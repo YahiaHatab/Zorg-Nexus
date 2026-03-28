@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZORG NEXUS | Shows Sorter</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Barlow+Condensed:wght@400;600;700&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --amber:#e8840a;--amber-dim:#9e5a07;--amber-bright:#ffaa33;--amber-glow:rgba(232,132,10,0.15);
+    --bg:#0a0a08;--bg2:#111109;--bg3:#181510;--border:rgba(232,132,10,0.25);
+  }
+  body{background:var(--bg);color:var(--amber);font-family:'JetBrains Mono',monospace;font-size:12px;min-height:100vh;overflow:hidden;}
+  .scanline{pointer-events:none;position:fixed;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);z-index:9000}
+  .root{display:grid;grid-template-rows:auto 1fr auto;height:100vh;}
+
+  /* LOGIN OVERLAY */
+  #loginScreen { position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(10,10,8,0.98); z-index:9999; display:flex; align-items:center; justify-content:center; flex-direction:column; }
+  .login-box { background:var(--bg2); border:1px solid var(--border); padding:30px; width:300px; box-shadow:0 0 30px var(--amber-glow); }
+  .login-box h2 { font-family:'Barlow Condensed',sans-serif; font-size:24px; margin-bottom:20px; text-align:center; letter-spacing:2px; color:var(--amber-bright);}
+  .login-box input { width:100%; background:var(--bg); border:1px solid var(--border); color:var(--amber-bright); padding:10px; margin-bottom:15px; font-family:'JetBrains Mono',monospace; outline:none; }
+  .login-box button { width:100%; background:var(--amber-glow); border:1px solid var(--amber-bright); color:var(--amber-bright); padding:10px; cursor:pointer; font-weight:700; transition:all 0.2s; }
+  .login-box button:hover { background:var(--amber-bright); color:var(--bg); }
+
+  /* GHOST DRAG OVERLAY */
+  #dragOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:9995; background:rgba(10,10,8,0.85); backdrop-filter:blur(4px); }
+  .drop-half { flex:1; display:flex; align-items:center; justify-content:center; flex-direction:column; transition:all 0.2s; border:2px dashed transparent;}
+  .drop-half.std { color:var(--amber-bright); }
+  .drop-half.some { color:#12DAF4; border-left:1px solid var(--border); }
+  .drop-half.dragover.std { background:rgba(232,132,10,0.2); border-color:var(--amber-bright); }
+  .drop-half.dragover.some { background:rgba(18,218,244,0.2); border-color:#12DAF4; }
+  .drop-half h1 { font-family:'Barlow Condensed',sans-serif; font-size:48px; letter-spacing:4px; margin-bottom:10px;}
+
+  /* TOPBAR */
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:6px 16px;background:var(--bg2);border-bottom:1px solid var(--border);}
+  .topbar-left{display:flex;align-items:center;gap:16px}
+  .logo{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;letter-spacing:2px;color:var(--amber-bright);text-transform:uppercase}
+  .logo span{color:var(--amber-dim);font-weight:400}
+  .status-pill{font-size:10px;padding:3px 8px;border:1px solid;border-radius:2px;letter-spacing:1px;text-transform:uppercase; color:#4dff91; border-color:rgba(77,255,145,0.4); background:rgba(77,255,145,0.07); animation:blink 2s step-end infinite;}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0.5}}
+  .topbar-right{display:flex;align-items:center;gap:24px}
+  .stat-mini{text-align:center}
+  .stat-mini .val{font-size:14px;font-weight:700;color:var(--amber-bright)}
+  .stat-mini .lbl{font-size:9px;color:var(--amber-dim);letter-spacing:1px;text-transform:uppercase}
+  .clock{font-size:20px;font-weight:700;color:var(--amber-bright);letter-spacing:2px;min-width:80px;text-align:right}
+
+  /* MAIN GRID */
+  .main{display:grid;grid-template-columns:220px 1fr;grid-template-rows:auto 1fr;gap:0;flex:1;overflow:hidden;}
+
+  /* SIDEBAR */
+  .sidebar{background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;grid-row:1/3; overflow-y:auto;}
+  .panel-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--amber-dim);padding:10px 14px 6px;border-bottom:1px solid var(--border)}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;border-left:2px solid transparent;font-size:11px;color:var(--amber-dim);transition:all 0.15s;}
+  .nav-item:hover{background:var(--amber-glow);color:var(--amber);}
+  .nav-item.active{border-left-color:var(--amber-bright);background:var(--amber-glow);color:var(--amber-bright)}
+  .nav-icon{width:14px;text-align:center;font-size:10px}
+  .nav-badge{margin-left:auto;background:var(--amber-dim);color:var(--bg);font-size:9px;padding:1px 5px;border-radius:1px;font-weight:700}
+  .sidebar-section{border-top:1px solid var(--border);margin-top:4px;padding-top:4px}
+  .agent-display{padding:10px 14px;font-size:11px;color:var(--amber-bright);border-top:1px solid var(--border);margin-top:auto;display:flex;justify-content:space-between;align-items:center;}
+  .logout-btn{background:none; border:1px solid var(--border); color:var(--amber-dim); font-size:9px; padding:2px 6px; cursor:pointer;}
+  .logout-btn:hover{color:#ff4d4d; border-color:#ff4d4d;}
+
+  /* TOOLBAR */
+  .toolbar{background:var(--bg3);border-bottom:1px solid var(--border);padding:8px 16px;display:flex;align-items:center;gap:10px;}
+  .search-box{display:flex;align-items:center;gap:6px;background:var(--bg2);border:1px solid var(--border);padding:4px 10px;flex:1;max-width:300px;}
+  .search-box input{background:none;border:none;outline:none;color:var(--amber);font-family:'JetBrains Mono',monospace;font-size:11px;flex:1;}
+  .filter-btn{font-family:'JetBrains Mono',monospace;font-size:10px;padding:4px 10px;background:rgba(232,132,10,0.05);border:1px solid var(--border);color:var(--amber-dim);cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:all 0.15s;display:flex;align-items:center;gap:5px;}
+  .filter-btn:hover{background:var(--amber-glow);color:var(--amber-bright);}
+  .btn-std { border-color:var(--amber); color:var(--amber); }
+  .btn-some { border-color:#12DAF4; color:#12DAF4; background:rgba(18,218,244,0.05); }
+  .btn-some:hover { background:rgba(18,218,244,0.15); color:#12DAF4; }
+
+  /* TABLE */
+  .table-wrap{overflow-y:auto;flex:1;position:relative;}
+  .file-table{width:100%;border-collapse:collapse}
+  .file-table th{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--amber-dim);padding:8px 14px;text-align:left;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg3);}
+  .file-table td{padding:7px 14px;border-bottom:1px solid rgba(232,132,10,0.08);font-size:11px;vertical-align:middle}
+  .file-table tr:hover td{background:var(--amber-glow)}
+  .file-name{color:var(--amber-bright);font-weight:700}
+  .file-ext{color:var(--amber-dim)}
+  .region-tag{font-size:9px;padding:2px 6px;border:1px solid;border-radius:1px;letter-spacing:1px}
+  .region-tag.usa{color:#4daaff;border-color:rgba(77,170,255,0.4)}
+  .region-tag.uk{color:#ff7a4d;border-color:rgba(255,122,77,0.4)}
+  .status-icon.ok{color:#4dff91}
+  .status-icon.err{color:#ff4d4d}
+  .size-cell,.date-cell,.dest-cell{color:var(--amber-dim)}
+  
+  /* REPORT TAGS */
+  .mode-tag { padding:2px 6px; border-radius:3px; font-size:9px; font-weight:700; letter-spacing:1px; display:inline-block; }
+  .mode-some { background:rgba(18,218,244,0.1); color:#12DAF4; border:1px solid rgba(18,218,244,0.3); }
+  .mode-standard { background:rgba(232,132,10,0.1); color:var(--amber-bright); border:1px solid rgba(232,132,10,0.3); }
+
+  /* LOG PANEL */
+  .log-panel{background:var(--bg2);border-top:1px solid var(--border);display:flex;flex-direction:column;grid-column:1/3;height:160px}
+  .log-inner{overflow-y:auto;flex:1;padding:6px 16px 10px}
+  .log-entry{display:flex;gap:10px;padding:2px 0;font-size:10px;line-height:1.6;border-bottom:1px solid rgba(232,132,10,0.04)}
+  .log-time{color:var(--amber-dim);flex-shrink:0;}
+  .log-msg.success{color:#4dff91}
+  .log-msg.error{color:#ff4d4d}
+
+  /* TOAST */
+  #toastContainer { position:fixed; left:20px; bottom:20px; z-index:9999; display:flex; flex-direction:column; gap:10px; width:300px; }
+  .toast { background:#181510; border-left:3px solid #4dff91; padding:12px 15px; box-shadow:0 5px 15px rgba(0,0,0,0.5); font-size:11px; animation:slideIn 0.3s forwards, slideOut 0.3s forwards 4.7s; line-height:1.4; }
+  .toast.error { border-left-color:#ff4d4d; }
+  @keyframes slideIn { from{transform:translateX(-120%);} to{transform:translateX(0);} }
+  @keyframes slideOut { to{transform:translateX(-120%);opacity:0;} }
+
+  ::-webkit-scrollbar{width:4px;height:4px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:var(--amber-dim);border-radius:0}
+  
+  .view-container { display:flex; flex-direction:column; flex:1; overflow:hidden; }
+</style>
+</head>
+<body>
+
+<div class="scanline"></div>
+
+<div id="loginScreen">
+  <div class="login-box">
+    <h2>NEXUS LOGIN</h2>
+    <input type="text" id="usernameInput" placeholder="Username" autocomplete="off">
+    <input type="password" id="passwordInput" placeholder="Password">
+    <button onclick="attemptLogin()">ACCESS PORTAL</button>
+    <div id="loginError" style="color:#ff4d4d; font-size:10px; margin-top:10px; text-align:center; display:none;">Invalid Credentials</div>
+  </div>
+</div>
+
+<div id="dragOverlay">
+  <div class="drop-half std" id="dropStd">
+    <h1>STANDARD MODE</h1>
+    <p>Drop file to extract 'New' records.</p>
+  </div>
+  <div class="drop-half some" id="dropSome">
+    <h1>SOME MODE</h1>
+    <p>Drop file to extract 'Some' records.</p>
+  </div>
+</div>
+
+<div class="root">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="logo">ZORG<span>-Ω</span> / SHOWS<span> SORTER</span></div>
+      <div class="status-pill">● ACTIVE</div>
+    </div>
+    <div class="topbar-right">
+      <div class="stat-mini"><div class="val" id="statTotal">0</div><div class="lbl">Total</div></div>
+      <div class="stat-mini"><div class="val" id="statSorted" style="color:#4dff91">0</div><div class="lbl">Sorted</div></div>
+      <div class="stat-mini"><div class="val" id="statErrors" style="color:#ff4d4d">0</div><div class="lbl">Errors</div></div>
+      <div class="clock" id="clock">--:--:--</div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="sidebar">
+      <div class="panel-label">Navigation</div>
+      <div class="nav-item active" data-view="files" onclick="setView(this, 'files')">
+        <span class="nav-icon">▤</span> My Files <span class="nav-badge" id="nbAll">0</span>
+      </div>
+      
+      <div class="sidebar-section">
+        <div class="panel-label">Analytics</div>
+        <div class="nav-item" data-view="report" onclick="setView(this, 'report')">
+          <span class="nav-icon" style="color:#12DAF4;">📊</span> Z-Report
+        </div>
+      </div>
+
+      <div class="sidebar-section" id="regionNav">
+        <div class="panel-label">Region</div>
+        <div class="nav-item active" onclick="setRegion(this, '')"><span class="nav-icon">◉</span> All regions</div>
+        <div class="nav-item" onclick="setRegion(this, 'USA')"><span class="nav-icon">▸</span> USA / Canada</div>
+        <div class="nav-item" onclick="setRegion(this, 'UK')"><span class="nav-icon">▸</span> UK / Europe</div>
+      </div>
+      <div class="agent-display">
+        <span id="displayUser">Loading...</span>
+        <button class="logout-btn" onclick="logout()">LOGOUT</button>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; flex:1; overflow:hidden;">
+        <div class="view-container" id="filesView">
+          <div class="toolbar">
+            <div class="search-box">
+              <span>$</span>
+              <input type="text" id="searchInput" placeholder="filter by name..." oninput="renderTable()">
+            </div>
+            
+            <input type="file" id="fileStd" style="display:none" accept=".xlsx" onchange="manualUpload(this, 'standard')">
+            <input type="file" id="fileSome" style="display:none" accept=".xlsx" onchange="manualUpload(this, 'some')">
+            
+            <button class="filter-btn btn-std" style="margin-left:auto;" onclick="document.getElementById('fileStd').click()">+ UPLOAD (STANDARD)</button>
+            <button class="filter-btn btn-some" onclick="document.getElementById('fileSome').click()">+ UPLOAD (SOME)</button>
+          </div>
+    
+          <div class="table-wrap">
+            <table class="file-table">
+              <thead>
+                <tr>
+                  <th>Filename</th>
+                  <th>Modified</th>
+                  <th>Size</th>
+                  <th>Region</th>
+                  <th>Destination</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="view-container" id="reportView" style="display:none;">
+          <div class="toolbar">
+            <span style="color:#12DAF4; font-weight:700; letter-spacing:2px; font-size:14px; margin-left:10px;">MY Z-REPORT DATA</span>
+            <button class="filter-btn btn-some" onclick="fetchUserReport()" style="margin-left:auto;">↻ REFRESH DATA</button>
+          </div>
+          <div class="table-wrap">
+            <table class="file-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Mode</th>
+                  <th>File Name</th>
+                  <th>Shown Count</th>
+                  <th>Total (Hidden + Shown)</th>
+                </tr>
+              </thead>
+              <tbody id="reportTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+    </div>
+
+    <div class="log-panel">
+      <div class="panel-label" style="display:flex;justify-content:space-between;padding-right:14px">
+        <span>Personal Activity Log</span>
+        <span id="logCount" style="color:var(--amber-dim);font-size:9px">0 entries</span>
+      </div>
+      <div class="log-inner" id="logInner"></div>
+    </div>
+  </div>
+</div>
+
+<div id="toastContainer"></div>
+
+<script>
+const monthNames=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+let currentUser = null;
+let files = [], logs = [], currentRegion = '';
+let currentView = 'files';
+
+// --- AUTH ---
+function checkAuth() {
+    currentUser = localStorage.getItem('zorg_nexus_user');
+    if (currentUser) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('displayUser').innerText = currentUser;
+        fetchUserData();
+        if (currentView === 'report') fetchUserReport();
+    }
+}
+
+async function attemptLogin() {
+    const u = document.getElementById('usernameInput').value;
+    const p = document.getElementById('passwordInput').value;
+    const res = await fetch('/api/login', { method: 'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({username:u, password:p}) });
+    const data = await res.json();
+    if (data.success) {
+        localStorage.setItem('zorg_nexus_user', data.username);
+        checkAuth();
+    } else {
+        document.getElementById('loginError').style.display = 'block';
+    }
+}
+
+function logout() { localStorage.removeItem('zorg_nexus_user'); window.location.reload(); }
+
+// --- DATA FETCHING ---
+async function fetchUserData() {
+    try {
+        const res = await fetch(`/api/user/data?username=${currentUser}`);
+        const data = await res.json();
+        files = data.files.map(f => ({ ...f, mtime: new Date(f.mtime) }));
+        logs = data.logs;
+        if (currentView === 'files') renderTable();
+        renderLog();
+        updateStats();
+    } catch (e) { console.error("Data fetch failed"); }
+}
+
+async function fetchUserReport() {
+    try {
+        const res = await fetch(`/api/user/report?username=${currentUser}`);
+        const json = await res.json();
+        const tbody = document.getElementById('reportTableBody');
+        
+        if (!json.data || json.data.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--amber-dim); padding:40px;">No report data found. Process a file first!</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = json.data.map(row => `
+            <tr>
+                <td style="color:var(--amber-dim)">${row.date || '—'}</td>
+                <td><span class="mode-tag ${row.mode === 'SOME' ? 'mode-some' : 'mode-standard'}">${row.mode || '—'}</span></td>
+                <td style="color:var(--amber-bright); font-weight:700;">${row.filename || '—'}</td>
+                <td style="color:#4dff91; font-weight:700;">${row.shown || 0}</td>
+                <td style="color:var(--amber); font-weight:700;">${row.total || 0}</td>
+            </tr>
+        `).join('');
+    } catch (e) {
+        console.error("Failed to load report", e);
+    }
+}
+
+// --- UPLOAD LOGIC ---
+async function uploadFile(file, mode) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('username', currentUser);
+    formData.append('mode', mode);
+
+    showToast(`Uploading ${file.name}...`, 'info');
+
+    try {
+        const res = await fetch('/api/upload', { method: 'POST', body: formData });
+        const data = await res.json();
+        if (data.success) {
+            showToast(`✅ ${data.stats.finalFileName}<br>Shown: <b>${data.stats.shown}</b> | Hidden: <b>${data.stats.hidden}</b>`, 'success');
+            fetchUserData(); 
+            if (currentView === 'report') fetchUserReport();
+        } else {
+            showToast(`❌ Failed: ${file.name}`, 'error');
+        }
+    } catch (err) {
+        showToast(`❌ Server Error`, 'error');
+    }
+}
+
+function manualUpload(inputEl, mode) {
+    if (inputEl.files.length > 0) {
+        uploadFile(inputEl.files[0], mode);
+        inputEl.value = ""; 
+    }
+}
+
+// --- GHOST DRAG OVERLAY LOGIC ---
+let dragTimer;
+window.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    document.getElementById('dragOverlay').style.display = 'flex';
+    clearTimeout(dragTimer);
+});
+window.addEventListener('dragleave', (e) => {
+    e.preventDefault();
+    dragTimer = setTimeout(() => { document.getElementById('dragOverlay').style.display = 'none'; }, 100);
+});
+window.addEventListener('drop', (e) => {
+    e.preventDefault();
+    document.getElementById('dragOverlay').style.display = 'none';
+});
+
+function setupZone(id, mode) {
+    const zone = document.getElementById(id);
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+    zone.addEventListener('dragleave', e => { e.preventDefault(); zone.classList.remove('dragover'); });
+    zone.addEventListener('drop', e => {
+        e.preventDefault();
+        zone.classList.remove('dragover');
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) uploadFile(e.dataTransfer.files[0], mode);
+    });
+}
+setupZone('dropStd', 'standard');
+setupZone('dropSome', 'some');
+
+// --- UI NAVIGATION & RENDER LOGIC ---
+function setView(el, view) {
+    currentView = view;
+    document.querySelectorAll('.sidebar .nav-item[data-view]').forEach(n => n.classList.remove('active'));
+    if (el) el.classList.add('active');
+    
+    if (view === 'report') {
+        document.getElementById('filesView').style.display = 'none';
+        document.getElementById('reportView').style.display = 'flex';
+        fetchUserReport();
+    } else {
+        document.getElementById('reportView').style.display = 'none';
+        document.getElementById('filesView').style.display = 'flex';
+        renderTable();
+    }
+}
+
+// FIX: Added HTML element passing so the amber glow moves to the clicked item
+function setRegion(el, r) { 
+    currentRegion = r; 
+    document.querySelectorAll('#regionNav .nav-item').forEach(n => n.classList.remove('active'));
+    if(el) el.classList.add('active');
+    renderTable(); 
+}
+
+function fmtSize(b){if(b>1048576)return(b/1048576).toFixed(1)+'MB';return(b/1024).toFixed(0)+'KB';}
+function fmtDate(d){return`${d.getDate()}-${monthNames[d.getMonth()]}-${d.getFullYear()}`;}
+
+function renderTable() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const list = files.filter(f => {
+        if(q && !f.name.toLowerCase().includes(q)) return false;
+        if(currentRegion && f.region !== currentRegion) return false;
+        return true;
+    });
+
+    const tbody = document.getElementById('tableBody');
+    const statusHtml = { sorted: '<span class="status-icon ok">✓ SORTED</span>', error: '<span class="status-icon err">✕ ERROR</span>' };
+    
+    tbody.innerHTML = list.map(f => {
+        let displayBase = f.name;
+        let ext = displayBase.lastIndexOf('.')>-1 ? displayBase.slice(displayBase.lastIndexOf('.')) : '';
+        let base = displayBase.slice(0, displayBase.length-ext.length);
+        return`<tr>
+          <td><span class="file-name">${base}</span><span class="file-ext">${ext}</span></td>
+          <td class="date-cell">${fmtDate(f.mtime)}</td>
+          <td class="size-cell">${fmtSize(f.size)}</td>
+          <td><span class="region-tag ${f.region.toLowerCase()}">${f.region}</span></td>
+          <td class="dest-cell">${f.destPath}</td>
+          <td>${statusHtml[f.status] || f.status}</td>
+        </tr>`;
+    }).join('');
+}
+
+function renderLog() {
+    document.getElementById('logInner').innerHTML = logs.map(l => 
+        `<div class="log-entry"><span class="log-time">${l.ts}</span><span class="log-msg ${l.type}">${l.msg}</span></div>`
+    ).join('');
+    document.getElementById('logCount').textContent = `${logs.length} entries`;
+}
+
+function updateStats() {
+    document.getElementById('statTotal').textContent = files.length;
+    document.getElementById('nbAll').textContent = files.length;
+    document.getElementById('statSorted').textContent = files.filter(f => f.status==='sorted').length;
+    document.getElementById('statErrors').textContent = files.filter(f => f.status==='error').length;
+}
+
+function showToast(htmlMsg, type) {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = htmlMsg;
+    container.appendChild(toast);
+    setTimeout(() => { toast.remove(); }, 5000);
+}
+
+setInterval(() => {
+    const now=new Date();
+    document.getElementById('clock').textContent=[now.getHours(),now.getMinutes(),now.getSeconds()].map(n=>String(n).padStart(2,'0')).join(':');
+}, 1000);
+
+checkAuth();
+</script>
+</body>
+</html>

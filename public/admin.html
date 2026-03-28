@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZORG NEXUS | Admin Dashboard</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Barlow+Condensed:wght@400;600;700&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0a0a08;color:#ffaa33;font-family:'JetBrains Mono',monospace;height:100vh;display:flex;flex-direction:column;}
+  
+  /* TOPBAR */
+  .topbar { display:flex; justify-content:space-between; align-items:center; padding:15px 25px; background:#111109; border-bottom:1px solid rgba(232,132,10,0.25); }
+  .logo { font-family:'Barlow Condensed',sans-serif; font-size:24px; font-weight:700; letter-spacing:3px; color:#ffaa33;}
+  .logo span { color:#ff4d4d; }
+  .controls button { background:none; border:1px solid #12DAF4; color:#12DAF4; padding:6px 15px; cursor:pointer; font-weight:700; transition:all 0.2s; font-family:'JetBrains Mono'; font-size:12px;}
+  .controls button:hover { background:rgba(18,218,244,0.1); }
+
+  /* LAYOUT */
+  .dashboard { display:grid; grid-template-columns: 1fr 1fr; gap:20px; padding:20px; flex:1; overflow:hidden;}
+  .panel { background:#111109; border:1px solid rgba(232,132,10,0.2); display:flex; flex-direction:column; overflow:hidden;}
+  .panel-header { padding:12px 20px; border-bottom:1px solid rgba(232,132,10,0.2); font-family:'Barlow Condensed',sans-serif; font-size:18px; letter-spacing:2px; font-weight:700; background:#181510;}
+  
+  /* TABLES */
+  .table-wrap { overflow-y:auto; flex:1; }
+  table { width:100%; border-collapse:collapse; text-align:left; }
+  th { padding:10px 20px; font-size:10px; text-transform:uppercase; letter-spacing:1px; color:#9e5a07; position:sticky; top:0; background:#111109; border-bottom:1px solid rgba(232,132,10,0.2); }
+  td { padding:12px 20px; font-size:12px; border-bottom:1px solid rgba(232,132,10,0.05); }
+  
+  /* LEADERBOARD SPECIFICS */
+  .leader-row { cursor:pointer; transition:all 0.15s; }
+  .leader-row:hover, .leader-row.active { background:rgba(232,132,10,0.1); border-left:3px solid #ffaa33; }
+  .agent-name { font-weight:700; color:#fff; }
+  .stat-highlight { color:#4dff91; font-weight:700; }
+  
+  /* LOGS SPECIFICS */
+  .log-row { font-size:11px; }
+  .mode-tag { padding:2px 6px; border-radius:3px; font-size:9px; font-weight:700; letter-spacing:1px; }
+  .mode-some { background:rgba(18,218,244,0.1); color:#12DAF4; border:1px solid rgba(18,218,244,0.3); }
+  .mode-standard { background:rgba(232,132,10,0.1); color:#ffaa33; border:1px solid rgba(232,132,10,0.3); }
+
+  ::-webkit-scrollbar{width:6px;}
+  ::-webkit-scrollbar-track{background:#0a0a08;}
+  ::-webkit-scrollbar-thumb{background:#9e5a07;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">ZORG<span>-ADMIN</span></div>
+  <div class="controls">
+    <button onclick="fetchAdminData()">↻ REFRESH DATA</button>
+  </div>
+</div>
+
+<div class="dashboard">
+  <div class="panel">
+    <div class="panel-header">AGENT LEADERBOARD</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Agent</th>
+            <th>Total Shows</th>
+            <th>Exhibitors (Shown + Hidden)</th>
+            <th>Only Shown</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboardBody">
+          </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header" id="detailHeader">GLOBAL ACTIVITY LOG</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Mode</th>
+            <th>Filename</th>
+            <th>Total</th>
+            <th>Shown</th>
+          </tr>
+        </thead>
+        <tbody id="logBody">
+          </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+let masterData = [];
+
+// Ensure only admins can see this (Basic client-side check)
+const currentUser = localStorage.getItem('zorg_nexus_user');
+if (currentUser !== 'Admin') {
+    alert('Access Denied: Admin privileges required.');
+    window.location.href = '/';
+}
+
+async function fetchAdminData() {
+    try {
+        const res = await fetch('/api/admin/report?t=' + Date.now());
+        const json = await res.json();
+        if (json.success) {
+            masterData = json.data;
+            renderDashboard();
+        }
+    } catch (err) {
+        console.error("Failed to fetch admin data", err);
+    }
+}
+
+function renderDashboard() {
+    // 1. Aggregate Data for Leaderboard
+    const agents = {};
+    
+    masterData.forEach(row => {
+        if (!agents[row.agent]) {
+            agents[row.agent] = { name: row.agent, filesCount: 0, totalCombined: 0, totalShown: 0 };
+        }
+        agents[row.agent].filesCount += 1;
+        agents[row.agent].totalCombined += row.total;
+        agents[row.agent].totalShown += row.shown;
+    });
+
+    // Convert object to array and sort by most files processed
+    const leaderboard = Object.values(agents).sort((a, b) => b.filesCount - a.filesCount);
+
+    // 2. Render Leaderboard Table
+    const tbody = document.getElementById('leaderboardBody');
+    tbody.innerHTML = leaderboard.map(agent => `
+        <tr class="leader-row" onclick="viewAgentLogs('${agent.name}', this)">
+            <td class="agent-name">${agent.name}</td>
+            <td style="color:#12DAF4; font-weight:700;">${agent.filesCount}</td>
+            <td>${agent.totalCombined}</td>
+            <td class="stat-highlight">${agent.totalShown}</td>
+        </tr>
+    `).join('');
+
+    // Default: Show everyone's logs
+    renderLogs(masterData, "GLOBAL ACTIVITY LOG");
+}
+
+function viewAgentLogs(agentName, rowElement) {
+    // Highlight selected row
+    document.querySelectorAll('.leader-row').forEach(row => row.classList.remove('active'));
+    rowElement.classList.add('active');
+
+    // Filter logs for this agent
+    const agentLogs = masterData.filter(row => row.agent === agentName);
+    renderLogs(agentLogs, `ACTIVITY LOG: ${agentName.toUpperCase()}`);
+}
+
+function renderLogs(logData, title) {
+    document.getElementById('detailHeader').innerText = title;
+    const tbody = document.getElementById('logBody');
+    
+    tbody.innerHTML = logData.map(row => {
+        const modeClass = row.mode === 'SOME' ? 'mode-some' : 'mode-standard';
+        return `
+        <tr class="log-row">
+            <td style="color:#9e5a07;">${row.date}</td>
+            <td><span class="mode-tag ${modeClass}">${row.mode}</span></td>
+            <td style="color:#fff; max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${row.filename}">${row.filename}</td>
+            <td style="color:var(--amber);">${row.total}</td>
+            <td style="color:#4dff91;">${row.shown}</td>
+        </tr>
+        `;
+    }).join('');
+}
+
+// Boot up
+fetchAdminData();
+</script>
+</body>
+</html>

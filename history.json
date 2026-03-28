@@ -1,0 +1,21 @@
+{
+  "files": [
+    {
+      "agent": "Admin",
+      "name": "Some X Show - ADLM 2026 (Association for Diagnostics & Laboratory Medicine) - Annual Scientific Meeting & Clinical Lab Expo - July 28-30, 2026 - Anaheim Convention Center - Anaheim, CA, USA..xlsx",
+      "size": 54783,
+      "mtime": "2026-03-28T16:14:58.111Z",
+      "region": "USA",
+      "destPath": "2026/Mar/28-3/USA",
+      "status": "sorted"
+    }
+  ],
+  "logs": [
+    {
+      "agent": "Admin",
+      "ts": "18:14:58",
+      "msg": "Sorted [SOME]: Some X Show - ADLM 2026 (Association for Diagnostics & Laboratory Medicine) - Annual Scientific Meeting & Clinical Lab Expo - July 28-30, 2026 - Anaheim Convention Center - Anaheim, CA, USA..xlsx (Shown: 114, Hidden: 31)",
+      "type": "success"
+    }
+  ]
+}
