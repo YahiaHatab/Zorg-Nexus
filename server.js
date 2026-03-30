@@ -568,6 +568,34 @@ app.get('/api/analytics', (req, res) => {
 });
 
 // ─────────────────────────────────────────────
+//  ADMIN — DELETE SINGLE RECORD
+//  Body: { dateKey: "YYYY-MM-DD", transactionId: "..." }
+// ─────────────────────────────────────────────
+app.delete('/api/admin/record', (req, res) => {
+    try {
+        const { dateKey, transactionId } = req.body;
+        if (!dateKey || !transactionId) {
+            return res.status(400).json({ success: false, error: 'dateKey and transactionId are required.' });
+        }
+        const data = loadAnalytics();
+        if (!data[dateKey]) {
+            return res.status(404).json({ success: false, error: `No data for date ${dateKey}.` });
+        }
+        const recIdx = data[dateKey].records.findIndex(r => r.transactionId === transactionId);
+        if (recIdx === -1) {
+            return res.status(404).json({ success: false, error: 'Record not found.' });
+        }
+        // Reuse existing helper — deducts summaries and removes the record
+        analyticsRemoveRecord(dateKey, transactionId);
+        console.log(`> [ADMIN] Deleted record ${transactionId} from ${dateKey}`);
+        res.json({ success: true });
+    } catch (e) {
+        console.error('Admin delete record error:', e);
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
+// ─────────────────────────────────────────────
 //  EXPORT — on-demand Excel download for a date
 //  GET /api/export/:date   e.g. /api/export/2026-03-30
 // ─────────────────────────────────────────────

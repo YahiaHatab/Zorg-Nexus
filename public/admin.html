@@ -118,7 +118,7 @@
 </head>
 <body>
 
-<!-- CONFIRM MODAL -->
+<!-- CONFIRM RESET MODAL -->
 <div id="confirmModal">
   <div class="confirm-box">
     <h3>⚠ Confirm System Reset</h3>
@@ -126,6 +126,21 @@
     <div class="confirm-actions">
       <button class="btn" onclick="closeModal()">Cancel</button>
       <button class="btn btn-red" onclick="executeReset()">Confirm Reset</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE RECORD MODAL -->
+<div id="deleteRecordModal" style="display:none; position:fixed; inset:0; background:rgba(11,15,25,0.85); backdrop-filter:blur(4px); z-index:9998; align-items:center; justify-content:center;">
+  <div class="confirm-box" style="max-width:480px;">
+    <h3 style="color:var(--danger);">🗑 Delete Show Record</h3>
+    <p id="deleteRecordDetails" style="margin-bottom:20px;">Loading...</p>
+    <div style="background:rgba(239,68,68,0.06); border:1px solid rgba(239,68,68,0.2); border-radius:8px; padding:12px 16px; margin-bottom:20px; font-size:12px; color:var(--text-muted);">
+      ⚠ This will permanently remove this record from <b style="color:var(--text-main);">analytics.json</b> and deduct its Gross/Net counts from all summaries. This action cannot be undone.
+    </div>
+    <div class="confirm-actions">
+      <button class="btn" onclick="closeDeleteModal()">Cancel</button>
+      <button class="btn btn-red" id="confirmDeleteBtn" onclick="confirmDeleteRecord()">Delete Record</button>
     </div>
   </div>
 </div>
@@ -198,7 +213,7 @@
       <table class="data-table">
         <thead>
           <tr>
-            <th>Time</th><th>Agent</th><th>Mode</th><th>Shows</th><th>Gross</th><th>Net</th><th>Hidden</th>
+            <th>Time</th><th>Agent</th><th>Mode</th><th>Show Name</th><th>Gross</th><th>Net</th><th>Hidden</th><th style="width:80px;text-align:center;">Action</th>
           </tr>
         </thead>
         <tbody id="ledgerBody"></tbody>
@@ -455,6 +470,9 @@ async function fetchLedgerDay() {
             <td style="color:var(--text-muted);">${rec.total}</td>
             <td class="stat-highlight">${rec.shown}</td>
             <td style="color:var(--danger);">${rec.hidden}</td>
+            <td style="text-align:center;">
+              <button class="btn btn-red btn-sm" onclick="deleteRecord('${date}','${escHtml(rec.transactionId)}')" title="Delete this record permanently">🗑</button>
+            </td>
         </tr>`;
     }).join('');
 }
@@ -463,6 +481,59 @@ function exportDay() {
     const date = document.getElementById('ledgerDatePicker').value;
     if (!date) { showToast('Please select a date first.', 'error'); return; }
     window.location.href = `/api/export/${date}`;
+}
+
+// ── RECORD DELETION ──────────────────────────
+let pendingDelete = null; // { dateKey, transactionId }
+
+function deleteRecord(dateKey, transactionId) {
+    // Look up record details from the already-loaded fullAnalytics object.
+    // This avoids embedding arbitrary strings inline in onclick attributes,
+    // which breaks on filenames containing apostrophes, ampersands, quotes etc.
+    const day = fullAnalytics[dateKey];
+    const rec = day && day.records.find(r => r.transactionId === transactionId);
+    if (!rec) { showToast('\u274c Record not found in local data. Try refreshing.', 'error'); return; }
+
+    pendingDelete = { dateKey, transactionId };
+    document.getElementById('deleteRecordDetails').innerHTML =
+        `You are about to delete the following show record:<br><br>` +
+        `<b style="color:var(--text-main);">${escHtml(rec.filename)}</b><br>` +
+        `<span style="color:var(--text-muted);font-size:12px;">Agent: <b>${escHtml(rec.agent)}</b> &nbsp;|&nbsp; Net: <b style="color:var(--success);">${rec.shown}</b> &nbsp;|&nbsp; Gross: <b>${rec.total}</b> &nbsp;|&nbsp; Date: <b>${escHtml(dateKey)}</b></span>`;
+    const modal = document.getElementById('deleteRecordModal');
+    modal.style.display = 'flex';
+}
+
+function closeDeleteModal() {
+    document.getElementById('deleteRecordModal').style.display = 'none';
+    pendingDelete = null;
+}
+
+async function confirmDeleteRecord() {
+    if (!pendingDelete) return;
+    const { dateKey, transactionId } = pendingDelete;
+    document.getElementById('confirmDeleteBtn').disabled = true;
+    document.getElementById('confirmDeleteBtn').textContent = 'Deleting...';
+    try {
+        const res  = await fetch('/api/admin/record', {
+            method:  'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ dateKey, transactionId })
+        });
+        const json = await res.json();
+        if (json.success) {
+            closeDeleteModal();
+            showToast('✅ Record deleted and summaries updated.', 'success');
+            fetchLedgerDay();   // Refresh the ledger table
+            if (currentTab === 'leaderboard') fetchTodayData();
+        } else {
+            showToast(`❌ Delete failed: ${json.error}`, 'error');
+        }
+    } catch {
+        showToast('❌ Server error during deletion.', 'error');
+    } finally {
+        document.getElementById('confirmDeleteBtn').disabled = false;
+        document.getElementById('confirmDeleteBtn').textContent = 'Delete Record';
+    }
 }
 
 // ══════════════════════════════════════════════
@@ -742,6 +813,13 @@ function showToast(msg, type = 'success') {
 document.addEventListener('keydown', (e) => {
     const modalOpen = document.getElementById('confirmModal').classList.contains('open');
     const isTyping  = ['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName);
+
+    const deleteModalOpen = document.getElementById('deleteRecordModal').style.display === 'flex';
+
+    if (deleteModalOpen) {
+        if (e.key === 'Escape') { e.preventDefault(); closeDeleteModal(); }
+        return;
+    }
 
     if (modalOpen) {
         if (e.key === 'Enter')  { e.preventDefault(); executeReset(); }

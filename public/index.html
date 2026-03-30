@@ -1,318 +1,1091 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ZORG NEXUS | Shows Sorter</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
-  
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  
-  :root {
-    --bg-base: #0B0F19;
-    --bg-panel: #111827;
-    --bg-hover: #1F2937;
-    --border: #374151;
-    --text-main: #F9FAFB;
-    --text-muted: #9CA3AF;
-    --accent-blue: #3B82F6;
-    --accent-blue-glow: rgba(59, 130, 246, 0.15);
-    --accent-cyan: #06B6D4;
-    --accent-cyan-glow: rgba(6, 182, 212, 0.15);
-    --success: #10B981;
-    --danger: #EF4444;
-    --warning: #F59E0B;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZORG NEXUS | Agent Portal</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
 
-  body {
-    background: var(--bg-base); color: var(--text-main); font-family: 'Inter', sans-serif;
-    font-size: 13px; height: 100vh; overflow: hidden; display: flex; flex-direction: column;
-  }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  .mono { font-family: 'JetBrains Mono', monospace; }
+    :root {
+      --bg-base: #0B0F19;
+      --bg-panel: #111827;
+      --bg-hover: #1F2937;
+      --border: #374151;
+      --text-main: #F9FAFB;
+      --text-muted: #9CA3AF;
+      --accent-blue: #3B82F6;
+      --accent-blue-glow: rgba(59, 130, 246, 0.15);
+      --accent-cyan: #06B6D4;
+      --accent-cyan-glow: rgba(6, 182, 212, 0.15);
+      --accent-purple: #8B5CF6;
+      --accent-purple-glow: rgba(139, 92, 246, 0.15);
+      --success: #10B981;
+      --danger: #EF4444;
+      --warning: #F59E0B;
+    }
 
-  .root {
-    display: flex; flex-direction: column; flex: 1; overflow: hidden; height: 100vh; width: 100%;
-  }
+    body {
+      background: var(--bg-base);
+      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
 
-  /* LOGIN OVERLAY */
-  #loginScreen {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(11, 15, 25, 0.85); backdrop-filter: blur(12px);
-    z-index: 9999; display: flex; align-items: center; justify-content: center; flex-direction: column;
-  }
-  .login-box {
-    background: var(--bg-panel); border: 1px solid var(--border); border-radius: 12px;
-    padding: 40px; width: 340px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  }
-  .login-box h2 {
-    font-size: 22px; font-weight: 700; margin-bottom: 24px; text-align: center; letter-spacing: -0.5px;
-  }
-  .login-box input {
-    width: 100%; background: var(--bg-base); border: 1px solid var(--border); color: var(--text-main);
-    padding: 12px 16px; margin-bottom: 16px; border-radius: 8px; font-family: 'Inter', sans-serif; outline: none; transition: border 0.2s;
-  }
-  .login-box input:focus { border-color: var(--accent-blue); }
-  .login-box button {
-    width: 100%; background: var(--accent-blue); border: none; color: #fff; border-radius: 8px;
-    padding: 12px; cursor: pointer; font-weight: 600; transition: all 0.2s; margin-top: 8px;
-  }
-  .login-box button:hover { background: #2563EB; transform: translateY(-1px); }
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
 
-  /* GHOST DRAG OVERLAY */
-  #dragOverlay {
-    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    z-index: 9995; background: rgba(11, 15, 25, 0.7); backdrop-filter: blur(8px); gap: 24px; padding: 24px;
-  }
-  .drop-half {
-    flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column;
-    border: 2px dashed var(--border); border-radius: 16px; transition: all 0.2s; background: rgba(17, 24, 39, 0.5);
-  }
-  .drop-half.std { color: var(--accent-blue); }
-  .drop-half.some { color: var(--accent-cyan); }
-  .drop-half.dragover.std { background: var(--accent-blue-glow); border-color: var(--accent-blue); }
-  .drop-half.dragover.some { background: var(--accent-cyan-glow); border-color: var(--accent-cyan); }
-  .drop-half h1 { font-size: 32px; font-weight: 700; margin-bottom: 12px; }
+    .root {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      overflow: hidden;
+      height: 100vh;
+      width: 100%;
+    }
 
-  /* TOPBAR */
-  .topbar {
-    display: flex; align-items: center; justify-content: space-between; padding: 12px 24px;
-    background: var(--bg-panel); border-bottom: 1px solid var(--border); height: 64px; flex-shrink: 0;
-  }
-  .topbar-left { display: flex; align-items: center; gap: 20px; }
-  .logo { font-size: 16px; font-weight: 700; letter-spacing: 0.5px; color: #fff; }
-  .logo span { color: var(--text-muted); font-weight: 500; }
-  .status-pill {
-    font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 999px;
-    color: var(--success); background: rgba(16, 185, 129, 0.1); display: flex; align-items: center; gap: 6px;
-  }
-  .status-pill::before { content: ''; display: block; width: 6px; height: 6px; border-radius: 50%; background: var(--success); animation: pulse 2s infinite; }
-  @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-  
-  .topbar-right { display: flex; align-items: center; gap: 32px; }
-  .stat-mini { text-align: right; }
-  .stat-mini .val { font-size: 16px; font-weight: 700; font-family: 'JetBrains Mono'; }
-  .stat-mini .lbl { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
-  .clock { font-size: 16px; font-weight: 500; font-family: 'JetBrains Mono'; color: var(--text-muted); }
-  .admin-btn {
-    background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: var(--danger);
-    padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; text-decoration: none; transition: all 0.2s;
-  }
-  .admin-btn:hover { background: rgba(239, 68, 68, 0.2); }
+    /* LOGIN OVERLAY */
+    #loginScreen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(11, 15, 25, 0.85);
+      backdrop-filter: blur(12px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
 
-  /* MAIN GRID */
-  .main { display: flex; flex: 1; overflow: hidden; }
+    .login-box {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 40px;
+      width: 340px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
 
-  /* SIDEBAR */
-  .sidebar {
-    width: 260px; background: var(--bg-panel); border-right: 1px solid var(--border);
-    display: flex; flex-direction: column; overflow-y: auto; flex-shrink: 0; height: 100%;
-  }
-  .panel-label { font-size: 11px; font-weight: 600; color: var(--text-muted); padding: 24px 20px 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .nav-item {
-    display: flex; align-items: center; gap: 12px; padding: 10px 20px; cursor: pointer;
-    font-size: 13px; font-weight: 500; color: var(--text-muted); transition: all 0.2s; margin: 2px 12px; border-radius: 6px;
-  }
-  .nav-item:hover { background: var(--bg-hover); color: var(--text-main); }
-  .nav-item.active { background: var(--accent-blue-glow); color: var(--accent-blue); }
-  .nav-icon { width: 16px; font-size: 14px; display: flex; justify-content: center; }
-  .nav-badge { margin-left: auto; background: var(--border); color: var(--text-main); font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 600; }
-  .nav-item.active .nav-badge { background: var(--accent-blue); color: #fff; }
-  
-  .agent-display {
-    padding: 16px 20px; border-top: 1px solid var(--border); margin-top: auto; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2);
-  }
-  #displayUser { font-weight: 600; color: var(--text-main); }
-  .logout-btn { background: none; border: none; color: var(--text-muted); font-size: 12px; cursor: pointer; font-weight: 500; transition: color 0.2s; }
-  .logout-btn:hover { color: var(--danger); }
+    .login-box h2 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      text-align: center;
+      letter-spacing: -0.5px;
+    }
 
-  /* CONTENT AREA */
-  .content-wrapper { display: flex; flex-direction: column; flex: 1; overflow: hidden; background: var(--bg-base); height: 100%; }
-  .view-container { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+    .login-box input {
+      width: 100%;
+      background: var(--bg-base);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border 0.2s;
+    }
 
-  /* TOOLBAR */
-  .toolbar {
-    background: var(--bg-base); border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex; align-items: center; gap: 16px; flex-shrink: 0;
-  }
-  .search-box {
-    display: flex; align-items: center; gap: 10px; background: var(--bg-panel); border: 1px solid var(--border);
-    padding: 8px 16px; border-radius: 8px; flex: 1; max-width: 360px; transition: border 0.2s;
-  }
-  .search-box:focus-within { border-color: var(--accent-blue); }
-  .search-box input { background: none; border: none; outline: none; color: var(--text-main); font-size: 13px; width: 100%; }
-  
-  .filter-btn {
-    font-size: 12px; font-weight: 600; padding: 8px 16px; border-radius: 8px; border: 1px solid;
-    cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px;
-  }
-  .btn-std { background: var(--accent-blue-glow); border-color: rgba(59, 130, 246, 0.3); color: var(--accent-blue); }
-  .btn-std:hover { background: rgba(59, 130, 246, 0.25); }
-  .btn-some { background: var(--accent-cyan-glow); border-color: rgba(6, 182, 212, 0.3); color: var(--accent-cyan); }
-  .btn-some:hover { background: rgba(6, 182, 212, 0.25); }
+    .login-box input:focus {
+      border-color: var(--accent-blue);
+    }
 
-  /* TABLE */
-  .table-wrap { overflow-y: auto; flex: 1; padding: 0 24px; }
-  
-  .file-table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 16px; table-layout: fixed; }
-  
-  .file-table th {
-    font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px;
-    padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg-base); z-index: 10;
-  }
-  
-  .file-table td { 
-    padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 13px; 
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
-  }
+    .login-box button {
+      width: 100%;
+      background: var(--accent-blue);
+      border: none;
+      color: #fff;
+      border-radius: 8px;
+      padding: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+      margin-top: 8px;
+    }
 
-  /* FIX: Ensure the Status column never hides our Undo button */
-  .file-table td.status-cell {
-    overflow: visible;
-    text-overflow: clip;
-  }
-  
-  .file-table tr:last-child td { border-bottom: none; }
-  .file-table tr:hover td { background: var(--bg-hover); }
-  
-  .file-name { color: var(--text-main); font-weight: 500; }
-  .file-ext { color: var(--text-muted); }
-  
-  .region-tag { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 999px; }
-  .region-tag.usa { background: rgba(59, 130, 246, 0.1); color: #60A5FA; }
-  .region-tag.uk { background: rgba(245, 158, 11, 0.1); color: #FBBF24; }
-  
-  .status-icon { font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; }
-  .status-icon.ok { color: var(--success); }
-  .status-icon.err { color: var(--danger); }
-  .size-cell, .date-cell, .dest-cell { color: var(--text-muted); }
+    .login-box button:hover {
+      background: #2563EB;
+      transform: translateY(-1px);
+    }
 
-  /* COLUMN RESIZER STYLES */
-  .resizer {
-    position: absolute; right: 0; top: 0; bottom: 0; width: 5px;
-    cursor: col-resize; user-select: none; z-index: 11;
-  }
-  .resizer:hover, .resizer.resizing {
-    background: var(--accent-blue); opacity: 0.5;
-  }
+    /* GHOST DRAG OVERLAY */
+    #dragOverlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 9995;
+      background: rgba(11, 15, 25, 0.7);
+      backdrop-filter: blur(8px);
+      gap: 24px;
+      padding: 24px;
+    }
 
-  /* REPORT TAGS */
-  .mode-tag { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; }
-  .mode-some { background: var(--accent-cyan-glow); color: var(--accent-cyan); }
-  .mode-standard { background: var(--accent-blue-glow); color: var(--accent-blue); }
+    .drop-half {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      border: 2px dashed var(--border);
+      border-radius: 16px;
+      transition: all 0.2s;
+      background: rgba(17, 24, 39, 0.5);
+    }
 
-  /* COLLAPSIBLE LOG FOOTER */
-  .log-footer {
-    background: var(--bg-panel); border-top: 1px solid var(--border); flex-shrink: 0; z-index: 50; margin-top: auto;
-  }
-  .log-header {
-    padding: 10px 24px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
-    transition: background 0.2s; user-select: none;
-  }
-  .log-header:hover { background: var(--bg-hover); }
-  .log-title { font-size: 12px; font-weight: 600; color: var(--text-main); display: flex; align-items: center; }
-  .log-badge { background: rgba(255,255,255,0.08); padding: 2px 8px; border-radius: 999px; font-size: 10px; color: var(--text-muted); font-family: 'Inter', sans-serif; }
-  .log-toggle-icon { font-size: 10px; color: var(--text-muted); transition: transform 0.3s; }
-  
-  .log-inner-wrap {
-    height: 0; overflow: hidden; transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .log-footer.expanded .log-inner-wrap {
-    height: 220px; border-top: 1px solid var(--border);
-  }
-  .log-footer.expanded .log-toggle-icon { transform: rotate(180deg); }
-  
-  .log-inner {
-    padding: 12px 24px; font-family: 'JetBrains Mono', monospace; font-size: 11px; overflow-y: auto; height: 100%;
-  }
-  .log-entry { display: flex; gap: 16px; padding: 4px 0; color: var(--text-muted); }
-  .log-time { color: #6B7280; flex-shrink: 0; }
-  .log-msg.success { color: var(--success); }
-  .log-msg.error { color: var(--danger); }
+    .drop-half.std {
+      color: var(--accent-blue);
+    }
 
-  /* TOAST */
-  #toastContainer { position: fixed; right: 24px; bottom: 48px; z-index: 9999; display: flex; flex-direction: column; gap: 12px; width: 320px; }
-  .toast {
-    background: var(--bg-panel); border: 1px solid var(--border); border-left: 4px solid var(--success); border-radius: 8px;
-    padding: 16px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); font-size: 13px; color: var(--text-main);
-    animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards, slideOut 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards 5.7s; cursor: pointer; position: relative;
-  }
-  .toast::after { content: '✕'; position: absolute; top: 16px; right: 16px; font-size: 10px; color: var(--text-muted); }
-  .toast.error { border-left-color: var(--danger); }
-  .toast.info { border-left-color: var(--accent-blue); }
-  @keyframes slideIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-  @keyframes slideOut { to { transform: translateX(120%); opacity: 0; } }
+    .drop-half.some {
+      color: var(--accent-cyan);
+    }
 
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
-  ::-webkit-scrollbar-thumb:hover { background: #4B5563; }
-</style>
+    .drop-half.dragover.std {
+      background: var(--accent-blue-glow);
+      border-color: var(--accent-blue);
+    }
+
+    .drop-half.dragover.some {
+      background: var(--accent-cyan-glow);
+      border-color: var(--accent-cyan);
+    }
+
+    .drop-half h1 {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    /* TOPBAR */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 24px;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border);
+      height: 64px;
+      flex-shrink: 0;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .logo {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #fff;
+    }
+
+    .logo span {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .status-pill {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      color: var(--success);
+      background: rgba(16, 185, 129, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-pill::before {
+      content: '';
+      display: block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--success);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.4;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .stat-mini {
+      text-align: right;
+    }
+
+    .stat-mini .val {
+      font-size: 16px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono';
+    }
+
+    .stat-mini .lbl {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .clock {
+      font-size: 16px;
+      font-weight: 500;
+      font-family: 'JetBrains Mono';
+      color: var(--text-muted);
+    }
+
+    .admin-btn {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: var(--danger);
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .admin-btn:hover {
+      background: rgba(239, 68, 68, 0.2);
+    }
+
+    /* MAIN GRID */
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 220px;
+      background: var(--bg-panel);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      flex-shrink: 0;
+      height: 100%;
+    }
+
+    .panel-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      padding: 24px 20px 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: all 0.2s;
+      margin: 2px 12px;
+      border-radius: 6px;
+    }
+
+    .nav-item:hover {
+      background: var(--bg-hover);
+      color: var(--text-main);
+    }
+
+    .nav-item.active {
+      background: var(--accent-blue-glow);
+      color: var(--accent-blue);
+    }
+
+    .nav-item.perf-tab.active {
+      background: var(--accent-purple-glow);
+      color: var(--accent-purple);
+    }
+
+    .nav-icon {
+      width: 18px;
+      font-size: 15px;
+      display: flex;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--border);
+      color: var(--text-main);
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+
+    .nav-item.active .nav-badge {
+      background: var(--accent-blue);
+      color: #fff;
+    }
+
+    .agent-display {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      margin-top: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    #displayUser {
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .logout-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .logout-btn:hover {
+      color: var(--danger);
+    }
+
+    /* CONTENT AREA */
+    .content-wrapper {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      overflow: hidden;
+      background: var(--bg-base);
+      height: 100%;
+    }
+
+    .view-container {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* TOOLBAR */
+    .toolbar {
+      background: var(--bg-base);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      padding: 8px 16px;
+      border-radius: 8px;
+      flex: 1;
+      max-width: 360px;
+      transition: border 0.2s;
+    }
+
+    .search-box:focus-within {
+      border-color: var(--accent-blue);
+    }
+
+    .search-box input {
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--text-main);
+      font-size: 13px;
+      width: 100%;
+    }
+
+    .filter-btn {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-std {
+      background: var(--accent-blue-glow);
+      border-color: rgba(59, 130, 246, 0.3);
+      color: var(--accent-blue);
+    }
+
+    .btn-std:hover {
+      background: rgba(59, 130, 246, 0.25);
+    }
+
+    .btn-some {
+      background: var(--accent-cyan-glow);
+      border-color: rgba(6, 182, 212, 0.3);
+      color: var(--accent-cyan);
+    }
+
+    .btn-some:hover {
+      background: rgba(6, 182, 212, 0.25);
+    }
+
+    /* TABLE */
+    .table-wrap {
+      overflow-y: auto;
+      flex: 1;
+      padding: 0 24px;
+    }
+
+    .file-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-top: 16px;
+      table-layout: fixed;
+    }
+
+    .file-table th {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: var(--bg-base);
+      z-index: 10;
+    }
+
+    .file-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .file-table td.status-cell {
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .file-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .file-table tr:hover td {
+      background: var(--bg-hover);
+    }
+
+    .file-name {
+      color: var(--text-main);
+      font-weight: 500;
+    }
+
+    .file-ext {
+      color: var(--text-muted);
+    }
+
+    .region-tag {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    .region-tag.usa {
+      background: rgba(59, 130, 246, 0.1);
+      color: #60A5FA;
+    }
+
+    .region-tag.uk {
+      background: rgba(245, 158, 11, 0.1);
+      color: #FBBF24;
+    }
+
+    .status-icon {
+      font-weight: 600;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-icon.ok {
+      color: var(--success);
+    }
+
+    .status-icon.err {
+      color: var(--danger);
+    }
+
+    .size-cell,
+    .date-cell,
+    .dest-cell {
+      color: var(--text-muted);
+    }
+
+    /* COLUMN RESIZER STYLES */
+    .resizer {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 5px;
+      cursor: col-resize;
+      user-select: none;
+      z-index: 11;
+    }
+
+    .resizer:hover,
+    .resizer.resizing {
+      background: var(--accent-blue);
+      opacity: 0.5;
+    }
+
+    /* REPORT TAGS */
+    .mode-tag {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .mode-some {
+      background: var(--accent-cyan-glow);
+      color: var(--accent-cyan);
+    }
+
+    .mode-standard {
+      background: var(--accent-blue-glow);
+      color: var(--accent-blue);
+    }
+
+    /* COLLAPSIBLE LOG FOOTER */
+    .log-footer {
+      background: var(--bg-panel);
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+      z-index: 50;
+      margin-top: auto;
+    }
+
+    .log-header {
+      padding: 10px 24px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.2s;
+      user-select: none;
+    }
+
+    .log-header:hover {
+      background: var(--bg-hover);
+    }
+
+    .log-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+    }
+
+    .log-badge {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      color: var(--text-muted);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .log-toggle-icon {
+      font-size: 10px;
+      color: var(--text-muted);
+      transition: transform 0.3s;
+    }
+
+    .log-inner-wrap {
+      height: 0;
+      overflow: hidden;
+      transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .log-footer.expanded .log-inner-wrap {
+      height: 220px;
+      border-top: 1px solid var(--border);
+    }
+
+    .log-footer.expanded .log-toggle-icon {
+      transform: rotate(180deg);
+    }
+
+    .log-inner {
+      padding: 12px 24px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      overflow-y: auto;
+      height: 100%;
+    }
+
+    .log-entry {
+      display: flex;
+      gap: 16px;
+      padding: 4px 0;
+      color: var(--text-muted);
+    }
+
+    .log-time {
+      color: #6B7280;
+      flex-shrink: 0;
+    }
+
+    .log-msg.success {
+      color: var(--success);
+    }
+
+    .log-msg.error {
+      color: var(--danger);
+    }
+
+    /* ═══════════════════════════════════════════════
+     PERFORMANCE DASHBOARD
+  ════════════════════════════════════════════════ */
+    #performanceView {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .perf-header {
+      border-bottom: 1px solid var(--border);
+      padding: 20px 28px 16px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .perf-header-left h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: -0.3px;
+    }
+
+    .perf-header-left p {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    .perf-header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .refresh-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      background: var(--accent-purple-glow);
+      color: var(--accent-purple);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .refresh-btn:hover {
+      background: rgba(139, 92, 246, 0.25);
+    }
+
+    .perf-body {
+      padding: 24px 28px;
+      flex: 1;
+    }
+
+    /* STAT CARDS */
+    .stat-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .stat-card:hover {
+      border-color: rgba(139, 92, 246, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent-purple), var(--accent-blue));
+    }
+
+    .stat-card .sc-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin-bottom: 14px;
+    }
+
+    .stat-card .sc-icon.blue {
+      background: var(--accent-blue-glow);
+    }
+
+    .stat-card .sc-icon.cyan {
+      background: var(--accent-cyan-glow);
+    }
+
+    .stat-card .sc-icon.purple {
+      background: var(--accent-purple-glow);
+    }
+
+    .stat-card .sc-val {
+      font-size: 32px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono';
+      color: var(--text-main);
+      letter-spacing: -1px;
+      line-height: 1;
+    }
+
+    .stat-card .sc-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 6px;
+    }
+
+    .stat-card .sc-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* CHART PANEL */
+    .chart-panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .chart-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .chart-panel-header h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .chart-panel-header p {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .chart-legend {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--accent-purple);
+      background: var(--accent-purple-glow);
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+
+    .chart-legend::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-purple);
+    }
+
+    .chart-wrap {
+      position: relative;
+      height: 240px;
+    }
+
+    #performanceChart {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    /* EMPTY STATE */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 24px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .empty-state .es-icon {
+      font-size: 40px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    .empty-state p {
+      font-size: 13px;
+      max-width: 280px;
+      line-height: 1.6;
+    }
+
+    /* TOAST */
+    #toastContainer {
+      position: fixed;
+      right: 24px;
+      bottom: 48px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 320px;
+    }
+
+    .toast {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--success);
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+      font-size: 13px;
+      color: var(--text-main);
+      animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards, slideOut 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards 5.7s;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .toast::after {
+      content: '✕';
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .toast.error {
+      border-left-color: var(--danger);
+    }
+
+    .toast.info {
+      border-left-color: var(--accent-blue);
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(120%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideOut {
+      to {
+        transform: translateX(120%);
+        opacity: 0;
+      }
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #4B5563;
+    }
+  </style>
 </head>
+
 <body>
 
-<div id="loginScreen">
-  <div class="login-box">
-    <h2>NEXUS LOGIN</h2>
-    <input type="text" id="usernameInput" placeholder="Username" autocomplete="off" onkeydown="if(event.key==='Enter')attemptLogin()">
-    <input type="password" id="passwordInput" placeholder="Password" onkeydown="if(event.key==='Enter')attemptLogin()">
-    <button onclick="attemptLogin()">Access Portal</button>
-    <div id="loginError" style="color:var(--danger); font-size:12px; font-weight:500; margin-top:16px; text-align:center; display:none;">Invalid Credentials</div>
-  </div>
-</div>
-
-<div id="dragOverlay">
-  <div class="drop-half std" id="dropStd">
-    <h1>Standard Mode</h1>
-    <p>Drop file to extract 'New' records.</p>
-  </div>
-  <div class="drop-half some" id="dropSome">
-    <h1>Some Mode</h1>
-    <p>Drop file to extract 'Some' records.</p>
-  </div>
-</div>
-
-<div class="root">
-  <div class="topbar">
-    <div class="topbar-left">
-      <div class="logo">Z-LEADS <span>/ Sorter</span></div>
-      <div class="status-pill">Active System</div>
-    </div>
-    <div class="topbar-right">
-      <div class="stat-mini"><div class="val" id="statTotal">0</div><div class="lbl">Total Files</div></div>
-      <div class="stat-mini"><div class="val" id="statSorted" style="color:var(--success)">0</div><div class="lbl">Processed</div></div>
-      <div class="stat-mini"><div class="val" id="statErrors" style="color:var(--danger)">0</div><div class="lbl">Issues</div></div>
-      <div class="clock" id="clock">--:--:--</div>
-      <a id="adminLink" href="/admin.html" class="admin-btn" style="display:none;">Admin Config</a>
+  <div id="loginScreen">
+    <div class="login-box">
+      <h2>NEXUS LOGIN</h2>
+      <input type="text" id="usernameInput" placeholder="Username" autocomplete="off"
+        onkeydown="if(event.key==='Enter')attemptLogin()">
+      <input type="password" id="passwordInput" placeholder="Password"
+        onkeydown="if(event.key==='Enter')attemptLogin()">
+      <button onclick="attemptLogin()">Access Portal</button>
+      <div id="loginError"
+        style="color:var(--danger); font-size:12px; font-weight:500; margin-top:16px; text-align:center; display:none;">
+        Invalid Credentials</div>
     </div>
   </div>
 
-  <div class="main">
-    <div class="sidebar">
-      <div class="panel-label">Workspace</div>
-      <div class="nav-item active" data-view="files" onclick="setView(this, 'files')">
-        <span class="nav-icon">📁</span> My Files <span class="nav-badge" id="nbAll">0</span>
-      </div>
+  <div id="dragOverlay">
+    <div class="drop-half std" id="dropStd">
+      <h1>Standard Mode</h1>
+      <p>Drop file to extract 'New' records.</p>
+    </div>
+    <div class="drop-half some" id="dropSome">
+      <h1>Some Mode</h1>
+      <p>Drop file to extract 'Some' records.</p>
+    </div>
+  </div>
 
-      <div class="panel-label" style="margin-top: 8px;">Analytics</div>
-      <div class="nav-item" data-view="report" onclick="setView(this, 'report')">
-        <span class="nav-icon" style="color:var(--accent-blue);">📊</span> Activity Report
+  <div class="root">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="logo">Z-LEADS <span>/ Sorter</span></div>
+        <div class="status-pill">Active System</div>
       </div>
-
-      <div id="regionNav">
-        <div class="panel-label" style="margin-top: 8px;">Filters</div>
-        <div class="nav-item active" onclick="setRegion(this, '')"><span class="nav-icon">🌍</span> All Regions</div>
-        <div class="nav-item" onclick="setRegion(this, 'USA')"><span class="nav-icon">🇺🇸</span> USA / Canada</div>
-        <div class="nav-item" onclick="setRegion(this, 'UK')"><span class="nav-icon">🇬🇧</span> UK / Europe</div>
-      </div>
-      
-      <div class="agent-display">
-        <span id="displayUser">Loading...</span>
-        <button class="logout-btn" onclick="logout()">Logout</button>
+      <div class="topbar-right">
+        <div class="stat-mini">
+          <div class="val" id="statTotal">0</div>
+          <div class="lbl">Total Files</div>
+        </div>
+        <div class="stat-mini">
+          <div class="val" id="statSorted" style="color:var(--success)">0</div>
+          <div class="lbl">Processed</div>
+        </div>
+        <div class="stat-mini">
+          <div class="val" id="statErrors" style="color:var(--danger)">0</div>
+          <div class="lbl">Issues</div>
+        </div>
+        <div class="clock" id="clock">--:--:--</div>
+        <a id="adminLink" href="/admin.html" class="admin-btn" style="display:none;">Admin Config</a>
       </div>
     </div>
 
-    <div class="content-wrapper">
+    <div class="main">
+      <div class="sidebar">
+        <div class="panel-label">Workspace</div>
+        <div class="nav-item active" id="navFiles" data-view="files" onclick="setView('files')">
+          <span class="nav-icon">📁</span> Today's Shows <span class="nav-badge" id="nbAll">0</span>
+        </div>
+        <div class="nav-item perf-tab" id="navPerf" data-view="performance" onclick="setView('performance')">
+          <span class="nav-icon">📈</span> My Performance
+        </div>
+
+        <div class="agent-display">
+          <span id="displayUser">Loading...</span>
+          <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+      </div>
+
+      <div class="content-wrapper">
+
+        <!-- ── TODAY'S FILES VIEW ── -->
         <div class="view-container" id="filesView">
           <div class="toolbar">
             <div class="search-box">
@@ -320,11 +1093,14 @@
               <input type="text" id="searchInput" placeholder="Search by file name..." oninput="renderTable()">
             </div>
 
-            <input type="file" id="fileStd" style="display:none" accept=".xlsx" onchange="manualUpload(this, 'standard')">
+            <input type="file" id="fileStd" style="display:none" accept=".xlsx"
+              onchange="manualUpload(this, 'standard')">
             <input type="file" id="fileSome" style="display:none" accept=".xlsx" onchange="manualUpload(this, 'some')">
 
-            <button class="filter-btn btn-std" style="margin-left:auto;" onclick="document.getElementById('fileStd').click()">+ Upload Standard</button>
-            <button class="filter-btn btn-some" onclick="document.getElementById('fileSome').click()">+ Upload Some</button>
+            <button class="filter-btn btn-std" style="margin-left:auto;"
+              onclick="document.getElementById('fileStd').click()">+ Upload Standard</button>
+            <button class="filter-btn btn-some" onclick="document.getElementById('fileSome').click()">+ Upload
+              Some</button>
           </div>
 
           <div class="table-wrap">
@@ -342,304 +1118,313 @@
               <tbody id="tableBody"></tbody>
             </table>
           </div>
-        </div>
 
-        <div class="view-container" id="reportView" style="display:none;">
-          <div class="toolbar">
-            <span style="font-weight:600; font-size:14px; color:var(--text-main);">My Production Report</span>
-            <button class="filter-btn btn-some" onclick="fetchUserReport()" style="margin-left:auto;">↻ Refresh Data</button>
-          </div>
-          <div class="table-wrap">
-            <table class="file-table" id="reportTable">
-              <thead>
-                <tr>
-                  <th style="width: 15%;">Date</th>
-                  <th style="width: 10%;">Mode</th>
-                  <th style="width: 45%;">File Name</th>
-                  <th style="width: 15%;">Shown Count</th>
-                  <th style="width: 15%;">Total Processed</th>
-                </tr>
-              </thead>
-              <tbody id="reportTableBody"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <div class="log-footer" id="logFooter">
-          <div class="log-header" onclick="toggleLogs()">
-            <div class="log-title">
-              <span style="margin-right: 12px;">System Activity Terminal</span>
-              <span class="log-badge" id="logCount">0 entries</span>
+          <div class="log-footer" id="logFooter">
+            <div class="log-header" onclick="toggleLogs()">
+              <div class="log-title">
+                <span style="margin-right: 12px;">System Activity Terminal</span>
+                <span class="log-badge" id="logCount">0 entries</span>
+              </div>
+              <span class="log-toggle-icon">▲</span>
             </div>
-            <span class="log-toggle-icon">▲</span>
-          </div>
-          <div class="log-inner-wrap">
-            <div class="log-inner" id="logInner"></div>
+            <div class="log-inner-wrap">
+              <div class="log-inner" id="logInner"></div>
+            </div>
           </div>
         </div>
 
+        <!-- ── MY PERFORMANCE VIEW ── -->
+        <div id="performanceView">
+          <div class="perf-header">
+            <div class="perf-header-left">
+              <h2>📈 My Performance</h2>
+              <p id="perfSubtitle">Loading personal analytics...</p>
+            </div>
+            <div class="perf-header-right">
+              <button class="refresh-btn" onclick="loadPerformanceDashboard()">↻ Refresh</button>
+            </div>
+          </div>
+
+          <div class="perf-body">
+            <!-- STAT CARDS -->
+            <div class="stat-cards-grid" style="grid-template-columns: repeat(5, 1fr);">
+              <div class="stat-card">
+                <div class="sc-icon blue">📁</div>
+                <div class="sc-val" id="pcFilesToday">—</div>
+                <div class="sc-label">Shows Today</div>
+                <div class="sc-sub">Shows processed today</div>
+              </div>
+              <div class="stat-card">
+                <div class="sc-icon cyan">✨</div>
+                <div class="sc-val" id="pcShownToday">—</div>
+                <div class="sc-label">Net Leads Today</div>
+                <div class="sc-sub">Shown (qualified) leads today</div>
+              </div>
+              <div class="stat-card">
+                <div class="sc-icon" style="background:rgba(245,158,11,0.12)">📊</div>
+                <div class="sc-val" id="pcGrossToday" style="color:var(--warning)">—</div>
+                <div class="sc-label">Gross Leads Today</div>
+                <div class="sc-sub">Net + Hidden leads today</div>
+              </div>
+              <div class="stat-card">
+                <div class="sc-icon purple">📅</div>
+                <div class="sc-val" id="pcShownMonth">—</div>
+                <div class="sc-label">Net Leads (Month)</div>
+                <div class="sc-sub" id="pcMonthLabel">This month's total</div>
+              </div>
+              <div class="stat-card">
+                <div class="sc-icon" style="background:rgba(245,158,11,0.12)">🗓️</div>
+                <div class="sc-val" id="pcGrossMonth" style="color:var(--warning)">—</div>
+                <div class="sc-label">Gross Leads (Month)</div>
+                <div class="sc-sub" id="pcGrossMonthLabel">Net + Hidden this month</div>
+              </div>
+            </div>
+
+            <!-- 14-DAY LINE CHART -->
+            <div class="chart-panel">
+              <div class="chart-panel-header">
+                <div>
+                  <h3>Daily Productivity — Last 14 Days</h3>
+                  <p>Shown leads extracted per day</p>
+                </div>
+                <div class="chart-legend">Shown Leads</div>
+              </div>
+              <div class="chart-wrap">
+                <canvas id="performanceChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
-</div>
 
-<div id="toastContainer"></div>
+  <div id="toastContainer"></div>
 
-<script>
-const monthNames=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-let currentUser = null;
-let files = [], logs = [], currentRegion = '';
-let currentView = 'files';
+  <script>
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    let currentUser = null;
+    let files = [], logs = [];
+    let currentView = 'files';
+    let analyticsData = {};    // full ledger from /api/analytics
+    let perfChart = null;   // Chart.js instance
 
-// --- TABLE COLUMN RESIZING ---
-function initTableResizers() {
-    document.querySelectorAll('.file-table').forEach(table => {
-        const cols = table.querySelectorAll('th');
-        [].forEach.call(cols, function (col) {
-            const resizer = document.createElement('div');
-            resizer.classList.add('resizer');
-            col.appendChild(resizer);
-            createResizableColumn(col, resizer);
+    // ─────────────────────────────────────────────
+    //  TABLE COLUMN RESIZING
+    // ─────────────────────────────────────────────
+    function initTableResizers() {
+      document.querySelectorAll('.file-table').forEach(table => {
+        table.querySelectorAll('th').forEach(col => {
+          const resizer = document.createElement('div');
+          resizer.classList.add('resizer');
+          col.appendChild(resizer);
+          createResizableColumn(col, resizer);
         });
-    });
-}
+      });
+    }
 
-function createResizableColumn(col, resizer) {
-    let x = 0;
-    let w = 0;
-    
-    const mouseDownHandler = function (e) {
+    function createResizableColumn(col, resizer) {
+      let x = 0, w = 0;
+      const mouseDownHandler = e => {
         x = e.clientX;
-        const styles = window.getComputedStyle(col);
-        w = parseInt(styles.width, 10);
-        
+        w = parseInt(window.getComputedStyle(col).width, 10);
         document.addEventListener('mousemove', mouseMoveHandler);
         document.addEventListener('mouseup', mouseUpHandler);
         resizer.classList.add('resizing');
-    };
-    
-    const mouseMoveHandler = function (e) {
-        const dx = e.clientX - x;
-        col.style.width = `${w + dx}px`;
-    };
-    
-    const mouseUpHandler = function () {
+      };
+      const mouseMoveHandler = e => { col.style.width = `${w + (e.clientX - x)}px`; };
+      const mouseUpHandler = () => {
         resizer.classList.remove('resizing');
         document.removeEventListener('mousemove', mouseMoveHandler);
         document.removeEventListener('mouseup', mouseUpHandler);
-    };
-    
-    resizer.addEventListener('mousedown', mouseDownHandler);
-}
+      };
+      resizer.addEventListener('mousedown', mouseDownHandler);
+    }
 
-// --- UI TOGGLES ---
-function toggleLogs() {
-    const footer = document.getElementById('logFooter');
-    footer.classList.toggle('expanded');
-}
+    // ─────────────────────────────────────────────
+    //  UI TOGGLES
+    // ─────────────────────────────────────────────
+    function toggleLogs() {
+      document.getElementById('logFooter').classList.toggle('expanded');
+    }
 
-// --- AUTH ---
-function checkAuth() {
-    currentUser = localStorage.getItem('zorg_nexus_user');
-    if (currentUser) {
+    // ─────────────────────────────────────────────
+    //  AUTH
+    // ─────────────────────────────────────────────
+    function checkAuth() {
+      currentUser = localStorage.getItem('zorg_nexus_user');
+      if (currentUser) {
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('displayUser').innerText = currentUser;
         if (currentUser === 'Admin') {
-            document.getElementById('adminLink').style.display = 'inline-block';
+          document.getElementById('adminLink').style.display = 'inline-block';
         }
+        // Fetch both user files AND the full analytics ledger on load
         fetchUserData();
-        if (currentView === 'report') fetchUserReport();
+        fetchAnalytics();
+      }
     }
-}
 
-async function attemptLogin() {
-    const u = document.getElementById('usernameInput').value;
-    const p = document.getElementById('passwordInput').value;
-    const res = await fetch('/api/login', { method: 'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({username:u, password:p}) });
-    const data = await res.json();
-    if (data.success) {
+    async function attemptLogin() {
+      const u = document.getElementById('usernameInput').value;
+      const p = document.getElementById('passwordInput').value;
+      const res = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: u, password: p }) });
+      const data = await res.json();
+      if (data.success) {
         localStorage.setItem('zorg_nexus_user', data.username);
         checkAuth();
-    } else {
+      } else {
         document.getElementById('loginError').style.display = 'block';
+      }
     }
-}
 
-function logout() { localStorage.removeItem('zorg_nexus_user'); window.location.reload(); }
+    function logout() { localStorage.removeItem('zorg_nexus_user'); window.location.reload(); }
 
-// --- DATA FETCHING ---
-async function fetchUserData() {
-    try {
+    // ─────────────────────────────────────────────
+    //  DATA FETCHING
+    // ─────────────────────────────────────────────
+    async function fetchUserData() {
+      try {
         const res = await fetch(`/api/user/data?username=${currentUser}`);
         const data = await res.json();
         files = data.files.map(f => ({ ...f, mtime: new Date(f.mtime) }));
         logs = data.logs;
         if (currentView === 'files') renderTable();
-        renderLog(); 
+        renderLog();
         updateStats();
-    } catch (e) { console.error("Data fetch failed"); }
-}
-
-async function fetchUserReport() {
-    try {
-        const res = await fetch(`/api/user/report?username=${currentUser}`);
-        const json = await res.json();
-        const tbody = document.getElementById('reportTableBody');
-
-        if (!json.data || json.data.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:40px;">No report data found. Process a file first!</td></tr>`;
-            return;
-        }
-
-        tbody.innerHTML = json.data.map(row => `
-            <tr>
-                <td style="color:var(--text-muted)">${row.date || '—'}</td>
-                <td><span class="mode-tag ${row.mode === 'SOME' ? 'mode-some' : 'mode-standard'}">${row.mode || '—'}</span></td>
-                <td style="color:var(--text-main); font-weight:500;" title="${row.filename}">${row.filename || '—'}</td>
-                <td style="color:var(--success); font-weight:600;">${row.shown || 0}</td>
-                <td style="color:var(--text-muted); font-weight:600;">${row.total || 0}</td>
-            </tr>
-        `).join('');
-    } catch (e) {
-        console.error("Failed to load report", e);
+      } catch (e) { console.error('Data fetch failed', e); }
     }
-}
 
-// --- UPLOAD LOGIC ---
-async function uploadFile(file, mode) {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('username', currentUser);
-    formData.append('mode', mode);
+    async function fetchAnalytics() {
+      try {
+        const res = await fetch('/api/analytics');
+        const data = await res.json();
+        if (data.success) {
+          analyticsData = data.data;
+          if (currentView === 'performance') renderPerformanceDashboard();
+        }
+      } catch (e) { console.error('Analytics fetch failed', e); }
+    }
 
-    showToast(`Uploading ${file.name}...`, 'info');
+    // ─────────────────────────────────────────────
+    //  UPLOAD LOGIC
+    // ─────────────────────────────────────────────
+    async function uploadFile(file, mode) {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('username', currentUser);
+      formData.append('mode', mode);
 
-    try {
+      showToast(`Uploading ${file.name}...`, 'info');
+
+      try {
         const res = await fetch('/api/upload', { method: 'POST', body: formData });
         const data = await res.json();
         if (data.success) {
-            showToast(`✅ ${data.stats.finalFileName}<br>Shown: <b>${data.stats.shown}</b> | Hidden: <b>${data.stats.hidden}</b>`, 'success');
-            fetchUserData();
-            if (currentView === 'report') fetchUserReport();
+          showToast(`✅ ${data.stats.finalFileName}<br>Shown: <b>${data.stats.shown}</b> | Hidden: <b>${data.stats.hidden}</b>`, 'success');
+          fetchUserData();
+          fetchAnalytics(); // Refresh analytics ledger after every upload
         } else {
-            showToast(`❌ Failed: ${file.name}`, 'error');
+          showToast(`❌ Failed: ${file.name}`, 'error');
         }
-    } catch (err) {
+      } catch (err) {
         showToast(`❌ Server Error`, 'error');
+      }
     }
-}
 
-// --- UNDO FUNCTION ---
-async function undoUpload(transactionId) {
-    try {
+    // ─────────────────────────────────────────────
+    //  UNDO
+    // ─────────────────────────────────────────────
+    async function undoUpload(transactionId) {
+      try {
         const res = await fetch('/api/undo', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ transactionId, username: currentUser })
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ transactionId, username: currentUser })
         });
         const data = await res.json();
-        
         if (data.success) {
-            showToast('⏪ Action reversed. File deleted and records scrubbed.', 'info');
-            fetchUserData();
-            if (currentView === 'report') fetchUserReport();
+          showToast('⏪ Action reversed. File deleted and records scrubbed.', 'info');
+          fetchUserData();
+          fetchAnalytics();
         } else {
-            showToast(`❌ ${data.error || 'Undo time expired.'}`, 'error');
-            fetchUserData(); // Force refresh to clear expired button
+          showToast(`❌ ${data.error || 'Undo time expired.'}`, 'error');
+          fetchUserData();
         }
-    } catch (e) {
+      } catch (e) {
         showToast('❌ Server error during undo.', 'error');
+      }
     }
-}
 
-function manualUpload(inputEl, mode) {
-    if (inputEl.files.length > 0) {
-        uploadFile(inputEl.files[0], mode);
-        inputEl.value = "";
+    function manualUpload(inputEl, mode) {
+      if (inputEl.files.length > 0) { uploadFile(inputEl.files[0], mode); inputEl.value = ''; }
     }
-}
 
-// --- GHOST DRAG OVERLAY LOGIC ---
-let dragTimer;
-window.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    document.getElementById('dragOverlay').style.display = 'flex';
-    clearTimeout(dragTimer);
-});
-window.addEventListener('dragleave', (e) => {
-    e.preventDefault();
-    dragTimer = setTimeout(() => { document.getElementById('dragOverlay').style.display = 'none'; }, 100);
-});
-window.addEventListener('drop', (e) => {
-    e.preventDefault();
-    document.getElementById('dragOverlay').style.display = 'none';
-});
+    // ─────────────────────────────────────────────
+    //  DRAG & DROP
+    // ─────────────────────────────────────────────
+    let dragTimer;
+    window.addEventListener('dragover', e => { e.preventDefault(); document.getElementById('dragOverlay').style.display = 'flex'; clearTimeout(dragTimer); });
+    window.addEventListener('dragleave', e => { e.preventDefault(); dragTimer = setTimeout(() => { document.getElementById('dragOverlay').style.display = 'none'; }, 100); });
+    window.addEventListener('drop', e => { e.preventDefault(); document.getElementById('dragOverlay').style.display = 'none'; });
 
-function setupZone(id, mode) {
-    const zone = document.getElementById(id);
-    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
-    zone.addEventListener('dragleave', e => { e.preventDefault(); zone.classList.remove('dragover'); });
-    zone.addEventListener('drop', e => {
-        e.preventDefault();
-        zone.classList.remove('dragover');
+    function setupZone(id, mode) {
+      const zone = document.getElementById(id);
+      zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+      zone.addEventListener('dragleave', e => { e.preventDefault(); zone.classList.remove('dragover'); });
+      zone.addEventListener('drop', e => {
+        e.preventDefault(); zone.classList.remove('dragover');
         if (e.dataTransfer.files && e.dataTransfer.files.length > 0) uploadFile(e.dataTransfer.files[0], mode);
-    });
-}
-setupZone('dropStd', 'standard');
-setupZone('dropSome', 'some');
+      });
+    }
+    setupZone('dropStd', 'standard');
+    setupZone('dropSome', 'some');
 
-// --- UI NAVIGATION & RENDER LOGIC ---
-function setView(el, view) {
-    currentView = view;
-    document.querySelectorAll('.sidebar .nav-item[data-view]').forEach(n => n.classList.remove('active'));
-    if (el) el.classList.add('active');
+    // ─────────────────────────────────────────────
+    //  NAVIGATION
+    // ─────────────────────────────────────────────
+    function setView(view) {
+      currentView = view;
 
-    if (view === 'report') {
+      // Update sidebar active states
+      document.querySelectorAll('.sidebar .nav-item[data-view]').forEach(n => n.classList.remove('active'));
+      const navEl = document.getElementById(view === 'files' ? 'navFiles' : 'navPerf');
+      if (navEl) navEl.classList.add('active');
+
+      if (view === 'performance') {
         document.getElementById('filesView').style.display = 'none';
-        document.getElementById('reportView').style.display = 'flex';
-        fetchUserReport();
-    } else {
-        document.getElementById('reportView').style.display = 'none';
+        document.getElementById('performanceView').style.display = 'flex';
+        loadPerformanceDashboard();
+      } else {
+        document.getElementById('performanceView').style.display = 'none';
         document.getElementById('filesView').style.display = 'flex';
         renderTable();
+      }
     }
-}
 
-function setRegion(el, r) {
-    currentRegion = r;
-    document.querySelectorAll('#regionNav .nav-item').forEach(n => n.classList.remove('active'));
-    if(el) el.classList.add('active');
-    renderTable();
-}
+    // ─────────────────────────────────────────────
+    //  TABLE RENDER (Today's Files)
+    // ─────────────────────────────────────────────
+    function fmtSize(b) { return b > 1048576 ? (b / 1048576).toFixed(1) + 'MB' : (b / 1024).toFixed(0) + 'KB'; }
+    function fmtDate(d) { return `${d.getDate()}-${monthNames[d.getMonth()]}-${d.getFullYear()}`; }
 
-function fmtSize(b){if(b>1048576)return(b/1048576).toFixed(1)+'MB';return(b/1024).toFixed(0)+'KB';}
-function fmtDate(d){return`${d.getDate()}-${monthNames[d.getMonth()]}-${d.getFullYear()}`;}
+    function renderTable() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const list = files.filter(f => !q || f.name.toLowerCase().includes(q));
 
-function renderTable() {
-    const q = document.getElementById('searchInput').value.toLowerCase();
-    const list = files.filter(f => {
-        if(q && !f.name.toLowerCase().includes(q)) return false;
-        if(currentRegion && f.region !== currentRegion) return false;
-        return true;
-    });
+      const tbody = document.getElementById('tableBody');
+      const statusHtml = { sorted: '<span class="status-icon ok">✓ Sorted</span>', error: '<span class="status-icon err">✕ Error</span>' };
+      const nowMs = Date.now();
 
-    const tbody = document.getElementById('tableBody');
-    const statusHtml = { sorted: '<span class="status-icon ok">✓ Sorted</span>', error: '<span class="status-icon err">✕ Error</span>' };
-    const nowMs = Date.now();
-
-    tbody.innerHTML = list.map(f => {
-        let displayBase = f.name;
-        let ext = displayBase.lastIndexOf('.')>-1 ? displayBase.slice(displayBase.lastIndexOf('.')) : '';
-        let base = displayBase.slice(0, displayBase.length-ext.length);
-        
-        let ageMs = nowMs - new Date(f.mtime).getTime();
-        let canUndo = ageMs < 300000 && f.transactionId; // 5 minute window
-        
-        let undoBtnHtml = canUndo 
-            ? `<span title="Revert upload (within 5 min)" onclick="undoUpload('${f.transactionId}')" style="cursor:pointer; margin-left:12px; display:inline-flex; align-items:center; justify-content:center; background:rgba(239,68,68,0.1); color:var(--danger); border-radius:4px; padding:2px 6px; font-size:10px; font-weight:700; letter-spacing:0.5px; transition:all 0.2s;" onmouseover="this.style.background='var(--danger)'; this.style.color='#fff';" onmouseout="this.style.background='rgba(239,68,68,0.1)'; this.style.color='var(--danger)';">↩ UNDO</span>`
-            : '';
-
-        // FIX: Added 'status-cell' class here so overflow is visible for the button
-        return`<tr>
+      tbody.innerHTML = list.map(f => {
+        let ext = f.name.lastIndexOf('.') > -1 ? f.name.slice(f.name.lastIndexOf('.')) : '';
+        let base = f.name.slice(0, f.name.length - ext.length);
+        let canUndo = (nowMs - new Date(f.mtime).getTime()) < 300000 && f.transactionId;
+        let undoBtnHtml = canUndo
+          ? `<span title="Revert upload (within 5 min)" onclick="undoUpload('${f.transactionId}')" style="cursor:pointer; margin-left:12px; display:inline-flex; align-items:center; justify-content:center; background:rgba(239,68,68,0.1); color:var(--danger); border-radius:4px; padding:2px 6px; font-size:10px; font-weight:700; letter-spacing:0.5px; transition:all 0.2s;" onmouseover="this.style.background='var(--danger)'; this.style.color='#fff';" onmouseout="this.style.background='rgba(239,68,68,0.1)'; this.style.color='var(--danger)';">↩ UNDO</span>`
+          : '';
+        return `<tr>
           <td title="${f.name}"><span class="file-name">${base}</span><span class="file-ext">${ext}</span></td>
           <td class="date-cell">${fmtDate(f.mtime)}</td>
           <td class="size-cell mono">${fmtSize(f.size)}</td>
@@ -647,90 +1432,252 @@ function renderTable() {
           <td class="dest-cell mono" title="${f.destPath}">${f.destPath}</td>
           <td class="status-cell">${statusHtml[f.status] || f.status}${undoBtnHtml}</td>
         </tr>`;
-    }).join('');
-}
+      }).join('');
+    }
 
-function renderLog() {
-    const logInner = document.getElementById('logInner');
-    const logCount = document.getElementById('logCount');
-    if (!logInner || !logCount) return;
-
-    logInner.innerHTML = logs.map(l =>
+    function renderLog() {
+      const logInner = document.getElementById('logInner');
+      const logCount = document.getElementById('logCount');
+      if (!logInner || !logCount) return;
+      logInner.innerHTML = logs.map(l =>
         `<div class="log-entry"><span class="log-time">${l.ts}</span><span class="log-msg ${l.type}">${l.msg}</span></div>`
-    ).join('');
-    logCount.textContent = `${logs.length} entries`;
-    
-    // Auto-scroll log to bottom when updated
-    logInner.scrollTop = logInner.scrollHeight;
-}
+      ).join('');
+      logCount.textContent = `${logs.length} entries`;
+      logInner.scrollTop = logInner.scrollHeight;
+    }
 
-function updateStats() {
-    document.getElementById('statTotal').textContent = files.length;
-    document.getElementById('nbAll').textContent = files.length;
-    document.getElementById('statSorted').textContent = files.filter(f => f.status==='sorted').length;
-    document.getElementById('statErrors').textContent = files.filter(f => f.status==='error').length;
-}
+    function updateStats() {
+      document.getElementById('statTotal').textContent = files.length;
+      document.getElementById('nbAll').textContent = files.length;
+      document.getElementById('statSorted').textContent = files.filter(f => f.status === 'sorted').length;
+      document.getElementById('statErrors').textContent = files.filter(f => f.status === 'error').length;
+    }
 
-function dismissToast(toast) {
-    if (!toast) return;
-    toast.style.animation = 'none';
-    toast.style.transition = 'transform 0.15s ease, opacity 0.15s ease';
-    requestAnimationFrame(() => {
-        toast.style.transform = 'translateX(120%)';
-        toast.style.opacity   = '0';
-    });
-    setTimeout(() => toast.remove(), 160);
-}
+    // ─────────────────────────────────────────────
+    //  PERFORMANCE DASHBOARD  (personal, filtered)
+    // ─────────────────────────────────────────────
 
-function showToast(htmlMsg, type) {
-    const container = document.getElementById('toastContainer');
-    const toast = document.createElement('div');
-    toast.className = `toast ${type || ''}`;
-    toast.innerHTML = htmlMsg;
-    toast.addEventListener('click', () => dismissToast(toast));
-    container.appendChild(toast);
-    
-    setTimeout(() => { if (toast.parentNode) toast.remove(); }, 5000);
-}
+    /**
+     * Build the last N calendar days as ISO date strings (YYYY-MM-DD),
+     * from (today - N+1) up to today, inclusive.
+     */
+    function buildDateRange(days) {
+      const result = [];
+      for (let i = days - 1; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        result.push(d.toISOString().split('T')[0]);
+      }
+      return result;
+    }
 
-// ── KEYBOARD NAVIGATION ───────────────────────
-document.addEventListener('keydown', (e) => {
-    const loginVisible = document.getElementById('loginScreen').style.display !== 'none'
-                      && !document.getElementById('loginScreen').style.display;
+    function loadPerformanceDashboard() {
+      // Always re-fetch so the data is fresh on tab switch
+      fetchAnalytics().then(() => renderPerformanceDashboard());
+    }
 
-    const loginScreen = document.getElementById('loginScreen');
-    const loginShowing = loginScreen && loginScreen.style.display !== 'none'
-                      && getComputedStyle(loginScreen).display !== 'none';
+    function renderPerformanceDashboard() {
+      if (!currentUser) return;
 
-    if (loginShowing) {
+      const today = new Date().toISOString().split('T')[0];
+      const nowMonth = today.slice(0, 7);   // "YYYY-MM"
+      const dates14 = buildDateRange(14);
+
+      // ── Compute personal stats by scanning ONLY this user's data ──────────
+      let filesToday = 0;
+      let shownToday = 0;   // Net Leads
+      let grossToday = 0;   // Gross Leads (shown + hidden)
+      let shownMonth = 0;
+      let grossMonth = 0;
+
+      // Map: dateKey -> shown count (personal)
+      const dailyShown = {};
+
+      for (const dateKey of Object.keys(analyticsData)) {
+        const day = analyticsData[dateKey];
+        if (!day || !day.records) continue;
+
+        for (const rec of day.records) {
+          // STRICT FILTER — only count records belonging to currentUser
+          if (rec.agent !== currentUser) continue;
+
+          const recShown = rec.shown || 0;
+          const recTotal = rec.total || (recShown + (rec.hidden || 0));
+
+          // Today
+          if (dateKey === today) {
+            filesToday++;
+            shownToday += recShown;
+            grossToday += recTotal;
+          }
+
+          // This month
+          if (dateKey.startsWith(nowMonth)) {
+            shownMonth += recShown;
+            grossMonth += recTotal;
+          }
+
+          // Daily shown map (for the chart)
+          if (!dailyShown[dateKey]) dailyShown[dateKey] = 0;
+          dailyShown[dateKey] += recShown;
+        }
+      }
+
+      // ── Update subtitle ──
+      const monthLabel = `${monthNames[new Date().getMonth()]} ${new Date().getFullYear()}`;
+      document.getElementById('perfSubtitle').textContent = `Personal stats for ${currentUser} — ${today}`;
+      document.getElementById('pcMonthLabel').textContent = `Total for ${monthLabel}`;
+
+      // ── Update stat cards ──
+      document.getElementById('pcFilesToday').textContent  = filesToday;
+      document.getElementById('pcShownToday').textContent  = shownToday;
+      document.getElementById('pcGrossToday').textContent  = grossToday;
+      document.getElementById('pcShownMonth').textContent  = shownMonth;
+      document.getElementById('pcGrossMonth').textContent  = grossMonth;
+      document.getElementById('pcGrossMonthLabel').textContent = `Net + Hidden — ${monthLabel}`;
+
+      // ── Build chart data (14 days) ──
+      const chartLabels = dates14.map(d => {
+        const parts = d.split('-');
+        return `${parseInt(parts[2])} ${monthNames[parseInt(parts[1]) - 1]}`;
+      });
+      const chartValues = dates14.map(d => dailyShown[d] || 0);
+
+      // ── Render / update Chart.js ──
+      renderChart(chartLabels, chartValues);
+    }
+
+    function renderChart(labels, values) {
+      const ctx = document.getElementById('performanceChart').getContext('2d');
+
+      const gradient = ctx.createLinearGradient(0, 0, 0, 240);
+      gradient.addColorStop(0, 'rgba(139, 92, 246, 0.35)');
+      gradient.addColorStop(1, 'rgba(139, 92, 246, 0.00)');
+
+      const chartConfig = {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Shown Leads',
+            data: values,
+            borderColor: '#8B5CF6',
+            backgroundColor: gradient,
+            borderWidth: 2.5,
+            pointBackgroundColor: '#8B5CF6',
+            pointBorderColor: '#0B0F19',
+            pointBorderWidth: 2,
+            pointRadius: 5,
+            pointHoverRadius: 8,
+            tension: 0.35,
+            fill: true,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#1F2937',
+              borderColor: '#374151',
+              borderWidth: 1,
+              titleColor: '#F9FAFB',
+              bodyColor: '#9CA3AF',
+              padding: 12,
+              callbacks: {
+                label: ctx => ` ${ctx.parsed.y} shown leads`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(55, 65, 81, 0.5)', drawBorder: false },
+              ticks: { color: '#9CA3AF', font: { size: 11, family: 'Inter' } }
+            },
+            y: {
+              beginAtZero: true,
+              grid: { color: 'rgba(55, 65, 81, 0.5)', drawBorder: false },
+              ticks: {
+                color: '#9CA3AF', font: { size: 11, family: 'Inter' },
+                stepSize: 1,
+                callback: v => Number.isInteger(v) ? v : ''
+              }
+            }
+          }
+        }
+      };
+
+      if (perfChart) {
+        // Update existing chart in-place (smooth transition)
+        perfChart.data.labels = labels;
+        perfChart.data.datasets[0].data = values;
+        perfChart.update();
+      } else {
+        perfChart = new Chart(ctx, chartConfig);
+      }
+    }
+
+    // ─────────────────────────────────────────────
+    //  TOAST
+    // ─────────────────────────────────────────────
+    function dismissToast(toast) {
+      if (!toast) return;
+      toast.style.animation = 'none';
+      toast.style.transition = 'transform 0.15s ease, opacity 0.15s ease';
+      requestAnimationFrame(() => { toast.style.transform = 'translateX(120%)'; toast.style.opacity = '0'; });
+      setTimeout(() => toast.remove(), 160);
+    }
+
+    function showToast(htmlMsg, type) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type || ''}`;
+      toast.innerHTML = htmlMsg;
+      toast.addEventListener('click', () => dismissToast(toast));
+      container.appendChild(toast);
+      setTimeout(() => { if (toast.parentNode) toast.remove(); }, 5000);
+    }
+
+    // ─────────────────────────────────────────────
+    //  KEYBOARD SHORTCUTS
+    // ─────────────────────────────────────────────
+    document.addEventListener('keydown', e => {
+      const loginScreen = document.getElementById('loginScreen');
+      const loginShowing = loginScreen && loginScreen.style.display !== 'none' && getComputedStyle(loginScreen).display !== 'none';
+      if (loginShowing) {
         if (e.key === 'Enter') { e.preventDefault(); attemptLogin(); }
         if (e.key === 'Escape') {
-            e.preventDefault();
-            document.getElementById('loginError').style.display = 'none';
-            document.getElementById('usernameInput').value = '';
-            document.getElementById('passwordInput').value = '';
+          e.preventDefault();
+          document.getElementById('loginError').style.display = 'none';
+          document.getElementById('usernameInput').value = '';
+          document.getElementById('passwordInput').value = '';
         }
         return;
-    }
+      }
+      if (e.key === 'Escape') document.querySelectorAll('.toast').forEach(t => dismissToast(t));
+    });
 
-    if (e.key === 'Escape') {
-        document.querySelectorAll('.toast').forEach(t => dismissToast(t));
-    }
-});
+    // ─────────────────────────────────────────────
+    //  CLOCK
+    // ─────────────────────────────────────────────
+    setInterval(() => {
+      const now = new Date();
+      document.getElementById('clock').textContent = [now.getHours(), now.getMinutes(), now.getSeconds()]
+        .map(n => String(n).padStart(2, '0')).join(':');
+    }, 1000);
 
-setInterval(() => {
-    const now=new Date();
-    document.getElementById('clock').textContent=[now.getHours(),now.getMinutes(),now.getSeconds()].map(n=>String(n).padStart(2,'0')).join(':');
-}, 1000);
+    // Background refresh: re-render file list every 30s to expire undo buttons
+    setInterval(() => {
+      if (currentView === 'files') renderTable();
+    }, 30000);
 
-// Silent background timer: Every 30s, re-render the file list so expired Undo buttons disappear automatically.
-setInterval(() => {
-    if (currentView === 'files') renderTable();
-}, 30000);
-
-// Initialize column resizers on load
-initTableResizers();
-checkAuth();
-</script>
+    // ─────────────────────────────────────────────
+    //  BOOT
+    // ─────────────────────────────────────────────
+    initTableResizers();
+    checkAuth();
+  </script>
 </body>
+
 </html>
