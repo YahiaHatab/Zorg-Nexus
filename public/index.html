@@ -1090,7 +1090,7 @@
           <div class="toolbar">
             <div class="search-box">
               <span style="color:var(--text-muted)">🔍</span>
-              <input type="text" id="searchInput" placeholder="Search by file name..." oninput="renderTable()">
+              <input type="text" id="searchInput" placeholder="Search by Show name..." oninput="renderTable()">
             </div>
 
             <input type="file" id="fileStd" style="display:none" accept=".xlsx"
@@ -1185,9 +1185,9 @@
               <div class="chart-panel-header">
                 <div>
                   <h3>Daily Productivity — Last 14 Days</h3>
-                  <p>Shown leads extracted per day</p>
+                  <p>Net leads extracted per day</p>
                 </div>
-                <div class="chart-legend">Shown Leads</div>
+                <div class="chart-legend">Net Leads</div>
               </div>
               <div class="chart-wrap">
                 <canvas id="performanceChart"></canvas>
@@ -1529,11 +1529,11 @@
       document.getElementById('pcMonthLabel').textContent = `Total for ${monthLabel}`;
 
       // ── Update stat cards ──
-      document.getElementById('pcFilesToday').textContent  = filesToday;
-      document.getElementById('pcShownToday').textContent  = shownToday;
-      document.getElementById('pcGrossToday').textContent  = grossToday;
-      document.getElementById('pcShownMonth').textContent  = shownMonth;
-      document.getElementById('pcGrossMonth').textContent  = grossMonth;
+      document.getElementById('pcFilesToday').textContent = filesToday;
+      document.getElementById('pcShownToday').textContent = shownToday;
+      document.getElementById('pcGrossToday').textContent = grossToday;
+      document.getElementById('pcShownMonth').textContent = shownMonth;
+      document.getElementById('pcGrossMonth').textContent = grossMonth;
       document.getElementById('pcGrossMonthLabel').textContent = `Net + Hidden — ${monthLabel}`;
 
       // ── Build chart data (14 days) ──
@@ -1663,8 +1663,11 @@
     // ─────────────────────────────────────────────
     setInterval(() => {
       const now = new Date();
-      document.getElementById('clock').textContent = [now.getHours(), now.getMinutes(), now.getSeconds()]
-        .map(n => String(n).padStart(2, '0')).join(':');
+      const h = now.getHours();
+      const ampm = h < 12 ? 'AM' : 'PM';
+      const h12 = h % 12 || 12;
+      const time = [h12, now.getMinutes(), now.getSeconds()].map(n => String(n).padStart(2, '0')).join(':');
+      document.getElementById('clock').textContent = `${time} ${ampm}`;
     }, 1000);
 
     // Background refresh: re-render file list every 30s to expire undo buttons

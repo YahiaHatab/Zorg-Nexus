@@ -1,38 +1,4 @@
 {
-  "files": [
-    {
-      "agent": "YahiaH",
-      "name": "X_Show_PRINTING_United_Expo_2026_The_North_American_Gateway_to_the.xlsx",
-      "size": 57716,
-      "mtime": "2026-03-30T09:05:09.184Z",
-      "region": "UK",
-      "destPath": "2026/Mar/30-3/UK",
-      "status": "sorted",
-      "transactionId": "mncypt9itchi2on00"
-    },
-    {
-      "agent": "YahiaH",
-      "name": "Some X Show - ADLM 2026 (Association for Diagnostics & Laboratory Medicine) - Annual Scientific Meeting & Clinical Lab Expo - July 28-30, 2026 - Anaheim Convention Center - Anaheim, CA, USA. YahiaH.xlsx",
-      "size": 59328,
-      "mtime": "2026-03-30T09:05:04.770Z",
-      "region": "USA",
-      "destPath": "2026/Mar/30-3/USA",
-      "status": "sorted",
-      "transactionId": "mncypptujp318zh8e"
-    }
-  ],
-  "logs": [
-    {
-      "agent": "YahiaH",
-      "ts": "11:05:09",
-      "msg": "Sorted [STANDARD]: X_Show_PRINTING_United_Expo_2026_The_North_American_Gateway_to_the.xlsx (Shown: 2, Hidden: 0)",
-      "type": "success"
-    },
-    {
-      "agent": "YahiaH",
-      "ts": "11:05:04",
-      "msg": "Sorted [SOME]: Some X Show - ADLM 2026 (Association for Diagnostics & Laboratory Medicine) - Annual Scientific Meeting & Clinical Lab Expo - July 28-30, 2026 - Anaheim Convention Center - Anaheim, CA, USA. YahiaH.xlsx (Shown: 83, Hidden: 17)",
-      "type": "success"
-    }
-  ]
+  "files": [],
+  "logs": []
 }

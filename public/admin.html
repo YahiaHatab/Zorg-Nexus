@@ -1,389 +1,873 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ZORG NEXUS | Admin Dashboard</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg-base: #0B0F19; --bg-panel: #111827; --bg-hover: #1F2937;
-    --border: #374151; --text-main: #F9FAFB; --text-muted: #9CA3AF;
-    --accent-blue: #3B82F6; --accent-cyan: #06B6D4;
-    --success: #10B981; --danger: #EF4444; --warning: #F59E0B;
-  }
-  body { background: var(--bg-base); color: var(--text-main); font-family: 'Inter', sans-serif; min-height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZORG NEXUS | Admin Dashboard</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
 
-  /* ── TOPBAR ── */
-  .topbar { display: flex; justify-content: space-between; align-items: center; padding: 0 24px; background: var(--bg-panel); border-bottom: 1px solid var(--border); flex-shrink: 0; height: 60px; }
-  .logo { font-size: 17px; font-weight: 700; letter-spacing: -0.5px; }
-  .logo span { color: var(--text-muted); font-weight: 400; }
-  .topbar-right { display: flex; gap: 10px; align-items: center; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  /* ── BUTTONS ── */
-  .btn { background: var(--bg-base); border: 1px solid var(--border); border-radius: 6px; padding: 7px 14px; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; transition: all 0.15s; color: var(--text-main); display: inline-flex; align-items: center; gap: 6px; }
-  .btn:hover { background: var(--bg-hover); }
-  .btn-blue { background: var(--accent-blue); border-color: var(--accent-blue); color: #fff; }
-  .btn-blue:hover { background: #2563EB; }
-  .btn-green { background: var(--success); border-color: var(--success); color: #fff; }
-  .btn-green:hover { background: #059669; }
-  .btn-red { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.25); color: var(--danger); }
-  .btn-red:hover { background: rgba(239,68,68,0.2); }
-  .btn-sm { padding: 5px 10px; font-size: 11px; }
+    :root {
+      --bg-base: #0B0F19;
+      --bg-panel: #111827;
+      --bg-hover: #1F2937;
+      --border: #374151;
+      --text-main: #F9FAFB;
+      --text-muted: #9CA3AF;
+      --accent-blue: #3B82F6;
+      --accent-cyan: #06B6D4;
+      --success: #10B981;
+      --danger: #EF4444;
+      --warning: #F59E0B;
+    }
 
-  /* ── TAB NAV ── */
-  .tab-nav { display: flex; background: var(--bg-panel); border-bottom: 1px solid var(--border); flex-shrink: 0; padding: 0 16px; }
-  .tab { padding: 15px 18px; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text-muted); border-bottom: 2px solid transparent; transition: all 0.2s; margin-bottom: -1px; white-space: nowrap; }
-  .tab:hover { color: var(--text-main); }
-  .tab.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); }
+    body {
+      background: var(--bg-base);
+      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
 
-  /* ── TAB CONTENT ── */
-  .tab-content { display: none; flex: 1; overflow: auto; padding: 20px 24px; }
-  .tab-content.active { display: flex; flex-direction: column; gap: 20px; }
+    /* ── TOPBAR ── */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      height: 60px;
+    }
 
-  /* ── PANELS ── */
-  .panel { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
-  .panel-header { padding: 14px 20px; border-bottom: 1px solid var(--border); font-size: 13px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
-  .panel-body { padding: 20px; }
+    .logo {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
 
-  /* ── TABLES ── */
-  .data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-  .data-table th { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); padding: 10px 20px; text-align: left; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.15); position: sticky; top: 0; z-index: 1; }
-  .data-table td { padding: 10px 20px; font-size: 13px; border-bottom: 1px solid rgba(55,65,81,0.5); vertical-align: middle; }
-  .data-table tr:last-child td { border-bottom: none; }
-  .data-table tr:hover td { background: var(--bg-hover); }
-  .data-table.compact td { padding: 6px 20px; font-size: 12px; font-family: 'JetBrains Mono', monospace; }
-  .data-table.compact th { padding: 8px 20px; }
-  .leader-row { cursor: pointer; }
-  .leader-row.active td { background: rgba(59,130,246,0.08); }
-  .leader-row td:first-child { border-left: 2px solid transparent; }
-  .leader-row.active td:first-child { border-left-color: var(--accent-blue); }
+    .logo span {
+      color: var(--text-muted);
+      font-weight: 400;
+    }
 
-  /* ── TAGS ── */
-  .mode-tag { padding: 3px 9px; border-radius: 5px; font-size: 11px; font-weight: 600; display: inline-block; }
-  .mode-some     { background: rgba(6,182,212,0.1);  color: var(--accent-cyan); }
-  .mode-standard { background: rgba(59,130,246,0.1); color: var(--accent-blue); }
+    .topbar-right {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
 
-  /* ── FORMS ── */
-  .field-row { display: grid; grid-template-columns: 180px 1fr auto; gap: 14px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border); }
-  .field-row:last-child { border-bottom: none; }
-  .field-label { font-size: 13px; font-weight: 500; }
-  .field-input { background: var(--bg-base); border: 1px solid var(--border); color: var(--text-main); border-radius: 6px; padding: 9px 13px; font-family: 'JetBrains Mono', monospace; font-size: 12px; outline: none; width: 100%; transition: border 0.2s; }
-  .field-input:focus { border-color: var(--accent-blue); }
-  .date-input { background: var(--bg-base); border: 1px solid var(--border); color: var(--text-main); border-radius: 6px; padding: 8px 12px; font-family: 'Inter', sans-serif; font-size: 13px; outline: none; cursor: pointer; }
-  .date-input:focus { border-color: var(--accent-blue); }
-  .user-input { background: var(--bg-base); border: 1px solid transparent; color: var(--text-main); border-radius: 4px; padding: 7px 10px; font-family: 'Inter', sans-serif; font-size: 13px; outline: none; width: 100%; transition: all 0.2s; }
-  .user-input:hover, .user-input:focus { border-color: var(--border); background: var(--bg-panel); }
+    /* ── BUTTONS ── */
+    .btn {
+      background: var(--bg-base);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 7px 14px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      transition: all 0.15s;
+      color: var(--text-main);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
 
-  /* ── SAVE BAR ── */
-  .save-bar { display: flex; justify-content: flex-end; gap: 12px; padding-top: 20px; margin-top: 4px; border-top: 1px solid var(--border); }
+    .btn:hover {
+      background: var(--bg-hover);
+    }
 
-  /* ── STAT CARDS ── */
-  .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
-  .stat-card { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; }
-  .stat-card .sc-val { font-size: 26px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
-  .stat-card .sc-lbl { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .btn-blue {
+      background: var(--accent-blue);
+      border-color: var(--accent-blue);
+      color: #fff;
+    }
 
-  /* ── CHART GRID ── */
-  .chart-grid-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 16px; }
-  .chart-wrap { position: relative; width: 100%; }
-  .chart-wrap canvas { width: 100% !important; }
+    .btn-blue:hover {
+      background: #2563EB;
+    }
 
-  /* ── TOAST ── */
-  #toastContainer { position: fixed; right: 20px; bottom: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 300px; }
-  .toast { background: var(--bg-panel); border: 1px solid var(--border); border-left: 4px solid var(--success); border-radius: 8px; padding: 13px 36px 13px 15px; font-size: 13px; line-height: 1.5; animation: slideIn 0.25s forwards, slideOut 0.25s forwards 3.75s; cursor: pointer; position: relative; box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
-  .toast::after { content: '✕'; position: absolute; top: 13px; right: 13px; font-size: 10px; color: var(--text-muted); }
-  .toast.error { border-left-color: var(--danger); }
-  .toast.info  { border-left-color: var(--accent-blue); }
-  @keyframes slideIn { from { transform: translateX(110%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-  @keyframes slideOut { to { transform: translateX(110%); opacity: 0; } }
+    .btn-green {
+      background: var(--success);
+      border-color: var(--success);
+      color: #fff;
+    }
 
-  /* ── MODAL ── */
-  #confirmModal { display: none; position: fixed; inset: 0; background: rgba(11,15,25,0.85); backdrop-filter: blur(4px); z-index: 9998; align-items: center; justify-content: center; }
-  #confirmModal.open { display: flex; }
-  .confirm-box { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 12px; padding: 28px 32px; max-width: 420px; width: 90%; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
-  .confirm-box h3 { font-size: 18px; font-weight: 700; color: var(--danger); margin-bottom: 14px; }
-  .confirm-box p { font-size: 13px; line-height: 1.65; color: var(--text-muted); margin-bottom: 24px; }
-  .confirm-box b { color: var(--text-main); }
-  .confirm-actions { display: flex; gap: 10px; justify-content: flex-end; }
+    .btn-green:hover {
+      background: #059669;
+    }
 
-  .stat-highlight { color: var(--success); font-weight: 600; }
-  .agent-name { font-weight: 600; }
+    .btn-red {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.25);
+      color: var(--danger);
+    }
 
-  ::-webkit-scrollbar { width: 5px; height: 5px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
-</style>
+    .btn-red:hover {
+      background: rgba(239, 68, 68, 0.2);
+    }
+
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: 11px;
+    }
+
+    /* ── TAB NAV ── */
+    .tab-nav {
+      display: flex;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      padding: 0 16px;
+    }
+
+    .tab {
+      padding: 15px 18px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+      margin-bottom: -1px;
+      white-space: nowrap;
+    }
+
+    .tab:hover {
+      color: var(--text-main);
+    }
+
+    .tab.active {
+      color: var(--accent-blue);
+      border-bottom-color: var(--accent-blue);
+    }
+
+    /* ── TAB CONTENT ── */
+    .tab-content {
+      display: none;
+      flex: 1;
+      overflow: auto;
+      padding: 20px 24px;
+    }
+
+    .tab-content.active {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* ── PANELS ── */
+    .panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .panel-body {
+      padding: 20px;
+    }
+
+    /* ── TABLES ── */
+    .data-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    .data-table th {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      padding: 10px 20px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.15);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    .data-table td {
+      padding: 10px 20px;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(55, 65, 81, 0.5);
+      vertical-align: middle;
+    }
+
+    .data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .data-table tr:hover td {
+      background: var(--bg-hover);
+    }
+
+    .data-table.compact td {
+      padding: 6px 20px;
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .data-table.compact th {
+      padding: 8px 20px;
+    }
+
+    .leader-row {
+      cursor: pointer;
+    }
+
+    .leader-row.active td {
+      background: rgba(59, 130, 246, 0.08);
+    }
+
+    .leader-row td:first-child {
+      border-left: 2px solid transparent;
+    }
+
+    .leader-row.active td:first-child {
+      border-left-color: var(--accent-blue);
+    }
+
+    /* ── TAGS ── */
+    .mode-tag {
+      padding: 3px 9px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .mode-some {
+      background: rgba(6, 182, 212, 0.1);
+      color: var(--accent-cyan);
+    }
+
+    .mode-standard {
+      background: rgba(59, 130, 246, 0.1);
+      color: var(--accent-blue);
+    }
+
+    /* ── FORMS ── */
+    .field-row {
+      display: grid;
+      grid-template-columns: 180px 1fr auto;
+      gap: 14px;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .field-row:last-child {
+      border-bottom: none;
+    }
+
+    .field-label {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .field-input {
+      background: var(--bg-base);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      border-radius: 6px;
+      padding: 9px 13px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      outline: none;
+      width: 100%;
+      transition: border 0.2s;
+    }
+
+    .field-input:focus {
+      border-color: var(--accent-blue);
+    }
+
+    .date-input {
+      background: var(--bg-base);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .date-input:focus {
+      border-color: var(--accent-blue);
+    }
+
+    .user-input {
+      background: var(--bg-base);
+      border: 1px solid transparent;
+      color: var(--text-main);
+      border-radius: 4px;
+      padding: 7px 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      outline: none;
+      width: 100%;
+      transition: all 0.2s;
+    }
+
+    .user-input:hover,
+    .user-input:focus {
+      border-color: var(--border);
+      background: var(--bg-panel);
+    }
+
+    /* ── SAVE BAR ── */
+    .save-bar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      padding-top: 20px;
+      margin-top: 4px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── STAT CARDS ── */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 14px;
+    }
+
+    .stat-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 20px;
+    }
+
+    .stat-card .sc-val {
+      font-size: 26px;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .stat-card .sc-lbl {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── CHART GRID ── */
+    .chart-grid-3 {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 16px;
+    }
+
+    .chart-wrap {
+      position: relative;
+      width: 100%;
+    }
+
+    .chart-wrap canvas {
+      width: 100% !important;
+    }
+
+    /* ── TOAST ── */
+    #toastContainer {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 300px;
+    }
+
+    .toast {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--success);
+      border-radius: 8px;
+      padding: 13px 36px 13px 15px;
+      font-size: 13px;
+      line-height: 1.5;
+      animation: slideIn 0.25s forwards, slideOut 0.25s forwards 3.75s;
+      cursor: pointer;
+      position: relative;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .toast::after {
+      content: '✕';
+      position: absolute;
+      top: 13px;
+      right: 13px;
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .toast.error {
+      border-left-color: var(--danger);
+    }
+
+    .toast.info {
+      border-left-color: var(--accent-blue);
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(110%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideOut {
+      to {
+        transform: translateX(110%);
+        opacity: 0;
+      }
+    }
+
+    /* ── MODAL ── */
+    #confirmModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(11, 15, 25, 0.85);
+      backdrop-filter: blur(4px);
+      z-index: 9998;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #confirmModal.open {
+      display: flex;
+    }
+
+    .confirm-box {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 32px;
+      max-width: 420px;
+      width: 90%;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .confirm-box h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--danger);
+      margin-bottom: 14px;
+    }
+
+    .confirm-box p {
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .confirm-box b {
+      color: var(--text-main);
+    }
+
+    .confirm-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .stat-highlight {
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    .agent-name {
+      font-weight: 600;
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 10px;
+    }
+  </style>
 </head>
+
 <body>
 
-<!-- CONFIRM RESET MODAL -->
-<div id="confirmModal">
-  <div class="confirm-box">
-    <h3>⚠ Confirm System Reset</h3>
-    <p>This will wipe <b>history.json</b> and broadcast a reset event to all connected sessions.<br><br>The <b>analytics.json</b> ledger is permanent and will <b>not</b> be affected. This clears today's live activity only.</p>
-    <div class="confirm-actions">
-      <button class="btn" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-red" onclick="executeReset()">Confirm Reset</button>
+  <!-- CONFIRM RESET MODAL -->
+  <div id="confirmModal">
+    <div class="confirm-box">
+      <h3>⚠ Confirm System Reset</h3>
+      <p>This will wipe <b>history.json</b> and broadcast a reset event to all connected sessions.<br><br>The
+        <b>analytics.json</b> ledger is permanent and will <b>not</b> be affected. This clears today's live activity
+        only.</p>
+      <div class="confirm-actions">
+        <button class="btn" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-red" onclick="executeReset()">Confirm Reset</button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- DELETE RECORD MODAL -->
-<div id="deleteRecordModal" style="display:none; position:fixed; inset:0; background:rgba(11,15,25,0.85); backdrop-filter:blur(4px); z-index:9998; align-items:center; justify-content:center;">
-  <div class="confirm-box" style="max-width:480px;">
-    <h3 style="color:var(--danger);">🗑 Delete Show Record</h3>
-    <p id="deleteRecordDetails" style="margin-bottom:20px;">Loading...</p>
-    <div style="background:rgba(239,68,68,0.06); border:1px solid rgba(239,68,68,0.2); border-radius:8px; padding:12px 16px; margin-bottom:20px; font-size:12px; color:var(--text-muted);">
-      ⚠ This will permanently remove this record from <b style="color:var(--text-main);">analytics.json</b> and deduct its Gross/Net counts from all summaries. This action cannot be undone.
-    </div>
-    <div class="confirm-actions">
-      <button class="btn" onclick="closeDeleteModal()">Cancel</button>
-      <button class="btn btn-red" id="confirmDeleteBtn" onclick="confirmDeleteRecord()">Delete Record</button>
+  <!-- DELETE RECORD MODAL -->
+  <div id="deleteRecordModal"
+    style="display:none; position:fixed; inset:0; background:rgba(11,15,25,0.85); backdrop-filter:blur(4px); z-index:9998; align-items:center; justify-content:center;">
+    <div class="confirm-box" style="max-width:480px;">
+      <h3 style="color:var(--danger);">🗑 Delete Show Record</h3>
+      <p id="deleteRecordDetails" style="margin-bottom:20px;">Loading...</p>
+      <div
+        style="background:rgba(239,68,68,0.06); border:1px solid rgba(239,68,68,0.2); border-radius:8px; padding:12px 16px; margin-bottom:20px; font-size:12px; color:var(--text-muted);">
+        ⚠ This will permanently remove this record from <b style="color:var(--text-main);">analytics.json</b> and deduct
+        its Gross/Net counts from all summaries. This action cannot be undone.
+      </div>
+      <div class="confirm-actions">
+        <button class="btn" onclick="closeDeleteModal()">Cancel</button>
+        <button class="btn btn-red" id="confirmDeleteBtn" onclick="confirmDeleteRecord()">Delete Record</button>
+      </div>
     </div>
   </div>
-</div>
 
-<div class="topbar">
-  <div class="logo">Z-LEADS <span>/ Admin</span></div>
-  <div class="topbar-right">
-    <button class="btn btn-red" onclick="openModal()">⚡ Manual Reset</button>
-    <button class="btn" onclick="refreshCurrentTab()">↻ Refresh</button>
-    <a href="/" style="text-decoration:none;"><button class="btn btn-blue">← Portal</button></a>
+  <div class="topbar">
+    <div class="logo">Z-LEADS <span>/ Admin</span></div>
+    <div class="topbar-right">
+      <button class="btn btn-red" onclick="openModal()">⚡ Reset History</button>
+      <button class="btn" onclick="refreshCurrentTab()">↻ Refresh</button>
+      <a href="/" style="text-decoration:none;"><button class="btn btn-blue">← Portal</button></a>
+    </div>
   </div>
-</div>
 
-<div class="tab-nav">
-  <div class="tab active"  onclick="switchTab('leaderboard', this)">📡 Live Leaderboard</div>
-  <div class="tab"         onclick="switchTab('ledger', this)">🗂 Data Ledger</div>
-  <div class="tab"         onclick="switchTab('analytics', this)">📊 Analytics</div>
-  <div class="tab"         onclick="switchTab('config', this)">⚙ Config</div>
-  <div class="tab"         onclick="switchTab('users', this)">👥 Users</div>
-</div>
+  <div class="tab-nav">
+    <div class="tab active" onclick="switchTab('leaderboard', this)">📡 Live Leaderboard</div>
+    <div class="tab" onclick="switchTab('ledger', this)">🗂 Data Ledger</div>
+    <div class="tab" onclick="switchTab('analytics', this)">📊 Analytics</div>
+    <div class="tab" onclick="switchTab('config', this)">⚙ Config</div>
+    <div class="tab" onclick="switchTab('users', this)">👥 Users</div>
+  </div>
 
-<!-- ══════════ TAB: LIVE LEADERBOARD (today only) ══════════ -->
-<div id="tab-leaderboard" class="tab-content active">
-  <div class="panel" style="flex:1; display:flex; flex-direction:column; min-height:0;">
-    <div class="panel-header">
-      <span>Today's Performance <span id="todayLabel" style="color:var(--text-muted); font-weight:400; font-size:12px;"></span></span>
-      <span style="display:flex; align-items:center; gap:14px;">
-        <span id="liveIndicator" style="font-size:11px; font-weight:600; color:var(--text-muted); display:flex; align-items:center; gap:6px;">
-          <span style="display:inline-block; width:8px; height:8px; background:var(--text-muted); border-radius:50%;"></span> Connecting...
+  <!-- ══════════ TAB: LIVE LEADERBOARD (today only) ══════════ -->
+  <div id="tab-leaderboard" class="tab-content active">
+    <div class="panel" style="flex:1; display:flex; flex-direction:column; min-height:0;">
+      <div class="panel-header">
+        <span>Today's Performance <span id="todayLabel"
+            style="color:var(--text-muted); font-weight:400; font-size:12px;"></span></span>
+        <span style="display:flex; align-items:center; gap:14px;">
+          <span id="liveIndicator"
+            style="font-size:11px; font-weight:600; color:var(--text-muted); display:flex; align-items:center; gap:6px;">
+            <span
+              style="display:inline-block; width:8px; height:8px; background:var(--text-muted); border-radius:50%;"></span>
+            Connecting...
+          </span>
         </span>
-      </span>
-    </div>
-    <div style="display:grid; grid-template-columns:1fr 1fr; flex:1; overflow:hidden;">
-      <div style="overflow-y:auto; border-right:1px solid var(--border);">
-        <table class="data-table">
-          <thead><tr><th>Agent</th><th>Shows</th><th>Gross</th><th>Net</th></tr></thead>
-          <tbody id="leaderboardBody"></tbody>
-        </table>
       </div>
-      <div style="overflow-y:auto; display:flex; flex-direction:column; background:var(--bg-base);">
-        <div style="padding:12px 20px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--bg-base); z-index:10; display:flex; justify-content:space-between; align-items:center;">
-          <span id="logPanelTitleText" style="font-size:11px; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.05em;">Today's Activity</span>
-          <button id="backToGlobalBtn" class="btn btn-sm btn-blue" style="display:none;" onclick="resetToGlobalLogs()">← All Agents</button>
+      <div style="display:grid; grid-template-columns:1fr 1fr; flex:1; overflow:hidden;">
+        <div style="overflow-y:auto; border-right:1px solid var(--border);">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Agent</th>
+                <th>Shows</th>
+                <th>Gross</th>
+                <th>Net</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboardBody"></tbody>
+          </table>
         </div>
-        <table class="data-table compact" style="margin-bottom:auto;">
-          <thead><tr><th>Time</th><th>Mode</th><th>Shows</th><th>Gross</th><th>Net</th></tr></thead>
-          <tbody id="logBody"></tbody>
+        <div style="overflow-y:auto; display:flex; flex-direction:column; background:var(--bg-base);">
+          <div
+            style="padding:12px 20px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--bg-base); z-index:10; display:flex; justify-content:space-between; align-items:center;">
+            <span id="logPanelTitleText"
+              style="font-size:11px; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.05em;">Today's
+              Activity</span>
+            <button id="backToGlobalBtn" class="btn btn-sm btn-blue" style="display:none;"
+              onclick="resetToGlobalLogs()">← All Agents</button>
+          </div>
+          <table class="data-table compact" style="margin-bottom:auto;">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Mode</th>
+                <th>Shows</th>
+                <th>Gross</th>
+                <th>Net</th>
+              </tr>
+            </thead>
+            <tbody id="logBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ TAB: DATA LEDGER ══════════ -->
+  <div id="tab-ledger" class="tab-content">
+    <div class="panel">
+      <div class="panel-header">
+        <span>Historical Records</span>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <input type="date" id="ledgerDatePicker" class="date-input" onchange="fetchLedgerDay()">
+          <button class="btn btn-green" onclick="exportDay()">⬇ Export to Excel</button>
+        </div>
+      </div>
+      <div id="ledgerSummaryBar"
+        style="padding:10px 20px; border-bottom:1px solid var(--border); display:none; gap:24px; flex-wrap:wrap; font-size:12px; color:var(--text-muted);">
+        <span>Shows: <b id="ls-files" style="color:var(--text-main);">—</b></span>
+        <span>Gross: <b id="ls-leads" style="color:var(--text-main);">—</b></span>
+        <span>Net: <b id="ls-shown" style="color:var(--success);">—</b></span>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Agent</th>
+              <th>Mode</th>
+              <th>Show Name</th>
+              <th>Gross</th>
+              <th>Net</th>
+              <th>Hidden</th>
+              <th style="width:80px;text-align:center;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="ledgerBody"></tbody>
         </table>
       </div>
     </div>
   </div>
-</div>
 
-<!-- ══════════ TAB: DATA LEDGER ══════════ -->
-<div id="tab-ledger" class="tab-content">
-  <div class="panel">
-    <div class="panel-header">
-      <span>Historical Records</span>
-      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-        <input type="date" id="ledgerDatePicker" class="date-input" onchange="fetchLedgerDay()">
-        <button class="btn btn-green" onclick="exportDay()">⬇ Export to Excel</button>
+  <!-- ══════════ TAB: ANALYTICS ══════════ -->
+  <div id="tab-analytics" class="tab-content">
+
+    <!-- Stat cards row -->
+    <div class="stat-grid" id="analyticsStatGrid">
+      <div class="stat-card">
+        <div class="sc-val" id="as-totalFiles" style="color:var(--accent-blue);">—</div>
+        <div class="sc-lbl">Total Shows</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-val" id="as-totalLeads" style="color:var(--warning);">—</div>
+        <div class="sc-lbl">Total Leads</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-val" id="as-totalShown" style="color:var(--success);">—</div>
+        <div class="sc-lbl">Total Shown</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-val" id="as-totalDays" style="color:var(--accent-cyan);">—</div>
+        <div class="sc-lbl">Active Days</div>
       </div>
     </div>
-    <div id="ledgerSummaryBar" style="padding:10px 20px; border-bottom:1px solid var(--border); display:none; gap:24px; flex-wrap:wrap; font-size:12px; color:var(--text-muted);">
-      <span>Shows: <b id="ls-files" style="color:var(--text-main);">—</b></span>
-      <span>Gross: <b id="ls-leads" style="color:var(--text-main);">—</b></span>
-      <span>Net: <b id="ls-shown" style="color:var(--success);">—</b></span>
+
+    <!-- Charts -->
+    <div class="chart-grid-3">
+      <div class="panel">
+        <div class="panel-header">Shown Leads — Last 14 Days</div>
+        <div class="panel-body">
+          <div class="chart-wrap" style="height:220px;"><canvas id="chartLine"></canvas></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">Agent Totals (All-Time)</div>
+        <div class="panel-body">
+          <div class="chart-wrap" style="height:220px;"><canvas id="chartBar"></canvas></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">Mode Distribution</div>
+        <div class="panel-body">
+          <div class="chart-wrap" style="height:220px;"><canvas id="chartDonut"></canvas></div>
+        </div>
+      </div>
     </div>
-    <div style="overflow-x:auto;">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Time</th><th>Agent</th><th>Mode</th><th>Show Name</th><th>Gross</th><th>Net</th><th>Hidden</th><th style="width:80px;text-align:center;">Action</th>
-          </tr>
-        </thead>
-        <tbody id="ledgerBody"></tbody>
-      </table>
-    </div>
-  </div>
-</div>
 
-<!-- ══════════ TAB: ANALYTICS ══════════ -->
-<div id="tab-analytics" class="tab-content">
-
-  <!-- Stat cards row -->
-  <div class="stat-grid" id="analyticsStatGrid">
-    <div class="stat-card"><div class="sc-val" id="as-totalFiles" style="color:var(--accent-blue);">—</div><div class="sc-lbl">Total Shows</div></div>
-    <div class="stat-card"><div class="sc-val" id="as-totalLeads" style="color:var(--warning);">—</div><div class="sc-lbl">Total Leads</div></div>
-    <div class="stat-card"><div class="sc-val" id="as-totalShown" style="color:var(--success);">—</div><div class="sc-lbl">Total Shown</div></div>
-    <div class="stat-card"><div class="sc-val" id="as-totalDays"  style="color:var(--accent-cyan);">—</div><div class="sc-lbl">Active Days</div></div>
-  </div>
-
-  <!-- Charts -->
-  <div class="chart-grid-3">
+    <!-- Per-agent breakdown table -->
     <div class="panel">
-      <div class="panel-header">Shown Leads — Last 14 Days</div>
-      <div class="panel-body">
-        <div class="chart-wrap" style="height:220px;"><canvas id="chartLine"></canvas></div>
+      <div class="panel-header">All-Time Agent Breakdown</div>
+      <div style="overflow-x:auto;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Agent</th>
+              <th>Shows</th>
+              <th>Gross</th>
+              <th>Net</th>
+              <th>Hidden</th>
+              <th>Conversion %</th>
+            </tr>
+          </thead>
+          <tbody id="analyticsAgentTable"></tbody>
+        </table>
       </div>
     </div>
+  </div>
+
+  <!-- ══════════ TAB: CONFIG ══════════ -->
+  <div id="tab-config" class="tab-content">
     <div class="panel">
-      <div class="panel-header">Agent Totals (All-Time)</div>
+      <div class="panel-header">Directory Routes</div>
       <div class="panel-body">
-        <div class="chart-wrap" style="height:220px;"><canvas id="chartBar"></canvas></div>
+        <div id="configFields"></div>
+        <div class="save-bar">
+          <button class="btn btn-blue" onclick="saveConfig()">Save Configuration</button>
+        </div>
       </div>
     </div>
+  </div>
+
+  <!-- ══════════ TAB: USERS ══════════ -->
+  <div id="tab-users" class="tab-content">
     <div class="panel">
-      <div class="panel-header">Mode Distribution</div>
-      <div class="panel-body">
-        <div class="chart-wrap" style="height:220px;"><canvas id="chartDonut"></canvas></div>
+      <div class="panel-header">
+        Access Control
+        <button class="btn btn-blue btn-sm" onclick="addUserRow()">+ Add User</button>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="data-table" id="usersTable">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Password</th>
+              <th>Archive Path</th>
+              <th style="width:100px;text-align:center;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="usersBody"></tbody>
+        </table>
+      </div>
+      <div class="panel-body" style="padding-top:0;">
+        <div class="save-bar"><button class="btn btn-green" onclick="saveUsers()">Commit Changes</button></div>
       </div>
     </div>
   </div>
 
-  <!-- Per-agent breakdown table -->
-  <div class="panel">
-    <div class="panel-header">All-Time Agent Breakdown</div>
-    <div style="overflow-x:auto;">
-      <table class="data-table">
-        <thead><tr><th>Agent</th><th>Shows</th><th>Gross</th><th>Net</th><th>Hidden</th><th>Conversion %</th></tr></thead>
-        <tbody id="analyticsAgentTable"></tbody>
-      </table>
-    </div>
-  </div>
-</div>
+  <div id="toastContainer"></div>
 
-<!-- ══════════ TAB: CONFIG ══════════ -->
-<div id="tab-config" class="tab-content">
-  <div class="panel">
-    <div class="panel-header">Directory Routes</div>
-    <div class="panel-body">
-      <div id="configFields"></div>
-      <div class="save-bar">
-        <button class="btn btn-blue" onclick="saveConfig()">Save Configuration</button>
-      </div>
-    </div>
-  </div>
-</div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    // ── STATE ────────────────────────────────────
+    let masterData = [];   // today's records (from /api/admin/report filtered to today)
+    let fullAnalytics = {}; // full analytics.json blob
+    let currentTab = 'leaderboard';
+    let configData = {};
+    let usersData = [];
+    let selectedLeaderIdx = -1;
+    let chartLine = null, chartBar = null, chartDonut = null;
 
-<!-- ══════════ TAB: USERS ══════════ -->
-<div id="tab-users" class="tab-content">
-  <div class="panel">
-    <div class="panel-header">
-      Access Control
-      <button class="btn btn-blue btn-sm" onclick="addUserRow()">+ Add User</button>
-    </div>
-    <div style="overflow-x:auto;">
-      <table class="data-table" id="usersTable">
-        <thead><tr><th>Username</th><th>Password</th><th>Archive Path</th><th style="width:100px;text-align:center;">Action</th></tr></thead>
-        <tbody id="usersBody"></tbody>
-      </table>
-    </div>
-    <div class="panel-body" style="padding-top:0;">
-      <div class="save-bar"><button class="btn btn-green" onclick="saveUsers()">Commit Changes</button></div>
-    </div>
-  </div>
-</div>
+    const TODAY = new Date().toISOString().split('T')[0]; // "2026-03-30"
 
-<div id="toastContainer"></div>
+    // ── GUARD ────────────────────────────────────
+    const currentUser = localStorage.getItem('zorg_nexus_user');
+    if (currentUser !== 'Admin') {
+      alert('Access Denied: Admin privileges required.');
+      window.location.href = '/';
+    }
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
-<script src="/socket.io/socket.io.js"></script>
-<script>
-// ── STATE ────────────────────────────────────
-let masterData  = [];   // today's records (from /api/admin/report filtered to today)
-let fullAnalytics = {}; // full analytics.json blob
-let currentTab  = 'leaderboard';
-let configData  = {};
-let usersData   = [];
-let selectedLeaderIdx = -1;
-let chartLine = null, chartBar = null, chartDonut = null;
+    document.getElementById('todayLabel').textContent = `(${TODAY})`;
 
-const TODAY = new Date().toISOString().split('T')[0]; // "2026-03-30"
+    // ── TABS ─────────────────────────────────────
+    function switchTab(tab, el) {
+      currentTab = tab;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      document.getElementById(`tab-${tab}`).classList.add('active');
+      refreshCurrentTab();
+    }
 
-// ── GUARD ────────────────────────────────────
-const currentUser = localStorage.getItem('zorg_nexus_user');
-if (currentUser !== 'Admin') {
-    alert('Access Denied: Admin privileges required.');
-    window.location.href = '/';
-}
+    function refreshCurrentTab() {
+      if (currentTab === 'leaderboard') fetchTodayData();
+      if (currentTab === 'ledger') fetchLedgerDay();
+      if (currentTab === 'analytics') fetchAnalytics();
+      if (currentTab === 'config') fetchConfig();
+      if (currentTab === 'users') fetchUsers();
+    }
 
-document.getElementById('todayLabel').textContent = `(${TODAY})`;
+    // ── MODAL ────────────────────────────────────
+    function openModal() { document.getElementById('confirmModal').classList.add('open'); }
+    function closeModal() { document.getElementById('confirmModal').classList.remove('open'); }
 
-// ── TABS ─────────────────────────────────────
-function switchTab(tab, el) {
-    currentTab = tab;
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
-    document.getElementById(`tab-${tab}`).classList.add('active');
-    refreshCurrentTab();
-}
-
-function refreshCurrentTab() {
-    if (currentTab === 'leaderboard') fetchTodayData();
-    if (currentTab === 'ledger')      fetchLedgerDay();
-    if (currentTab === 'analytics')   fetchAnalytics();
-    if (currentTab === 'config')      fetchConfig();
-    if (currentTab === 'users')       fetchUsers();
-}
-
-// ── MODAL ────────────────────────────────────
-function openModal()  { document.getElementById('confirmModal').classList.add('open'); }
-function closeModal() { document.getElementById('confirmModal').classList.remove('open'); }
-
-async function executeReset() {
-    closeModal();
-    try {
-        const res  = await fetch('/api/admin/reset', { method: 'POST' });
+    async function executeReset() {
+      closeModal();
+      try {
+        const res = await fetch('/api/admin/reset', { method: 'POST' });
         const json = await res.json();
         if (json.success) { masterData = []; renderDashboard(); showToast('✅ Reset complete.', 'success'); }
         else showToast(`❌ Reset failed: ${json.error}`, 'error');
-    } catch { showToast('❌ Server error.', 'error'); }
-}
+      } catch { showToast('❌ Server error.', 'error'); }
+    }
 
-// ══════════════════════════════════════════════
-//  TAB 1: LIVE LEADERBOARD
-//  Only shows today's date key from analytics.json
-// ══════════════════════════════════════════════
-async function fetchTodayData() {
-    try {
-        const res  = await fetch('/api/analytics?t=' + Date.now());
+    // ══════════════════════════════════════════════
+    //  TAB 1: LIVE LEADERBOARD
+    //  Only shows today's date key from analytics.json
+    // ══════════════════════════════════════════════
+    async function fetchTodayData() {
+      try {
+        const res = await fetch('/api/analytics?t=' + Date.now());
         const json = await res.json();
         if (!json.success) throw new Error(json.error);
         fullAnalytics = json.data;
-        const today   = fullAnalytics[TODAY];
-        masterData    = today ? today.records.map(r => ({ ...r, date: TODAY })) : [];
+        const today = fullAnalytics[TODAY];
+        masterData = today ? today.records.map(r => ({ ...r, date: TODAY })) : [];
         renderDashboard();
-    } catch (e) { showToast('Failed to load today\'s data.', 'error'); }
-}
+      } catch (e) { showToast('Failed to load today\'s data.', 'error'); }
+    }
 
-function renderDashboard() {
-    selectedLeaderIdx = -1;
-    const agents = {};
-    masterData.forEach(r => {
+    function renderDashboard() {
+      selectedLeaderIdx = -1;
+      const agents = {};
+      masterData.forEach(r => {
         if (!agents[r.agent]) agents[r.agent] = { name: r.agent, files: 0, leads: 0, shown: 0 };
         agents[r.agent].files++;
         agents[r.agent].leads += r.total;
         agents[r.agent].shown += r.shown;
-    });
+      });
 
-    const rows = Object.values(agents).sort((a, b) => b.files - a.files);
-    document.getElementById('leaderboardBody').innerHTML = rows.map(a => `
+      const rows = Object.values(agents).sort((a, b) => b.files - a.files);
+      document.getElementById('leaderboardBody').innerHTML = rows.map(a => `
         <tr class="leader-row" onclick="viewAgentLogs('${escHtml(a.name)}', this)">
             <td class="agent-name">${escHtml(a.name)}</td>
             <td style="color:var(--accent-blue);font-weight:600;">${a.files}</td>
@@ -392,28 +876,28 @@ function renderDashboard() {
         </tr>
     `).join('') || `<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:30px;">No activity today yet.</td></tr>`;
 
-    resetToGlobalLogs();
-}
+      resetToGlobalLogs();
+    }
 
-function viewAgentLogs(agentName, rowEl) {
-    document.querySelectorAll('.leader-row').forEach(r => r.classList.remove('active'));
-    if (rowEl) rowEl.classList.add('active');
-    renderLogs(masterData.filter(r => r.agent === agentName), `${agentName.toUpperCase()}`);
-    document.getElementById('backToGlobalBtn').style.display = 'inline-flex';
-}
+    function viewAgentLogs(agentName, rowEl) {
+      document.querySelectorAll('.leader-row').forEach(r => r.classList.remove('active'));
+      if (rowEl) rowEl.classList.add('active');
+      renderLogs(masterData.filter(r => r.agent === agentName), `${agentName.toUpperCase()}`);
+      document.getElementById('backToGlobalBtn').style.display = 'inline-flex';
+    }
 
-function resetToGlobalLogs() {
-    selectedLeaderIdx = -1;
-    document.querySelectorAll('#leaderboardBody .leader-row').forEach(r => r.classList.remove('active'));
-    renderLogs(masterData, "Today's Activity");
-    document.getElementById('backToGlobalBtn').style.display = 'none';
-}
+    function resetToGlobalLogs() {
+      selectedLeaderIdx = -1;
+      document.querySelectorAll('#leaderboardBody .leader-row').forEach(r => r.classList.remove('active'));
+      renderLogs(masterData, "Today's Activity");
+      document.getElementById('backToGlobalBtn').style.display = 'none';
+    }
 
-function renderLogs(data, title) {
-    document.getElementById('logPanelTitleText').textContent = title;
-    // Sort newest first by time string
-    const sorted = [...data].sort((a, b) => (b.time || '').localeCompare(a.time || ''));
-    document.getElementById('logBody').innerHTML = sorted.map(row => {
+    function renderLogs(data, title) {
+      document.getElementById('logPanelTitleText').textContent = title;
+      // Sort newest first by time string
+      const sorted = [...data].sort((a, b) => (b.time || '').localeCompare(a.time || ''));
+      document.getElementById('logBody').innerHTML = sorted.map(row => {
         const cls = row.mode === 'SOME' ? 'mode-some' : 'mode-standard';
         return `<tr>
             <td style="color:var(--text-muted)">${row.time || row.date || '—'}</td>
@@ -422,45 +906,45 @@ function renderLogs(data, title) {
             <td style="color:var(--text-muted)">${row.total}</td>
             <td class="stat-highlight">${row.shown}</td>
         </tr>`;
-    }).join('') || `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:30px;">No entries.</td></tr>`;
-}
+      }).join('') || `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:30px;">No entries.</td></tr>`;
+    }
 
-// ══════════════════════════════════════════════
-//  TAB 2: DATA LEDGER
-// ══════════════════════════════════════════════
-// Set date picker default to today
-document.getElementById('ledgerDatePicker').value = TODAY;
+    // ══════════════════════════════════════════════
+    //  TAB 2: DATA LEDGER
+    // ══════════════════════════════════════════════
+    // Set date picker default to today
+    document.getElementById('ledgerDatePicker').value = TODAY;
 
-async function fetchLedgerDay() {
-    const date = document.getElementById('ledgerDatePicker').value;
-    if (!date) return;
+    async function fetchLedgerDay() {
+      const date = document.getElementById('ledgerDatePicker').value;
+      if (!date) return;
 
-    try {
-        const res  = await fetch('/api/analytics?t=' + Date.now());
+      try {
+        const res = await fetch('/api/analytics?t=' + Date.now());
         const json = await res.json();
         if (!json.success) throw new Error(json.error);
         fullAnalytics = json.data;
-    } catch (e) { showToast('Failed to fetch analytics.', 'error'); return; }
+      } catch (e) { showToast('Failed to fetch analytics.', 'error'); return; }
 
-    const day  = fullAnalytics[date];
-    const tbody = document.getElementById('ledgerBody');
-    const summaryBar = document.getElementById('ledgerSummaryBar');
+      const day = fullAnalytics[date];
+      const tbody = document.getElementById('ledgerBody');
+      const summaryBar = document.getElementById('ledgerSummaryBar');
 
-    if (!day || !day.records || day.records.length === 0) {
+      if (!day || !day.records || day.records.length === 0) {
         tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:40px;">No records found for ${date}.</td></tr>`;
         summaryBar.style.display = 'none';
         return;
-    }
+      }
 
-    // Summary bar
-    summaryBar.style.display = 'flex';
-    document.getElementById('ls-files').textContent = day.summary.totalFiles;
-    document.getElementById('ls-leads').textContent = day.summary.totalLeads;
-    document.getElementById('ls-shown').textContent = day.summary.totalShown;
+      // Summary bar
+      summaryBar.style.display = 'flex';
+      document.getElementById('ls-files').textContent = day.summary.totalFiles;
+      document.getElementById('ls-leads').textContent = day.summary.totalLeads;
+      document.getElementById('ls-shown').textContent = day.summary.totalShown;
 
-    // Records table — newest first
-    const sorted = [...day.records].sort((a, b) => (b.time || '').localeCompare(a.time || ''));
-    tbody.innerHTML = sorted.map(rec => {
+      // Records table — newest first
+      const sorted = [...day.records].sort((a, b) => (b.time || '').localeCompare(a.time || ''));
+      tbody.innerHTML = sorted.map(rec => {
         const cls = rec.mode === 'SOME' ? 'mode-some' : 'mode-standard';
         return `<tr>
             <td style="color:var(--text-muted);font-family:'JetBrains Mono',monospace;font-size:12px;">${rec.time || '—'}</td>
@@ -474,202 +958,202 @@ async function fetchLedgerDay() {
               <button class="btn btn-red btn-sm" onclick="deleteRecord('${date}','${escHtml(rec.transactionId)}')" title="Delete this record permanently">🗑</button>
             </td>
         </tr>`;
-    }).join('');
-}
+      }).join('');
+    }
 
-function exportDay() {
-    const date = document.getElementById('ledgerDatePicker').value;
-    if (!date) { showToast('Please select a date first.', 'error'); return; }
-    window.location.href = `/api/export/${date}`;
-}
+    function exportDay() {
+      const date = document.getElementById('ledgerDatePicker').value;
+      if (!date) { showToast('Please select a date first.', 'error'); return; }
+      window.location.href = `/api/export/${date}`;
+    }
 
-// ── RECORD DELETION ──────────────────────────
-let pendingDelete = null; // { dateKey, transactionId }
+    // ── RECORD DELETION ──────────────────────────
+    let pendingDelete = null; // { dateKey, transactionId }
 
-function deleteRecord(dateKey, transactionId) {
-    // Look up record details from the already-loaded fullAnalytics object.
-    // This avoids embedding arbitrary strings inline in onclick attributes,
-    // which breaks on filenames containing apostrophes, ampersands, quotes etc.
-    const day = fullAnalytics[dateKey];
-    const rec = day && day.records.find(r => r.transactionId === transactionId);
-    if (!rec) { showToast('\u274c Record not found in local data. Try refreshing.', 'error'); return; }
+    function deleteRecord(dateKey, transactionId) {
+      // Look up record details from the already-loaded fullAnalytics object.
+      // This avoids embedding arbitrary strings inline in onclick attributes,
+      // which breaks on filenames containing apostrophes, ampersands, quotes etc.
+      const day = fullAnalytics[dateKey];
+      const rec = day && day.records.find(r => r.transactionId === transactionId);
+      if (!rec) { showToast('\u274c Record not found in local data. Try refreshing.', 'error'); return; }
 
-    pendingDelete = { dateKey, transactionId };
-    document.getElementById('deleteRecordDetails').innerHTML =
+      pendingDelete = { dateKey, transactionId };
+      document.getElementById('deleteRecordDetails').innerHTML =
         `You are about to delete the following show record:<br><br>` +
         `<b style="color:var(--text-main);">${escHtml(rec.filename)}</b><br>` +
         `<span style="color:var(--text-muted);font-size:12px;">Agent: <b>${escHtml(rec.agent)}</b> &nbsp;|&nbsp; Net: <b style="color:var(--success);">${rec.shown}</b> &nbsp;|&nbsp; Gross: <b>${rec.total}</b> &nbsp;|&nbsp; Date: <b>${escHtml(dateKey)}</b></span>`;
-    const modal = document.getElementById('deleteRecordModal');
-    modal.style.display = 'flex';
-}
+      const modal = document.getElementById('deleteRecordModal');
+      modal.style.display = 'flex';
+    }
 
-function closeDeleteModal() {
-    document.getElementById('deleteRecordModal').style.display = 'none';
-    pendingDelete = null;
-}
+    function closeDeleteModal() {
+      document.getElementById('deleteRecordModal').style.display = 'none';
+      pendingDelete = null;
+    }
 
-async function confirmDeleteRecord() {
-    if (!pendingDelete) return;
-    const { dateKey, transactionId } = pendingDelete;
-    document.getElementById('confirmDeleteBtn').disabled = true;
-    document.getElementById('confirmDeleteBtn').textContent = 'Deleting...';
-    try {
-        const res  = await fetch('/api/admin/record', {
-            method:  'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify({ dateKey, transactionId })
+    async function confirmDeleteRecord() {
+      if (!pendingDelete) return;
+      const { dateKey, transactionId } = pendingDelete;
+      document.getElementById('confirmDeleteBtn').disabled = true;
+      document.getElementById('confirmDeleteBtn').textContent = 'Deleting...';
+      try {
+        const res = await fetch('/api/admin/record', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ dateKey, transactionId })
         });
         const json = await res.json();
         if (json.success) {
-            closeDeleteModal();
-            showToast('✅ Record deleted and summaries updated.', 'success');
-            fetchLedgerDay();   // Refresh the ledger table
-            if (currentTab === 'leaderboard') fetchTodayData();
+          closeDeleteModal();
+          showToast('✅ Record deleted and summaries updated.', 'success');
+          fetchLedgerDay();   // Refresh the ledger table
+          if (currentTab === 'leaderboard') fetchTodayData();
         } else {
-            showToast(`❌ Delete failed: ${json.error}`, 'error');
+          showToast(`❌ Delete failed: ${json.error}`, 'error');
         }
-    } catch {
+      } catch {
         showToast('❌ Server error during deletion.', 'error');
-    } finally {
+      } finally {
         document.getElementById('confirmDeleteBtn').disabled = false;
         document.getElementById('confirmDeleteBtn').textContent = 'Delete Record';
+      }
     }
-}
 
-// ══════════════════════════════════════════════
-//  TAB 3: ANALYTICS
-// ══════════════════════════════════════════════
-const CHART_COLORS = ['#3B82F6','#10B981','#F59E0B','#EF4444','#8B5CF6','#06B6D4','#EC4899','#14B8A6'];
+    // ══════════════════════════════════════════════
+    //  TAB 3: ANALYTICS
+    // ══════════════════════════════════════════════
+    const CHART_COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4', '#EC4899', '#14B8A6'];
 
-async function fetchAnalytics() {
-    try {
-        const res  = await fetch('/api/analytics?t=' + Date.now());
+    async function fetchAnalytics() {
+      try {
+        const res = await fetch('/api/analytics?t=' + Date.now());
         const json = await res.json();
         if (!json.success) throw new Error(json.error);
         fullAnalytics = json.data;
         renderAnalytics(fullAnalytics);
-    } catch (e) { showToast('Failed to load analytics.', 'error'); }
-}
+      } catch (e) { showToast('Failed to load analytics.', 'error'); }
+    }
 
-function renderAnalytics(data) {
-    // ── Aggregate all-time totals ──
-    let totalFiles = 0, totalLeads = 0, totalShown = 0;
-    const agentMap  = {}; // agent → { files, leads, shown }
-    const modeMap   = { STANDARD: 0, SOME: 0 };
-    const dateKeys  = Object.keys(data).sort();
+    function renderAnalytics(data) {
+      // ── Aggregate all-time totals ──
+      let totalFiles = 0, totalLeads = 0, totalShown = 0;
+      const agentMap = {}; // agent → { files, leads, shown }
+      const modeMap = { STANDARD: 0, SOME: 0 };
+      const dateKeys = Object.keys(data).sort();
 
-    for (const [dateKey, day] of Object.entries(data)) {
+      for (const [dateKey, day] of Object.entries(data)) {
         totalFiles += day.summary.totalFiles;
         totalLeads += day.summary.totalLeads;
         totalShown += day.summary.totalShown;
 
         for (const [agent, stats] of Object.entries(day.summary.byAgent || {})) {
-            if (!agentMap[agent]) agentMap[agent] = { files: 0, leads: 0, shown: 0 };
-            agentMap[agent].files += stats.files;
-            agentMap[agent].leads += stats.leads;
-            agentMap[agent].shown += stats.shown;
+          if (!agentMap[agent]) agentMap[agent] = { files: 0, leads: 0, shown: 0 };
+          agentMap[agent].files += stats.files;
+          agentMap[agent].leads += stats.leads;
+          agentMap[agent].shown += stats.shown;
         }
 
         for (const rec of (day.records || [])) {
-            if (rec.mode === 'SOME') modeMap.SOME++;
-            else modeMap.STANDARD++;
+          if (rec.mode === 'SOME') modeMap.SOME++;
+          else modeMap.STANDARD++;
         }
-    }
+      }
 
-    // Stat cards
-    document.getElementById('as-totalFiles').textContent = totalFiles;
-    document.getElementById('as-totalLeads').textContent = totalLeads;
-    document.getElementById('as-totalShown').textContent = totalShown;
-    document.getElementById('as-totalDays').textContent  = dateKeys.length;
+      // Stat cards
+      document.getElementById('as-totalFiles').textContent = totalFiles;
+      document.getElementById('as-totalLeads').textContent = totalLeads;
+      document.getElementById('as-totalShown').textContent = totalShown;
+      document.getElementById('as-totalDays').textContent = dateKeys.length;
 
-    // ── Line chart — shown leads over last 14 days ──
-    const last14 = [];
-    for (let i = 13; i >= 0; i--) {
+      // ── Line chart — shown leads over last 14 days ──
+      const last14 = [];
+      for (let i = 13; i >= 0; i--) {
         const d = new Date();
         d.setDate(d.getDate() - i);
         last14.push(d.toISOString().split('T')[0]);
-    }
-    const lineLabels = last14.map(d => d.slice(5));   // "MM-DD"
-    const lineValues = last14.map(d => data[d]?.summary.totalShown || 0);
+      }
+      const lineLabels = last14.map(d => d.slice(5));   // "MM-DD"
+      const lineValues = last14.map(d => data[d]?.summary.totalShown || 0);
 
-    if (chartLine) chartLine.destroy();
-    chartLine = new Chart(document.getElementById('chartLine'), {
+      if (chartLine) chartLine.destroy();
+      chartLine = new Chart(document.getElementById('chartLine'), {
         type: 'line',
         data: {
-            labels: lineLabels,
-            datasets: [{
-                label: 'Shown',
-                data: lineValues,
-                borderColor: '#3B82F6',
-                backgroundColor: 'rgba(59,130,246,0.08)',
-                tension: 0.35,
-                fill: true,
-                pointBackgroundColor: '#3B82F6',
-                pointRadius: 4,
-            }]
+          labels: lineLabels,
+          datasets: [{
+            label: 'Shown',
+            data: lineValues,
+            borderColor: '#3B82F6',
+            backgroundColor: 'rgba(59,130,246,0.08)',
+            tension: 0.35,
+            fill: true,
+            pointBackgroundColor: '#3B82F6',
+            pointRadius: 4,
+          }]
         },
         options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                x: { grid: { color: 'rgba(55,65,81,0.5)' }, ticks: { color: '#9CA3AF', font: { size: 11 } } },
-                y: { grid: { color: 'rgba(55,65,81,0.5)' }, ticks: { color: '#9CA3AF', font: { size: 11 } }, beginAtZero: true }
-            }
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { color: 'rgba(55,65,81,0.5)' }, ticks: { color: '#9CA3AF', font: { size: 11 } } },
+            y: { grid: { color: 'rgba(55,65,81,0.5)' }, ticks: { color: '#9CA3AF', font: { size: 11 } }, beginAtZero: true }
+          }
         }
-    });
+      });
 
-    // ── Bar chart — all-time agent shown totals ──
-    const agentEntries = Object.entries(agentMap).sort((a, b) => b[1].shown - a[1].shown);
-    const barLabels    = agentEntries.map(([name]) => name);
-    const barShown     = agentEntries.map(([, s]) => s.shown);
-    const barHidden    = agentEntries.map(([, s]) => s.leads - s.shown);
+      // ── Bar chart — all-time agent shown totals ──
+      const agentEntries = Object.entries(agentMap).sort((a, b) => b[1].shown - a[1].shown);
+      const barLabels = agentEntries.map(([name]) => name);
+      const barShown = agentEntries.map(([, s]) => s.shown);
+      const barHidden = agentEntries.map(([, s]) => s.leads - s.shown);
 
-    if (chartBar) chartBar.destroy();
-    chartBar = new Chart(document.getElementById('chartBar'), {
+      if (chartBar) chartBar.destroy();
+      chartBar = new Chart(document.getElementById('chartBar'), {
         type: 'bar',
         data: {
-            labels: barLabels,
-            datasets: [
-                { label: 'Shown',  data: barShown,  backgroundColor: '#10B981', borderRadius: 4, stack: 'stack' },
-                { label: 'Hidden', data: barHidden, backgroundColor: 'rgba(239,68,68,0.35)', borderRadius: 4, stack: 'stack' }
-            ]
+          labels: barLabels,
+          datasets: [
+            { label: 'Shown', data: barShown, backgroundColor: '#10B981', borderRadius: 4, stack: 'stack' },
+            { label: 'Hidden', data: barHidden, backgroundColor: 'rgba(239,68,68,0.35)', borderRadius: 4, stack: 'stack' }
+          ]
         },
         options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { labels: { color: '#9CA3AF', font: { size: 11 } } } },
-            scales: {
-                x: { stacked: true, grid: { display: false }, ticks: { color: '#9CA3AF', font: { size: 11 } } },
-                y: { stacked: true, grid: { color: 'rgba(55,65,81,0.5)' }, ticks: { color: '#9CA3AF', font: { size: 11 } }, beginAtZero: true }
-            }
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { labels: { color: '#9CA3AF', font: { size: 11 } } } },
+          scales: {
+            x: { stacked: true, grid: { display: false }, ticks: { color: '#9CA3AF', font: { size: 11 } } },
+            y: { stacked: true, grid: { color: 'rgba(55,65,81,0.5)' }, ticks: { color: '#9CA3AF', font: { size: 11 } }, beginAtZero: true }
+          }
         }
-    });
+      });
 
-    // ── Donut chart — mode distribution ──
-    if (chartDonut) chartDonut.destroy();
-    chartDonut = new Chart(document.getElementById('chartDonut'), {
+      // ── Donut chart — mode distribution ──
+      if (chartDonut) chartDonut.destroy();
+      chartDonut = new Chart(document.getElementById('chartDonut'), {
         type: 'doughnut',
         data: {
-            labels: ['Standard', 'Some'],
-            datasets: [{
-                data: [modeMap.STANDARD, modeMap.SOME],
-                backgroundColor: ['#3B82F6', '#06B6D4'],
-                borderColor: '#111827',
-                borderWidth: 3,
-                hoverOffset: 8
-            }]
+          labels: ['Standard', 'Some'],
+          datasets: [{
+            data: [modeMap.STANDARD, modeMap.SOME],
+            backgroundColor: ['#3B82F6', '#06B6D4'],
+            borderColor: '#111827',
+            borderWidth: 3,
+            hoverOffset: 8
+          }]
         },
         options: {
-            responsive: true, maintainAspectRatio: false,
-            cutout: '65%',
-            plugins: {
-                legend: { position: 'bottom', labels: { color: '#9CA3AF', font: { size: 11 }, padding: 14 } }
-            }
+          responsive: true, maintainAspectRatio: false,
+          cutout: '65%',
+          plugins: {
+            legend: { position: 'bottom', labels: { color: '#9CA3AF', font: { size: 11 }, padding: 14 } }
+          }
         }
-    });
+      });
 
-    // ── Agent breakdown table ──
-    document.getElementById('analyticsAgentTable').innerHTML = agentEntries.map(([name, s]) => {
-        const hidden     = s.leads - s.shown;
+      // ── Agent breakdown table ──
+      document.getElementById('analyticsAgentTable').innerHTML = agentEntries.map(([name, s]) => {
+        const hidden = s.leads - s.shown;
         const conversion = s.leads > 0 ? ((s.shown / s.leads) * 100).toFixed(1) : '0.0';
         return `<tr>
             <td class="agent-name">${escHtml(name)}</td>
@@ -679,180 +1163,180 @@ function renderAnalytics(data) {
             <td style="color:var(--danger);">${hidden}</td>
             <td style="color:var(--warning);font-weight:600;">${conversion}%</td>
         </tr>`;
-    }).join('') || `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:30px;">No data yet.</td></tr>`;
-}
+      }).join('') || `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:30px;">No data yet.</td></tr>`;
+    }
 
-// ══════════════════════════════════════════════
-//  TAB 4: CONFIG
-// ══════════════════════════════════════════════
-const CONFIG_LABELS = { tempZone: 'Temp Zone', usBase: 'US Base Path', ukBase: 'UK Base Path' };
+    // ══════════════════════════════════════════════
+    //  TAB 4: CONFIG
+    // ══════════════════════════════════════════════
+    const CONFIG_LABELS = { tempZone: 'Temp Zone', usBase: 'US Base Path', ukBase: 'UK Base Path' };
 
-async function fetchConfig() {
-    try {
-        const res  = await fetch('/api/admin/config');
+    async function fetchConfig() {
+      try {
+        const res = await fetch('/api/admin/config');
         const json = await res.json();
         if (!json.success) throw new Error(json.error);
         configData = json.config;
         renderConfigFields();
-    } catch (e) { showToast('Failed to load config.', 'error'); }
-}
+      } catch (e) { showToast('Failed to load config.', 'error'); }
+    }
 
-function renderConfigFields() {
-    const allKeys = new Set([...Object.keys(CONFIG_LABELS), ...Object.keys(configData)]);
-    document.getElementById('configFields').innerHTML = [...allKeys].map(key => `
+    function renderConfigFields() {
+      const allKeys = new Set([...Object.keys(CONFIG_LABELS), ...Object.keys(configData)]);
+      document.getElementById('configFields').innerHTML = [...allKeys].map(key => `
         <div class="field-row">
             <div class="field-label">${CONFIG_LABELS[key] || key}</div>
             <input class="field-input" type="text" id="cfg_${key}" value="${escHtml(configData[key] || '')}" placeholder="Enter path...">
             <span style="font-size:11px;color:var(--text-muted);white-space:nowrap;font-family:'JetBrains Mono';">${key}</span>
         </div>`).join('');
-}
+    }
 
-async function saveConfig() {
-    const allKeys = new Set([...Object.keys(CONFIG_LABELS), ...Object.keys(configData)]);
-    const newConfig = {};
-    allKeys.forEach(key => { const el = document.getElementById(`cfg_${key}`); if (el) newConfig[key] = el.value.trim(); });
-    try {
-        const res  = await fetch('/api/admin/config', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(newConfig) });
+    async function saveConfig() {
+      const allKeys = new Set([...Object.keys(CONFIG_LABELS), ...Object.keys(configData)]);
+      const newConfig = {};
+      allKeys.forEach(key => { const el = document.getElementById(`cfg_${key}`); if (el) newConfig[key] = el.value.trim(); });
+      try {
+        const res = await fetch('/api/admin/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newConfig) });
         const json = await res.json();
         if (json.success) { configData = newConfig; showToast('✅ Config saved.', 'success'); }
         else showToast('❌ Save failed: ' + json.error, 'error');
-    } catch { showToast('❌ Server error.', 'error'); }
-}
+      } catch { showToast('❌ Server error.', 'error'); }
+    }
 
-// ══════════════════════════════════════════════
-//  TAB 5: USERS
-// ══════════════════════════════════════════════
-async function fetchUsers() {
-    try {
-        const res  = await fetch('/api/admin/users');
+    // ══════════════════════════════════════════════
+    //  TAB 5: USERS
+    // ══════════════════════════════════════════════
+    async function fetchUsers() {
+      try {
+        const res = await fetch('/api/admin/users');
         const json = await res.json();
         if (!json.success) throw new Error(json.error);
         usersData = json.users;
         renderUsersTable();
-    } catch (e) { showToast('Failed to load users.', 'error'); }
-}
+      } catch (e) { showToast('Failed to load users.', 'error'); }
+    }
 
-function renderUsersTable() {
-    document.getElementById('usersBody').innerHTML = usersData.map((u, i) => {
-        const isAdmin   = u.username === 'Admin';
+    function renderUsersTable() {
+      document.getElementById('usersBody').innerHTML = usersData.map((u, i) => {
+        const isAdmin = u.username === 'Admin';
         const deleteBtn = isAdmin
-            ? `<span style="color:var(--text-muted);font-size:11px;font-weight:600;">PROTECTED</span>`
-            : `<button class="btn btn-red btn-sm" onclick="deleteUser(${i})">✕ Remove</button>`;
+          ? `<span style="color:var(--text-muted);font-size:11px;font-weight:600;">PROTECTED</span>`
+          : `<button class="btn btn-red btn-sm" onclick="deleteUser(${i})">✕ Remove</button>`;
         return `<tr data-index="${i}">
-            <td><input class="user-input" type="text"     value="${escHtml(u.username)}"          ${isAdmin?'readonly style="opacity:0.5;"':''} data-field="username"    data-idx="${i}"></td>
+            <td><input class="user-input" type="text"     value="${escHtml(u.username)}"          ${isAdmin ? 'readonly style="opacity:0.5;"' : ''} data-field="username"    data-idx="${i}"></td>
             <td><input class="user-input" type="password" value="${escHtml(u.password)}"                                                        data-field="password"    data-idx="${i}"></td>
             <td><input class="user-input" type="text"     value="${escHtml(u.archivePath || '')}"                                               data-field="archivePath" data-idx="${i}"></td>
             <td style="text-align:center;">${deleteBtn}</td>
         </tr>`;
-    }).join('') || `<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:24px;">No users.</td></tr>`;
+      }).join('') || `<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:24px;">No users.</td></tr>`;
 
-    document.querySelectorAll('.user-input').forEach(input => {
+      document.querySelectorAll('.user-input').forEach(input => {
         input.addEventListener('input', e => {
-            usersData[parseInt(e.target.dataset.idx)][e.target.dataset.field] = e.target.value;
+          usersData[parseInt(e.target.dataset.idx)][e.target.dataset.field] = e.target.value;
         });
-    });
-}
-
-function addUserRow() {
-    usersData.push({ username: '', password: '', archivePath: '' });
-    renderUsersTable();
-    const rows = document.getElementById('usersBody').querySelectorAll('tr');
-    if (rows.length) {
-        rows[rows.length-1].scrollIntoView({ behavior: 'smooth' });
-        rows[rows.length-1].querySelector('input')?.focus();
+      });
     }
-}
 
-function deleteUser(idx) {
-    if (usersData[idx].username === 'Admin') { showToast('Cannot delete Admin.', 'error'); return; }
-    usersData.splice(idx, 1);
-    renderUsersTable();
-    showToast('User removed. Click Save to apply.', 'info');
-}
-
-async function saveUsers() {
-    for (let i = 0; i < usersData.length; i++) {
-        if (!usersData[i].username.trim()) { showToast(`Row ${i+1}: Username empty.`, 'error'); return; }
-        if (!usersData[i].password.trim()) { showToast(`Row ${i+1}: Password empty.`, 'error'); return; }
+    function addUserRow() {
+      usersData.push({ username: '', password: '', archivePath: '' });
+      renderUsersTable();
+      const rows = document.getElementById('usersBody').querySelectorAll('tr');
+      if (rows.length) {
+        rows[rows.length - 1].scrollIntoView({ behavior: 'smooth' });
+        rows[rows.length - 1].querySelector('input')?.focus();
+      }
     }
-    try {
-        const res  = await fetch('/api/admin/users', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(usersData) });
+
+    function deleteUser(idx) {
+      if (usersData[idx].username === 'Admin') { showToast('Cannot delete Admin.', 'error'); return; }
+      usersData.splice(idx, 1);
+      renderUsersTable();
+      showToast('User removed. Click Save to apply.', 'info');
+    }
+
+    async function saveUsers() {
+      for (let i = 0; i < usersData.length; i++) {
+        if (!usersData[i].username.trim()) { showToast(`Row ${i + 1}: Username empty.`, 'error'); return; }
+        if (!usersData[i].password.trim()) { showToast(`Row ${i + 1}: Password empty.`, 'error'); return; }
+      }
+      try {
+        const res = await fetch('/api/admin/users', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(usersData) });
         const json = await res.json();
         if (json.success) showToast('✅ Users saved.', 'success');
         else showToast('❌ Save failed: ' + json.error, 'error');
-    } catch { showToast('❌ Server error.', 'error'); }
-}
+      } catch { showToast('❌ Server error.', 'error'); }
+    }
 
-// ══════════════════════════════════════════════
-//  UTILITIES
-// ══════════════════════════════════════════════
-function escHtml(str) {
-    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+    // ══════════════════════════════════════════════
+    //  UTILITIES
+    // ══════════════════════════════════════════════
+    function escHtml(str) {
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
 
-function dismissToast(toast) {
-    toast.style.animation = 'none';
-    toast.style.transition = 'transform 0.15s, opacity 0.15s';
-    requestAnimationFrame(() => { toast.style.transform = 'translateX(110%)'; toast.style.opacity = '0'; });
-    setTimeout(() => toast.remove(), 160);
-}
+    function dismissToast(toast) {
+      toast.style.animation = 'none';
+      toast.style.transition = 'transform 0.15s, opacity 0.15s';
+      requestAnimationFrame(() => { toast.style.transform = 'translateX(110%)'; toast.style.opacity = '0'; });
+      setTimeout(() => toast.remove(), 160);
+    }
 
-function showToast(msg, type = 'success') {
-    const c     = document.getElementById('toastContainer');
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.innerHTML = msg;
-    toast.addEventListener('click', () => dismissToast(toast));
-    c.appendChild(toast);
-    setTimeout(() => { if (toast.parentNode) toast.remove(); }, 4000);
-}
+    function showToast(msg, type = 'success') {
+      const c = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = msg;
+      toast.addEventListener('click', () => dismissToast(toast));
+      c.appendChild(toast);
+      setTimeout(() => { if (toast.parentNode) toast.remove(); }, 4000);
+    }
 
-// ══════════════════════════════════════════════
-//  KEYBOARD NAVIGATION
-// ══════════════════════════════════════════════
-document.addEventListener('keydown', (e) => {
-    const modalOpen = document.getElementById('confirmModal').classList.contains('open');
-    const isTyping  = ['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName);
+    // ══════════════════════════════════════════════
+    //  KEYBOARD NAVIGATION
+    // ══════════════════════════════════════════════
+    document.addEventListener('keydown', (e) => {
+      const modalOpen = document.getElementById('confirmModal').classList.contains('open');
+      const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
 
-    const deleteModalOpen = document.getElementById('deleteRecordModal').style.display === 'flex';
+      const deleteModalOpen = document.getElementById('deleteRecordModal').style.display === 'flex';
 
-    if (deleteModalOpen) {
+      if (deleteModalOpen) {
         if (e.key === 'Escape') { e.preventDefault(); closeDeleteModal(); }
         return;
-    }
+      }
 
-    if (modalOpen) {
-        if (e.key === 'Enter')  { e.preventDefault(); executeReset(); }
+      if (modalOpen) {
+        if (e.key === 'Enter') { e.preventDefault(); executeReset(); }
         if (e.key === 'Escape') { e.preventDefault(); closeModal(); }
         return;
-    }
+      }
 
-    if (e.key === 'Escape') { document.querySelectorAll('.toast').forEach(dismissToast); return; }
-    if (isTyping) return;
+      if (e.key === 'Escape') { document.querySelectorAll('.toast').forEach(dismissToast); return; }
+      if (isTyping) return;
 
-    if (e.key === 'r' || e.key === 'R') { e.preventDefault(); refreshCurrentTab(); showToast('↻ Refreshing...', 'info'); return; }
-    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+      if (e.key === 'r' || e.key === 'R') { e.preventDefault(); refreshCurrentTab(); showToast('↻ Refreshing...', 'info'); return; }
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
         e.preventDefault();
         if (currentTab === 'config') saveConfig();
-        if (currentTab === 'users')  saveUsers();
+        if (currentTab === 'users') saveUsers();
         return;
-    }
+      }
 
-    const tabKeys = ['1','2','3','4','5'];
-    const tabIds  = ['leaderboard','ledger','analytics','config','users'];
-    if (tabKeys.includes(e.key)) {
+      const tabKeys = ['1', '2', '3', '4', '5'];
+      const tabIds = ['leaderboard', 'ledger', 'analytics', 'config', 'users'];
+      if (tabKeys.includes(e.key)) {
         const i = tabKeys.indexOf(e.key);
-        const t = document.querySelector(`.tab:nth-child(${i+1})`);
+        const t = document.querySelector(`.tab:nth-child(${i + 1})`);
         if (t) switchTab(tabIds[i], t);
         return;
-    }
+      }
 
-    if (currentTab === 'leaderboard' && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+      if (currentTab === 'leaderboard' && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
         e.preventDefault();
         const rows = document.querySelectorAll('#leaderboardBody .leader-row');
         if (!rows.length) return;
         if (e.key === 'ArrowDown') selectedLeaderIdx = Math.min(selectedLeaderIdx + 1, rows.length - 1);
-        if (e.key === 'ArrowUp')   selectedLeaderIdx = Math.max(selectedLeaderIdx - 1, 0);
+        if (e.key === 'ArrowUp') selectedLeaderIdx = Math.max(selectedLeaderIdx - 1, 0);
         rows.forEach(r => r.classList.remove('active'));
         const target = rows[selectedLeaderIdx];
         target.classList.add('active');
@@ -860,43 +1344,44 @@ document.addEventListener('keydown', (e) => {
         const name = target.querySelector('.agent-name')?.textContent;
         if (name) viewAgentLogs(name, target);
         return;
-    }
+      }
 
-    if (currentTab === 'leaderboard' && e.key === 'Enter') { resetToGlobalLogs(); return; }
-});
+      if (currentTab === 'leaderboard' && e.key === 'Enter') { resetToGlobalLogs(); return; }
+    });
 
-// ══════════════════════════════════════════════
-//  SOCKET.IO
-// ══════════════════════════════════════════════
-const socket = io();
+    // ══════════════════════════════════════════════
+    //  SOCKET.IO
+    // ══════════════════════════════════════════════
+    const socket = io();
 
-socket.on('connect', () => {
-    const el = document.getElementById('liveIndicator');
-    if (el) { el.innerHTML = `<span style="display:inline-block;width:8px;height:8px;background:var(--success);border-radius:50%;box-shadow:0 0 6px var(--success);"></span> LIVE`; el.style.color = 'var(--success)'; }
-});
+    socket.on('connect', () => {
+      const el = document.getElementById('liveIndicator');
+      if (el) { el.innerHTML = `<span style="display:inline-block;width:8px;height:8px;background:var(--success);border-radius:50%;box-shadow:0 0 6px var(--success);"></span> LIVE`; el.style.color = 'var(--success)'; }
+    });
 
-socket.on('disconnect', () => {
-    const el = document.getElementById('liveIndicator');
-    if (el) { el.innerHTML = `<span style="display:inline-block;width:8px;height:8px;background:var(--danger);border-radius:50%;"></span> OFFLINE`; el.style.color = 'var(--danger)'; }
-});
+    socket.on('disconnect', () => {
+      const el = document.getElementById('liveIndicator');
+      if (el) { el.innerHTML = `<span style="display:inline-block;width:8px;height:8px;background:var(--danger);border-radius:50%;"></span> OFFLINE`; el.style.color = 'var(--danger)'; }
+    });
 
-socket.on('new_upload', (row) => {
-    // Only push to masterData if it's from today
-    if (row.date === TODAY) {
+    socket.on('new_upload', (row) => {
+      // Only push to masterData if it's from today
+      if (row.date === TODAY) {
         masterData.push(row);
         if (currentTab === 'leaderboard') renderDashboard();
-    }
-    showToast(`⚡ <b>${escHtml(row.agent)}</b> — ${escHtml(row.filename)}<br>Shown: ${row.shown}`, 'info');
-});
+      }
+      showToast(`⚡ <b>${escHtml(row.agent)}</b> — ${escHtml(row.filename)}<br>Shown: ${row.shown}`, 'info');
+    });
 
-socket.on('daily_reset', () => {
-    masterData = [];
-    if (currentTab === 'leaderboard') renderDashboard();
-    showToast('🔄 Daily reset — live view cleared.', 'info');
-});
+    socket.on('daily_reset', () => {
+      masterData = [];
+      if (currentTab === 'leaderboard') renderDashboard();
+      showToast('🔄 Daily reset — live view cleared.', 'info');
+    });
 
-// ── BOOT ─────────────────────────────────────
-fetchTodayData();
-</script>
+    // ── BOOT ─────────────────────────────────────
+    fetchTodayData();
+  </script>
 </body>
+
 </html>

@@ -440,7 +440,9 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
         const year       = date.getFullYear().toString();
         const isNA       = /\bUSA\b|\bCANADA\b/i.test(originalName);
         const region     = isNA ? 'USA' : 'UK';
-        const timeStr    = `${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}:${String(date.getSeconds()).padStart(2,'0')}`;
+        const h12upload  = date.getHours() % 12 || 12;
+        const amPmUpload = date.getHours() < 12 ? 'AM' : 'PM';
+        const timeStr    = `${String(h12upload).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}:${String(date.getSeconds()).padStart(2,'0')} ${amPmUpload}`;
         const totalCount = stats.shown + stats.hidden;
 
         // ── Copy files ──
@@ -508,7 +510,10 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
 
     } catch (error) {
         if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
-        const timeStr = new Date().toLocaleTimeString();
+        const errDate = new Date();
+        const h12err  = errDate.getHours() % 12 || 12;
+        const amPmErr = errDate.getHours() < 12 ? 'AM' : 'PM';
+        const timeStr = `${String(h12err).padStart(2,'0')}:${String(errDate.getMinutes()).padStart(2,'0')}:${String(errDate.getSeconds()).padStart(2,'0')} ${amPmErr}`;
         saveHistory(
             { agent: username, name: originalName, size: req.file.size, mtime: new Date().toISOString(), region: 'UNK', destPath: 'ERROR', status: 'error' },
             { agent: username, ts: timeStr, msg: `Error: ${error.message}`, type: 'error' }
@@ -542,7 +547,9 @@ app.post('/api/undo', async (req, res) => {
         if (fileIdx > -1) history.files.splice(fileIdx, 1);
 
         const now     = new Date();
-        const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+        const h12undo  = now.getHours() % 12 || 12;
+        const amPmUndo = now.getHours() < 12 ? 'AM' : 'PM';
+        const timeStr  = `${String(h12undo).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')} ${amPmUndo}`;
         history.logs.unshift({ agent: username, ts: timeStr, msg: `[UNDO] Reverted: ${record.filename}`, type: 'warning' });
         fs.writeFileSync(historyPath, JSON.stringify(history, null, 2));
 
