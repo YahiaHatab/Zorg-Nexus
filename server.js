@@ -1,10 +1,10 @@
 const express = require('express');
 const http    = require('http');
 const { Server } = require('socket.io');
-const fs = require('fs');
-const path = require('path');
+const fs      = require('fs');
+const path    = require('path');
 const ExcelJS = require('exceljs');
-const multer = require('multer');
+const multer  = require('multer');
 
 const app    = express();
 const server = http.createServer(app);
@@ -14,15 +14,15 @@ const PORT   = 3005;
 // ─────────────────────────────────────────────
 //  BOOTSTRAP — ensure all required files exist
 // ─────────────────────────────────────────────
-const configPath  = path.join(__dirname, 'config.json');
-const usersPath   = path.join(__dirname, 'users.json');
-const historyPath = path.join(__dirname, 'history.json');
+const configPath    = path.join(__dirname, 'config.json');
+const usersPath     = path.join(__dirname, 'users.json');
+const historyPath   = path.join(__dirname, 'history.json');
+const analyticsPath = path.join(__dirname, 'analytics.json');
 
 const DEFAULT_CONFIG = {
-    tempZone:          path.join(__dirname, 'temp'),
-    usBase:            path.join(__dirname, 'output', 'US'),
-    ukBase:            path.join(__dirname, 'output', 'UK'),
-    reportArchivePath: path.join(__dirname, 'report-archive')
+    tempZone: path.join(__dirname, 'temp'),
+    usBase:   path.join(__dirname, 'output', 'US'),
+    ukBase:   path.join(__dirname, 'output', 'UK'),
 };
 
 const DEFAULT_USERS = [
@@ -40,31 +40,31 @@ if (!fs.existsSync(usersPath)) {
 if (!fs.existsSync(historyPath)) {
     fs.writeFileSync(historyPath, JSON.stringify({ files: [], logs: [] }, null, 2));
 }
+if (!fs.existsSync(analyticsPath)) {
+    fs.writeFileSync(analyticsPath, JSON.stringify({}, null, 2));
+    console.log('> Created analytics.json');
+}
 
 // Load config AFTER ensuring it exists
 let config = JSON.parse(fs.readFileSync(configPath));
 
 // Ensure all critical directories exist
-[config.tempZone, config.usBase, config.ukBase, config.reportArchivePath].forEach(dir => {
+[config.tempZone, config.usBase, config.ukBase].forEach(dir => {
     if (dir && !fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
 
 const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-
-const upload = multer({ dest: config.tempZone });
+const upload     = multer({ dest: config.tempZone });
 
 // ─────────────────────────────────────────────
 //  UNDO REGISTRY (5-Minute Window)
 // ─────────────────────────────────────────────
 const undoRegistry = new Map();
 
-// Auto-clean expired undo tokens every 60 seconds to prevent memory leaks
 setInterval(() => {
     const now = Date.now();
     for (const [txnId, data] of undoRegistry.entries()) {
-        if (now - data.timestamp > 5 * 60 * 1000) { // 5 minutes
-            undoRegistry.delete(txnId);
-        }
+        if (now - data.timestamp > 5 * 60 * 1000) undoRegistry.delete(txnId);
     }
 }, 60 * 1000);
 
@@ -78,10 +78,104 @@ function reloadConfig() {
 function saveHistory(newFile, newLog) {
     const history = JSON.parse(fs.readFileSync(historyPath));
     if (newFile) history.files.unshift(newFile);
-    if (newLog) history.logs.unshift(newLog);
+    if (newLog)  history.logs.unshift(newLog);
     if (history.files.length > 500) history.files.pop();
-    if (history.logs.length > 500) history.logs.pop();
+    if (history.logs.length  > 500) history.logs.pop();
     fs.writeFileSync(historyPath, JSON.stringify(history, null, 2));
+}
+
+// ── Analytics ledger helpers ──────────────────
+function loadAnalytics() {
+    return JSON.parse(fs.readFileSync(analyticsPath));
+}
+
+function saveAnalytics(data) {
+    fs.writeFileSync(analyticsPath, JSON.stringify(data, null, 2));
+}
+
+/**
+ * Append one upload record to analytics.json.
+ *
+ * Structure:
+ *   analytics[dateKey] = {
+ *     summary: {
+ *       totalFiles: N,
+ *       totalLeads: N,     // shown + hidden combined
+ *       totalShown: N,
+ *       byAgent: {
+ *         [username]: { files: N, leads: N, shown: N }
+ *       }
+ *     },
+ *     records: [
+ *       { transactionId, agent, filename, mode, shown, hidden, total, time }
+ *     ]
+ *   }
+ */
+function analyticsAddRecord(dateKey, username, record) {
+    const data = loadAnalytics();
+
+    if (!data[dateKey]) {
+        data[dateKey] = {
+            summary: { totalFiles: 0, totalLeads: 0, totalShown: 0, byAgent: {} },
+            records: []
+        };
+    }
+
+    const day = data[dateKey];
+
+    // Global summary
+    day.summary.totalFiles++;
+    day.summary.totalLeads += record.total;
+    day.summary.totalShown += record.shown;
+
+    // Per-agent summary
+    if (!day.summary.byAgent[username]) {
+        day.summary.byAgent[username] = { files: 0, leads: 0, shown: 0 };
+    }
+    day.summary.byAgent[username].files++;
+    day.summary.byAgent[username].leads += record.total;
+    day.summary.byAgent[username].shown += record.shown;
+
+    // Individual record
+    day.records.push(record);
+
+    saveAnalytics(data);
+}
+
+/**
+ * Remove one record from analytics.json by transactionId and deduct its tallies.
+ */
+function analyticsRemoveRecord(dateKey, transactionId) {
+    const data = loadAnalytics();
+    if (!data[dateKey]) return;
+
+    const day    = data[dateKey];
+    const recIdx = day.records.findIndex(r => r.transactionId === transactionId);
+    if (recIdx === -1) return;
+
+    const rec = day.records[recIdx];
+
+    // Deduct global summary
+    day.summary.totalFiles = Math.max(0, day.summary.totalFiles - 1);
+    day.summary.totalLeads = Math.max(0, day.summary.totalLeads - rec.total);
+    day.summary.totalShown = Math.max(0, day.summary.totalShown - rec.shown);
+
+    // Deduct per-agent summary
+    const agentSummary = day.summary.byAgent[rec.agent];
+    if (agentSummary) {
+        agentSummary.files = Math.max(0, agentSummary.files - 1);
+        agentSummary.leads = Math.max(0, agentSummary.leads - rec.total);
+        agentSummary.shown = Math.max(0, agentSummary.shown - rec.shown);
+        if (agentSummary.files === 0) delete day.summary.byAgent[rec.agent];
+    }
+
+    // Remove record
+    day.records.splice(recIdx, 1);
+
+    // Remove day key if empty
+    if (day.records.length === 0) delete data[dateKey];
+
+    saveAnalytics(data);
 }
 
 function checkIsRed(font) {
@@ -95,32 +189,24 @@ function checkIsRed(font) {
 }
 
 // ─────────────────────────────────────────────
-//  DAILY RESET LOGIC
+//  DAILY RESET
+//  No longer touches any Excel files.
+//  Clears history.json and signals all frontends.
 // ─────────────────────────────────────────────
 async function performDailyReset() {
-    reloadConfig();
-    const reportPath = path.join(__dirname, 'Z-Report.xlsx');
-    const archiveDir = config.reportArchivePath;
-
     console.log(`\n> [RESET] Starting daily reset at ${new Date().toISOString()}`);
-
-    if (fs.existsSync(reportPath)) {
-        if (!fs.existsSync(archiveDir)) fs.mkdirSync(archiveDir, { recursive: true });
-        const today = new Date().toISOString().split('T')[0];
-        const archiveName = `Report ${today}.xlsx`;
-        const archiveDest = path.join(archiveDir, archiveName);
-        fs.copyFileSync(reportPath, archiveDest);
-        fs.unlinkSync(reportPath);
-        console.log(`> [RESET] Archived Z-Report.xlsx → ${archiveName}`);
-    } else {
-        console.log('> [RESET] No Z-Report.xlsx found, skipping archive step.');
-    }
 
     fs.writeFileSync(historyPath, JSON.stringify({ files: [], logs: [] }, null, 2));
     console.log('> [RESET] history.json cleared.');
-    console.log('> [RESET] Daily reset complete.\n');
+
+    io.emit('daily_reset');
+    console.log('> [RESET] daily_reset event broadcast.');
+    console.log('> [RESET] Complete.\n');
 }
 
+// ─────────────────────────────────────────────
+//  MIDNIGHT CRON
+// ─────────────────────────────────────────────
 function scheduleMidnightReset() {
     function msUntilMidnight() {
         const now  = new Date();
@@ -145,8 +231,10 @@ scheduleMidnightReset();
 
 // ─────────────────────────────────────────────
 //  EXCEL PROCESSING
+//  Pure extraction — returns { finalFileName, shown, hidden }.
+//  No longer writes any report file.
 // ─────────────────────────────────────────────
-async function processExcelFile(filePath, originalName, username, mode) {
+async function processExcelFile(filePath, originalName, mode) {
     const workbook = new ExcelJS.Workbook();
     await workbook.xlsx.readFile(filePath);
 
@@ -157,7 +245,7 @@ async function processExcelFile(filePath, originalName, username, mode) {
     if (isSomeMode) {
         const sheet2 = workbook.worksheets[1];
         if (sheet2) {
-            let stats = {};
+            let stats          = {};
             let highestSomeNum = -1;
             let latestSomeKey  = "Some";
             let foundAnySome   = false;
@@ -195,12 +283,15 @@ async function processExcelFile(filePath, originalName, username, mode) {
                 }
             });
 
-            if (foundAnySome) { finalVisibleRed = stats[latestSomeKey].shown; finalHidden = stats[latestSomeKey].hidden; }
+            if (foundAnySome) {
+                finalVisibleRed = stats[latestSomeKey].shown;
+                finalHidden     = stats[latestSomeKey].hidden;
+            }
         }
     } else {
         const sheet = workbook.getWorksheet('Sheet1');
         if (sheet) {
-            let stats = {};
+            let stats         = {};
             let highestNewNum = -1;
             let latestNewKey  = "New";
             let foundAnyNew   = false;
@@ -208,7 +299,7 @@ async function processExcelFile(filePath, originalName, username, mode) {
             let globalVisible = 0;
 
             sheet.eachRow((row) => {
-                const isHidden = row.hidden;
+                const isHidden  = row.hidden;
                 let hasNewInRow = false;
                 let rowNewKey   = null;
                 let rowNewNum   = -1;
@@ -255,55 +346,10 @@ async function processExcelFile(filePath, originalName, username, mode) {
         }
     }
 
-    const ext          = path.extname(originalName);
-    const baseName     = path.basename(originalName, ext);
-    let finalFileName  = originalName;
-    if (isSomeMode) finalFileName = `Some ${baseName}${ext}`;
+    const ext           = path.extname(originalName);
+    const baseName      = path.basename(originalName, ext);
+    const finalFileName = isSomeMode ? `Some ${baseName}${ext}` : originalName;
 
-    const reportPath = path.join(__dirname, 'Z-Report.xlsx');
-    const reportWb   = new ExcelJS.Workbook();
-    let reportSheet;
-
-    const columnsDef = [
-        { header: 'Agent',                 key: 'agent',    width: 15 },
-        { header: 'Total (Hidden + Shown)', key: 'total',   width: 28 },
-        { header: 'Shown Count',            key: 'shown',   width: 18 },
-        { header: 'File Name',              key: 'filename', width: 45 },
-        { header: 'Date',                   key: 'date',     width: 15 },
-        { header: 'Mode',                   key: 'mode',     width: 15 }
-    ];
-
-    if (fs.existsSync(reportPath)) {
-        await reportWb.xlsx.readFile(reportPath);
-        reportSheet = reportWb.getWorksheet(1);
-        reportSheet.columns = columnsDef;
-    } else {
-        reportSheet = reportWb.addWorksheet('Report');
-        reportSheet.columns = columnsDef;
-        const headerRow = reportSheet.getRow(1);
-        headerRow.eachCell((cell) => {
-            cell.font      = { name: 'Arial', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
-            cell.fill      = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4F81BD' } };
-            cell.alignment = { vertical: 'middle', horizontal: 'center' };
-            cell.border    = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
-        });
-    }
-
-    const todayDate  = new Date().toISOString().split('T')[0];
-    const totalCount = finalVisibleRed + finalHidden;
-
-    const newRow = reportSheet.addRow({
-        agent: username, total: totalCount, shown: finalVisibleRed,
-        filename: finalFileName, date: todayDate, mode: mode.toUpperCase()
-    });
-
-    newRow.eachCell((cell, colNumber) => {
-        cell.font      = { name: 'Arial', size: 11, bold: true };
-        cell.border    = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
-        cell.alignment = { vertical: 'middle', horizontal: colNumber === 4 ? 'left' : 'center' };
-    });
-
-    await reportWb.xlsx.writeFile(reportPath);
     return { finalFileName, shown: finalVisibleRed, hidden: finalHidden };
 }
 
@@ -325,7 +371,7 @@ app.post('/api/login', (req, res) => {
 });
 
 // ─────────────────────────────────────────────
-//  USER DATA
+//  USER DATA  (today's activity from history.json)
 // ─────────────────────────────────────────────
 app.get('/api/user/data', (req, res) => {
     const username = req.query.username;
@@ -333,38 +379,39 @@ app.get('/api/user/data', (req, res) => {
     res.json({
         success: true,
         files: history.files.filter(f => f.agent === username),
-        logs:  history.logs.filter(l  => l.agent  === username)
+        logs:  history.logs.filter(l  => l.agent === username)
     });
 });
 
-app.get('/api/user/report', async (req, res) => {
-    const username   = req.query.username;
-    const reportPath = path.join(__dirname, 'Z-Report.xlsx');
-    if (!fs.existsSync(reportPath)) return res.json({ success: true, data: [] });
-
+// ─────────────────────────────────────────────
+//  USER REPORT  (all-time from analytics.json)
+// ─────────────────────────────────────────────
+app.get('/api/user/report', (req, res) => {
     try {
-        const workbook = new ExcelJS.Workbook();
-        await workbook.xlsx.readFile(reportPath);
-        const sheet      = workbook.getWorksheet(1);
-        let   reportData = [];
+        const username = req.query.username;
+        const data     = loadAnalytics();
+        const result   = [];
 
-        sheet.eachRow((row, rowNumber) => {
-            if (rowNumber === 1) return;
-            const rowAgent = row.getCell(1).value ? row.getCell(1).value.toString() : '';
-            if (rowAgent === username) {
-                reportData.push({
-                    total:    parseInt(row.getCell(2).value) || 0,
-                    shown:    parseInt(row.getCell(3).value) || 0,
-                    filename: row.getCell(4).value ? row.getCell(4).value.toString() : '',
-                    date:     row.getCell(5).value ? row.getCell(5).value.toString() : '',
-                    mode:     row.getCell(6).value ? row.getCell(6).value.toString() : ''
-                });
+        // Newest date first
+        for (const dateKey of Object.keys(data).sort((a, b) => b.localeCompare(a))) {
+            const day = data[dateKey];
+            // Newest record within the day first
+            for (const rec of [...day.records].reverse()) {
+                if (rec.agent === username) {
+                    result.push({
+                        date:     dateKey,
+                        mode:     rec.mode,
+                        filename: rec.filename,
+                        shown:    rec.shown,
+                        total:    rec.total
+                    });
+                }
             }
-        });
+        }
 
-        res.json({ success: true, data: reportData.reverse() });
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        res.json({ success: true, data: result });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
     }
 });
 
@@ -384,20 +431,23 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
         const activeUser = users.find(u => u.username === username);
         if (!activeUser || !activeUser.archivePath) throw new Error(`Archive path missing for ${username}`);
 
-        const stats       = await processExcelFile(tempPath, originalName, username, mode);
-        const date        = new Date();
-        const folderName  = `${date.getDate()}-${date.getMonth() + 1}`;
-        const month       = monthNames[date.getMonth()];
-        const year        = date.getFullYear().toString();
-        const isNA        = /\bUSA\b|\bCANADA\b/i.test(originalName);
-        const region      = isNA ? 'USA' : 'UK';
+        // Pure extraction — no report file written
+        const stats      = await processExcelFile(tempPath, originalName, mode);
+        const date       = new Date();
+        const dateKey    = date.toISOString().split('T')[0];
+        const folderName = `${date.getDate()}-${date.getMonth() + 1}`;
+        const month      = monthNames[date.getMonth()];
+        const year       = date.getFullYear().toString();
+        const isNA       = /\bUSA\b|\bCANADA\b/i.test(originalName);
+        const region     = isNA ? 'USA' : 'UK';
+        const timeStr    = `${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}:${String(date.getSeconds()).padStart(2,'0')}`;
+        const totalCount = stats.shown + stats.hidden;
 
+        // ── Copy files ──
         const personalDir = path.join(activeUser.archivePath, year, month, folderName, region);
         if (!fs.existsSync(personalDir)) fs.mkdirSync(personalDir, { recursive: true });
         const finalPersonalPath = path.join(personalDir, stats.finalFileName);
-        
-        // Track saved paths for potential undo
-        let savedPaths = [finalPersonalPath];
+        const savedPaths        = [finalPersonalPath];
 
         if (mode === 'some') {
             fs.copyFileSync(tempPath, finalPersonalPath);
@@ -405,43 +455,52 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
             const regionBase = isNA ? config.usBase : config.ukBase;
             const regionDir  = path.join(regionBase, year, month, folderName);
             if (!fs.existsSync(regionDir)) fs.mkdirSync(regionDir, { recursive: true });
-            fs.copyFileSync(tempPath, finalPersonalPath);
-            
             const regionDest = path.join(regionDir, stats.finalFileName);
+            fs.copyFileSync(tempPath, finalPersonalPath);
             fs.copyFileSync(tempPath, regionDest);
-            savedPaths.push(regionDest); // Track standard region copy
+            savedPaths.push(regionDest);
         }
 
         fs.unlinkSync(tempPath);
 
-        // Generate Transaction ID BEFORE saving history
+        // ── Transaction ID ──
         const transactionId = Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
 
-        const timeStr   = `${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}:${String(date.getSeconds()).padStart(2,'0')}`;
-        
-        // Include transactionId in the history record!
-        const fileRecord = { agent: username, name: stats.finalFileName, size: req.file.size, mtime: date.toISOString(), region, destPath: `${year}/${month}/${folderName}/${region}`, status: 'sorted', transactionId };
-        
-        const logRecord  = { agent: username, ts: timeStr, msg: `Sorted [${mode.toUpperCase()}]: ${stats.finalFileName} (Shown: ${stats.shown}, Hidden: ${stats.hidden})`, type: 'success' };
-        saveHistory(fileRecord, logRecord);
+        // ── Write to analytics.json ──
+        analyticsAddRecord(dateKey, username, {
+            transactionId,
+            agent:    username,
+            filename: stats.finalFileName,
+            mode:     mode.toUpperCase(),
+            shown:    stats.shown,
+            hidden:   stats.hidden,
+            total:    totalCount,
+            time:     timeStr
+        });
 
-        // Register Undo Token
+        // ── Write to history.json ──
+        saveHistory(
+            { agent: username, name: stats.finalFileName, size: req.file.size, mtime: date.toISOString(), region, destPath: `${year}/${month}/${folderName}/${region}`, status: 'sorted', transactionId },
+            { agent: username, ts: timeStr, msg: `Sorted [${mode.toUpperCase()}]: ${stats.finalFileName} (Shown: ${stats.shown}, Hidden: ${stats.hidden})`, type: 'success' }
+        );
+
+        // ── Undo registry ──
         undoRegistry.set(transactionId, {
             timestamp: Date.now(),
             username,
-            filename: stats.finalFileName,
+            filename:  stats.finalFileName,
+            dateKey,
             savedPaths
         });
 
-        // Broadcast live update to all admin watchers
-        const todayDate = new Date().toISOString().split('T')[0];
+        // ── Broadcast to admin dashboard ──
         io.emit('new_upload', {
             agent:    username,
-            total:    stats.shown + stats.hidden,
+            total:    totalCount,
             shown:    stats.shown,
             hidden:   stats.hidden,
             filename: stats.finalFileName,
-            date:     todayDate,
+            date:     dateKey,
             mode:     mode.toUpperCase()
         });
 
@@ -459,7 +518,7 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
 });
 
 // ─────────────────────────────────────────────
-//  UNDO ENDPOINT
+//  UNDO
 // ─────────────────────────────────────────────
 app.post('/api/undo', async (req, res) => {
     const { transactionId, username } = req.body;
@@ -474,38 +533,20 @@ app.post('/api/undo', async (req, res) => {
             if (fs.existsSync(p)) fs.unlinkSync(p);
         });
 
-        // 2. Remove from Z-Report.xlsx
-        const reportPath = path.join(__dirname, 'Z-Report.xlsx');
-        if (fs.existsSync(reportPath)) {
-            const reportWb = new ExcelJS.Workbook();
-            await reportWb.xlsx.readFile(reportPath);
-            const sheet = reportWb.getWorksheet(1);
-            let rowToDelete = -1;
-            
-            for (let i = sheet.rowCount; i >= 2; i--) {
-                const row = sheet.getRow(i);
-                if (row.getCell(1).value === username && row.getCell(4).value === record.filename) {
-                    rowToDelete = i;
-                    break;
-                }
-            }
-            if (rowToDelete !== -1) {
-                sheet.spliceRows(rowToDelete, 1);
-                await reportWb.xlsx.writeFile(reportPath);
-            }
-        }
+        // 2. Remove from analytics.json and deduct tallies
+        analyticsRemoveRecord(record.dateKey, transactionId);
 
-        // 3. Clean up history.json
+        // 3. Remove from history.json
         const history = JSON.parse(fs.readFileSync(historyPath));
-        const fileIdx = history.files.findIndex(f => f.agent === username && f.name === record.filename);
+        const fileIdx = history.files.findIndex(f => f.transactionId === transactionId);
         if (fileIdx > -1) history.files.splice(fileIdx, 1);
 
-        const date = new Date();
-        const timeStr = `${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}:${String(date.getSeconds()).padStart(2,'0')}`;
-        history.logs.unshift({ agent: username, ts: timeStr, msg: `[UNDO] Reverted upload: ${record.filename}`, type: 'warning' });
+        const now     = new Date();
+        const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+        history.logs.unshift({ agent: username, ts: timeStr, msg: `[UNDO] Reverted: ${record.filename}`, type: 'warning' });
         fs.writeFileSync(historyPath, JSON.stringify(history, null, 2));
 
-        // 4. Clear from registry so it can't be spammed
+        // 4. Clear from registry
         undoRegistry.delete(transactionId);
 
         res.json({ success: true });
@@ -516,33 +557,125 @@ app.post('/api/undo', async (req, res) => {
 });
 
 // ─────────────────────────────────────────────
-//  ADMIN — REPORT DATA
+//  ANALYTICS — full ledger
 // ─────────────────────────────────────────────
-app.get('/api/admin/report', async (req, res) => {
-    const reportPath = path.join(__dirname, 'Z-Report.xlsx');
-    if (!fs.existsSync(reportPath)) return res.json({ success: true, data: [] });
-
+app.get('/api/analytics', (req, res) => {
     try {
-        const workbook   = new ExcelJS.Workbook();
-        await workbook.xlsx.readFile(reportPath);
-        const sheet      = workbook.getWorksheet(1);
-        let   reportData = [];
+        res.json({ success: true, data: loadAnalytics() });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
 
-        sheet.eachRow((row, rowNumber) => {
-            if (rowNumber === 1) return;
-            reportData.push({
-                agent:    row.getCell(1).value ? row.getCell(1).value.toString() : 'Unknown',
-                total:    parseInt(row.getCell(2).value) || 0,
-                shown:    parseInt(row.getCell(3).value) || 0,
-                filename: row.getCell(4).value ? row.getCell(4).value.toString() : '',
-                date:     row.getCell(5).value ? row.getCell(5).value.toString() : '',
-                mode:     row.getCell(6).value ? row.getCell(6).value.toString() : ''
-            });
+// ─────────────────────────────────────────────
+//  EXPORT — on-demand Excel download for a date
+//  GET /api/export/:date   e.g. /api/export/2026-03-30
+// ─────────────────────────────────────────────
+app.get('/api/export/:date', async (req, res) => {
+    try {
+        const dateKey = req.params.date;
+        const data    = loadAnalytics();
+        const day     = data[dateKey];
+
+        if (!day || !day.records || day.records.length === 0) {
+            return res.status(404).json({ success: false, error: `No data found for ${dateKey}` });
+        }
+
+        const wb    = new ExcelJS.Workbook();
+        const sheet = wb.addWorksheet('Report');
+
+        // Column definitions — identical layout to the old Z-Report
+        sheet.columns = [
+            { header: 'Agent',                  key: 'agent',    width: 15 },
+            { header: 'Total (Hidden + Shown)',  key: 'total',    width: 28 },
+            { header: 'Shown Count',             key: 'shown',    width: 18 },
+            { header: 'File Name',               key: 'filename', width: 50 },
+            { header: 'Date',                    key: 'date',     width: 15 },
+            { header: 'Mode',                    key: 'mode',     width: 15 },
+            { header: 'Time',                    key: 'time',     width: 12 },
+        ];
+
+        // Style header row
+        const headerRow = sheet.getRow(1);
+        headerRow.eachCell((cell) => {
+            cell.font      = { name: 'Arial', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
+            cell.fill      = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4F81BD' } };
+            cell.alignment = { vertical: 'middle', horizontal: 'center' };
+            cell.border    = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
         });
 
-        res.json({ success: true, data: reportData.reverse() });
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        // Data rows
+        for (const rec of day.records) {
+            const row = sheet.addRow({
+                agent:    rec.agent,
+                total:    rec.total,
+                shown:    rec.shown,
+                filename: rec.filename,
+                date:     dateKey,
+                mode:     rec.mode,
+                time:     rec.time || '',
+            });
+            row.eachCell((cell, colNumber) => {
+                cell.font      = { name: 'Arial', size: 11 };
+                cell.alignment = { vertical: 'middle', horizontal: colNumber === 4 ? 'left' : 'center' };
+                cell.border    = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
+            });
+        }
+
+        // Summary row at the bottom
+        const summaryRow = sheet.addRow({
+            agent:    'TOTAL',
+            total:    day.summary.totalLeads,
+            shown:    day.summary.totalShown,
+            filename: `${day.summary.totalFiles} file(s) processed`,
+            date:     dateKey,
+            mode:     '—',
+            time:     '—',
+        });
+        summaryRow.eachCell((cell) => {
+            cell.font      = { name: 'Arial', size: 11, bold: true };
+            cell.fill      = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD9E1F2' } };
+            cell.alignment = { vertical: 'middle', horizontal: 'center' };
+            cell.border    = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
+        });
+
+        // Stream directly to browser as a download
+        const filename = `Report ${dateKey}.xlsx`;
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+        await wb.xlsx.write(res);
+        res.end();
+
+    } catch (e) {
+        console.error('Export error:', e);
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
+// ─────────────────────────────────────────────
+//  ADMIN — REPORT DATA  (from analytics.json)
+// ─────────────────────────────────────────────
+app.get('/api/admin/report', (req, res) => {
+    try {
+        const data    = loadAnalytics();
+        const records = [];
+
+        for (const dateKey of Object.keys(data).sort((a, b) => b.localeCompare(a))) {
+            for (const rec of [...data[dateKey].records].reverse()) {
+                records.push({
+                    agent:    rec.agent,
+                    total:    rec.total,
+                    shown:    rec.shown,
+                    filename: rec.filename,
+                    date:     dateKey,
+                    mode:     rec.mode
+                });
+            }
+        }
+
+        res.json({ success: true, data: records });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
     }
 });
 
@@ -551,8 +684,7 @@ app.get('/api/admin/report', async (req, res) => {
 // ─────────────────────────────────────────────
 app.get('/api/admin/config', (req, res) => {
     try {
-        const cfg = JSON.parse(fs.readFileSync(configPath));
-        res.json({ success: true, config: cfg });
+        res.json({ success: true, config: JSON.parse(fs.readFileSync(configPath)) });
     } catch (e) {
         res.status(500).json({ success: false, error: e.message });
     }
@@ -562,8 +694,7 @@ app.post('/api/admin/config', (req, res) => {
     try {
         const newConfig = req.body;
         if (!newConfig || typeof newConfig !== 'object') throw new Error('Invalid config payload');
-        // Ensure all dirs exist
-        ['usBase', 'ukBase', 'tempZone', 'reportArchivePath'].forEach(key => {
+        ['usBase', 'ukBase', 'tempZone'].forEach(key => {
             if (newConfig[key]) fs.mkdirSync(newConfig[key], { recursive: true });
         });
         fs.writeFileSync(configPath, JSON.stringify(newConfig, null, 2));
@@ -579,8 +710,7 @@ app.post('/api/admin/config', (req, res) => {
 // ─────────────────────────────────────────────
 app.get('/api/admin/users', (req, res) => {
     try {
-        const users = JSON.parse(fs.readFileSync(usersPath));
-        res.json({ success: true, users });
+        res.json({ success: true, users: JSON.parse(fs.readFileSync(usersPath)) });
     } catch (e) {
         res.status(500).json({ success: false, error: e.message });
     }
@@ -604,8 +734,7 @@ app.post('/api/admin/users', (req, res) => {
 app.post('/api/admin/reset', async (req, res) => {
     try {
         await performDailyReset();
-        io.emit('daily_reset');
-        res.json({ success: true, message: 'Report archived and history cleared.' });
+        res.json({ success: true, message: 'History cleared and frontends notified.' });
     } catch (e) {
         res.status(500).json({ success: false, error: e.message });
     }

@@ -1,0 +1,38 @@
+{
+  "2026-03-30": {
+    "summary": {
+      "totalFiles": 2,
+      "totalLeads": 128,
+      "totalShown": 106,
+      "byAgent": {
+        "Admin": {
+          "files": 2,
+          "leads": 128,
+          "shown": 106
+        }
+      }
+    },
+    "records": [
+      {
+        "transactionId": "mncwcthhaa8qsjw31",
+        "agent": "Admin",
+        "filename": "Some X Show - ADLM 2026 (Association for Diagnostics & Laboratory Medicine) - Annual Scientific Meeting & Clinical Lab Expo - July 28-30, 2026 - Anaheim Convention Center - Anaheim, CA, USA. YahiaH.xlsx",
+        "mode": "SOME",
+        "shown": 83,
+        "hidden": 17,
+        "total": 100,
+        "time": "09:59:03"
+      },
+      {
+        "transactionId": "mncwcysopwg3xdhcy",
+        "agent": "Admin",
+        "filename": "X_Show_Automate_Show_2026_North_America's_largest_robotics_&_automation.xlsx",
+        "mode": "STANDARD",
+        "shown": 23,
+        "hidden": 5,
+        "total": 28,
+        "time": "09:59:10"
+      }
+    ]
+  }
+}
