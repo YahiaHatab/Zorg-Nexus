@@ -7,175 +7,572 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Barlow+Condensed:wght@400;600;700&display=swap');
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:#0a0a08;color:#ffaa33;font-family:'JetBrains Mono',monospace;height:100vh;display:flex;flex-direction:column;}
-  
+  :root{
+    --amber:#e8840a;--amber-dim:#9e5a07;--amber-bright:#ffaa33;--amber-glow:rgba(232,132,10,0.12);
+    --bg:#0a0a08;--bg2:#111109;--bg3:#181510;--border:rgba(232,132,10,0.22);
+    --cyan:#12DAF4;--green:#4dff91;--red:#ff4d4d;
+  }
+  body{background:var(--bg);color:var(--amber);font-family:'JetBrains Mono',monospace;min-height:100vh;display:flex;flex-direction:column;}
+
   /* TOPBAR */
-  .topbar { display:flex; justify-content:space-between; align-items:center; padding:15px 25px; background:#111109; border-bottom:1px solid rgba(232,132,10,0.25); }
-  .logo { font-family:'Barlow Condensed',sans-serif; font-size:24px; font-weight:700; letter-spacing:3px; color:#ffaa33;}
-  .logo span { color:#ff4d4d; }
-  .controls button { background:none; border:1px solid #12DAF4; color:#12DAF4; padding:6px 15px; cursor:pointer; font-weight:700; transition:all 0.2s; font-family:'JetBrains Mono'; font-size:12px;}
-  .controls button:hover { background:rgba(18,218,244,0.1); }
+  .topbar{display:flex;justify-content:space-between;align-items:center;padding:10px 20px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;}
+  .logo{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;letter-spacing:3px;color:var(--amber-bright);}
+  .logo span{color:var(--red);}
+  .topbar-right{display:flex;gap:10px;align-items:center;}
+  .btn{background:none;border:1px solid;padding:6px 14px;cursor:pointer;font-family:'JetBrains Mono';font-size:11px;font-weight:700;letter-spacing:1px;transition:all 0.2s;text-transform:uppercase;}
+  .btn-amber{border-color:var(--amber);color:var(--amber);}
+  .btn-amber:hover{background:var(--amber-glow);color:var(--amber-bright);}
+  .btn-cyan{border-color:var(--cyan);color:var(--cyan);}
+  .btn-cyan:hover{background:rgba(18,218,244,0.08);color:var(--cyan);}
+  .btn-red{border-color:var(--red);color:var(--red);}
+  .btn-red:hover{background:rgba(255,77,77,0.1);}
+  .btn-green{border-color:var(--green);color:var(--green);}
+  .btn-green:hover{background:rgba(77,255,145,0.1);}
+  .btn-sm{padding:4px 10px;font-size:10px;}
 
-  /* LAYOUT */
-  .dashboard { display:grid; grid-template-columns: 1fr 1fr; gap:20px; padding:20px; flex:1; overflow:hidden;}
-  .panel { background:#111109; border:1px solid rgba(232,132,10,0.2); display:flex; flex-direction:column; overflow:hidden;}
-  .panel-header { padding:12px 20px; border-bottom:1px solid rgba(232,132,10,0.2); font-family:'Barlow Condensed',sans-serif; font-size:18px; letter-spacing:2px; font-weight:700; background:#181510;}
-  
+  /* TAB NAV */
+  .tab-nav{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;}
+  .tab{padding:10px 22px;cursor:pointer;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--amber-dim);border-bottom:2px solid transparent;transition:all 0.2s;}
+  .tab:hover{color:var(--amber);}
+  .tab.active{color:var(--amber-bright);border-bottom-color:var(--amber-bright);background:var(--amber-glow);}
+
+  /* SCROLLABLE CONTENT */
+  .tab-content{display:none;flex:1;overflow:auto;padding:20px;}
+  .tab-content.active{display:flex;flex-direction:column;gap:16px;}
+
+  /* PANELS */
+  .panel{background:var(--bg2);border:1px solid var(--border);}
+  .panel-header{padding:10px 18px;border-bottom:1px solid var(--border);font-family:'Barlow Condensed',sans-serif;font-size:16px;letter-spacing:2px;font-weight:700;background:var(--bg3);display:flex;justify-content:space-between;align-items:center;}
+  .panel-body{padding:18px;}
+
   /* TABLES */
-  .table-wrap { overflow-y:auto; flex:1; }
-  table { width:100%; border-collapse:collapse; text-align:left; }
-  th { padding:10px 20px; font-size:10px; text-transform:uppercase; letter-spacing:1px; color:#9e5a07; position:sticky; top:0; background:#111109; border-bottom:1px solid rgba(232,132,10,0.2); }
-  td { padding:12px 20px; font-size:12px; border-bottom:1px solid rgba(232,132,10,0.05); }
-  
-  /* LEADERBOARD SPECIFICS */
-  .leader-row { cursor:pointer; transition:all 0.15s; }
-  .leader-row:hover, .leader-row.active { background:rgba(232,132,10,0.1); border-left:3px solid #ffaa33; }
-  .agent-name { font-weight:700; color:#fff; }
-  .stat-highlight { color:#4dff91; font-weight:700; }
-  
-  /* LOGS SPECIFICS */
-  .log-row { font-size:11px; }
-  .mode-tag { padding:2px 6px; border-radius:3px; font-size:9px; font-weight:700; letter-spacing:1px; }
-  .mode-some { background:rgba(18,218,244,0.1); color:#12DAF4; border:1px solid rgba(18,218,244,0.3); }
-  .mode-standard { background:rgba(232,132,10,0.1); color:#ffaa33; border:1px solid rgba(232,132,10,0.3); }
+  .data-table{width:100%;border-collapse:collapse;}
+  .data-table th{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--amber-dim);padding:8px 14px;text-align:left;border-bottom:1px solid var(--border);background:var(--bg3);}
+  .data-table td{padding:9px 14px;font-size:11px;border-bottom:1px solid rgba(232,132,10,0.06);vertical-align:middle;}
+  .data-table tr:hover td{background:var(--amber-glow);}
+  /* Compact variant for the log panel on the right */
+  .data-table.compact td{padding:2px 10px;font-size:10px;line-height:1.6;}
+  .data-table.compact th{padding:5px 10px;}
+  .leader-row{cursor:pointer;}
+  .leader-row.active td{background:var(--amber-glow);}
 
-  ::-webkit-scrollbar{width:6px;}
-  ::-webkit-scrollbar-track{background:#0a0a08;}
-  ::-webkit-scrollbar-thumb{background:#9e5a07;}
+  /* FORMS */
+  .field-row{display:grid;grid-template-columns:180px 1fr auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid rgba(232,132,10,0.06);}
+  .field-row:last-child{border-bottom:none;}
+  .field-label{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--amber-dim);}
+  .field-input{background:var(--bg);border:1px solid var(--border);color:var(--amber-bright);padding:8px 12px;font-family:'JetBrains Mono';font-size:11px;outline:none;width:100%;transition:border-color 0.2s;}
+  .field-input:focus{border-color:var(--amber-bright);}
+  .field-input.error{border-color:var(--red);}
+
+  /* USER TABLE INPUTS */
+  .user-input{background:var(--bg);border:1px solid var(--border);color:var(--amber-bright);padding:5px 8px;font-family:'JetBrains Mono';font-size:10px;outline:none;width:100%;transition:border-color 0.2s;}
+  .user-input:focus{border-color:var(--amber-bright);}
+
+  /* TAGS */
+  .mode-tag{padding:2px 6px;border-radius:2px;font-size:9px;font-weight:700;letter-spacing:1px;display:inline-block;}
+  .mode-some{background:rgba(18,218,244,0.1);color:var(--cyan);border:1px solid rgba(18,218,244,0.3);}
+  .mode-standard{background:rgba(232,132,10,0.1);color:var(--amber-bright);border:1px solid rgba(232,132,10,0.3);}
+
+  /* STATUS */
+  .stat-highlight{color:var(--green);font-weight:700;}
+  .agent-name{color:#fff;font-weight:700;}
+
+  /* SAVE BAR */
+  .save-bar{display:flex;justify-content:flex-end;gap:10px;padding-top:14px;border-top:1px solid var(--border);margin-top:4px;}
+
+  /* TOAST */
+  #toastContainer{position:fixed;right:20px;bottom:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;width:280px;}
+  .toast{background:var(--bg3);border-left:3px solid var(--green);padding:10px 14px;font-size:11px;animation:slideIn 0.3s forwards,slideOut 0.3s forwards 3.7s;line-height:1.5;cursor:pointer;user-select:none;position:relative;}
+  .toast::after{content:'✕';position:absolute;top:6px;right:8px;font-size:9px;opacity:0.4;}
+  .toast:hover::after{opacity:1;}
+  .toast.error{border-left-color:var(--red);}
+  .toast.info{border-left-color:var(--cyan);}
+  @keyframes slideIn{from{transform:translateX(120%)}to{transform:translateX(0)}}
+  @keyframes slideOut{to{transform:translateX(120%);opacity:0}}
+
+  /* CONFIRM MODAL */
+  #confirmModal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(10,10,8,0.92);z-index:9998;align-items:center;justify-content:center;}
+  #confirmModal.open{display:flex;}
+  .confirm-box{background:var(--bg2);border:1px solid var(--red);padding:28px 32px;max-width:400px;width:90%;box-shadow:0 0 40px rgba(255,77,77,0.15);}
+  .confirm-box h3{font-family:'Barlow Condensed',sans-serif;font-size:22px;letter-spacing:2px;color:var(--red);margin-bottom:12px;}
+  .confirm-box p{font-size:11px;line-height:1.7;color:var(--amber-dim);margin-bottom:20px;}
+  .confirm-box .confirm-actions{display:flex;gap:10px;justify-content:flex-end;}
+
+  /* NEW USER ROW */
+  .new-user-row{background:rgba(18,218,244,0.04);border-top:2px dashed rgba(18,218,244,0.2);}
+
+  ::-webkit-scrollbar{width:5px;height:5px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:var(--amber-dim)}
 </style>
 </head>
 <body>
 
+<!-- CONFIRM MODAL -->
+<div id="confirmModal">
+  <div class="confirm-box">
+    <h3>⚠ CONFIRM RESET</h3>
+    <p>This will immediately archive <b>Z-Report.xlsx</b> with today's date and wipe <b>history.json</b>.<br><br>All agent activity logs and file records will be cleared. This action <b>cannot be undone</b>.</p>
+    <div class="confirm-actions">
+      <button class="btn btn-amber" onclick="closeModal()">CANCEL</button>
+      <button class="btn btn-red" onclick="executeReset()">CONFIRM RESET</button>
+    </div>
+  </div>
+</div>
+
 <div class="topbar">
   <div class="logo">ZORG<span>-ADMIN</span></div>
-  <div class="controls">
-    <button onclick="fetchAdminData()">↻ REFRESH DATA</button>
+  <div class="topbar-right">
+    <button class="btn btn-red" onclick="openModal()">⚡ MANUAL RESET</button>
+    <button class="btn btn-amber" onclick="refreshCurrentTab()">↻ REFRESH</button>
+    <a href="/" style="text-decoration:none;"><button class="btn btn-cyan">← PORTAL</button></a>
   </div>
 </div>
 
-<div class="dashboard">
-  <div class="panel">
-    <div class="panel-header">AGENT LEADERBOARD</div>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Agent</th>
-            <th>Total Shows</th>
-            <th>Exhibitors (Shown + Hidden)</th>
-            <th>Only Shown</th>
-          </tr>
-        </thead>
-        <tbody id="leaderboardBody">
-          </tbody>
-      </table>
-    </div>
-  </div>
+<div class="tab-nav">
+  <div class="tab active" onclick="switchTab('leaderboard', this)">📊 Leaderboard</div>
+  <div class="tab" onclick="switchTab('config', this)">⚙ Config</div>
+  <div class="tab" onclick="switchTab('users', this)">👥 Users</div>
+</div>
 
-  <div class="panel">
-    <div class="panel-header" id="detailHeader">GLOBAL ACTIVITY LOG</div>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Mode</th>
-            <th>Filename</th>
-            <th>Total</th>
-            <th>Shown</th>
-          </tr>
-        </thead>
-        <tbody id="logBody">
-          </tbody>
-      </table>
+<!-- ══════════ TAB: LEADERBOARD ══════════ -->
+<div id="tab-leaderboard" class="tab-content active">
+  <div class="panel" style="flex:1;display:flex;flex-direction:column;min-height:0;">
+    <div class="panel-header">
+      AGENT LEADERBOARD
+      <span style="display:flex;align-items:center;gap:12px;">
+        <span id="liveIndicator" style="font-size:9px;color:var(--amber-dim);font-family:'JetBrains Mono';letter-spacing:1px;">⬤ CONNECTING...</span>
+        <span style="font-size:10px;color:var(--amber-dim);font-family:'JetBrains Mono';">Click a row to filter logs →</span>
+      </span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;flex:1;overflow:hidden;">
+      <!-- Left: Leaderboard -->
+      <div style="overflow-y:auto;border-right:1px solid var(--border);">
+        <table class="data-table">
+          <thead><tr><th>Agent</th><th>Shows</th><th>Total (Shown+Hidden)</th><th>Shown Only</th></tr></thead>
+          <tbody id="leaderboardBody"></tbody>
+        </table>
+      </div>
+      <!-- Right: Logs -->
+      <div style="overflow-y:auto;display:flex;flex-direction:column;">
+        <div style="padding:10px 18px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);" id="logPanelTitle">GLOBAL ACTIVITY LOG</div>
+        <table class="data-table compact" style="flex:1;">
+          <thead><tr><th>Date</th><th>Mode</th><th>File</th><th>Total</th><th>Shown</th></tr></thead>
+          <tbody id="logBody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
 
+<!-- ══════════ TAB: CONFIG ══════════ -->
+<div id="tab-config" class="tab-content">
+  <div class="panel">
+    <div class="panel-header">SYSTEM CONFIGURATION <span style="font-size:10px;font-family:'JetBrains Mono';color:var(--amber-dim);">config.json</span></div>
+    <div class="panel-body">
+      <div id="configFields"></div>
+      <div class="save-bar">
+        <button class="btn btn-amber" onclick="saveConfig()">💾 SAVE CONFIG</button>
+      </div>
+    </div>
+  </div>
+  <div style="font-size:10px;color:var(--amber-dim);padding:4px 2px;line-height:1.6;">
+    ⚠ Path changes take effect immediately. Ensure paths exist or the server will create them automatically.
+  </div>
+</div>
+
+<!-- ══════════ TAB: USERS ══════════ -->
+<div id="tab-users" class="tab-content">
+  <div class="panel">
+    <div class="panel-header">
+      USER ACCOUNTS
+      <button class="btn btn-cyan btn-sm" onclick="addUserRow()">+ ADD USER</button>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="data-table" id="usersTable">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Password</th>
+            <th>Archive Path</th>
+            <th style="width:80px;text-align:center;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="usersBody"></tbody>
+      </table>
+    </div>
+    <div class="panel-body" style="padding-top:12px;">
+      <div class="save-bar" style="border-top:none;padding-top:0;">
+        <button class="btn btn-green" onclick="saveUsers()">💾 SAVE ALL USERS</button>
+      </div>
+    </div>
+  </div>
+  <div style="font-size:10px;color:var(--amber-dim);padding:4px 2px;line-height:1.6;">
+    ⚠ The Admin account cannot be deleted. Changes are applied after clicking Save All Users.
+  </div>
+</div>
+
+<div id="toastContainer"></div>
+
+<script src="/socket.io/socket.io.js"></script>
 <script>
-let masterData = [];
+let masterData  = [];
+let currentTab  = 'leaderboard';
+let configData  = {};
+let pendingNewUsers = [];
 
-// Ensure only admins can see this (Basic client-side check)
+// ── GUARD ────────────────────────────────────
 const currentUser = localStorage.getItem('zorg_nexus_user');
 if (currentUser !== 'Admin') {
     alert('Access Denied: Admin privileges required.');
     window.location.href = '/';
 }
 
-async function fetchAdminData() {
+// ── TABS ─────────────────────────────────────
+function switchTab(tab, el) {
+    currentTab = tab;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById(`tab-${tab}`).classList.add('active');
+    refreshCurrentTab();
+}
+
+function refreshCurrentTab() {
+    if (currentTab === 'leaderboard') fetchAdminData();
+    if (currentTab === 'config')      fetchConfig();
+    if (currentTab === 'users')       fetchUsers();
+}
+
+// ── CONFIRM MODAL ────────────────────────────
+function openModal()  { document.getElementById('confirmModal').classList.add('open'); }
+function closeModal() { document.getElementById('confirmModal').classList.remove('open'); }
+
+async function executeReset() {
+    closeModal();
+    showToast('Executing reset...', 'info');
     try {
-        const res = await fetch('/api/admin/report?t=' + Date.now());
+        const res  = await fetch('/api/admin/reset', { method: 'POST' });
         const json = await res.json();
         if (json.success) {
-            masterData = json.data;
-            renderDashboard();
+            showToast('✅ Report archived & history cleared.', 'success');
+            if (currentTab === 'leaderboard') fetchAdminData();
+        } else {
+            showToast(`❌ Reset failed: ${json.error}`, 'error');
         }
-    } catch (err) {
-        console.error("Failed to fetch admin data", err);
+    } catch (e) {
+        showToast('❌ Server error during reset.', 'error');
     }
 }
 
-function renderDashboard() {
-    // 1. Aggregate Data for Leaderboard
-    const agents = {};
-    
-    masterData.forEach(row => {
-        if (!agents[row.agent]) {
-            agents[row.agent] = { name: row.agent, filesCount: 0, totalCombined: 0, totalShown: 0 };
-        }
-        agents[row.agent].filesCount += 1;
-        agents[row.agent].totalCombined += row.total;
-        agents[row.agent].totalShown += row.shown;
-    });
-
-    // Convert object to array and sort by most files processed
-    const leaderboard = Object.values(agents).sort((a, b) => b.filesCount - a.filesCount);
-
-    // 2. Render Leaderboard Table
-    const tbody = document.getElementById('leaderboardBody');
-    tbody.innerHTML = leaderboard.map(agent => `
-        <tr class="leader-row" onclick="viewAgentLogs('${agent.name}', this)">
-            <td class="agent-name">${agent.name}</td>
-            <td style="color:#12DAF4; font-weight:700;">${agent.filesCount}</td>
-            <td>${agent.totalCombined}</td>
-            <td class="stat-highlight">${agent.totalShown}</td>
-        </tr>
-    `).join('');
-
-    // Default: Show everyone's logs
-    renderLogs(masterData, "GLOBAL ACTIVITY LOG");
+// ── LEADERBOARD ───────────────────────────────
+async function fetchAdminData() {
+    try {
+        const res  = await fetch('/api/admin/report?t=' + Date.now());
+        const json = await res.json();
+        if (json.success) { masterData = json.data; renderDashboard(); }
+    } catch (e) { showToast('Failed to fetch report data', 'error'); }
 }
 
-function viewAgentLogs(agentName, rowElement) {
-    // Highlight selected row
-    document.querySelectorAll('.leader-row').forEach(row => row.classList.remove('active'));
-    rowElement.classList.add('active');
-
-    // Filter logs for this agent
-    const agentLogs = masterData.filter(row => row.agent === agentName);
-    renderLogs(agentLogs, `ACTIVITY LOG: ${agentName.toUpperCase()}`);
+function viewAgentLogs(agentName, rowEl) {
+    document.querySelectorAll('.leader-row').forEach(r => r.classList.remove('active'));
+    rowEl.classList.add('active');
+    renderLogs(masterData.filter(r => r.agent === agentName), `ACTIVITY LOG: ${agentName.toUpperCase()}`);
 }
 
-function renderLogs(logData, title) {
-    document.getElementById('detailHeader').innerText = title;
-    const tbody = document.getElementById('logBody');
-    
-    tbody.innerHTML = logData.map(row => {
-        const modeClass = row.mode === 'SOME' ? 'mode-some' : 'mode-standard';
+function renderLogs(data, title) {
+    document.getElementById('logPanelTitle').textContent = title;
+    document.getElementById('logBody').innerHTML = data.map(row => {
+        const cls = row.mode === 'SOME' ? 'mode-some' : 'mode-standard';
+        return `<tr>
+            <td style="color:var(--amber-dim)">${row.date}</td>
+            <td><span class="mode-tag ${cls}">${row.mode}</span></td>
+            <td style="color:#fff;max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${row.filename}">${row.filename}</td>
+            <td style="color:var(--amber)">${row.total}</td>
+            <td class="stat-highlight">${row.shown}</td>
+        </tr>`;
+    }).join('') || `<tr><td colspan="5" style="text-align:center;color:var(--amber-dim);padding:30px;">No entries.</td></tr>`;
+}
+
+// ── CONFIG ────────────────────────────────────
+const CONFIG_LABELS = {
+    tempZone:          'Temp Zone',
+    usBase:            'US Base Path',
+    ukBase:            'UK Base Path',
+    reportArchivePath: 'Report Archive Path'
+};
+
+async function fetchConfig() {
+    try {
+        const res  = await fetch('/api/admin/config');
+        const json = await res.json();
+        if (!json.success) throw new Error(json.error);
+        configData = json.config;
+        renderConfigFields();
+    } catch (e) { showToast('Failed to load config: ' + e.message, 'error'); }
+}
+
+function renderConfigFields() {
+    const container = document.getElementById('configFields');
+    const allKeys   = new Set([...Object.keys(CONFIG_LABELS), ...Object.keys(configData)]);
+
+    container.innerHTML = [...allKeys].map(key => {
+        const label = CONFIG_LABELS[key] || key;
+        const value = configData[key] || '';
         return `
-        <tr class="log-row">
-            <td style="color:#9e5a07;">${row.date}</td>
-            <td><span class="mode-tag ${modeClass}">${row.mode}</span></td>
-            <td style="color:#fff; max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${row.filename}">${row.filename}</td>
-            <td style="color:var(--amber);">${row.total}</td>
-            <td style="color:#4dff91;">${row.shown}</td>
-        </tr>
-        `;
+        <div class="field-row">
+            <div class="field-label">${label}</div>
+            <input class="field-input" type="text" id="cfg_${key}" value="${escHtml(value)}" placeholder="Enter path...">
+            <span style="font-size:9px;color:var(--amber-dim);white-space:nowrap;">${key}</span>
+        </div>`;
     }).join('');
 }
 
-// Boot up
+async function saveConfig() {
+    const allKeys  = new Set([...Object.keys(CONFIG_LABELS), ...Object.keys(configData)]);
+    const newConfig = {};
+    allKeys.forEach(key => {
+        const el = document.getElementById(`cfg_${key}`);
+        if (el) newConfig[key] = el.value.trim();
+    });
+
+    try {
+        const res  = await fetch('/api/admin/config', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(newConfig) });
+        const json = await res.json();
+        if (json.success) { configData = newConfig; showToast('✅ Config saved successfully.', 'success'); }
+        else               showToast('❌ Save failed: ' + json.error, 'error');
+    } catch (e) { showToast('❌ Server error.', 'error'); }
+}
+
+// ── USERS ─────────────────────────────────────
+let usersData = [];
+
+async function fetchUsers() {
+    try {
+        const res  = await fetch('/api/admin/users');
+        const json = await res.json();
+        if (!json.success) throw new Error(json.error);
+        usersData = json.users;
+        renderUsersTable();
+    } catch (e) { showToast('Failed to load users: ' + e.message, 'error'); }
+}
+
+function renderUsersTable() {
+    document.getElementById('usersBody').innerHTML = usersData.map((u, i) => {
+        const isAdmin  = u.username === 'Admin';
+        const deleteBtn = isAdmin
+            ? `<span style="color:var(--amber-dim);font-size:9px;">PROTECTED</span>`
+            : `<button class="btn btn-red btn-sm" onclick="deleteUser(${i})">✕ DEL</button>`;
+        return `
+        <tr data-index="${i}">
+            <td><input class="user-input" type="text" value="${escHtml(u.username)}" ${isAdmin ? 'readonly style="opacity:0.5;"' : ''} data-field="username" data-idx="${i}"></td>
+            <td><input class="user-input" type="text" value="${escHtml(u.password)}" data-field="password" data-idx="${i}"></td>
+            <td><input class="user-input" type="text" value="${escHtml(u.archivePath || '')}" data-field="archivePath" data-idx="${i}"></td>
+            <td style="text-align:center;">${deleteBtn}</td>
+        </tr>`;
+    }).join('') || `<tr><td colspan="4" style="text-align:center;color:var(--amber-dim);padding:20px;">No users found.</td></tr>`;
+
+    // Live-bind inputs to usersData
+    document.querySelectorAll('.user-input').forEach(input => {
+        input.addEventListener('input', e => {
+            const idx   = parseInt(e.target.dataset.idx);
+            const field = e.target.dataset.field;
+            usersData[idx][field] = e.target.value;
+        });
+    });
+}
+
+function addUserRow() {
+    usersData.push({ username: '', password: '', archivePath: '' });
+    renderUsersTable();
+    // Scroll to bottom & focus new row
+    const tbody = document.getElementById('usersBody');
+    const rows  = tbody.querySelectorAll('tr');
+    if (rows.length) {
+        rows[rows.length - 1].scrollIntoView({ behavior: 'smooth' });
+        const firstInput = rows[rows.length - 1].querySelector('input');
+        if (firstInput) firstInput.focus();
+    }
+}
+
+function deleteUser(idx) {
+    if (usersData[idx].username === 'Admin') { showToast('Cannot delete Admin.', 'error'); return; }
+    usersData.splice(idx, 1);
+    renderUsersTable();
+    showToast('User removed. Click Save to apply.', 'info');
+}
+
+async function saveUsers() {
+    // Validate
+    for (let i = 0; i < usersData.length; i++) {
+        if (!usersData[i].username.trim()) { showToast(`Row ${i+1}: Username cannot be empty.`, 'error'); return; }
+        if (!usersData[i].password.trim()) { showToast(`Row ${i+1}: Password cannot be empty.`, 'error'); return; }
+    }
+
+    try {
+        const res  = await fetch('/api/admin/users', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(usersData) });
+        const json = await res.json();
+        if (json.success) showToast('✅ Users saved successfully.', 'success');
+        else               showToast('❌ Save failed: ' + json.error, 'error');
+    } catch (e) { showToast('❌ Server error.', 'error'); }
+}
+
+// ── UTILITIES ─────────────────────────────────
+function escHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function dismissToast(toast) {
+    // Cancel the slow auto-slideOut and do an instant one
+    toast.style.animation = 'none';
+    toast.style.transition = 'transform 0.15s ease, opacity 0.15s ease';
+    requestAnimationFrame(() => {
+        toast.style.transform = 'translateX(120%)';
+        toast.style.opacity   = '0';
+    });
+    setTimeout(() => toast.remove(), 160);
+}
+
+function showToast(msg, type = 'success') {
+    const c     = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = msg;
+    toast.addEventListener('click', () => dismissToast(toast));
+    c.appendChild(toast);
+    setTimeout(() => { if (toast.parentNode) toast.remove(); }, 4000);
+}
+
+// ── KEYBOARD NAVIGATION ───────────────────────
+let selectedLeaderIdx = -1;  // tracks arrow-key selection in leaderboard
+
+document.addEventListener('keydown', (e) => {
+    const modalOpen = document.getElementById('confirmModal').classList.contains('open');
+    const tag       = document.activeElement.tagName;
+    const isTyping  = (tag === 'INPUT' || tag === 'TEXTAREA');
+
+    // ── MODAL SHORTCUTS ──
+    if (modalOpen) {
+        if (e.key === 'Enter')  { e.preventDefault(); executeReset(); }
+        if (e.key === 'Escape') { e.preventDefault(); closeModal(); }
+        return; // block everything else while modal is open
+    }
+
+    // ── ESCAPE — dismiss all toasts ──
+    if (e.key === 'Escape') {
+        document.querySelectorAll('.toast').forEach(t => dismissToast(t));
+        return;
+    }
+
+    // ── Don't fire shortcuts when user is typing in an input ──
+    if (isTyping) return;
+
+    // ── R — refresh current tab ──
+    if (e.key === 'r' || e.key === 'R') {
+        e.preventDefault();
+        refreshCurrentTab();
+        showToast('↻ Refreshing...', 'info');
+        return;
+    }
+
+    // ── CTRL+S — save depending on active tab ──
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        if (currentTab === 'config') saveConfig();
+        if (currentTab === 'users')  saveUsers();
+        return;
+    }
+
+    // ── TAB SWITCHING: 1, 2, 3 ──
+    if (e.key === '1') { const t = document.querySelector('.tab:nth-child(1)'); if(t) { switchTab('leaderboard', t); } return; }
+    if (e.key === '2') { const t = document.querySelector('.tab:nth-child(2)'); if(t) { switchTab('config', t); } return; }
+    if (e.key === '3') { const t = document.querySelector('.tab:nth-child(3)'); if(t) { switchTab('users', t); } return; }
+
+    // ── ARROW KEYS — leaderboard row navigation ──
+    if (currentTab === 'leaderboard' && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+        e.preventDefault();
+        const rows = document.querySelectorAll('#leaderboardBody .leader-row');
+        if (!rows.length) return;
+
+        if (e.key === 'ArrowDown') selectedLeaderIdx = Math.min(selectedLeaderIdx + 1, rows.length - 1);
+        if (e.key === 'ArrowUp')   selectedLeaderIdx = Math.max(selectedLeaderIdx - 1, 0);
+
+        rows.forEach(r => r.classList.remove('active'));
+        const target = rows[selectedLeaderIdx];
+        target.classList.add('active');
+        target.scrollIntoView({ block: 'nearest' });
+
+        // Extract agent name from first cell and filter logs
+        const agentName = target.querySelector('.agent-name')?.textContent;
+        if (agentName) {
+            renderLogs(masterData.filter(r => r.agent === agentName), `ACTIVITY LOG: ${agentName.toUpperCase()}`);
+        }
+        return;
+    }
+
+    // ── ENTER on leaderboard — reset to global log ──
+    if (currentTab === 'leaderboard' && e.key === 'Enter') {
+        selectedLeaderIdx = -1;
+        document.querySelectorAll('#leaderboardBody .leader-row').forEach(r => r.classList.remove('active'));
+        renderLogs(masterData, 'GLOBAL ACTIVITY LOG');
+        return;
+    }
+});
+
+// Reset arrow selection whenever leaderboard re-renders
+const _origRenderDashboard = renderDashboard;
+// patch: reset idx on full re-render so arrow nav starts fresh
+function renderDashboard() {
+    selectedLeaderIdx = -1;
+    const agents = {};
+    masterData.forEach(row => {
+        if (!agents[row.agent]) agents[row.agent] = { name: row.agent, filesCount: 0, totalCombined: 0, totalShown: 0 };
+        agents[row.agent].filesCount++;
+        agents[row.agent].totalCombined += row.total;
+        agents[row.agent].totalShown    += row.shown;
+    });
+
+    const leaderboard = Object.values(agents).sort((a, b) => b.filesCount - a.filesCount);
+    document.getElementById('leaderboardBody').innerHTML = leaderboard.map(a => `
+        <tr class="leader-row" onclick="viewAgentLogs('${a.name}', this)">
+            <td class="agent-name">${a.name}</td>
+            <td style="color:var(--cyan);font-weight:700;">${a.filesCount}</td>
+            <td>${a.totalCombined}</td>
+            <td class="stat-highlight">${a.totalShown}</td>
+        </tr>
+    `).join('') || `<tr><td colspan="4" style="text-align:center;color:var(--amber-dim);padding:30px;">No data yet.</td></tr>`;
+
+    renderLogs(masterData, 'GLOBAL ACTIVITY LOG');
+}
+
+// ── BOOT ─────────────────────────────────────
 fetchAdminData();
+
+// ── SOCKET.IO LIVE FEED ───────────────────────
+const socket = io();
+
+socket.on('connect', () => {
+    const el = document.getElementById('liveIndicator');
+    if (el) { el.textContent = '⬤ LIVE'; el.style.color = 'var(--green)'; }
+});
+
+socket.on('disconnect', () => {
+    const el = document.getElementById('liveIndicator');
+    if (el) { el.textContent = '⬤ DISCONNECTED'; el.style.color = 'var(--red)'; }
+});
+
+socket.on('new_upload', (row) => {
+    // Prepend to masterData and re-render leaderboard + log
+    masterData.unshift(row);
+    renderDashboard();
+    showToast(`⚡ <b>${row.agent}</b> uploaded <b>${row.filename}</b><br>Shown: ${row.shown}`, 'info');
+});
+
+socket.on('daily_reset', () => {
+    masterData = [];
+    renderDashboard();
+    showToast('🔄 Daily reset triggered — report cleared.', 'info');
+});
 </script>
 </body>
 </html>

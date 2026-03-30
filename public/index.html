@@ -45,6 +45,10 @@
   .stat-mini .lbl{font-size:9px;color:var(--amber-dim);letter-spacing:1px;text-transform:uppercase}
   .clock{font-size:20px;font-weight:700;color:var(--amber-bright);letter-spacing:2px;min-width:80px;text-align:right}
 
+  /* ADMIN BUTTON */
+  .admin-btn{display:none;background:none;border:1px solid #ff4d4d;color:#ff4d4d;padding:4px 12px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:all 0.2s;text-decoration:none;}
+  .admin-btn:hover{background:rgba(255,77,77,0.12);color:#ff6666;}
+
   /* MAIN GRID */
   .main{display:grid;grid-template-columns:220px 1fr;grid-template-rows:auto 1fr;gap:0;flex:1;overflow:hidden;}
 
@@ -85,7 +89,7 @@
   .status-icon.ok{color:#4dff91}
   .status-icon.err{color:#ff4d4d}
   .size-cell,.date-cell,.dest-cell{color:var(--amber-dim)}
-  
+
   /* REPORT TAGS */
   .mode-tag { padding:2px 6px; border-radius:3px; font-size:9px; font-weight:700; letter-spacing:1px; display:inline-block; }
   .mode-some { background:rgba(18,218,244,0.1); color:#12DAF4; border:1px solid rgba(18,218,244,0.3); }
@@ -101,7 +105,9 @@
 
   /* TOAST */
   #toastContainer { position:fixed; left:20px; bottom:20px; z-index:9999; display:flex; flex-direction:column; gap:10px; width:300px; }
-  .toast { background:#181510; border-left:3px solid #4dff91; padding:12px 15px; box-shadow:0 5px 15px rgba(0,0,0,0.5); font-size:11px; animation:slideIn 0.3s forwards, slideOut 0.3s forwards 4.7s; line-height:1.4; }
+  .toast { background:#181510; border-left:3px solid #4dff91; padding:12px 15px; box-shadow:0 5px 15px rgba(0,0,0,0.5); font-size:11px; animation:slideIn 0.3s forwards, slideOut 0.3s forwards 4.7s; line-height:1.4; cursor:pointer; user-select:none; position:relative; }
+  .toast::after{content:'✕';position:absolute;top:7px;right:10px;font-size:9px;opacity:0.35;}
+  .toast:hover::after{opacity:1;}
   .toast.error { border-left-color:#ff4d4d; }
   @keyframes slideIn { from{transform:translateX(-120%);} to{transform:translateX(0);} }
   @keyframes slideOut { to{transform:translateX(-120%);opacity:0;} }
@@ -109,7 +115,7 @@
   ::-webkit-scrollbar{width:4px;height:4px}
   ::-webkit-scrollbar-track{background:var(--bg)}
   ::-webkit-scrollbar-thumb{background:var(--amber-dim);border-radius:0}
-  
+
   .view-container { display:flex; flex-direction:column; flex:1; overflow:hidden; }
 </style>
 </head>
@@ -120,8 +126,8 @@
 <div id="loginScreen">
   <div class="login-box">
     <h2>NEXUS LOGIN</h2>
-    <input type="text" id="usernameInput" placeholder="Username" autocomplete="off">
-    <input type="password" id="passwordInput" placeholder="Password">
+    <input type="text" id="usernameInput" placeholder="Username" autocomplete="off" onkeydown="if(event.key==='Enter')attemptLogin()">
+    <input type="password" id="passwordInput" placeholder="Password" onkeydown="if(event.key==='Enter')attemptLogin()">
     <button onclick="attemptLogin()">ACCESS PORTAL</button>
     <div id="loginError" style="color:#ff4d4d; font-size:10px; margin-top:10px; text-align:center; display:none;">Invalid Credentials</div>
   </div>
@@ -149,6 +155,7 @@
       <div class="stat-mini"><div class="val" id="statSorted" style="color:#4dff91">0</div><div class="lbl">Sorted</div></div>
       <div class="stat-mini"><div class="val" id="statErrors" style="color:#ff4d4d">0</div><div class="lbl">Errors</div></div>
       <div class="clock" id="clock">--:--:--</div>
+      <a id="adminLink" href="/admin.html" class="admin-btn">⚙ ADMIN</a>
     </div>
   </div>
 
@@ -158,7 +165,7 @@
       <div class="nav-item active" data-view="files" onclick="setView(this, 'files')">
         <span class="nav-icon">▤</span> My Files <span class="nav-badge" id="nbAll">0</span>
       </div>
-      
+
       <div class="sidebar-section">
         <div class="panel-label">Analytics</div>
         <div class="nav-item" data-view="report" onclick="setView(this, 'report')">
@@ -185,14 +192,14 @@
               <span>$</span>
               <input type="text" id="searchInput" placeholder="filter by name..." oninput="renderTable()">
             </div>
-            
+
             <input type="file" id="fileStd" style="display:none" accept=".xlsx" onchange="manualUpload(this, 'standard')">
             <input type="file" id="fileSome" style="display:none" accept=".xlsx" onchange="manualUpload(this, 'some')">
-            
+
             <button class="filter-btn btn-std" style="margin-left:auto;" onclick="document.getElementById('fileStd').click()">+ UPLOAD (STANDARD)</button>
             <button class="filter-btn btn-some" onclick="document.getElementById('fileSome').click()">+ UPLOAD (SOME)</button>
           </div>
-    
+
           <div class="table-wrap">
             <table class="file-table">
               <thead>
@@ -256,6 +263,10 @@ function checkAuth() {
     if (currentUser) {
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('displayUser').innerText = currentUser;
+        // Show Admin button only for Admin user
+        if (currentUser === 'Admin') {
+            document.getElementById('adminLink').style.display = 'inline-block';
+        }
         fetchUserData();
         if (currentView === 'report') fetchUserReport();
     }
@@ -294,7 +305,7 @@ async function fetchUserReport() {
         const res = await fetch(`/api/user/report?username=${currentUser}`);
         const json = await res.json();
         const tbody = document.getElementById('reportTableBody');
-        
+
         if (!json.data || json.data.length === 0) {
             tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--amber-dim); padding:40px;">No report data found. Process a file first!</td></tr>`;
             return;
@@ -328,7 +339,7 @@ async function uploadFile(file, mode) {
         const data = await res.json();
         if (data.success) {
             showToast(`✅ ${data.stats.finalFileName}<br>Shown: <b>${data.stats.shown}</b> | Hidden: <b>${data.stats.hidden}</b>`, 'success');
-            fetchUserData(); 
+            fetchUserData();
             if (currentView === 'report') fetchUserReport();
         } else {
             showToast(`❌ Failed: ${file.name}`, 'error');
@@ -341,7 +352,7 @@ async function uploadFile(file, mode) {
 function manualUpload(inputEl, mode) {
     if (inputEl.files.length > 0) {
         uploadFile(inputEl.files[0], mode);
-        inputEl.value = ""; 
+        inputEl.value = "";
     }
 }
 
@@ -379,7 +390,7 @@ function setView(el, view) {
     currentView = view;
     document.querySelectorAll('.sidebar .nav-item[data-view]').forEach(n => n.classList.remove('active'));
     if (el) el.classList.add('active');
-    
+
     if (view === 'report') {
         document.getElementById('filesView').style.display = 'none';
         document.getElementById('reportView').style.display = 'flex';
@@ -391,12 +402,11 @@ function setView(el, view) {
     }
 }
 
-// FIX: Added HTML element passing so the amber glow moves to the clicked item
-function setRegion(el, r) { 
-    currentRegion = r; 
+function setRegion(el, r) {
+    currentRegion = r;
     document.querySelectorAll('#regionNav .nav-item').forEach(n => n.classList.remove('active'));
     if(el) el.classList.add('active');
-    renderTable(); 
+    renderTable();
 }
 
 function fmtSize(b){if(b>1048576)return(b/1048576).toFixed(1)+'MB';return(b/1024).toFixed(0)+'KB';}
@@ -412,7 +422,7 @@ function renderTable() {
 
     const tbody = document.getElementById('tableBody');
     const statusHtml = { sorted: '<span class="status-icon ok">✓ SORTED</span>', error: '<span class="status-icon err">✕ ERROR</span>' };
-    
+
     tbody.innerHTML = list.map(f => {
         let displayBase = f.name;
         let ext = displayBase.lastIndexOf('.')>-1 ? displayBase.slice(displayBase.lastIndexOf('.')) : '';
@@ -429,7 +439,7 @@ function renderTable() {
 }
 
 function renderLog() {
-    document.getElementById('logInner').innerHTML = logs.map(l => 
+    document.getElementById('logInner').innerHTML = logs.map(l =>
         `<div class="log-entry"><span class="log-time">${l.ts}</span><span class="log-msg ${l.type}">${l.msg}</span></div>`
     ).join('');
     document.getElementById('logCount').textContent = `${logs.length} entries`;
@@ -442,14 +452,53 @@ function updateStats() {
     document.getElementById('statErrors').textContent = files.filter(f => f.status==='error').length;
 }
 
+function dismissToast(toast) {
+    toast.style.animation = 'none';
+    toast.style.transition = 'transform 0.15s ease, opacity 0.15s ease';
+    requestAnimationFrame(() => {
+        toast.style.transform = 'translateX(-120%)';
+        toast.style.opacity   = '0';
+    });
+    setTimeout(() => toast.remove(), 160);
+}
+
 function showToast(htmlMsg, type) {
     const container = document.getElementById('toastContainer');
     const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
+    toast.className = `toast ${type || ''}`;
     toast.innerHTML = htmlMsg;
+    toast.addEventListener('click', () => dismissToast(toast));
     container.appendChild(toast);
-    setTimeout(() => { toast.remove(); }, 5000);
+    setTimeout(() => { if (toast.parentNode) toast.remove(); }, 5000);
 }
+
+// ── KEYBOARD NAVIGATION ───────────────────────
+// Login screen: Enter to submit, Escape to clear error
+document.addEventListener('keydown', (e) => {
+    const loginVisible = document.getElementById('loginScreen').style.display !== 'none'
+                      && !document.getElementById('loginScreen').style.display; // default = visible
+
+    // Detect login screen by checking if it's not hidden
+    const loginScreen = document.getElementById('loginScreen');
+    const loginShowing = loginScreen && loginScreen.style.display !== 'none'
+                      && getComputedStyle(loginScreen).display !== 'none';
+
+    if (loginShowing) {
+        if (e.key === 'Enter') { e.preventDefault(); attemptLogin(); }
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            document.getElementById('loginError').style.display = 'none';
+            document.getElementById('usernameInput').value = '';
+            document.getElementById('passwordInput').value = '';
+        }
+        return;
+    }
+
+    // Escape: dismiss all toasts
+    if (e.key === 'Escape') {
+        document.querySelectorAll('.toast').forEach(t => dismissToast(t));
+    }
+});
 
 setInterval(() => {
     const now=new Date();

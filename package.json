@@ -13,6 +13,7 @@
   "dependencies": {
     "exceljs": "^4.4.0",
     "express": "^5.2.1",
-    "multer": "^2.1.1"
+    "multer": "^2.1.1",
+    "socket.io": "^4.8.3"
   }
 }

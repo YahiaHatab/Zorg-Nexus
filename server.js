@@ -1,23 +1,64 @@
 const express = require('express');
+const http    = require('http');
+const { Server } = require('socket.io');
 const fs = require('fs');
 const path = require('path');
 const ExcelJS = require('exceljs');
 const multer = require('multer');
 
-const app = express();
-const PORT = 3005;
+const app    = express();
+const server = http.createServer(app);
+const io     = new Server(server);
+const PORT   = 3005;
 
-// --- CONFIGURATION ---
-const configPath = path.join(__dirname, 'config.json');
-let config = JSON.parse(fs.readFileSync(configPath));
-const usersPath = path.join(__dirname, 'users.json');
+// ─────────────────────────────────────────────
+//  BOOTSTRAP — ensure all required files exist
+// ─────────────────────────────────────────────
+const configPath  = path.join(__dirname, 'config.json');
+const usersPath   = path.join(__dirname, 'users.json');
 const historyPath = path.join(__dirname, 'history.json');
-const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-if (!fs.existsSync(config.tempZone)) fs.mkdirSync(config.tempZone, { recursive: true });
-if (!fs.existsSync(historyPath)) fs.writeFileSync(historyPath, JSON.stringify({ files: [], logs: [] }));
+const DEFAULT_CONFIG = {
+    tempZone:          path.join(__dirname, 'temp'),
+    usBase:            path.join(__dirname, 'output', 'US'),
+    ukBase:            path.join(__dirname, 'output', 'UK'),
+    reportArchivePath: path.join(__dirname, 'report-archive')
+};
+
+const DEFAULT_USERS = [
+    { username: 'Admin', password: 'admin', archivePath: path.join(__dirname, 'archive') }
+];
+
+if (!fs.existsSync(configPath)) {
+    fs.writeFileSync(configPath, JSON.stringify(DEFAULT_CONFIG, null, 2));
+    console.log('> Created default config.json');
+}
+if (!fs.existsSync(usersPath)) {
+    fs.writeFileSync(usersPath, JSON.stringify(DEFAULT_USERS, null, 2));
+    console.log('> Created default users.json');
+}
+if (!fs.existsSync(historyPath)) {
+    fs.writeFileSync(historyPath, JSON.stringify({ files: [], logs: [] }, null, 2));
+}
+
+// Load config AFTER ensuring it exists
+let config = JSON.parse(fs.readFileSync(configPath));
+
+// Ensure all critical directories exist
+[config.tempZone, config.usBase, config.ukBase, config.reportArchivePath].forEach(dir => {
+    if (dir && !fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+});
+
+const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
 const upload = multer({ dest: config.tempZone });
+
+// ─────────────────────────────────────────────
+//  HELPERS
+// ─────────────────────────────────────────────
+function reloadConfig() {
+    config = JSON.parse(fs.readFileSync(configPath));
+}
 
 function saveHistory(newFile, newLog) {
     const history = JSON.parse(fs.readFileSync(historyPath));
@@ -38,57 +79,104 @@ function checkIsRed(font) {
     return false;
 }
 
-// --- EXCEL LOGIC ---
+// ─────────────────────────────────────────────
+//  DAILY RESET LOGIC
+// ─────────────────────────────────────────────
+async function performDailyReset() {
+    reloadConfig();
+    const reportPath = path.join(__dirname, 'Z-Report.xlsx');
+    const archiveDir = config.reportArchivePath;
+
+    console.log(`\n> [RESET] Starting daily reset at ${new Date().toISOString()}`);
+
+    // 1. Archive existing report if it exists
+    if (fs.existsSync(reportPath)) {
+        if (!fs.existsSync(archiveDir)) fs.mkdirSync(archiveDir, { recursive: true });
+        const today = new Date().toISOString().split('T')[0];
+        const archiveName = `Report ${today}.xlsx`;
+        const archiveDest = path.join(archiveDir, archiveName);
+        fs.copyFileSync(reportPath, archiveDest);
+        fs.unlinkSync(reportPath);
+        console.log(`> [RESET] Archived Z-Report.xlsx → ${archiveName}`);
+    } else {
+        console.log('> [RESET] No Z-Report.xlsx found, skipping archive step.');
+    }
+
+    // 2. Wipe history.json
+    fs.writeFileSync(historyPath, JSON.stringify({ files: [], logs: [] }, null, 2));
+    console.log('> [RESET] history.json cleared.');
+    console.log('> [RESET] Daily reset complete.\n');
+}
+
+// ─────────────────────────────────────────────
+//  MIDNIGHT CRON  (pure Node.js — no dependency)
+// ─────────────────────────────────────────────
+function scheduleMidnightReset() {
+    function msUntilMidnight() {
+        const now  = new Date();
+        const next = new Date(now);
+        next.setHours(24, 0, 0, 0);   // next midnight
+        return next - now;
+    }
+
+    function arm() {
+        const delay = msUntilMidnight();
+        console.log(`> [CRON] Next reset in ${Math.round(delay / 1000 / 60)} minutes.`);
+        setTimeout(async () => {
+            await performDailyReset();
+            arm(); // re-arm for next midnight
+        }, delay);
+    }
+
+    arm();
+}
+
+scheduleMidnightReset();
+
+// ─────────────────────────────────────────────
+//  EXCEL PROCESSING
+// ─────────────────────────────────────────────
 async function processExcelFile(filePath, originalName, username, mode) {
     const workbook = new ExcelJS.Workbook();
     await workbook.xlsx.readFile(filePath);
-    
+
     let finalVisibleRed = 0;
-    let finalHidden = 0;
-    const isSomeMode = mode === 'some';
+    let finalHidden     = 0;
+    const isSomeMode    = mode === 'some';
 
     if (isSomeMode) {
-        const sheet2 = workbook.worksheets[1]; 
+        const sheet2 = workbook.worksheets[1];
         if (sheet2) {
             let stats = {};
             let highestSomeNum = -1;
-            let latestSomeKey = "Some";
-            let foundAnySome = false;
+            let latestSomeKey  = "Some";
+            let foundAnySome   = false;
 
             sheet2.eachRow((row) => {
                 let hasSomeInRow = false;
-                let rowSomeKey = null;
-                let rowSomeNum = -1;
+                let rowSomeKey   = null;
+                let rowSomeNum   = -1;
 
                 row.eachCell((cell) => {
                     let cellText = '';
-                    let isRed = false;
+                    let isRed    = false;
                     if (cell.value && cell.value.richText) {
-                        cell.value.richText.forEach(rt => {
-                            cellText += rt.text;
-                            if (checkIsRed(rt.font)) isRed = true;
-                        });
+                        cell.value.richText.forEach(rt => { cellText += rt.text; if (checkIsRed(rt.font)) isRed = true; });
                     } else {
                         cellText = cell.value ? cell.value.toString() : '';
                         if (checkIsRed(cell.font)) isRed = true;
                     }
                     const match = cellText.trim().match(/^some(\d*)$/i);
                     if (match && isRed) {
-                        hasSomeInRow = true;
-                        foundAnySome = true;
-                        const numStr = match[1];
-                        const num = numStr === "" ? 0 : parseInt(numStr, 10);
-                        if (num > rowSomeNum) {
-                            rowSomeNum = num;
-                            rowSomeKey = num === 0 ? "Some" : `Some${num}`;
-                        }
+                        hasSomeInRow = true; foundAnySome = true;
+                        const num = match[1] === "" ? 0 : parseInt(match[1], 10);
+                        if (num > rowSomeNum) { rowSomeNum = num; rowSomeKey = num === 0 ? "Some" : `Some${num}`; }
                     }
                 });
 
                 if (hasSomeInRow) {
                     if (rowSomeNum > highestSomeNum) { highestSomeNum = rowSomeNum; latestSomeKey = rowSomeKey; }
                     if (!stats[rowSomeKey]) stats[rowSomeKey] = { shown: 0, hidden: 0 };
-                    
                     let col2Value = row.getCell(2).value;
                     if (col2Value && typeof col2Value === 'object' && col2Value.result !== undefined) col2Value = col2Value.result;
                     const col2Str = col2Value !== null && col2Value !== undefined ? col2Value.toString().trim() : '';
@@ -97,53 +185,41 @@ async function processExcelFile(filePath, originalName, username, mode) {
                 }
             });
 
-            if (foundAnySome) {
-                finalVisibleRed = stats[latestSomeKey].shown;
-                finalHidden = stats[latestSomeKey].hidden;
-            }
+            if (foundAnySome) { finalVisibleRed = stats[latestSomeKey].shown; finalHidden = stats[latestSomeKey].hidden; }
         }
     } else {
         const sheet = workbook.getWorksheet('Sheet1');
         if (sheet) {
             let stats = {};
             let highestNewNum = -1;
-            let latestNewKey = "New"; 
-            let foundAnyNew = false;
-            let globalHidden = 0;
-            let globalVisible = 0; 
+            let latestNewKey  = "New";
+            let foundAnyNew   = false;
+            let globalHidden  = 0;
+            let globalVisible = 0;
 
             sheet.eachRow((row) => {
                 const isHidden = row.hidden;
                 let hasNewInRow = false;
-                let rowNewKey = null;
-                let rowNewNum = -1;
-                let hasRedFont = false;
-
-                const col1 = row.getCell(1).value;
-                const hasData = col1 !== null && col1 !== undefined && col1.toString().trim() !== '';
+                let rowNewKey   = null;
+                let rowNewNum   = -1;
+                let hasRedFont  = false;
+                const col1      = row.getCell(1).value;
+                const hasData   = col1 !== null && col1 !== undefined && col1.toString().trim() !== '';
 
                 row.eachCell((cell) => {
                     let cellText = '';
-                    let isRed = false;
+                    let isRed    = false;
                     if (cell.value && cell.value.richText) {
-                        cell.value.richText.forEach(rt => {
-                            cellText += rt.text;
-                            if (checkIsRed(rt.font)) isRed = true;
-                        });
+                        cell.value.richText.forEach(rt => { cellText += rt.text; if (checkIsRed(rt.font)) isRed = true; });
                     } else {
                         cellText = cell.value ? cell.value.toString() : '';
                         if (checkIsRed(cell.font)) isRed = true;
                     }
                     const match = cellText.trim().match(/^new(\d*)$/i);
                     if (match) {
-                        hasNewInRow = true;
-                        foundAnyNew = true;
-                        const numStr = match[1];
-                        const num = numStr === "" ? 0 : parseInt(numStr, 10);
-                        if (num > rowNewNum) {
-                            rowNewNum = num;
-                            rowNewKey = num === 0 ? "New" : `New${num}`;
-                        }
+                        hasNewInRow = true; foundAnyNew = true;
+                        const num = match[1] === "" ? 0 : parseInt(match[1], 10);
+                        if (num > rowNewNum) { rowNewNum = num; rowNewKey = num === 0 ? "New" : `New${num}`; }
                     }
                     if (isRed) hasRedFont = true;
                 });
@@ -161,182 +237,183 @@ async function processExcelFile(filePath, originalName, username, mode) {
 
             if (foundAnyNew) {
                 finalVisibleRed = stats[latestNewKey].visibleRed;
-                finalHidden = stats[latestNewKey].hidden;
+                finalHidden     = stats[latestNewKey].hidden;
             } else {
                 finalVisibleRed = globalVisible;
-                finalHidden = globalHidden;
+                finalHidden     = globalHidden;
             }
         }
     }
 
-    const ext = path.extname(originalName);
-    const baseName = path.basename(originalName, ext);
-    let finalFileName = originalName;
+    const ext          = path.extname(originalName);
+    const baseName     = path.basename(originalName, ext);
+    let finalFileName  = originalName;
     if (isSomeMode) finalFileName = `Some ${baseName}${ext}`;
 
     const reportPath = path.join(__dirname, 'Z-Report.xlsx');
-    const reportWb = new ExcelJS.Workbook();
+    const reportWb   = new ExcelJS.Workbook();
     let reportSheet;
 
     const columnsDef = [
-        { header: 'Agent', key: 'agent', width: 15 },
-        { header: 'Total (Hidden + Shown)', key: 'total', width: 28 },
-        { header: 'Shown Count', key: 'shown', width: 18 },
-        { header: 'File Name', key: 'filename', width: 45 },
-        { header: 'Date', key: 'date', width: 15 },
-        { header: 'Mode', key: 'mode', width: 15 }
+        { header: 'Agent',                 key: 'agent',    width: 15 },
+        { header: 'Total (Hidden + Shown)', key: 'total',   width: 28 },
+        { header: 'Shown Count',            key: 'shown',   width: 18 },
+        { header: 'File Name',              key: 'filename', width: 45 },
+        { header: 'Date',                   key: 'date',     width: 15 },
+        { header: 'Mode',                   key: 'mode',     width: 15 }
     ];
 
     if (fs.existsSync(reportPath)) {
         await reportWb.xlsx.readFile(reportPath);
         reportSheet = reportWb.getWorksheet(1);
-        reportSheet.columns = columnsDef; 
+        reportSheet.columns = columnsDef;
     } else {
         reportSheet = reportWb.addWorksheet('Report');
         reportSheet.columns = columnsDef;
         const headerRow = reportSheet.getRow(1);
         headerRow.eachCell((cell) => {
-            cell.font = { name: 'Arial', size: 11, bold: true, color: { argb: 'FFFFFFFF' } }; 
-            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4F81BD' } }; 
+            cell.font      = { name: 'Arial', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
+            cell.fill      = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4F81BD' } };
             cell.alignment = { vertical: 'middle', horizontal: 'center' };
-            cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
+            cell.border    = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
         });
     }
 
-    const todayDate = new Date().toISOString().split('T')[0];
+    const todayDate  = new Date().toISOString().split('T')[0];
     const totalCount = finalVisibleRed + finalHidden;
-    
+
     const newRow = reportSheet.addRow({
-        agent: username,
-        total: totalCount,
-        shown: finalVisibleRed,
-        filename: finalFileName, 
-        date: todayDate,
-        mode: mode.toUpperCase()
+        agent: username, total: totalCount, shown: finalVisibleRed,
+        filename: finalFileName, date: todayDate, mode: mode.toUpperCase()
     });
 
     newRow.eachCell((cell, colNumber) => {
-        cell.font = { name: 'Arial', size: 11, bold: true };
-        cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
+        cell.font      = { name: 'Arial', size: 11, bold: true };
+        cell.border    = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
         cell.alignment = { vertical: 'middle', horizontal: colNumber === 4 ? 'left' : 'center' };
     });
 
     await reportWb.xlsx.writeFile(reportPath);
-
     return { finalFileName, shown: finalVisibleRed, hidden: finalHidden };
 }
 
-// --- API ENDPOINTS ---
+// ─────────────────────────────────────────────
+//  MIDDLEWARE
+// ─────────────────────────────────────────────
 app.use(express.static('public'));
 app.use(express.json());
 
+// ─────────────────────────────────────────────
+//  AUTH
+// ─────────────────────────────────────────────
 app.post('/api/login', (req, res) => {
     const { username, password } = req.body;
     const users = JSON.parse(fs.readFileSync(usersPath));
-    const user = users.find(u => u.username === username && u.password === password);
+    const user  = users.find(u => u.username === username && u.password === password);
     if (user) res.json({ success: true, username: user.username });
-    else res.json({ success: false, message: 'Invalid credentials' });
+    else       res.json({ success: false, message: 'Invalid credentials' });
 });
 
-// PRIVATE DATA ROUTE (Filters by User)
+// ─────────────────────────────────────────────
+//  USER DATA
+// ─────────────────────────────────────────────
 app.get('/api/user/data', (req, res) => {
     const username = req.query.username;
-    const history = JSON.parse(fs.readFileSync(historyPath));
-    
-    const userFiles = history.files.filter(f => f.agent === username);
-    const userLogs = history.logs.filter(l => l.agent === username);
-    
-    res.json({ success: true, files: userFiles, logs: userLogs });
+    const history  = JSON.parse(fs.readFileSync(historyPath));
+    res.json({
+        success: true,
+        files: history.files.filter(f => f.agent === username),
+        logs:  history.logs.filter(l  => l.agent  === username)
+    });
 });
 
-// --- NEW: Personal Z-Report Endpoint ---
 app.get('/api/user/report', async (req, res) => {
-    const username = req.query.username;
+    const username   = req.query.username;
     const reportPath = path.join(__dirname, 'Z-Report.xlsx');
-    
-    if (!fs.existsSync(reportPath)) {
-        return res.json({ success: true, data: [] });
-    }
-    
+    if (!fs.existsSync(reportPath)) return res.json({ success: true, data: [] });
+
     try {
         const workbook = new ExcelJS.Workbook();
         await workbook.xlsx.readFile(reportPath);
-        const sheet = workbook.getWorksheet(1);
-        
-        let reportData = [];
-        
+        const sheet      = workbook.getWorksheet(1);
+        let   reportData = [];
+
         sheet.eachRow((row, rowNumber) => {
-            if (rowNumber === 1) return; // Skip the header row
+            if (rowNumber === 1) return;
             const rowAgent = row.getCell(1).value ? row.getCell(1).value.toString() : '';
-            
-            // Only grab data if the agent name matches the logged-in user
             if (rowAgent === username) {
                 reportData.push({
-                    total: parseInt(row.getCell(2).value) || 0,
-                    shown: parseInt(row.getCell(3).value) || 0,
+                    total:    parseInt(row.getCell(2).value) || 0,
+                    shown:    parseInt(row.getCell(3).value) || 0,
                     filename: row.getCell(4).value ? row.getCell(4).value.toString() : '',
-                    date: row.getCell(5).value ? row.getCell(5).value.toString() : '',
-                    mode: row.getCell(6).value ? row.getCell(6).value.toString() : ''
+                    date:     row.getCell(5).value ? row.getCell(5).value.toString() : '',
+                    mode:     row.getCell(6).value ? row.getCell(6).value.toString() : ''
                 });
             }
         });
-        
-        // Reverse it so the newest files are at the top!
+
         res.json({ success: true, data: reportData.reverse() });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }
 });
 
+// ─────────────────────────────────────────────
+//  UPLOAD
+// ─────────────────────────────────────────────
 app.post('/api/upload', upload.single('file'), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'No file uploaded.' });
-    
+
     const { username, mode } = req.body;
-    const originalName = req.file.originalname;
-    const tempPath = req.file.path;
-    
+    const originalName       = req.file.originalname;
+    const tempPath           = req.file.path;
+
     try {
-        const users = JSON.parse(fs.readFileSync(usersPath));
+        reloadConfig();
+        const users      = JSON.parse(fs.readFileSync(usersPath));
         const activeUser = users.find(u => u.username === username);
         if (!activeUser || !activeUser.archivePath) throw new Error(`Archive path missing for ${username}`);
-        const userArchiveBase = activeUser.archivePath;
 
-        const stats = await processExcelFile(tempPath, originalName, username, mode);
-        
-        const date = new Date();
-        const folderName = `${date.getDate()}-${date.getMonth() + 1}`;
-        const month = monthNames[date.getMonth()];
-        const year = date.getFullYear().toString();
-        const isNorthAmerica = /\bUSA\b|\bCANADA\b/i.test(originalName);
-        const region = isNorthAmerica ? 'USA' : 'UK';
-        
-        const personalDir = path.join(userArchiveBase, year, month, folderName, region);
+        const stats       = await processExcelFile(tempPath, originalName, username, mode);
+        const date        = new Date();
+        const folderName  = `${date.getDate()}-${date.getMonth() + 1}`;
+        const month       = monthNames[date.getMonth()];
+        const year        = date.getFullYear().toString();
+        const isNA        = /\bUSA\b|\bCANADA\b/i.test(originalName);
+        const region      = isNA ? 'USA' : 'UK';
+
+        const personalDir = path.join(activeUser.archivePath, year, month, folderName, region);
         if (!fs.existsSync(personalDir)) fs.mkdirSync(personalDir, { recursive: true });
         const finalPersonalPath = path.join(personalDir, stats.finalFileName);
 
         if (mode === 'some') {
             fs.copyFileSync(tempPath, finalPersonalPath);
         } else {
-            const regionBase = isNorthAmerica ? config.usBase : config.ukBase;
-            const regionDir = path.join(regionBase, year, month, folderName);
+            const regionBase = isNA ? config.usBase : config.ukBase;
+            const regionDir  = path.join(regionBase, year, month, folderName);
             if (!fs.existsSync(regionDir)) fs.mkdirSync(regionDir, { recursive: true });
-            const finalRegionPath = path.join(regionDir, stats.finalFileName);
             fs.copyFileSync(tempPath, finalPersonalPath);
-            fs.copyFileSync(tempPath, finalRegionPath);
+            fs.copyFileSync(tempPath, path.join(regionDir, stats.finalFileName));
         }
 
         fs.unlinkSync(tempPath);
 
-        // Update History for UI
-        const timeStr = `${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}:${String(date.getSeconds()).padStart(2,'0')}`;
-        const fileRecord = {
-            agent: username, name: stats.finalFileName, size: req.file.size,
-            mtime: date.toISOString(), region: region, destPath: `${year}/${month}/${folderName}/${region}`, status: 'sorted'
-        };
-        const logRecord = {
-            agent: username, ts: timeStr, msg: `Sorted [${mode.toUpperCase()}]: ${stats.finalFileName} (Shown: ${stats.shown}, Hidden: ${stats.hidden})`, type: 'success'
-        };
+        const timeStr   = `${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}:${String(date.getSeconds()).padStart(2,'0')}`;
+        const fileRecord = { agent: username, name: stats.finalFileName, size: req.file.size, mtime: date.toISOString(), region, destPath: `${year}/${month}/${folderName}/${region}`, status: 'sorted' };
+        const logRecord  = { agent: username, ts: timeStr, msg: `Sorted [${mode.toUpperCase()}]: ${stats.finalFileName} (Shown: ${stats.shown}, Hidden: ${stats.hidden})`, type: 'success' };
         saveHistory(fileRecord, logRecord);
+
+        // Broadcast live update to all admin watchers
+        const todayDate = new Date().toISOString().split('T')[0];
+        io.emit('new_upload', {
+            agent:    username,
+            total:    stats.shown + stats.hidden,
+            shown:    stats.shown,
+            hidden:   stats.hidden,
+            filename: stats.finalFileName,
+            date:     todayDate,
+            mode:     mode.toUpperCase()
+        });
 
         res.json({ success: true, stats });
 
@@ -351,40 +428,106 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
     }
 });
 
-// --- ADMIN DASHBOARD DATA ROUTE ---
+// ─────────────────────────────────────────────
+//  ADMIN — REPORT DATA
+// ─────────────────────────────────────────────
 app.get('/api/admin/report', async (req, res) => {
     const reportPath = path.join(__dirname, 'Z-Report.xlsx');
-    
-    if (!fs.existsSync(reportPath)) {
-        return res.json({ success: true, data: [] });
-    }
-    
+    if (!fs.existsSync(reportPath)) return res.json({ success: true, data: [] });
+
     try {
-        const workbook = new ExcelJS.Workbook();
+        const workbook   = new ExcelJS.Workbook();
         await workbook.xlsx.readFile(reportPath);
-        const sheet = workbook.getWorksheet(1);
-        
-        let reportData = [];
-        
+        const sheet      = workbook.getWorksheet(1);
+        let   reportData = [];
+
         sheet.eachRow((row, rowNumber) => {
-            if (rowNumber === 1) return; // Skip header
+            if (rowNumber === 1) return;
             reportData.push({
-                agent: row.getCell(1).value ? row.getCell(1).value.toString() : 'Unknown',
-                total: parseInt(row.getCell(2).value) || 0,
-                shown: parseInt(row.getCell(3).value) || 0,
+                agent:    row.getCell(1).value ? row.getCell(1).value.toString() : 'Unknown',
+                total:    parseInt(row.getCell(2).value) || 0,
+                shown:    parseInt(row.getCell(3).value) || 0,
                 filename: row.getCell(4).value ? row.getCell(4).value.toString() : '',
-                date: row.getCell(5).value ? row.getCell(5).value.toString() : '',
-                mode: row.getCell(6).value ? row.getCell(6).value.toString() : ''
+                date:     row.getCell(5).value ? row.getCell(5).value.toString() : '',
+                mode:     row.getCell(6).value ? row.getCell(6).value.toString() : ''
             });
         });
-        
+
         res.json({ success: true, data: reportData.reverse() });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`\n> ZORG-NEXUS ACTIVE (Classic UI Mode)`);
+// ─────────────────────────────────────────────
+//  ADMIN — CONFIG EDITOR
+// ─────────────────────────────────────────────
+app.get('/api/admin/config', (req, res) => {
+    try {
+        const cfg = JSON.parse(fs.readFileSync(configPath));
+        res.json({ success: true, config: cfg });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
+app.post('/api/admin/config', (req, res) => {
+    try {
+        const newConfig = req.body;
+        if (!newConfig || typeof newConfig !== 'object') throw new Error('Invalid config payload');
+        // Ensure all dirs exist
+        ['usBase', 'ukBase', 'tempZone', 'reportArchivePath'].forEach(key => {
+            if (newConfig[key]) fs.mkdirSync(newConfig[key], { recursive: true });
+        });
+        fs.writeFileSync(configPath, JSON.stringify(newConfig, null, 2));
+        reloadConfig();
+        res.json({ success: true });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
+// ─────────────────────────────────────────────
+//  ADMIN — USERS MANAGER
+// ─────────────────────────────────────────────
+app.get('/api/admin/users', (req, res) => {
+    try {
+        const users = JSON.parse(fs.readFileSync(usersPath));
+        res.json({ success: true, users });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
+app.post('/api/admin/users', (req, res) => {
+    try {
+        const users = req.body;
+        if (!Array.isArray(users)) throw new Error('Payload must be an array of users');
+        if (!users.some(u => u.username === 'Admin')) throw new Error('Cannot remove the Admin user');
+        fs.writeFileSync(usersPath, JSON.stringify(users, null, 2));
+        res.json({ success: true });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
+// ─────────────────────────────────────────────
+//  ADMIN — MANUAL RESET
+// ─────────────────────────────────────────────
+app.post('/api/admin/reset', async (req, res) => {
+    try {
+        await performDailyReset();
+        io.emit('daily_reset');
+        res.json({ success: true, message: 'Report archived and history cleared.' });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
+// ─────────────────────────────────────────────
+//  START
+// ─────────────────────────────────────────────
+server.listen(PORT, () => {
+    console.log(`\n> ZORG-NEXUS ACTIVE`);
     console.log(`> http://localhost:${PORT}\n`);
 });
