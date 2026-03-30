@@ -154,7 +154,6 @@
   /* TABLE */
   .table-wrap { overflow-y: auto; flex: 1; padding: 0 24px; }
   
-  /* Added table-layout fixed to allow strict widths and truncation */
   .file-table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 16px; table-layout: fixed; }
   
   .file-table th {
@@ -162,10 +161,15 @@
     padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg-base); z-index: 10;
   }
   
-  /* Added overflow/text-overflow for truncation when columns get too small */
   .file-table td { 
     padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 13px; 
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+  }
+
+  /* FIX: Ensure the Status column never hides our Undo button */
+  .file-table td.status-cell {
+    overflow: visible;
+    text-overflow: clip;
   }
   
   .file-table tr:last-child td { border-bottom: none; }
@@ -231,7 +235,7 @@
   .toast {
     background: var(--bg-panel); border: 1px solid var(--border); border-left: 4px solid var(--success); border-radius: 8px;
     padding: 16px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); font-size: 13px; color: var(--text-main);
-    animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards, slideOut 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards 4.7s; cursor: pointer; position: relative;
+    animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards, slideOut 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards 5.7s; cursor: pointer; position: relative;
   }
   .toast::after { content: '✕'; position: absolute; top: 16px; right: 16px; font-size: 10px; color: var(--text-muted); }
   .toast.error { border-left-color: var(--danger); }
@@ -327,12 +331,12 @@
             <table class="file-table" id="mainTable">
               <thead>
                 <tr>
-                  <th style="width: 35%;">Filename</th>
+                  <th style="width: 30%;">Filename</th>
                   <th style="width: 15%;">Modified</th>
                   <th style="width: 10%;">Size</th>
                   <th style="width: 10%;">Region</th>
                   <th style="width: 20%;">Destination</th>
-                  <th style="width: 10%;">Status</th>
+                  <th style="width: 15%;">Status</th>
                 </tr>
               </thead>
               <tbody id="tableBody"></tbody>
@@ -351,9 +355,9 @@
                 <tr>
                   <th style="width: 15%;">Date</th>
                   <th style="width: 10%;">Mode</th>
-                  <th style="width: 45%;">Show</th>
-                  <th style="width: 15%;">Net</th>
-                  <th style="width: 15%;">Gross</th>
+                  <th style="width: 45%;">File Name</th>
+                  <th style="width: 15%;">Shown Count</th>
+                  <th style="width: 15%;">Total Processed</th>
                 </tr>
               </thead>
               <tbody id="reportTableBody"></tbody>
@@ -391,7 +395,6 @@ function initTableResizers() {
     document.querySelectorAll('.file-table').forEach(table => {
         const cols = table.querySelectorAll('th');
         [].forEach.call(cols, function (col) {
-            // Create a resizer element
             const resizer = document.createElement('div');
             resizer.classList.add('resizer');
             col.appendChild(resizer);
@@ -440,7 +443,6 @@ function checkAuth() {
     if (currentUser) {
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('displayUser').innerText = currentUser;
-        // Show Admin button only for Admin user
         if (currentUser === 'Admin') {
             document.getElementById('adminLink').style.display = 'inline-block';
         }
@@ -526,6 +528,29 @@ async function uploadFile(file, mode) {
     }
 }
 
+// --- UNDO FUNCTION ---
+async function undoUpload(transactionId) {
+    try {
+        const res = await fetch('/api/undo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ transactionId, username: currentUser })
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            showToast('⏪ Action reversed. File deleted and records scrubbed.', 'info');
+            fetchUserData();
+            if (currentView === 'report') fetchUserReport();
+        } else {
+            showToast(`❌ ${data.error || 'Undo time expired.'}`, 'error');
+            fetchUserData(); // Force refresh to clear expired button
+        }
+    } catch (e) {
+        showToast('❌ Server error during undo.', 'error');
+    }
+}
+
 function manualUpload(inputEl, mode) {
     if (inputEl.files.length > 0) {
         uploadFile(inputEl.files[0], mode);
@@ -599,18 +624,28 @@ function renderTable() {
 
     const tbody = document.getElementById('tableBody');
     const statusHtml = { sorted: '<span class="status-icon ok">✓ Sorted</span>', error: '<span class="status-icon err">✕ Error</span>' };
+    const nowMs = Date.now();
 
     tbody.innerHTML = list.map(f => {
         let displayBase = f.name;
         let ext = displayBase.lastIndexOf('.')>-1 ? displayBase.slice(displayBase.lastIndexOf('.')) : '';
         let base = displayBase.slice(0, displayBase.length-ext.length);
+        
+        let ageMs = nowMs - new Date(f.mtime).getTime();
+        let canUndo = ageMs < 300000 && f.transactionId; // 5 minute window
+        
+        let undoBtnHtml = canUndo 
+            ? `<span title="Revert upload (within 5 min)" onclick="undoUpload('${f.transactionId}')" style="cursor:pointer; margin-left:12px; display:inline-flex; align-items:center; justify-content:center; background:rgba(239,68,68,0.1); color:var(--danger); border-radius:4px; padding:2px 6px; font-size:10px; font-weight:700; letter-spacing:0.5px; transition:all 0.2s;" onmouseover="this.style.background='var(--danger)'; this.style.color='#fff';" onmouseout="this.style.background='rgba(239,68,68,0.1)'; this.style.color='var(--danger)';">↩ UNDO</span>`
+            : '';
+
+        // FIX: Added 'status-cell' class here so overflow is visible for the button
         return`<tr>
           <td title="${f.name}"><span class="file-name">${base}</span><span class="file-ext">${ext}</span></td>
           <td class="date-cell">${fmtDate(f.mtime)}</td>
           <td class="size-cell mono">${fmtSize(f.size)}</td>
           <td><span class="region-tag ${f.region.toLowerCase()}">${f.region}</span></td>
           <td class="dest-cell mono" title="${f.destPath}">${f.destPath}</td>
-          <td>${statusHtml[f.status] || f.status}</td>
+          <td class="status-cell">${statusHtml[f.status] || f.status}${undoBtnHtml}</td>
         </tr>`;
     }).join('');
 }
@@ -637,6 +672,7 @@ function updateStats() {
 }
 
 function dismissToast(toast) {
+    if (!toast) return;
     toast.style.animation = 'none';
     toast.style.transition = 'transform 0.15s ease, opacity 0.15s ease';
     requestAnimationFrame(() => {
@@ -653,6 +689,7 @@ function showToast(htmlMsg, type) {
     toast.innerHTML = htmlMsg;
     toast.addEventListener('click', () => dismissToast(toast));
     container.appendChild(toast);
+    
     setTimeout(() => { if (toast.parentNode) toast.remove(); }, 5000);
 }
 
@@ -685,6 +722,11 @@ setInterval(() => {
     const now=new Date();
     document.getElementById('clock').textContent=[now.getHours(),now.getMinutes(),now.getSeconds()].map(n=>String(n).padStart(2,'0')).join(':');
 }, 1000);
+
+// Silent background timer: Every 30s, re-render the file list so expired Undo buttons disappear automatically.
+setInterval(() => {
+    if (currentView === 'files') renderTable();
+}, 30000);
 
 // Initialize column resizers on load
 initTableResizers();

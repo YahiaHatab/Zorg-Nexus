@@ -54,6 +54,21 @@ const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct",
 const upload = multer({ dest: config.tempZone });
 
 // ─────────────────────────────────────────────
+//  UNDO REGISTRY (5-Minute Window)
+// ─────────────────────────────────────────────
+const undoRegistry = new Map();
+
+// Auto-clean expired undo tokens every 60 seconds to prevent memory leaks
+setInterval(() => {
+    const now = Date.now();
+    for (const [txnId, data] of undoRegistry.entries()) {
+        if (now - data.timestamp > 5 * 60 * 1000) { // 5 minutes
+            undoRegistry.delete(txnId);
+        }
+    }
+}, 60 * 1000);
+
+// ─────────────────────────────────────────────
 //  HELPERS
 // ─────────────────────────────────────────────
 function reloadConfig() {
@@ -62,8 +77,8 @@ function reloadConfig() {
 
 function saveHistory(newFile, newLog) {
     const history = JSON.parse(fs.readFileSync(historyPath));
-    history.files.unshift(newFile);
-    history.logs.unshift(newLog);
+    if (newFile) history.files.unshift(newFile);
+    if (newLog) history.logs.unshift(newLog);
     if (history.files.length > 500) history.files.pop();
     if (history.logs.length > 500) history.logs.pop();
     fs.writeFileSync(historyPath, JSON.stringify(history, null, 2));
@@ -89,7 +104,6 @@ async function performDailyReset() {
 
     console.log(`\n> [RESET] Starting daily reset at ${new Date().toISOString()}`);
 
-    // 1. Archive existing report if it exists
     if (fs.existsSync(reportPath)) {
         if (!fs.existsSync(archiveDir)) fs.mkdirSync(archiveDir, { recursive: true });
         const today = new Date().toISOString().split('T')[0];
@@ -102,20 +116,16 @@ async function performDailyReset() {
         console.log('> [RESET] No Z-Report.xlsx found, skipping archive step.');
     }
 
-    // 2. Wipe history.json
     fs.writeFileSync(historyPath, JSON.stringify({ files: [], logs: [] }, null, 2));
     console.log('> [RESET] history.json cleared.');
     console.log('> [RESET] Daily reset complete.\n');
 }
 
-// ─────────────────────────────────────────────
-//  MIDNIGHT CRON  (pure Node.js — no dependency)
-// ─────────────────────────────────────────────
 function scheduleMidnightReset() {
     function msUntilMidnight() {
         const now  = new Date();
         const next = new Date(now);
-        next.setHours(24, 0, 0, 0);   // next midnight
+        next.setHours(24, 0, 0, 0);
         return next - now;
     }
 
@@ -124,7 +134,7 @@ function scheduleMidnightReset() {
         console.log(`> [CRON] Next reset in ${Math.round(delay / 1000 / 60)} minutes.`);
         setTimeout(async () => {
             await performDailyReset();
-            arm(); // re-arm for next midnight
+            arm();
         }, delay);
     }
 
@@ -385,6 +395,9 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
         const personalDir = path.join(activeUser.archivePath, year, month, folderName, region);
         if (!fs.existsSync(personalDir)) fs.mkdirSync(personalDir, { recursive: true });
         const finalPersonalPath = path.join(personalDir, stats.finalFileName);
+        
+        // Track saved paths for potential undo
+        let savedPaths = [finalPersonalPath];
 
         if (mode === 'some') {
             fs.copyFileSync(tempPath, finalPersonalPath);
@@ -393,15 +406,32 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
             const regionDir  = path.join(regionBase, year, month, folderName);
             if (!fs.existsSync(regionDir)) fs.mkdirSync(regionDir, { recursive: true });
             fs.copyFileSync(tempPath, finalPersonalPath);
-            fs.copyFileSync(tempPath, path.join(regionDir, stats.finalFileName));
+            
+            const regionDest = path.join(regionDir, stats.finalFileName);
+            fs.copyFileSync(tempPath, regionDest);
+            savedPaths.push(regionDest); // Track standard region copy
         }
 
         fs.unlinkSync(tempPath);
 
+        // Generate Transaction ID BEFORE saving history
+        const transactionId = Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+
         const timeStr   = `${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}:${String(date.getSeconds()).padStart(2,'0')}`;
-        const fileRecord = { agent: username, name: stats.finalFileName, size: req.file.size, mtime: date.toISOString(), region, destPath: `${year}/${month}/${folderName}/${region}`, status: 'sorted' };
+        
+        // Include transactionId in the history record!
+        const fileRecord = { agent: username, name: stats.finalFileName, size: req.file.size, mtime: date.toISOString(), region, destPath: `${year}/${month}/${folderName}/${region}`, status: 'sorted', transactionId };
+        
         const logRecord  = { agent: username, ts: timeStr, msg: `Sorted [${mode.toUpperCase()}]: ${stats.finalFileName} (Shown: ${stats.shown}, Hidden: ${stats.hidden})`, type: 'success' };
         saveHistory(fileRecord, logRecord);
+
+        // Register Undo Token
+        undoRegistry.set(transactionId, {
+            timestamp: Date.now(),
+            username,
+            filename: stats.finalFileName,
+            savedPaths
+        });
 
         // Broadcast live update to all admin watchers
         const todayDate = new Date().toISOString().split('T')[0];
@@ -415,7 +445,7 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
             mode:     mode.toUpperCase()
         });
 
-        res.json({ success: true, stats });
+        res.json({ success: true, stats, transactionId });
 
     } catch (error) {
         if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
@@ -425,6 +455,63 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
             { agent: username, ts: timeStr, msg: `Error: ${error.message}`, type: 'error' }
         );
         res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ─────────────────────────────────────────────
+//  UNDO ENDPOINT
+// ─────────────────────────────────────────────
+app.post('/api/undo', async (req, res) => {
+    const { transactionId, username } = req.body;
+    const record = undoRegistry.get(transactionId);
+
+    if (!record) return res.status(400).json({ success: false, error: 'Undo expired or invalid.' });
+    if (record.username !== username) return res.status(403).json({ success: false, error: 'Unauthorized undo attempt.' });
+
+    try {
+        // 1. Delete physical files
+        record.savedPaths.forEach(p => {
+            if (fs.existsSync(p)) fs.unlinkSync(p);
+        });
+
+        // 2. Remove from Z-Report.xlsx
+        const reportPath = path.join(__dirname, 'Z-Report.xlsx');
+        if (fs.existsSync(reportPath)) {
+            const reportWb = new ExcelJS.Workbook();
+            await reportWb.xlsx.readFile(reportPath);
+            const sheet = reportWb.getWorksheet(1);
+            let rowToDelete = -1;
+            
+            for (let i = sheet.rowCount; i >= 2; i--) {
+                const row = sheet.getRow(i);
+                if (row.getCell(1).value === username && row.getCell(4).value === record.filename) {
+                    rowToDelete = i;
+                    break;
+                }
+            }
+            if (rowToDelete !== -1) {
+                sheet.spliceRows(rowToDelete, 1);
+                await reportWb.xlsx.writeFile(reportPath);
+            }
+        }
+
+        // 3. Clean up history.json
+        const history = JSON.parse(fs.readFileSync(historyPath));
+        const fileIdx = history.files.findIndex(f => f.agent === username && f.name === record.filename);
+        if (fileIdx > -1) history.files.splice(fileIdx, 1);
+
+        const date = new Date();
+        const timeStr = `${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}:${String(date.getSeconds()).padStart(2,'0')}`;
+        history.logs.unshift({ agent: username, ts: timeStr, msg: `[UNDO] Reverted upload: ${record.filename}`, type: 'warning' });
+        fs.writeFileSync(historyPath, JSON.stringify(history, null, 2));
+
+        // 4. Clear from registry so it can't be spammed
+        undoRegistry.delete(transactionId);
+
+        res.json({ success: true });
+    } catch (err) {
+        console.error('Undo Error:', err);
+        res.status(500).json({ success: false, error: 'Failed to process undo.' });
     }
 });
 
