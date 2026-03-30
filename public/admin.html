@@ -544,7 +544,8 @@
       <h3>⚠ Confirm System Reset</h3>
       <p>This will wipe <b>history.json</b> and broadcast a reset event to all connected sessions.<br><br>The
         <b>analytics.json</b> ledger is permanent and will <b>not</b> be affected. This clears today's live activity
-        only.</p>
+        only.
+      </p>
       <div class="confirm-actions">
         <button class="btn" onclick="closeModal()">Cancel</button>
         <button class="btn btn-red" onclick="executeReset()">Confirm Reset</button>
@@ -689,11 +690,11 @@
       </div>
       <div class="stat-card">
         <div class="sc-val" id="as-totalLeads" style="color:var(--warning);">—</div>
-        <div class="sc-lbl">Total Leads</div>
+        <div class="sc-lbl">Gross</div>
       </div>
       <div class="stat-card">
         <div class="sc-val" id="as-totalShown" style="color:var(--success);">—</div>
-        <div class="sc-lbl">Total Shown</div>
+        <div class="sc-lbl">Net</div>
       </div>
       <div class="stat-card">
         <div class="sc-val" id="as-totalDays" style="color:var(--accent-cyan);">—</div>
@@ -704,7 +705,7 @@
     <!-- Charts -->
     <div class="chart-grid-3">
       <div class="panel">
-        <div class="panel-header">Shown Leads — Last 14 Days</div>
+        <div class="panel-header">Net Leads — Last 14 Days</div>
         <div class="panel-body">
           <div class="chart-wrap" style="height:220px;"><canvas id="chartLine"></canvas></div>
         </div>
@@ -1314,7 +1315,6 @@
       if (e.key === 'Escape') { document.querySelectorAll('.toast').forEach(dismissToast); return; }
       if (isTyping) return;
 
-      if (e.key === 'r' || e.key === 'R') { e.preventDefault(); refreshCurrentTab(); showToast('↻ Refreshing...', 'info'); return; }
       if ((e.ctrlKey || e.metaKey) && e.key === 's') {
         e.preventDefault();
         if (currentTab === 'config') saveConfig();
