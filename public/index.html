@@ -5,141 +5,265 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ZORG NEXUS | Shows Sorter</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Barlow+Condensed:wght@400;600;700&display=swap');
-  *{box-sizing:border-box;margin:0;padding:0}
-  :root{
-    --amber:#e8840a;--amber-dim:#9e5a07;--amber-bright:#ffaa33;--amber-glow:rgba(232,132,10,0.15);
-    --bg:#0a0a08;--bg2:#111109;--bg3:#181510;--border:rgba(232,132,10,0.25);
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+  
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  :root {
+    --bg-base: #0B0F19;
+    --bg-panel: #111827;
+    --bg-hover: #1F2937;
+    --border: #374151;
+    --text-main: #F9FAFB;
+    --text-muted: #9CA3AF;
+    --accent-blue: #3B82F6;
+    --accent-blue-glow: rgba(59, 130, 246, 0.15);
+    --accent-cyan: #06B6D4;
+    --accent-cyan-glow: rgba(6, 182, 212, 0.15);
+    --success: #10B981;
+    --danger: #EF4444;
+    --warning: #F59E0B;
   }
-  body{background:var(--bg);color:var(--amber);font-family:'JetBrains Mono',monospace;font-size:12px;min-height:100vh;overflow:hidden;}
-  .scanline{pointer-events:none;position:fixed;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);z-index:9000}
-  .root{display:grid;grid-template-rows:auto 1fr auto;height:100vh;}
+
+  body {
+    background: var(--bg-base); color: var(--text-main); font-family: 'Inter', sans-serif;
+    font-size: 13px; height: 100vh; overflow: hidden; display: flex; flex-direction: column;
+  }
+
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  .root {
+    display: flex; flex-direction: column; flex: 1; overflow: hidden; height: 100vh; width: 100%;
+  }
 
   /* LOGIN OVERLAY */
-  #loginScreen { position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(10,10,8,0.98); z-index:9999; display:flex; align-items:center; justify-content:center; flex-direction:column; }
-  .login-box { background:var(--bg2); border:1px solid var(--border); padding:30px; width:300px; box-shadow:0 0 30px var(--amber-glow); }
-  .login-box h2 { font-family:'Barlow Condensed',sans-serif; font-size:24px; margin-bottom:20px; text-align:center; letter-spacing:2px; color:var(--amber-bright);}
-  .login-box input { width:100%; background:var(--bg); border:1px solid var(--border); color:var(--amber-bright); padding:10px; margin-bottom:15px; font-family:'JetBrains Mono',monospace; outline:none; }
-  .login-box button { width:100%; background:var(--amber-glow); border:1px solid var(--amber-bright); color:var(--amber-bright); padding:10px; cursor:pointer; font-weight:700; transition:all 0.2s; }
-  .login-box button:hover { background:var(--amber-bright); color:var(--bg); }
+  #loginScreen {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(11, 15, 25, 0.85); backdrop-filter: blur(12px);
+    z-index: 9999; display: flex; align-items: center; justify-content: center; flex-direction: column;
+  }
+  .login-box {
+    background: var(--bg-panel); border: 1px solid var(--border); border-radius: 12px;
+    padding: 40px; width: 340px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  }
+  .login-box h2 {
+    font-size: 22px; font-weight: 700; margin-bottom: 24px; text-align: center; letter-spacing: -0.5px;
+  }
+  .login-box input {
+    width: 100%; background: var(--bg-base); border: 1px solid var(--border); color: var(--text-main);
+    padding: 12px 16px; margin-bottom: 16px; border-radius: 8px; font-family: 'Inter', sans-serif; outline: none; transition: border 0.2s;
+  }
+  .login-box input:focus { border-color: var(--accent-blue); }
+  .login-box button {
+    width: 100%; background: var(--accent-blue); border: none; color: #fff; border-radius: 8px;
+    padding: 12px; cursor: pointer; font-weight: 600; transition: all 0.2s; margin-top: 8px;
+  }
+  .login-box button:hover { background: #2563EB; transform: translateY(-1px); }
 
   /* GHOST DRAG OVERLAY */
-  #dragOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:9995; background:rgba(10,10,8,0.85); backdrop-filter:blur(4px); }
-  .drop-half { flex:1; display:flex; align-items:center; justify-content:center; flex-direction:column; transition:all 0.2s; border:2px dashed transparent;}
-  .drop-half.std { color:var(--amber-bright); }
-  .drop-half.some { color:#12DAF4; border-left:1px solid var(--border); }
-  .drop-half.dragover.std { background:rgba(232,132,10,0.2); border-color:var(--amber-bright); }
-  .drop-half.dragover.some { background:rgba(18,218,244,0.2); border-color:#12DAF4; }
-  .drop-half h1 { font-family:'Barlow Condensed',sans-serif; font-size:48px; letter-spacing:4px; margin-bottom:10px;}
+  #dragOverlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 9995; background: rgba(11, 15, 25, 0.7); backdrop-filter: blur(8px); gap: 24px; padding: 24px;
+  }
+  .drop-half {
+    flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column;
+    border: 2px dashed var(--border); border-radius: 16px; transition: all 0.2s; background: rgba(17, 24, 39, 0.5);
+  }
+  .drop-half.std { color: var(--accent-blue); }
+  .drop-half.some { color: var(--accent-cyan); }
+  .drop-half.dragover.std { background: var(--accent-blue-glow); border-color: var(--accent-blue); }
+  .drop-half.dragover.some { background: var(--accent-cyan-glow); border-color: var(--accent-cyan); }
+  .drop-half h1 { font-size: 32px; font-weight: 700; margin-bottom: 12px; }
 
   /* TOPBAR */
-  .topbar{display:flex;align-items:center;justify-content:space-between;padding:6px 16px;background:var(--bg2);border-bottom:1px solid var(--border);}
-  .topbar-left{display:flex;align-items:center;gap:16px}
-  .logo{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;letter-spacing:2px;color:var(--amber-bright);text-transform:uppercase}
-  .logo span{color:var(--amber-dim);font-weight:400}
-  .status-pill{font-size:10px;padding:3px 8px;border:1px solid;border-radius:2px;letter-spacing:1px;text-transform:uppercase; color:#4dff91; border-color:rgba(77,255,145,0.4); background:rgba(77,255,145,0.07); animation:blink 2s step-end infinite;}
-  @keyframes blink{0%,100%{opacity:1}50%{opacity:0.5}}
-  .topbar-right{display:flex;align-items:center;gap:24px}
-  .stat-mini{text-align:center}
-  .stat-mini .val{font-size:14px;font-weight:700;color:var(--amber-bright)}
-  .stat-mini .lbl{font-size:9px;color:var(--amber-dim);letter-spacing:1px;text-transform:uppercase}
-  .clock{font-size:20px;font-weight:700;color:var(--amber-bright);letter-spacing:2px;min-width:80px;text-align:right}
-
-  /* ADMIN BUTTON */
-  .admin-btn{display:none;background:none;border:1px solid #ff4d4d;color:#ff4d4d;padding:4px 12px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:all 0.2s;text-decoration:none;}
-  .admin-btn:hover{background:rgba(255,77,77,0.12);color:#ff6666;}
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between; padding: 12px 24px;
+    background: var(--bg-panel); border-bottom: 1px solid var(--border); height: 64px; flex-shrink: 0;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 20px; }
+  .logo { font-size: 16px; font-weight: 700; letter-spacing: 0.5px; color: #fff; }
+  .logo span { color: var(--text-muted); font-weight: 500; }
+  .status-pill {
+    font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 999px;
+    color: var(--success); background: rgba(16, 185, 129, 0.1); display: flex; align-items: center; gap: 6px;
+  }
+  .status-pill::before { content: ''; display: block; width: 6px; height: 6px; border-radius: 50%; background: var(--success); animation: pulse 2s infinite; }
+  @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+  
+  .topbar-right { display: flex; align-items: center; gap: 32px; }
+  .stat-mini { text-align: right; }
+  .stat-mini .val { font-size: 16px; font-weight: 700; font-family: 'JetBrains Mono'; }
+  .stat-mini .lbl { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
+  .clock { font-size: 16px; font-weight: 500; font-family: 'JetBrains Mono'; color: var(--text-muted); }
+  .admin-btn {
+    background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: var(--danger);
+    padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; text-decoration: none; transition: all 0.2s;
+  }
+  .admin-btn:hover { background: rgba(239, 68, 68, 0.2); }
 
   /* MAIN GRID */
-  .main{display:grid;grid-template-columns:220px 1fr;grid-template-rows:auto 1fr;gap:0;flex:1;overflow:hidden;}
+  .main { display: flex; flex: 1; overflow: hidden; }
 
   /* SIDEBAR */
-  .sidebar{background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;grid-row:1/3; overflow-y:auto;}
-  .panel-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--amber-dim);padding:10px 14px 6px;border-bottom:1px solid var(--border)}
-  .nav-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;border-left:2px solid transparent;font-size:11px;color:var(--amber-dim);transition:all 0.15s;}
-  .nav-item:hover{background:var(--amber-glow);color:var(--amber);}
-  .nav-item.active{border-left-color:var(--amber-bright);background:var(--amber-glow);color:var(--amber-bright)}
-  .nav-icon{width:14px;text-align:center;font-size:10px}
-  .nav-badge{margin-left:auto;background:var(--amber-dim);color:var(--bg);font-size:9px;padding:1px 5px;border-radius:1px;font-weight:700}
-  .sidebar-section{border-top:1px solid var(--border);margin-top:4px;padding-top:4px}
-  .agent-display{padding:10px 14px;font-size:11px;color:var(--amber-bright);border-top:1px solid var(--border);margin-top:auto;display:flex;justify-content:space-between;align-items:center;}
-  .logout-btn{background:none; border:1px solid var(--border); color:var(--amber-dim); font-size:9px; padding:2px 6px; cursor:pointer;}
-  .logout-btn:hover{color:#ff4d4d; border-color:#ff4d4d;}
+  .sidebar {
+    width: 260px; background: var(--bg-panel); border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; overflow-y: auto; flex-shrink: 0; height: 100%;
+  }
+  .panel-label { font-size: 11px; font-weight: 600; color: var(--text-muted); padding: 24px 20px 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 12px; padding: 10px 20px; cursor: pointer;
+    font-size: 13px; font-weight: 500; color: var(--text-muted); transition: all 0.2s; margin: 2px 12px; border-radius: 6px;
+  }
+  .nav-item:hover { background: var(--bg-hover); color: var(--text-main); }
+  .nav-item.active { background: var(--accent-blue-glow); color: var(--accent-blue); }
+  .nav-icon { width: 16px; font-size: 14px; display: flex; justify-content: center; }
+  .nav-badge { margin-left: auto; background: var(--border); color: var(--text-main); font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 600; }
+  .nav-item.active .nav-badge { background: var(--accent-blue); color: #fff; }
+  
+  .agent-display {
+    padding: 16px 20px; border-top: 1px solid var(--border); margin-top: auto; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2);
+  }
+  #displayUser { font-weight: 600; color: var(--text-main); }
+  .logout-btn { background: none; border: none; color: var(--text-muted); font-size: 12px; cursor: pointer; font-weight: 500; transition: color 0.2s; }
+  .logout-btn:hover { color: var(--danger); }
+
+  /* CONTENT AREA */
+  .content-wrapper { display: flex; flex-direction: column; flex: 1; overflow: hidden; background: var(--bg-base); height: 100%; }
+  .view-container { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
 
   /* TOOLBAR */
-  .toolbar{background:var(--bg3);border-bottom:1px solid var(--border);padding:8px 16px;display:flex;align-items:center;gap:10px;}
-  .search-box{display:flex;align-items:center;gap:6px;background:var(--bg2);border:1px solid var(--border);padding:4px 10px;flex:1;max-width:300px;}
-  .search-box input{background:none;border:none;outline:none;color:var(--amber);font-family:'JetBrains Mono',monospace;font-size:11px;flex:1;}
-  .filter-btn{font-family:'JetBrains Mono',monospace;font-size:10px;padding:4px 10px;background:rgba(232,132,10,0.05);border:1px solid var(--border);color:var(--amber-dim);cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:all 0.15s;display:flex;align-items:center;gap:5px;}
-  .filter-btn:hover{background:var(--amber-glow);color:var(--amber-bright);}
-  .btn-std { border-color:var(--amber); color:var(--amber); }
-  .btn-some { border-color:#12DAF4; color:#12DAF4; background:rgba(18,218,244,0.05); }
-  .btn-some:hover { background:rgba(18,218,244,0.15); color:#12DAF4; }
+  .toolbar {
+    background: var(--bg-base); border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex; align-items: center; gap: 16px; flex-shrink: 0;
+  }
+  .search-box {
+    display: flex; align-items: center; gap: 10px; background: var(--bg-panel); border: 1px solid var(--border);
+    padding: 8px 16px; border-radius: 8px; flex: 1; max-width: 360px; transition: border 0.2s;
+  }
+  .search-box:focus-within { border-color: var(--accent-blue); }
+  .search-box input { background: none; border: none; outline: none; color: var(--text-main); font-size: 13px; width: 100%; }
+  
+  .filter-btn {
+    font-size: 12px; font-weight: 600; padding: 8px 16px; border-radius: 8px; border: 1px solid;
+    cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px;
+  }
+  .btn-std { background: var(--accent-blue-glow); border-color: rgba(59, 130, 246, 0.3); color: var(--accent-blue); }
+  .btn-std:hover { background: rgba(59, 130, 246, 0.25); }
+  .btn-some { background: var(--accent-cyan-glow); border-color: rgba(6, 182, 212, 0.3); color: var(--accent-cyan); }
+  .btn-some:hover { background: rgba(6, 182, 212, 0.25); }
 
   /* TABLE */
-  .table-wrap{overflow-y:auto;flex:1;position:relative;}
-  .file-table{width:100%;border-collapse:collapse}
-  .file-table th{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--amber-dim);padding:8px 14px;text-align:left;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg3);}
-  .file-table td{padding:7px 14px;border-bottom:1px solid rgba(232,132,10,0.08);font-size:11px;vertical-align:middle}
-  .file-table tr:hover td{background:var(--amber-glow)}
-  .file-name{color:var(--amber-bright);font-weight:700}
-  .file-ext{color:var(--amber-dim)}
-  .region-tag{font-size:9px;padding:2px 6px;border:1px solid;border-radius:1px;letter-spacing:1px}
-  .region-tag.usa{color:#4daaff;border-color:rgba(77,170,255,0.4)}
-  .region-tag.uk{color:#ff7a4d;border-color:rgba(255,122,77,0.4)}
-  .status-icon.ok{color:#4dff91}
-  .status-icon.err{color:#ff4d4d}
-  .size-cell,.date-cell,.dest-cell{color:var(--amber-dim)}
+  .table-wrap { overflow-y: auto; flex: 1; padding: 0 24px; }
+  
+  /* Added table-layout fixed to allow strict widths and truncation */
+  .file-table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 16px; table-layout: fixed; }
+  
+  .file-table th {
+    font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px;
+    padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg-base); z-index: 10;
+  }
+  
+  /* Added overflow/text-overflow for truncation when columns get too small */
+  .file-table td { 
+    padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 13px; 
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+  }
+  
+  .file-table tr:last-child td { border-bottom: none; }
+  .file-table tr:hover td { background: var(--bg-hover); }
+  
+  .file-name { color: var(--text-main); font-weight: 500; }
+  .file-ext { color: var(--text-muted); }
+  
+  .region-tag { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 999px; }
+  .region-tag.usa { background: rgba(59, 130, 246, 0.1); color: #60A5FA; }
+  .region-tag.uk { background: rgba(245, 158, 11, 0.1); color: #FBBF24; }
+  
+  .status-icon { font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; }
+  .status-icon.ok { color: var(--success); }
+  .status-icon.err { color: var(--danger); }
+  .size-cell, .date-cell, .dest-cell { color: var(--text-muted); }
+
+  /* COLUMN RESIZER STYLES */
+  .resizer {
+    position: absolute; right: 0; top: 0; bottom: 0; width: 5px;
+    cursor: col-resize; user-select: none; z-index: 11;
+  }
+  .resizer:hover, .resizer.resizing {
+    background: var(--accent-blue); opacity: 0.5;
+  }
 
   /* REPORT TAGS */
-  .mode-tag { padding:2px 6px; border-radius:3px; font-size:9px; font-weight:700; letter-spacing:1px; display:inline-block; }
-  .mode-some { background:rgba(18,218,244,0.1); color:#12DAF4; border:1px solid rgba(18,218,244,0.3); }
-  .mode-standard { background:rgba(232,132,10,0.1); color:var(--amber-bright); border:1px solid rgba(232,132,10,0.3); }
+  .mode-tag { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+  .mode-some { background: var(--accent-cyan-glow); color: var(--accent-cyan); }
+  .mode-standard { background: var(--accent-blue-glow); color: var(--accent-blue); }
 
-  /* LOG PANEL */
-  .log-panel{background:var(--bg2);border-top:1px solid var(--border);display:flex;flex-direction:column;grid-column:1/3;height:160px}
-  .log-inner{overflow-y:auto;flex:1;padding:6px 16px 10px}
-  .log-entry{display:flex;gap:10px;padding:2px 0;font-size:10px;line-height:1.6;border-bottom:1px solid rgba(232,132,10,0.04)}
-  .log-time{color:var(--amber-dim);flex-shrink:0;}
-  .log-msg.success{color:#4dff91}
-  .log-msg.error{color:#ff4d4d}
+  /* COLLAPSIBLE LOG FOOTER */
+  .log-footer {
+    background: var(--bg-panel); border-top: 1px solid var(--border); flex-shrink: 0; z-index: 50; margin-top: auto;
+  }
+  .log-header {
+    padding: 10px 24px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+    transition: background 0.2s; user-select: none;
+  }
+  .log-header:hover { background: var(--bg-hover); }
+  .log-title { font-size: 12px; font-weight: 600; color: var(--text-main); display: flex; align-items: center; }
+  .log-badge { background: rgba(255,255,255,0.08); padding: 2px 8px; border-radius: 999px; font-size: 10px; color: var(--text-muted); font-family: 'Inter', sans-serif; }
+  .log-toggle-icon { font-size: 10px; color: var(--text-muted); transition: transform 0.3s; }
+  
+  .log-inner-wrap {
+    height: 0; overflow: hidden; transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .log-footer.expanded .log-inner-wrap {
+    height: 220px; border-top: 1px solid var(--border);
+  }
+  .log-footer.expanded .log-toggle-icon { transform: rotate(180deg); }
+  
+  .log-inner {
+    padding: 12px 24px; font-family: 'JetBrains Mono', monospace; font-size: 11px; overflow-y: auto; height: 100%;
+  }
+  .log-entry { display: flex; gap: 16px; padding: 4px 0; color: var(--text-muted); }
+  .log-time { color: #6B7280; flex-shrink: 0; }
+  .log-msg.success { color: var(--success); }
+  .log-msg.error { color: var(--danger); }
 
   /* TOAST */
-  #toastContainer { position:fixed; left:20px; bottom:20px; z-index:9999; display:flex; flex-direction:column; gap:10px; width:300px; }
-  .toast { background:#181510; border-left:3px solid #4dff91; padding:12px 15px; box-shadow:0 5px 15px rgba(0,0,0,0.5); font-size:11px; animation:slideIn 0.3s forwards, slideOut 0.3s forwards 4.7s; line-height:1.4; cursor:pointer; user-select:none; position:relative; }
-  .toast::after{content:'✕';position:absolute;top:7px;right:10px;font-size:9px;opacity:0.35;}
-  .toast:hover::after{opacity:1;}
-  .toast.error { border-left-color:#ff4d4d; }
-  @keyframes slideIn { from{transform:translateX(-120%);} to{transform:translateX(0);} }
-  @keyframes slideOut { to{transform:translateX(-120%);opacity:0;} }
+  #toastContainer { position: fixed; right: 24px; bottom: 48px; z-index: 9999; display: flex; flex-direction: column; gap: 12px; width: 320px; }
+  .toast {
+    background: var(--bg-panel); border: 1px solid var(--border); border-left: 4px solid var(--success); border-radius: 8px;
+    padding: 16px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); font-size: 13px; color: var(--text-main);
+    animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards, slideOut 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards 4.7s; cursor: pointer; position: relative;
+  }
+  .toast::after { content: '✕'; position: absolute; top: 16px; right: 16px; font-size: 10px; color: var(--text-muted); }
+  .toast.error { border-left-color: var(--danger); }
+  .toast.info { border-left-color: var(--accent-blue); }
+  @keyframes slideIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  @keyframes slideOut { to { transform: translateX(120%); opacity: 0; } }
 
-  ::-webkit-scrollbar{width:4px;height:4px}
-  ::-webkit-scrollbar-track{background:var(--bg)}
-  ::-webkit-scrollbar-thumb{background:var(--amber-dim);border-radius:0}
-
-  .view-container { display:flex; flex-direction:column; flex:1; overflow:hidden; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: #4B5563; }
 </style>
 </head>
 <body>
-
-<div class="scanline"></div>
 
 <div id="loginScreen">
   <div class="login-box">
     <h2>NEXUS LOGIN</h2>
     <input type="text" id="usernameInput" placeholder="Username" autocomplete="off" onkeydown="if(event.key==='Enter')attemptLogin()">
     <input type="password" id="passwordInput" placeholder="Password" onkeydown="if(event.key==='Enter')attemptLogin()">
-    <button onclick="attemptLogin()">ACCESS PORTAL</button>
-    <div id="loginError" style="color:#ff4d4d; font-size:10px; margin-top:10px; text-align:center; display:none;">Invalid Credentials</div>
+    <button onclick="attemptLogin()">Access Portal</button>
+    <div id="loginError" style="color:var(--danger); font-size:12px; font-weight:500; margin-top:16px; text-align:center; display:none;">Invalid Credentials</div>
   </div>
 </div>
 
 <div id="dragOverlay">
   <div class="drop-half std" id="dropStd">
-    <h1>STANDARD MODE</h1>
+    <h1>Standard Mode</h1>
     <p>Drop file to extract 'New' records.</p>
   </div>
   <div class="drop-half some" id="dropSome">
-    <h1>SOME MODE</h1>
+    <h1>Some Mode</h1>
     <p>Drop file to extract 'Some' records.</p>
   </div>
 </div>
@@ -147,69 +271,68 @@
 <div class="root">
   <div class="topbar">
     <div class="topbar-left">
-      <div class="logo">ZORG<span>-Ω</span> / SHOWS<span> SORTER</span></div>
-      <div class="status-pill">● ACTIVE</div>
+      <div class="logo">Z-LEADS <span>/ Sorter</span></div>
+      <div class="status-pill">Active System</div>
     </div>
     <div class="topbar-right">
-      <div class="stat-mini"><div class="val" id="statTotal">0</div><div class="lbl">Total</div></div>
-      <div class="stat-mini"><div class="val" id="statSorted" style="color:#4dff91">0</div><div class="lbl">Sorted</div></div>
-      <div class="stat-mini"><div class="val" id="statErrors" style="color:#ff4d4d">0</div><div class="lbl">Errors</div></div>
+      <div class="stat-mini"><div class="val" id="statTotal">0</div><div class="lbl">Total Files</div></div>
+      <div class="stat-mini"><div class="val" id="statSorted" style="color:var(--success)">0</div><div class="lbl">Processed</div></div>
+      <div class="stat-mini"><div class="val" id="statErrors" style="color:var(--danger)">0</div><div class="lbl">Issues</div></div>
       <div class="clock" id="clock">--:--:--</div>
-      <a id="adminLink" href="/admin.html" class="admin-btn">⚙ ADMIN</a>
+      <a id="adminLink" href="/admin.html" class="admin-btn" style="display:none;">Admin Config</a>
     </div>
   </div>
 
   <div class="main">
     <div class="sidebar">
-      <div class="panel-label">Navigation</div>
+      <div class="panel-label">Workspace</div>
       <div class="nav-item active" data-view="files" onclick="setView(this, 'files')">
-        <span class="nav-icon">▤</span> My Files <span class="nav-badge" id="nbAll">0</span>
+        <span class="nav-icon">📁</span> My Files <span class="nav-badge" id="nbAll">0</span>
       </div>
 
-      <div class="sidebar-section">
-        <div class="panel-label">Analytics</div>
-        <div class="nav-item" data-view="report" onclick="setView(this, 'report')">
-          <span class="nav-icon" style="color:#12DAF4;">📊</span> Z-Report
-        </div>
+      <div class="panel-label" style="margin-top: 8px;">Analytics</div>
+      <div class="nav-item" data-view="report" onclick="setView(this, 'report')">
+        <span class="nav-icon" style="color:var(--accent-blue);">📊</span> Activity Report
       </div>
 
-      <div class="sidebar-section" id="regionNav">
-        <div class="panel-label">Region</div>
-        <div class="nav-item active" onclick="setRegion(this, '')"><span class="nav-icon">◉</span> All regions</div>
-        <div class="nav-item" onclick="setRegion(this, 'USA')"><span class="nav-icon">▸</span> USA / Canada</div>
-        <div class="nav-item" onclick="setRegion(this, 'UK')"><span class="nav-icon">▸</span> UK / Europe</div>
+      <div id="regionNav">
+        <div class="panel-label" style="margin-top: 8px;">Filters</div>
+        <div class="nav-item active" onclick="setRegion(this, '')"><span class="nav-icon">🌍</span> All Regions</div>
+        <div class="nav-item" onclick="setRegion(this, 'USA')"><span class="nav-icon">🇺🇸</span> USA / Canada</div>
+        <div class="nav-item" onclick="setRegion(this, 'UK')"><span class="nav-icon">🇬🇧</span> UK / Europe</div>
       </div>
+      
       <div class="agent-display">
         <span id="displayUser">Loading...</span>
-        <button class="logout-btn" onclick="logout()">LOGOUT</button>
+        <button class="logout-btn" onclick="logout()">Logout</button>
       </div>
     </div>
 
-    <div style="display:flex; flex-direction:column; flex:1; overflow:hidden;">
+    <div class="content-wrapper">
         <div class="view-container" id="filesView">
           <div class="toolbar">
             <div class="search-box">
-              <span>$</span>
-              <input type="text" id="searchInput" placeholder="filter by name..." oninput="renderTable()">
+              <span style="color:var(--text-muted)">🔍</span>
+              <input type="text" id="searchInput" placeholder="Search by file name..." oninput="renderTable()">
             </div>
 
             <input type="file" id="fileStd" style="display:none" accept=".xlsx" onchange="manualUpload(this, 'standard')">
             <input type="file" id="fileSome" style="display:none" accept=".xlsx" onchange="manualUpload(this, 'some')">
 
-            <button class="filter-btn btn-std" style="margin-left:auto;" onclick="document.getElementById('fileStd').click()">+ UPLOAD (STANDARD)</button>
-            <button class="filter-btn btn-some" onclick="document.getElementById('fileSome').click()">+ UPLOAD (SOME)</button>
+            <button class="filter-btn btn-std" style="margin-left:auto;" onclick="document.getElementById('fileStd').click()">+ Upload Standard</button>
+            <button class="filter-btn btn-some" onclick="document.getElementById('fileSome').click()">+ Upload Some</button>
           </div>
 
           <div class="table-wrap">
-            <table class="file-table">
+            <table class="file-table" id="mainTable">
               <thead>
                 <tr>
-                  <th>Filename</th>
-                  <th>Modified</th>
-                  <th>Size</th>
-                  <th>Region</th>
-                  <th>Destination</th>
-                  <th>Status</th>
+                  <th style="width: 35%;">Filename</th>
+                  <th style="width: 15%;">Modified</th>
+                  <th style="width: 10%;">Size</th>
+                  <th style="width: 10%;">Region</th>
+                  <th style="width: 20%;">Destination</th>
+                  <th style="width: 10%;">Status</th>
                 </tr>
               </thead>
               <tbody id="tableBody"></tbody>
@@ -219,32 +342,38 @@
 
         <div class="view-container" id="reportView" style="display:none;">
           <div class="toolbar">
-            <span style="color:#12DAF4; font-weight:700; letter-spacing:2px; font-size:14px; margin-left:10px;">MY Z-REPORT DATA</span>
-            <button class="filter-btn btn-some" onclick="fetchUserReport()" style="margin-left:auto;">↻ REFRESH DATA</button>
+            <span style="font-weight:600; font-size:14px; color:var(--text-main);">My Production Report</span>
+            <button class="filter-btn btn-some" onclick="fetchUserReport()" style="margin-left:auto;">↻ Refresh Data</button>
           </div>
           <div class="table-wrap">
-            <table class="file-table">
+            <table class="file-table" id="reportTable">
               <thead>
                 <tr>
-                  <th>Date</th>
-                  <th>Mode</th>
-                  <th>File Name</th>
-                  <th>Shown Count</th>
-                  <th>Total (Hidden + Shown)</th>
+                  <th style="width: 15%;">Date</th>
+                  <th style="width: 10%;">Mode</th>
+                  <th style="width: 45%;">Show</th>
+                  <th style="width: 15%;">Net</th>
+                  <th style="width: 15%;">Gross</th>
                 </tr>
               </thead>
               <tbody id="reportTableBody"></tbody>
             </table>
           </div>
         </div>
-    </div>
 
-    <div class="log-panel">
-      <div class="panel-label" style="display:flex;justify-content:space-between;padding-right:14px">
-        <span>Personal Activity Log</span>
-        <span id="logCount" style="color:var(--amber-dim);font-size:9px">0 entries</span>
-      </div>
-      <div class="log-inner" id="logInner"></div>
+        <div class="log-footer" id="logFooter">
+          <div class="log-header" onclick="toggleLogs()">
+            <div class="log-title">
+              <span style="margin-right: 12px;">System Activity Terminal</span>
+              <span class="log-badge" id="logCount">0 entries</span>
+            </div>
+            <span class="log-toggle-icon">▲</span>
+          </div>
+          <div class="log-inner-wrap">
+            <div class="log-inner" id="logInner"></div>
+          </div>
+        </div>
+
     </div>
   </div>
 </div>
@@ -256,6 +385,54 @@ const monthNames=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","N
 let currentUser = null;
 let files = [], logs = [], currentRegion = '';
 let currentView = 'files';
+
+// --- TABLE COLUMN RESIZING ---
+function initTableResizers() {
+    document.querySelectorAll('.file-table').forEach(table => {
+        const cols = table.querySelectorAll('th');
+        [].forEach.call(cols, function (col) {
+            // Create a resizer element
+            const resizer = document.createElement('div');
+            resizer.classList.add('resizer');
+            col.appendChild(resizer);
+            createResizableColumn(col, resizer);
+        });
+    });
+}
+
+function createResizableColumn(col, resizer) {
+    let x = 0;
+    let w = 0;
+    
+    const mouseDownHandler = function (e) {
+        x = e.clientX;
+        const styles = window.getComputedStyle(col);
+        w = parseInt(styles.width, 10);
+        
+        document.addEventListener('mousemove', mouseMoveHandler);
+        document.addEventListener('mouseup', mouseUpHandler);
+        resizer.classList.add('resizing');
+    };
+    
+    const mouseMoveHandler = function (e) {
+        const dx = e.clientX - x;
+        col.style.width = `${w + dx}px`;
+    };
+    
+    const mouseUpHandler = function () {
+        resizer.classList.remove('resizing');
+        document.removeEventListener('mousemove', mouseMoveHandler);
+        document.removeEventListener('mouseup', mouseUpHandler);
+    };
+    
+    resizer.addEventListener('mousedown', mouseDownHandler);
+}
+
+// --- UI TOGGLES ---
+function toggleLogs() {
+    const footer = document.getElementById('logFooter');
+    footer.classList.toggle('expanded');
+}
 
 // --- AUTH ---
 function checkAuth() {
@@ -295,7 +472,7 @@ async function fetchUserData() {
         files = data.files.map(f => ({ ...f, mtime: new Date(f.mtime) }));
         logs = data.logs;
         if (currentView === 'files') renderTable();
-        renderLog();
+        renderLog(); 
         updateStats();
     } catch (e) { console.error("Data fetch failed"); }
 }
@@ -307,17 +484,17 @@ async function fetchUserReport() {
         const tbody = document.getElementById('reportTableBody');
 
         if (!json.data || json.data.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--amber-dim); padding:40px;">No report data found. Process a file first!</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:40px;">No report data found. Process a file first!</td></tr>`;
             return;
         }
 
         tbody.innerHTML = json.data.map(row => `
             <tr>
-                <td style="color:var(--amber-dim)">${row.date || '—'}</td>
+                <td style="color:var(--text-muted)">${row.date || '—'}</td>
                 <td><span class="mode-tag ${row.mode === 'SOME' ? 'mode-some' : 'mode-standard'}">${row.mode || '—'}</span></td>
-                <td style="color:var(--amber-bright); font-weight:700;">${row.filename || '—'}</td>
-                <td style="color:#4dff91; font-weight:700;">${row.shown || 0}</td>
-                <td style="color:var(--amber); font-weight:700;">${row.total || 0}</td>
+                <td style="color:var(--text-main); font-weight:500;" title="${row.filename}">${row.filename || '—'}</td>
+                <td style="color:var(--success); font-weight:600;">${row.shown || 0}</td>
+                <td style="color:var(--text-muted); font-weight:600;">${row.total || 0}</td>
             </tr>
         `).join('');
     } catch (e) {
@@ -421,28 +598,35 @@ function renderTable() {
     });
 
     const tbody = document.getElementById('tableBody');
-    const statusHtml = { sorted: '<span class="status-icon ok">✓ SORTED</span>', error: '<span class="status-icon err">✕ ERROR</span>' };
+    const statusHtml = { sorted: '<span class="status-icon ok">✓ Sorted</span>', error: '<span class="status-icon err">✕ Error</span>' };
 
     tbody.innerHTML = list.map(f => {
         let displayBase = f.name;
         let ext = displayBase.lastIndexOf('.')>-1 ? displayBase.slice(displayBase.lastIndexOf('.')) : '';
         let base = displayBase.slice(0, displayBase.length-ext.length);
         return`<tr>
-          <td><span class="file-name">${base}</span><span class="file-ext">${ext}</span></td>
+          <td title="${f.name}"><span class="file-name">${base}</span><span class="file-ext">${ext}</span></td>
           <td class="date-cell">${fmtDate(f.mtime)}</td>
-          <td class="size-cell">${fmtSize(f.size)}</td>
+          <td class="size-cell mono">${fmtSize(f.size)}</td>
           <td><span class="region-tag ${f.region.toLowerCase()}">${f.region}</span></td>
-          <td class="dest-cell">${f.destPath}</td>
+          <td class="dest-cell mono" title="${f.destPath}">${f.destPath}</td>
           <td>${statusHtml[f.status] || f.status}</td>
         </tr>`;
     }).join('');
 }
 
 function renderLog() {
-    document.getElementById('logInner').innerHTML = logs.map(l =>
+    const logInner = document.getElementById('logInner');
+    const logCount = document.getElementById('logCount');
+    if (!logInner || !logCount) return;
+
+    logInner.innerHTML = logs.map(l =>
         `<div class="log-entry"><span class="log-time">${l.ts}</span><span class="log-msg ${l.type}">${l.msg}</span></div>`
     ).join('');
-    document.getElementById('logCount').textContent = `${logs.length} entries`;
+    logCount.textContent = `${logs.length} entries`;
+    
+    // Auto-scroll log to bottom when updated
+    logInner.scrollTop = logInner.scrollHeight;
 }
 
 function updateStats() {
@@ -456,7 +640,7 @@ function dismissToast(toast) {
     toast.style.animation = 'none';
     toast.style.transition = 'transform 0.15s ease, opacity 0.15s ease';
     requestAnimationFrame(() => {
-        toast.style.transform = 'translateX(-120%)';
+        toast.style.transform = 'translateX(120%)';
         toast.style.opacity   = '0';
     });
     setTimeout(() => toast.remove(), 160);
@@ -473,12 +657,10 @@ function showToast(htmlMsg, type) {
 }
 
 // ── KEYBOARD NAVIGATION ───────────────────────
-// Login screen: Enter to submit, Escape to clear error
 document.addEventListener('keydown', (e) => {
     const loginVisible = document.getElementById('loginScreen').style.display !== 'none'
-                      && !document.getElementById('loginScreen').style.display; // default = visible
+                      && !document.getElementById('loginScreen').style.display;
 
-    // Detect login screen by checking if it's not hidden
     const loginScreen = document.getElementById('loginScreen');
     const loginShowing = loginScreen && loginScreen.style.display !== 'none'
                       && getComputedStyle(loginScreen).display !== 'none';
@@ -494,7 +676,6 @@ document.addEventListener('keydown', (e) => {
         return;
     }
 
-    // Escape: dismiss all toasts
     if (e.key === 'Escape') {
         document.querySelectorAll('.toast').forEach(t => dismissToast(t));
     }
@@ -505,6 +686,8 @@ setInterval(() => {
     document.getElementById('clock').textContent=[now.getHours(),now.getMinutes(),now.getSeconds()].map(n=>String(n).padStart(2,'0')).join(':');
 }, 1000);
 
+// Initialize column resizers on load
+initTableResizers();
 checkAuth();
 </script>
 </body>
