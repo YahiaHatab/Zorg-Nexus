@@ -32,7 +32,7 @@
       background: var(--bg-base);
       color: var(--text-main);
       font-family: 'Inter', sans-serif;
-      min-height: 100vh;
+      height: 100vh;
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -157,8 +157,9 @@
     .tab-content {
       display: none;
       flex: 1;
-      overflow: auto;
+      overflow-y: auto;
       padding: 20px 24px;
+      min-height: 0;
     }
 
     .tab-content.active {
@@ -533,6 +534,54 @@
       background: var(--border);
       border-radius: 10px;
     }
+
+    /* ── SEARCH BAR ── */
+    .search-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-base);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 12px;
+      transition: border-color 0.2s;
+      min-width: 220px;
+    }
+
+    .search-bar:focus-within {
+      border-color: var(--accent-blue);
+    }
+
+    .search-bar input {
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .search-bar input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .search-clear {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 11px;
+      padding: 0;
+      line-height: 1;
+      display: none;
+      transition: color 0.15s;
+    }
+
+    .search-clear:hover { color: var(--text-main); }
+
+    .search-bar.has-value .search-clear { display: block; }
   </style>
 </head>
 
@@ -619,12 +668,19 @@
         </div>
         <div style="overflow-y:auto; display:flex; flex-direction:column; background:var(--bg-base);">
           <div
-            style="padding:12px 20px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--bg-base); z-index:10; display:flex; justify-content:space-between; align-items:center;">
+            style="padding:12px 20px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--bg-base); z-index:10; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
             <span id="logPanelTitleText"
               style="font-size:11px; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.05em;">Today's
               Activity</span>
-            <button id="backToGlobalBtn" class="btn btn-sm btn-blue" style="display:none;"
-              onclick="resetToGlobalLogs()">← All Agents</button>
+            <div style="display:flex; align-items:center; gap:8px; margin-left:auto;">
+              <div class="search-bar" id="logSearchBar" style="min-width:160px;">
+                <span style="color:var(--text-muted);font-size:13px;">🔍</span>
+                <input type="text" id="logSearch" placeholder="Filter..." oninput="onLogSearch(this)">
+                <button class="search-clear" id="logSearchClear" onclick="clearLogSearch()">✕</button>
+              </div>
+              <button id="backToGlobalBtn" class="btn btn-sm btn-blue" style="display:none;"
+                onclick="resetToGlobalLogs()">← All Agents</button>
+            </div>
           </div>
           <table class="data-table compact" style="margin-bottom:auto;">
             <thead>
@@ -649,6 +705,11 @@
       <div class="panel-header">
         <span>Historical Records</span>
         <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <div class="search-bar" id="ledgerSearchBar">
+            <span style="color:var(--text-muted);font-size:13px;">🔍</span>
+            <input type="text" id="ledgerSearch" placeholder="Search file, agent or time..." oninput="onLedgerSearch(this)">
+            <button class="search-clear" id="ledgerSearchClear" onclick="clearLedgerSearch()">✕</button>
+          </div>
           <input type="date" id="ledgerDatePicker" class="date-input" onchange="fetchLedgerDay()">
           <button class="btn btn-green" onclick="exportDay()">⬇ Export to Excel</button>
         </div>
@@ -894,10 +955,31 @@
       document.getElementById('backToGlobalBtn').style.display = 'none';
     }
 
+    // tracks the full unfiltered dataset for the log panel
+    let _logSource = [];
+
     function renderLogs(data, title) {
+      _logSource = data;
       document.getElementById('logPanelTitleText').textContent = title;
-      // Sort newest first by time string
+      applyLogFilter();
+    }
+
+    function applyLogFilter() {
+      const q = (document.getElementById('logSearch')?.value || '').toLowerCase().trim();
+      const data = q
+        ? _logSource.filter(r =>
+            (r.filename || '').toLowerCase().includes(q) ||
+            (r.agent    || '').toLowerCase().includes(q) ||
+            (r.time     || '').toLowerCase().includes(q)
+          )
+        : _logSource;
+
+      // Sort newest first
       const sorted = [...data].sort((a, b) => (b.time || '').localeCompare(a.time || ''));
+      const count = sorted.length;
+      const total = _logSource.length;
+      const suffix = q && count !== total ? ` (${count}/${total})` : '';
+
       document.getElementById('logBody').innerHTML = sorted.map(row => {
         const cls = row.mode === 'SOME' ? 'mode-some' : 'mode-standard';
         return `<tr>
@@ -907,7 +989,20 @@
             <td style="color:var(--text-muted)">${row.total}</td>
             <td class="stat-highlight">${row.shown}</td>
         </tr>`;
-      }).join('') || `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:30px;">No entries.</td></tr>`;
+      }).join('') || `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:30px;">No entries match your search.</td></tr>`;
+    }
+
+    function onLogSearch(input) {
+      const bar = document.getElementById('logSearchBar');
+      if (input.value) bar.classList.add('has-value'); else bar.classList.remove('has-value');
+      applyLogFilter();
+    }
+
+    function clearLogSearch() {
+      const input = document.getElementById('logSearch');
+      input.value = '';
+      document.getElementById('logSearchBar').classList.remove('has-value');
+      applyLogFilter();
     }
 
     // ══════════════════════════════════════════════
@@ -943,9 +1038,34 @@
       document.getElementById('ls-leads').textContent = day.summary.totalLeads;
       document.getElementById('ls-shown').textContent = day.summary.totalShown;
 
-      // Records table — newest first
-      const sorted = [...day.records].sort((a, b) => (b.time || '').localeCompare(a.time || ''));
-      tbody.innerHTML = sorted.map(rec => {
+      // Records table — newest first, searchable
+      _ledgerSource = [...day.records].sort((a, b) => (b.time || '').localeCompare(a.time || ''));
+      _ledgerDate   = date;
+      applyLedgerFilter();
+    }
+
+    // Source cache so search never needs to re-fetch
+    let _ledgerSource = [];
+    let _ledgerDate   = '';
+
+    function applyLedgerFilter() {
+      const q = (document.getElementById('ledgerSearch')?.value || '').toLowerCase().trim();
+      const filtered = q
+        ? _ledgerSource.filter(rec =>
+            (rec.filename || '').toLowerCase().includes(q) ||
+            (rec.agent    || '').toLowerCase().includes(q) ||
+            (rec.time     || '').toLowerCase().includes(q)
+          )
+        : _ledgerSource;
+
+      const tbody = document.getElementById('ledgerBody');
+      if (!filtered.length) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:40px;">${q ? 'No records match your search.' : `No records found for ${_ledgerDate}.`}</td></tr>`;
+        return;
+      }
+
+      const date = _ledgerDate;
+      tbody.innerHTML = filtered.map(rec => {
         const cls = rec.mode === 'SOME' ? 'mode-some' : 'mode-standard';
         return `<tr>
             <td style="color:var(--text-muted);font-family:'JetBrains Mono',monospace;font-size:12px;">${rec.time || '—'}</td>
@@ -960,6 +1080,19 @@
             </td>
         </tr>`;
       }).join('');
+    }
+
+    function onLedgerSearch(input) {
+      const bar = document.getElementById('ledgerSearchBar');
+      if (input.value) bar.classList.add('has-value'); else bar.classList.remove('has-value');
+      applyLedgerFilter();
+    }
+
+    function clearLedgerSearch() {
+      const input = document.getElementById('ledgerSearch');
+      input.value = '';
+      document.getElementById('ledgerSearchBar').classList.remove('has-value');
+      applyLedgerFilter();
     }
 
     function exportDay() {
