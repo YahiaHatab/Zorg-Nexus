@@ -45,6 +45,12 @@ if (!fs.existsSync(analyticsPath)) {
     console.log('> Created analytics.json');
 }
 
+const showsPath = path.join(__dirname, 'shows.json');
+if (!fs.existsSync(showsPath)) {
+    fs.writeFileSync(showsPath, JSON.stringify([], null, 2));
+    console.log('> Created default shows.json');
+}
+
 // Load config AFTER ensuring it exists
 let config = JSON.parse(fs.readFileSync(configPath));
 
@@ -413,6 +419,102 @@ app.get('/api/user/report', (req, res) => {
     } catch (e) {
         res.status(500).json({ success: false, error: e.message });
     }
+});
+
+// ─────────────────────────────────────────────
+//  SHOW HOPPER
+// ─────────────────────────────────────────────
+app.get('/api/shows', (req, res) => {
+    const shows = JSON.parse(fs.readFileSync(showsPath));
+    res.json({ success: true, shows });
+});
+
+app.post('/api/shows/upload', upload.single('file'), async (req, res) => {
+    if (!req.file) return res.status(400).json({ error: 'No file uploaded.' });
+    try {
+        const workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.readFile(req.file.path);
+        const sheet = workbook.worksheets[0];
+        const newShows = [];
+        
+        let lastShow = null;
+        sheet.eachRow((row, rowNumber) => {
+            if (rowNumber === 1) return; // skip header
+            
+            const getVal = (col) => {
+                let cell = row.getCell(col).value;
+                if (!cell) return '';
+                if (typeof cell === 'object' && cell.text) return cell.text;
+                if (typeof cell === 'object' && cell.hyperlink) return cell.hyperlink;
+                return cell.toString();
+            };
+            
+            const showName = getVal(1).trim();
+            const link = getVal(2).trim();
+            const status = getVal(3).trim();
+            
+            if (showName) {
+                if (!status) {
+                    lastShow = {
+                        id: Date.now().toString(36) + Math.random().toString(36).substr(2, 9),
+                        showName: showName,
+                        link: link ? [link] : [],
+                        agentName: getVal(4),
+                        ld: getVal(5),
+                        lists: getVal(6),
+                        comment: getVal(7),
+                        date: getVal(8),
+                        pinnedTo: null // for assignment logic
+                    };
+                    newShows.push(lastShow);
+                } else {
+                    lastShow = null;
+                }
+            } else if (!showName && link && lastShow) {
+                // Continuation row for the last show
+                lastShow.link.push(link);
+                const ld = getVal(5), lists = getVal(6), comment = getVal(7);
+                if (ld) lastShow.ld += (lastShow.ld ? '\n' : '') + ld;
+                if (lists) lastShow.lists += (lastShow.lists ? '\n' : '') + lists;
+                if (comment) lastShow.comment += (lastShow.comment ? '\n' : '') + comment;
+            }
+        });
+        
+        fs.unlinkSync(req.file.path);
+        const currentShows = JSON.parse(fs.readFileSync(showsPath));
+        const updatedShows = [...currentShows, ...newShows];
+        fs.writeFileSync(showsPath, JSON.stringify(updatedShows, null, 2));
+        
+        res.json({ success: true, added: newShows.length, shows: updatedShows });
+    } catch (error) {
+        if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+app.post('/api/shows/update', (req, res) => {
+    // Save reorder and pinning
+    fs.writeFileSync(showsPath, JSON.stringify(req.body.shows, null, 2));
+    res.json({ success: true });
+});
+
+app.get('/api/shows/next', (req, res) => {
+    const { username } = req.query;
+    const currentShows = JSON.parse(fs.readFileSync(showsPath));
+    if (currentShows.length === 0) return res.json({ success: false, message: 'No shows available' });
+    
+    // Check for pinned
+    const pinnedShowIndex = currentShows.findIndex(s => s.pinnedTo === username);
+    if (pinnedShowIndex !== -1) {
+        const show = currentShows.splice(pinnedShowIndex, 1)[0];
+        fs.writeFileSync(showsPath, JSON.stringify(currentShows, null, 2));
+        return res.json({ success: true, show });
+    }
+    
+    // Default next show
+    const show = currentShows.shift();
+    fs.writeFileSync(showsPath, JSON.stringify(currentShows, null, 2));
+    res.json({ success: true, show });
 });
 
 // ─────────────────────────────────────────────

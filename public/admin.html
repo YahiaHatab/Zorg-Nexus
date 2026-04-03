@@ -633,6 +633,7 @@
     <div class="tab active" onclick="switchTab('leaderboard', this)">📡 Live Leaderboard</div>
     <div class="tab" onclick="switchTab('ledger', this)">🗂 Data Ledger</div>
     <div class="tab" onclick="switchTab('analytics', this)">📊 Analytics</div>
+    <div class="tab" onclick="switchTab('hopper', this)">🚀 Show Hopper</div>
     <div class="tab" onclick="switchTab('config', this)">⚙ Config</div>
     <div class="tab" onclick="switchTab('users', this)">👥 Users</div>
   </div>
@@ -844,6 +845,37 @@
       </div>
     </div>
   </div>
+  <!-- ══════════ TAB: HOPPER ══════════ -->
+  <div id="tab-hopper" class="tab-content">
+    <div class="panel" style="flex:1; display:flex; flex-direction:column; min-height:0;">
+      <div class="panel-header">
+        Show Hopper Queue
+        <div style="display:flex; align-items:center; gap:10px;">
+           <input type="file" id="hopperUpload" style="display:none;" accept=".xlsx, .xls" onchange="handleHopperUpload(event)">
+           <button class="btn btn-blue" onclick="document.getElementById('hopperUpload').click()">+ Upload Excel</button>
+        </div>
+      </div>
+      <div style="overflow-y:auto; flex:1; transition: background 0.2s;" id="hopperDropZone">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Show Name</th>
+              <th>Link</th>
+              <th>Status</th>
+              <th>Agent Name</th>
+              <th>L/D</th>
+              <th>Name of Lists</th>
+              <th>Comment</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="hopperBody">
+             <tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:30px;">Queue is empty. Drop an Excel file here or click Upload.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 
   <div id="toastContainer"></div>
 
@@ -856,6 +888,7 @@
     let currentTab = 'leaderboard';
     let configData = {};
     let usersData = [];
+    let showsData = [];
     let selectedLeaderIdx = -1;
     let chartLine = null, chartBar = null, chartDonut = null;
 
@@ -884,6 +917,7 @@
       if (currentTab === 'leaderboard') fetchTodayData();
       if (currentTab === 'ledger') fetchLedgerDay();
       if (currentTab === 'analytics') fetchAnalytics();
+      if (currentTab === 'hopper') fetchShows();
       if (currentTab === 'config') fetchConfig();
       if (currentTab === 'users') fetchUsers();
     }
@@ -1455,8 +1489,8 @@
         return;
       }
 
-      const tabKeys = ['1', '2', '3', '4', '5'];
-      const tabIds = ['leaderboard', 'ledger', 'analytics', 'config', 'users'];
+      const tabKeys = ['1', '2', '3', '4', '5', '6'];
+      const tabIds = ['leaderboard', 'ledger', 'analytics', 'hopper', 'config', 'users'];
       if (tabKeys.includes(e.key)) {
         const i = tabKeys.indexOf(e.key);
         const t = document.querySelector(`.tab:nth-child(${i + 1})`);
@@ -1481,6 +1515,101 @@
 
       if (currentTab === 'leaderboard' && e.key === 'Enter') { resetToGlobalLogs(); return; }
     });
+
+    // ══════════════════════════════════════════════
+    //  HOPPER LOGIC
+    // ══════════════════════════════════════════════
+    async function fetchShows() {
+      try {
+        const res = await fetch('/api/shows');
+        const json = await res.json();
+        if (json.success) {
+          showsData = json.shows || [];
+          renderShowsTable();
+        }
+      } catch (e) { showToast('Failed to load shows.', 'error'); }
+    }
+    
+    function renderShowsTable() {
+      const tbody = document.getElementById('hopperBody');
+      if (!showsData.length) {
+         tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:40px;">Queue is empty. Drop an Excel file here or click Upload.</td></tr>`;
+         return;
+      }
+      tbody.innerHTML = showsData.map(s => {
+          const linksArray = Array.isArray(s.link) ? s.link : [s.link].filter(Boolean);
+          const linksHtml = linksArray.map(l => `<a href="${escHtml(l)}" target="_blank" style="color:var(--accent-blue);text-decoration:none;word-break:break-all;font-size:11px;display:block;">${escHtml(l)}</a>`).join('<div style="height:4px;"></div>');
+          
+          const agentOptions = `<option value="">— Unassigned —</option>` + 
+              usersData.map(u => `<option value="${escHtml(u.username)}" ${s.agentName === u.username ? 'selected' : ''}>${escHtml(u.username)}</option>`).join('');
+
+          return `<tr>
+              <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escHtml(s.showName)}">${escHtml(s.showName)}</td>
+              <td style="max-width:300px;vertical-align:top;">
+                <div style="max-height:80px;overflow-y:auto;padding-right:4px;">${linksHtml || '—'}</div>
+              </td>
+              <td><span class="mode-tag mode-standard">Pending</span></td>
+              <td style="min-width:140px;">
+                <select class="user-input" style="padding:5px;font-size:12px;" onchange="updateShowAgent('${s.id}', this.value)">
+                   ${agentOptions}
+                </select>
+              </td>
+              <td style="white-space:pre-wrap;">${escHtml(s.ld || '—')}</td>
+              <td style="white-space:pre-wrap;">${escHtml(s.lists || '—')}</td>
+              <td style="color:var(--warning);white-space:pre-wrap;">${escHtml(s.comment || '—')}</td>
+              <td style="color:var(--text-muted);">${escHtml(s.date || '—')}</td>
+          </tr>`;
+      }).join('');
+    }
+
+    async function updateShowAgent(id, newAgent) {
+       const show = showsData.find(s => s.id === id);
+       if (show) {
+          show.agentName = newAgent;
+          try {
+             const res = await fetch('/api/shows/update', { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' }, 
+                body: JSON.stringify({ shows: showsData }) 
+             });
+             if ((await res.json()).success) showToast('✅ Agent updated.', 'success');
+             else showToast('❌ Error saving.', 'error');
+          } catch(e) { showToast('❌ Server error.', 'error'); }
+       }
+    }
+
+    async function handleHopperUpload(e) {
+      if (!e.target.files.length) return;
+      uploadShowFile(e.target.files[0]);
+    }
+    
+    function initHopperDrag() {
+      const dropZone = document.getElementById('hopperDropZone');
+      if (!dropZone) return;
+      dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.background = 'var(--bg-hover)'; });
+      dropZone.addEventListener('dragleave', e => { e.preventDefault(); dropZone.style.background = 'transparent'; });
+      dropZone.addEventListener('drop', e => {
+        e.preventDefault();
+        dropZone.style.background = 'transparent';
+        if (e.dataTransfer.files.length) uploadShowFile(e.dataTransfer.files[0]);
+      });
+    }
+
+    async function uploadShowFile(file) {
+      const formData = new FormData();
+      formData.append('file', file);
+      try {
+        showToast('Uploading shows...', 'info');
+        const res = await fetch('/api/shows/upload', { method: 'POST', body: formData });
+        const json = await res.json();
+        if (json.success) {
+           showToast(`✅ Successfully parsed ${json.added} shows.`, 'success');
+           fetchShows();
+        } else {
+           showToast(`❌ Upload failed: ${json.error}`, 'error');
+        }
+      } catch(e) { showToast('❌ Server error.', 'error'); }
+    }
 
     // ══════════════════════════════════════════════
     //  SOCKET.IO
@@ -1514,6 +1643,8 @@
 
     // ── BOOT ─────────────────────────────────────
     fetchTodayData();
+    fetchUsers(); // Load users for dropdowns
+    initHopperDrag();
   </script>
 </body>
 
