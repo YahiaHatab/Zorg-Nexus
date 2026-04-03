@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ZORG NEXUS | Agent Portal</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
 
@@ -1079,6 +1080,9 @@
         <div class="nav-item perf-tab" id="navPerf" data-view="performance" onclick="setView('performance')">
           <span class="nav-icon">📈</span> My Performance
         </div>
+        <div class="nav-item" id="navBriefing" data-view="briefing" onclick="setView('briefing')">
+          <span class="nav-icon">🎯</span> Briefing Room
+        </div>
 
         <div class="agent-display">
           <span id="displayUser">Loading...</span>
@@ -1199,6 +1203,51 @@
           </div>
         </div>
 
+        <!-- ── BRIEFING ROOM VIEW ── -->
+        <div class="view-container" id="briefingView" style="display:none; padding:32px; overflow-y:auto; background:var(--bg-base);">
+          <div class="panel" style="max-width:800px; margin:0 auto; padding:32px; border:1px solid var(--border); border-radius:12px; background:var(--bg-panel); position:relative; width:100%;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px;">
+              <div>
+                <h1 style="font-size:24px; font-weight:700; margin-bottom:8px;">Agent Briefing Room</h1>
+                <p id="briefingStatus" style="color:var(--text-muted); font-size:14px;">Waiting for Show...</p>
+              </div>
+              <div id="briefingTimer" class="mono" style="font-size:20px; font-weight:700; color:var(--accent-blue); display:none;">00:00:00</div>
+            </div>
+
+            <div id="briefingContent" style="display:none;">
+              <div style="background:var(--bg-base); border: 1px solid var(--border); border-radius:8px; padding:20px; margin-bottom:24px;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+                  <h2 id="briefingShowName" style="font-size:16px; font-weight:600; color:var(--text-main); margin-right:16px; line-height:1.4;"></h2>
+                  <button id="copyNameBtn" onclick="copySmartName()" class="filter-btn btn-some" style="flex-shrink:0;">📋 Copy Name</button>
+                </div>
+                
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-top:20px; border-top:1px solid var(--border); padding-top:20px;">
+                  <div>
+                    <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase; font-weight:600; margin-bottom:8px;">Links</div>
+                    <div id="briefingLinks" style="display:flex; flex-direction:column; gap:8px;"></div>
+                  </div>
+                  <div>
+                    <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase; font-weight:600; margin-bottom:8px;">Details</div>
+                    <div id="briefingDetails" style="font-size:13px; color:var(--text-main); white-space:pre-wrap; line-height:1.5;"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display:flex; gap:16px;">
+                <button id="startWorkingBtn" onclick="startWorking()" style="flex:1; background:var(--accent-blue); border:none; color:#fff; font-weight:600; font-size:15px; padding:14px; border-radius:8px; cursor:pointer; transition:background 0.2s;">▶ Confirm & Start</button>
+                <button id="doneWorkingBtn" onclick="finishWorking()" style="flex:1; background:var(--success); border:none; color:#fff; font-weight:600; font-size:15px; padding:14px; border-radius:8px; cursor:pointer; display:none; transition:background 0.2s;">✓ Complete & Next Show</button>
+              </div>
+            </div>
+
+            <div id="briefingEmpty" style="text-align:center; padding:60px 0; color:var(--text-muted);">
+              <div style="font-size:48px; margin-bottom:16px; opacity:0.5;">☕</div>
+              <h3 style="font-size:16px; font-weight:600; margin-bottom:8px;">Hopper is Empty</h3>
+              <p style="font-size:13px; max-width:300px; margin:0 auto;">Keep an eye out for new shows coming in.</p>
+              <button onclick="fetchNextShow()" class="filter-btn btn-std" style="margin-top:24px; display:inline-flex; align-items:center; justify-content:center; margin-left:auto; margin-right:auto;">↻ Check Hopper</button>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -1212,6 +1261,11 @@
     let currentView = 'files';
     let analyticsData = {};    // full ledger from /api/analytics
     let perfChart = null;   // Chart.js instance
+
+    let socket = null;
+    let currentAssignedShow = null;
+    let workTimerInterval = null;
+    let workStartTime = 0;
 
     // ─────────────────────────────────────────────
     //  TABLE COLUMN RESIZING
@@ -1277,6 +1331,7 @@
       if (data.success) {
         localStorage.setItem('zorg_nexus_user', data.username);
         checkAuth();
+        if (!socket) initSocket();
       } else {
         document.getElementById('loginError').style.display = 'block';
       }
@@ -1392,15 +1447,24 @@
 
       // Update sidebar active states
       document.querySelectorAll('.sidebar .nav-item[data-view]').forEach(n => n.classList.remove('active'));
-      const navEl = document.getElementById(view === 'files' ? 'navFiles' : 'navPerf');
+      const navEl = document.getElementById(
+        view === 'files' ? 'navFiles' : 
+        view === 'performance' ? 'navPerf' :
+        'navBriefing'
+      );
       if (navEl) navEl.classList.add('active');
 
+      document.getElementById('filesView').style.display = 'none';
+      document.getElementById('performanceView').style.display = 'none';
+      document.getElementById('briefingView').style.display = 'none';
+
       if (view === 'performance') {
-        document.getElementById('filesView').style.display = 'none';
         document.getElementById('performanceView').style.display = 'flex';
         loadPerformanceDashboard();
+      } else if (view === 'briefing') {
+        document.getElementById('briefingView').style.display = 'flex';
+        if (!currentAssignedShow) fetchNextShow();
       } else {
-        document.getElementById('performanceView').style.display = 'none';
         document.getElementById('filesView').style.display = 'flex';
         renderTable();
       }
@@ -1679,10 +1743,148 @@
     }, 30000);
 
     // ─────────────────────────────────────────────
+    //  BRIEFING ROOM & SOCKET
+    // ─────────────────────────────────────────────
+    function initSocket() {
+      if (!socket && typeof io !== 'undefined') {
+        socket = io();
+        socket.on('new_upload', (data) => {
+          // If a new show arrives and we are empty
+          if (currentView === 'briefing' && !currentAssignedShow) {
+             fetchNextShow();
+          }
+        });
+        socket.on('daily_reset', () => {
+          logout();
+        });
+      }
+    }
+
+    async function fetchNextShow() {
+      if (!currentUser) return;
+      try {
+        const res = await fetch('/api/shows/next?username=' + encodeURIComponent(currentUser));
+        const data = await res.json();
+        if (data.success && data.show) {
+          currentAssignedShow = data.show;
+          renderBriefingCard();
+        } else {
+          currentAssignedShow = null;
+          renderBriefingCard();
+        }
+      } catch (err) {
+        console.error('Failed to fetch next show', err);
+      }
+    }
+
+    function renderBriefingCard() {
+      const emptyDiv = document.getElementById('briefingEmpty');
+      const contentDiv = document.getElementById('briefingContent');
+      const statusEl = document.getElementById('briefingStatus');
+
+      if (!currentAssignedShow) {
+        emptyDiv.style.display = 'block';
+        contentDiv.style.display = 'none';
+        statusEl.textContent = 'Waiting for Show...';
+      } else {
+        emptyDiv.style.display = 'none';
+        contentDiv.style.display = 'block';
+        statusEl.textContent = 'Show Assigned. Pending Handshake.';
+        
+        document.getElementById('briefingShowName').textContent = currentAssignedShow.showName || 'Unnamed Show';
+        
+        // Render links
+        const linksHtml = (currentAssignedShow.link || []).map(url => {
+          return `<a href="${url}" target="_blank" style="color:var(--accent-blue); text-decoration:none; word-break:break-all; font-size:12px;">${url}</a>`;
+        }).join('');
+        document.getElementById('briefingLinks').innerHTML = linksHtml || '<span style="color:var(--text-muted);font-style:italic;">No links provided</span>';
+        
+        // Render details
+        let detailsText = '';
+        if (currentAssignedShow.ld) detailsText += `Data: ${currentAssignedShow.ld}\n\n`;
+        if (currentAssignedShow.lists) detailsText += `Lists: ${currentAssignedShow.lists}\n\n`;
+        if (currentAssignedShow.comment) detailsText += `Comments:\n${currentAssignedShow.comment}\n`;
+        document.getElementById('briefingDetails').textContent = detailsText.trim() || 'No additional details.';
+        
+        // Reset working state UI
+        document.getElementById('startWorkingBtn').style.display = 'block';
+        document.getElementById('doneWorkingBtn').style.display = 'none';
+        stopTimer();
+      }
+    }
+
+    function startWorking() {
+      if (!currentAssignedShow || !socket) return;
+      document.getElementById('briefingStatus').textContent = 'Working on Show...';
+      document.getElementById('startWorkingBtn').style.display = 'none';
+      document.getElementById('doneWorkingBtn').style.display = 'block';
+      
+      // Tell server agent is working
+      socket.emit('agent_status', { agent: currentUser, status: 'Working', show: currentAssignedShow.showName });
+      
+      startTimer();
+    }
+
+    function finishWorking() {
+      stopTimer();
+      if (socket) socket.emit('agent_status', { agent: currentUser, status: 'Idle', show: null });
+      currentAssignedShow = null;
+      renderBriefingCard();
+      fetchNextShow(); // auto-fetch next
+    }
+
+    function startTimer() {
+      workStartTime = Date.now();
+      const timerEl = document.getElementById('briefingTimer');
+      timerEl.style.display = 'block';
+      
+      workTimerInterval = setInterval(() => {
+        const diff = Math.floor((Date.now() - workStartTime)/1000);
+        const h = Math.floor(diff / 3600);
+        const m = Math.floor((diff % 3600)/60);
+        const s = diff % 60;
+        timerEl.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      }, 1000);
+    }
+
+    function stopTimer() {
+      if (workTimerInterval) clearInterval(workTimerInterval);
+      document.getElementById('briefingTimer').style.display = 'none';
+      document.getElementById('briefingTimer').textContent = '00:00:00';
+    }
+
+    function copySmartName() {
+      if (!currentAssignedShow) return;
+      let name = currentAssignedShow.showName || '';
+      
+      // Exclude list ranges: e.g. "(1-500)", "List: 85-90", etc.
+      // Usually ranges are like (xxx-yyy)
+      name = name.replace(/\([\w\s-]+(?:-|to)[\w\s-]+\)/gi, '');
+      
+      // Exclude "Do Both" and its variations
+      name = name.replace(/do\s+both/gi, '');
+      
+      // Often asterisk comments are at the end, like "** Not Yet Available"
+      name = name.replace(/\*\*.*$/g, '');
+      
+      // Collapse multiple hyphens or spaces left over
+      name = name.replace(/\s+-\s+-\s+/g, ' - ').replace(/\s{2,}/g, ' ');
+      // Remove trailing hyphens
+      name = name.replace(/\s*-\s*$/, '').trim();
+
+      navigator.clipboard.writeText(name).then(() => {
+        showToast('📋 Show name copied to clipboard', 'info');
+      }).catch(err => {
+        console.error('Failed to copy', err);
+      });
+    }
+
+    // ─────────────────────────────────────────────
     //  BOOT
     // ─────────────────────────────────────────────
     initTableResizers();
     checkAuth();
+    if (currentUser) initSocket();
   </script>
 </body>
 
