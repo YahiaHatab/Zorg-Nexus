@@ -618,6 +618,10 @@
     
     tr.drag-over { border-top: 2px solid var(--accent-blue) !important; }
 
+    .admin-only {
+        display: none !important;
+    }
+
   </style>
 </head>
 
@@ -681,7 +685,7 @@
   <div class="topbar">
     <div class="logo">Z-LEADS <span>/ Admin</span></div>
     <div class="topbar-right">
-      <button class="btn btn-red" onclick="openModal()">⚡ Reset History</button>
+      <button class="btn btn-red admin-only" onclick=""openModal()">⚡ Reset History</button>
       <button class="btn" onclick="refreshCurrentTab()">↻ Refresh</button>
       <a href="/" style="text-decoration:none;"><button class="btn btn-blue">← Portal</button></a>
     </div>
@@ -865,7 +869,7 @@
       <div class="panel-header">Directory Routes</div>
       <div class="panel-body">
         <div id="configFields"></div>
-        <div class="save-bar">
+        <div class="save-bar admin-only">
           <button class="btn btn-blue" onclick="saveConfig()">Save Configuration</button>
         </div>
       </div>
@@ -877,7 +881,7 @@
     <div class="panel">
       <div class="panel-header">
         Access Control
-        <button class="btn btn-blue btn-sm" onclick="addUserRow()">+ Add User</button>
+        <button class="btn btn-blue btn-sm admin-only" onclick="addUserRow()">+ Add User</button>
       </div>
       <div style="overflow-x:auto;">
         <table class="data-table" id="usersTable">
@@ -885,6 +889,7 @@
             <tr>
               <th>Username</th>
               <th>Password</th>
+              <th>Role</th>
               <th>Archive Path</th>
               <th style="width:100px;text-align:center;">Action</th>
             </tr>
@@ -893,7 +898,7 @@
         </table>
       </div>
       <div class="panel-body" style="padding-top:0;">
-        <div class="save-bar"><button class="btn btn-green" onclick="saveUsers()">Commit Changes</button></div>
+        <div class="save-bar admin-only"><button class="btn btn-green" onclick="saveUsers()">Commit Changes</button></div>
       </div>
     </div>
   </div>
@@ -948,12 +953,12 @@
 
     const TODAY = new Date().toISOString().split('T')[0]; // "2026-03-30"
 
-    // ── GUARD ────────────────────────────────────
+    // ── GUARD & ROLE STATE ───────────────────────
     const currentUser = localStorage.getItem('zorg_nexus_user');
-    if (currentUser !== 'Admin') {
-      alert('Access Denied: Admin privileges required.');
+    if (!currentUser) {
       window.location.href = '/';
     }
+    let isAdminRole = false; // This will be verified dynamically
 
     document.getElementById('todayLabel').textContent = `(${TODAY})`;
 
@@ -1174,7 +1179,7 @@
             <td class="stat-highlight">${rec.shown}</td>
             <td style="color:var(--danger);">${rec.hidden}</td>
             <td style="text-align:center;">
-              <button class="btn btn-red btn-sm" onclick="deleteRecord('${date}','${escHtml(rec.transactionId)}')" title="Delete this record permanently">🗑</button>
+              ${isAdminRole ? `<button class="btn btn-red btn-sm" onclick="deleteRecord('${date}','${escHtml(rec.transactionId)}')" title="Delete this record permanently">🗑</button>` : `<span style="color:var(--text-muted);font-size:10px;font-weight:600;">VIEW ONLY</span>`}
             </td>
         </tr>`;
       }).join('');
@@ -1468,6 +1473,24 @@
         const json = await res.json();
         if (!json.success) throw new Error(json.error);
         usersData = json.users;
+
+        // Verify who is looking at the dashboard
+        const me = usersData.find(u => u.username === currentUser);
+        const myRole = me ? (me.role || 'Agent') : 'Agent';
+        isAdminRole = (myRole === 'Admin');
+
+        // Boot them if they aren't authorized for this page at all
+        if (myRole !== 'Admin' && myRole !== 'Viewer') {
+            alert('Access Denied: Admin or Viewer privileges required.');
+            window.location.href = '/';
+            return;
+        }
+
+        // Lock down the Config inputs if they are a Viewer
+        if (!isAdminRole) {
+            document.querySelectorAll('#configFields input').forEach(el => el.readOnly = true);
+        }
+
         renderUsersTable();
       } catch (e) { showToast('Failed to load users.', 'error'); }
     }
@@ -1475,22 +1498,41 @@
     function renderUsersTable() {
       document.getElementById('usersBody').innerHTML = usersData.map((u, i) => {
         const isAdmin = u.username === 'Admin';
-        const deleteBtn = isAdmin
-          ? `<span style="color:var(--text-muted);font-size:11px;font-weight:600;">PROTECTED</span>`
-          : `<button class="btn btn-red btn-sm" onclick="deleteUser(${i})">✕ Remove</button>`;
+        
+        let deleteBtn = `<span style="color:var(--text-muted);font-size:11px;">—</span>`;
+        if (isAdminRole) {
+            deleteBtn = isAdmin ? `<span style="color:var(--text-muted);font-size:11px;font-weight:600;">PROTECTED</span>` : `<button class="btn btn-red btn-sm" onclick="deleteUser(${i})">✕</button>`;
+        }
+        
+        const roleOpts = ['Admin', 'Viewer', 'Agent'].map(r => `<option value="${r}" ${u.role === r ? 'selected' : ''}>${r}</option>`).join('');
+        
         return `<tr data-index="${i}">
-            <td><input class="user-input" type="text"     value="${escHtml(u.username)}"          ${isAdmin ? 'readonly style="opacity:0.5;"' : ''} data-field="username"    data-idx="${i}"></td>
-            <td><input class="user-input" type="password" value="${escHtml(u.password)}"                                                        data-field="password"    data-idx="${i}"></td>
-            <td><input class="user-input" type="text"     value="${escHtml(u.archivePath || '')}"                                               data-field="archivePath" data-idx="${i}"></td>
+            <td><input class="user-input" type="text" value="${escHtml(u.username)}" ${(!isAdminRole || isAdmin) ? 'readonly style="opacity:0.5;"' : ''} data-field="username" data-idx="${i}"></td>
+            <td><input class="user-input" type="password" value="${isAdminRole ? escHtml(u.password) : '********'}" ${!isAdminRole ? 'readonly style="opacity:0.5;"' : ''} data-field="password" data-idx="${i}"></td>
+            <td>
+               ${isAdminRole ? `<select class="user-input" data-field="role" data-idx="${i}">${roleOpts}</select>` : `<input class="user-input" type="text" value="${escHtml(u.role || 'Agent')}" readonly style="opacity:0.5;">`}
+            </td>
+            <td><input class="user-input" type="text" value="${escHtml(u.archivePath || '')}" ${!isAdminRole ? 'readonly style="opacity:0.5;"' : ''} data-field="archivePath" data-idx="${i}"></td>
             <td style="text-align:center;">${deleteBtn}</td>
         </tr>`;
-      }).join('') || `<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:24px;">No users.</td></tr>`;
+      }).join('') || `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:24px;">No users.</td></tr>`;
 
       document.querySelectorAll('.user-input').forEach(input => {
-        input.addEventListener('input', e => {
-          usersData[parseInt(e.target.dataset.idx)][e.target.dataset.field] = e.target.value;
+        input.addEventListener('change', e => {
+          if(isAdminRole) usersData[parseInt(e.target.dataset.idx)][e.target.dataset.field] = e.target.value;
         });
       });
+    }
+
+    function addUserRow() {
+      if (!isAdminRole) return;
+      usersData.push({ username: '', password: '', role: 'Agent', archivePath: '' });
+      renderUsersTable();
+      const rows = document.getElementById('usersBody').querySelectorAll('tr');
+      if (rows.length) {
+        rows[rows.length - 1].scrollIntoView({ behavior: 'smooth' });
+        rows[rows.length - 1].querySelector('input')?.focus();
+      }
     }
 
     function addUserRow() {
@@ -1647,24 +1689,26 @@
           const isCxl = String(statusStr).startsWith('CXL');
           const statusClass = isCxl ? 'mode-danger' : (s.status === 'Done' ? 'mode-some' : (s.status === 'In Progress' ? 'mode-warning' : 'mode-standard'));
           
-          const cxlBtn = !isCxl ? `<button class="btn btn-red btn-sm" style="margin-left:8px; padding:2px 6px; font-size:10px;" onclick="openCancelModal('${s.id}')">CXL</button>` : '';
-
           const isPending = statusStr === 'Pending';
-          const dragAttrs = isPending ? `draggable="true" ondragstart="hopperDragStart(event)" data-id="${s.id}" data-status="Pending" style="cursor:grab;"` : `style="opacity:0.6;"`;
+          
+          // Only allow dragging and CXL if Admin
+          const dragAttrs = (isPending && isAdminRole) ? `draggable="true" ondragstart="hopperDragStart(event)" data-id="${s.id}" data-status="Pending" style="cursor:grab;"` : `style="opacity:0.6;"`;
+          const cxlBtn = (!isCxl && isAdminRole) ? `<button class="btn btn-red btn-sm" style="margin-left:8px; padding:2px 6px; font-size:10px;" onclick="openCancelModal('${s.id}')">CXL</button>` : '';
+
+          // Lock the agent dropdown if Viewer
+          const agentDisplay = isAdminRole 
+              ? `<select class="user-input" style="padding:5px;font-size:12px;" onchange="updateShowAgent('${s.id}', this.value)">${agentOptions}</select>`
+              : `<div style="padding:5px;font-size:12px;font-weight:600;color:var(--text-main);">${escHtml(s.agentName || '— Unassigned —')}</div>`;
 
           return `<tr ${dragAttrs}>
               <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escHtml(s.showName)}">
-                  ${isPending ? '↕️ ' : ''}${escHtml(s.showName)}
+                  ${(isPending && isAdminRole) ? '↕️ ' : ''}${escHtml(s.showName)}
               </td>
               <td style="max-width:300px;vertical-align:top;">
                 <div style="max-height:80px;overflow-y:auto;padding-right:4px;">${linksHtml || '—'}</div>
               </td>
               <td><span class="mode-tag ${statusClass}">${escHtml(statusStr)}</span>${cxlBtn}</td>
-              <td style="min-width:140px;">
-                <select class="user-input" style="padding:5px;font-size:12px;" onchange="updateShowAgent('${s.id}', this.value)">
-                   ${agentOptions}
-                </select>
-              </td>
+              <td style="min-width:140px;">${agentDisplay}</td>
               <td style="white-space:pre-wrap;">${escHtml(s.ld || '—')}</td>
               <td style="white-space:pre-wrap;">${escHtml(s.lists || '—')}</td>
               <td style="color:var(--warning);white-space:pre-wrap;">${escHtml(s.comment || '—')}</td>

@@ -28,7 +28,7 @@ const DEFAULT_CONFIG = {
 };
 
 const DEFAULT_USERS = [
-    { username: 'Admin', password: 'admin', archivePath: path.join(__dirname, 'archive') }
+    { username: 'Admin', password: 'admin', role: 'Admin', archivePath: path.join(__dirname, 'archive') }
 ];
 
 if (!fs.existsSync(configPath)) {
@@ -391,7 +391,8 @@ app.post('/api/login', (req, res) => {
     const { username, password } = req.body;
     const users = JSON.parse(fs.readFileSync(usersPath));
     const user  = users.find(u => u.username === username && u.password === password);
-    if (user) res.json({ success: true, username: user.username });
+    // Return the role, fallback to Agent if they don't have one yet
+    if (user) res.json({ success: true, username: user.username, role: user.role || 'Agent' });
     else       res.json({ success: false, message: 'Invalid credentials' });
 });
 
