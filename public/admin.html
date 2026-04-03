@@ -592,6 +592,32 @@
     .search-clear:hover { color: var(--text-main); }
 
     .search-bar.has-value .search-clear { display: block; }
+
+.floor-sidebar {
+      width: 280px;
+      background: var(--bg-panel);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      transition: margin-right 0.3s;
+    }
+    .floor-sidebar.collapsed { margin-right: -280px; }
+    
+    .agent-card {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .agent-card .ac-top { display: flex; justify-content: space-between; align-items: center; }
+    .agent-card .ac-status { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; }
+    .status-working { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+    .status-idle { background: rgba(156, 163, 175, 0.15); color: var(--text-muted); }
+    .status-cxl { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+    
+    tr.drag-over { border-top: 2px solid var(--accent-blue) !important; }
+
   </style>
 </head>
 
@@ -685,51 +711,44 @@
           </span>
         </span>
       </div>
-      <div style="display:grid; grid-template-columns:1fr 1fr; flex:1; overflow:hidden;">
-        <div style="overflow-y:auto; border-right:1px solid var(--border);">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Agent</th>
-                <th>Shows</th>
-                <th>Gross</th>
-                <th>Net</th>
-                <th>Conv. %</th>
-              </tr>
-            </thead>
-            <tbody id="leaderboardBody"></tbody>
-          </table>
-        </div>
-        <div style="overflow-y:auto; display:flex; flex-direction:column; background:var(--bg-base);">
-          <div
-            style="padding:12px 20px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--bg-base); z-index:10; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
-            <span id="logPanelTitleText"
-              style="font-size:11px; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.05em;">Today's
-              Activity</span>
-            <div style="display:flex; align-items:center; gap:8px; margin-left:auto;">
-              <div class="search-bar" id="logSearchBar" style="min-width:160px;">
-                <span style="color:var(--text-muted);font-size:13px;">🔍</span>
-                <input type="text" id="logSearch" placeholder="Filter..." oninput="onLogSearch(this)">
-                <button class="search-clear" id="logSearchClear" onclick="clearLogSearch()">✕</button>
-              </div>
-              <button id="backToGlobalBtn" class="btn btn-sm btn-blue" style="display:none;"
-                onclick="resetToGlobalLogs()">← All Agents</button>
-            </div>
+      <div style="display:flex; flex:1; overflow:hidden; position:relative;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; flex:1; overflow:hidden;">
+          <div style="overflow-y:auto; border-right:1px solid var(--border);">
+            <table class="data-table">
+              <thead><tr><th>Agent</th><th>Shows</th><th>Gross</th><th>Net</th><th>Conv. %</th></tr></thead>
+              <tbody id="leaderboardBody"></tbody>
+            </table>
           </div>
-          <table class="data-table compact" style="margin-bottom:auto;">
-            <thead>
-              <tr>
-                <th>Time</th>
-                <th>Mode</th>
-                <th>Shows</th>
-                <th>Gross</th>
-                <th>Net</th>
-              </tr>
-            </thead>
-            <tbody id="logBody"></tbody>
-          </table>
+          <div style="overflow-y:auto; display:flex; flex-direction:column; background:var(--bg-base);">
+            <div style="padding:12px 20px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--bg-base); z-index:10; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+              <span id="logPanelTitleText" style="font-size:11px; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.05em;">Today's Activity</span>
+              
+              <div style="display:flex; align-items:center; gap:8px; margin-left:auto;">
+                <div class="search-bar" id="logSearchBar" style="min-width:160px;">
+                  <span style="color:var(--text-muted);font-size:13px;">🔍</span>
+                  <input type="text" id="logSearch" placeholder="Filter..." oninput="onLogSearch(this)">
+                  <button class="search-clear" id="logSearchClear" onclick="clearLogSearch()">✕</button>
+                </div>
+                <button id="backToGlobalBtn" class="btn btn-sm btn-blue" style="display:none;" onclick="resetToGlobalLogs()">← All Agents</button>
+                <button onclick="document.getElementById('floorMap').classList.toggle('collapsed')" class="btn btn-sm">🗺 Floor Map</button>
+              </div>
+            </div>
+            <table class="data-table compact" style="margin-bottom:auto;">
+              <thead><tr><th>Time</th><th>Mode</th><th>Shows</th><th>Gross</th><th>Net</th></tr></thead>
+              <tbody id="logBody"></tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div id="floorMap" class="floor-sidebar">
+           <div style="padding:16px; border-bottom:1px solid var(--border); font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em;">Live Floor Map</div>
+           <div id="floorMapContent" style="overflow-y:auto; flex:1;">
+              <div style="padding:20px; text-align:center; color:var(--text-muted); font-size:12px;">Waiting for agents...</div>
+           </div>
         </div>
       </div>
+    </div>
+  </div>
     </div>
   </div>
 
@@ -1139,12 +1158,18 @@
 
       const date = _ledgerDate;
       tbody.innerHTML = filtered.map(rec => {
-        const cls = rec.mode === 'SOME' ? 'mode-some' : 'mode-standard';
-        return `<tr>
+        const isCxl = rec.mode === 'CXL' || String(rec.status || '').startsWith('CXL');
+        const bgStyle = isCxl ? 'background: rgba(239, 68, 68, 0.08);' : '';
+        const cls = isCxl ? 'mode-danger' : (rec.mode === 'SOME' ? 'mode-some' : 'mode-standard');
+        
+        // Add reason tracking for UI display
+        const reasonText = rec.reason ? `<br><span style="color:var(--danger); font-size:10px;">Reason: ${escHtml(rec.reason)}</span>` : '';
+
+        return `<tr style="${bgStyle}">
             <td style="color:var(--text-muted);font-family:'JetBrains Mono',monospace;font-size:12px;">${rec.time || '—'}</td>
             <td class="agent-name">${escHtml(rec.agent)}</td>
             <td><span class="mode-tag ${cls}">${rec.mode}</span></td>
-            <td style="max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escHtml(rec.filename)}">${escHtml(rec.filename)}</td>
+            <td style="max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escHtml(rec.filename)}">${escHtml(rec.filename)}${reasonText}</td>
             <td style="color:var(--text-muted);">${rec.total}</td>
             <td class="stat-highlight">${rec.shown}</td>
             <td style="color:var(--danger);">${rec.hidden}</td>
@@ -1373,10 +1398,10 @@
       }).join('') || `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:30px;">No data yet.</td></tr>`;
     }
 
-    // ══════════════════════════════════════════════
+// ══════════════════════════════════════════════
     //  TAB 4: CONFIG
     // ══════════════════════════════════════════════
-    const CONFIG_LABELS = { tempZone: 'Temp Zone', usBase: 'US Base Path', ukBase: 'UK Base Path' };
+    const CONFIG_LABELS = { tempZone: 'Temp Zone', usBase: 'US Base Path', ukBase: 'UK Base Path', cxlTags: 'CXL Tags (Comma Separated)' };
 
     async function fetchConfig() {
       try {
@@ -1390,24 +1415,48 @@
 
     function renderConfigFields() {
       const allKeys = new Set([...Object.keys(CONFIG_LABELS), ...Object.keys(configData)]);
-      document.getElementById('configFields').innerHTML = [...allKeys].map(key => `
+      document.getElementById('configFields').innerHTML = [...allKeys].map(key => {
+        let val = configData[key] || '';
+        if (Array.isArray(val)) val = val.join(', '); // Convert array to comma string
+        return `
         <div class="field-row">
             <div class="field-label">${CONFIG_LABELS[key] || key}</div>
-            <input class="field-input" type="text" id="cfg_${key}" value="${escHtml(configData[key] || '')}" placeholder="Enter path...">
+            <input class="field-input" type="text" id="cfg_${key}" value="${escHtml(val)}" placeholder="Enter path or tags...">
             <span style="font-size:11px;color:var(--text-muted);white-space:nowrap;font-family:'JetBrains Mono';">${key}</span>
-        </div>`).join('');
+        </div>`;
+      }).join('');
     }
 
     async function saveConfig() {
       const allKeys = new Set([...Object.keys(CONFIG_LABELS), ...Object.keys(configData)]);
       const newConfig = {};
-      allKeys.forEach(key => { const el = document.getElementById(`cfg_${key}`); if (el) newConfig[key] = el.value.trim(); });
+      allKeys.forEach(key => { 
+          const el = document.getElementById(`cfg_${key}`); 
+          if (el) {
+              if (key === 'cxlTags') newConfig[key] = el.value.split(',').map(s=>s.trim()).filter(Boolean);
+              else newConfig[key] = el.value.trim();
+          }
+      });
       try {
         const res = await fetch('/api/admin/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newConfig) });
         const json = await res.json();
         if (json.success) { configData = newConfig; showToast('✅ Config saved.', 'success'); }
         else showToast('❌ Save failed: ' + json.error, 'error');
       } catch { showToast('❌ Server error.', 'error'); }
+    }
+
+    // UPDATE MODAL TO USE CONFIG TAGS
+    function openCancelModal(id) {
+        document.getElementById('cxlShowId').value = id;
+        
+        // Populate dropdown from config
+        const tags = configData.cxlTags || ['Pricing', 'Duplicates', 'SameList'];
+        const sel = document.getElementById('cxlReasonSelect');
+        sel.innerHTML = tags.map(t => `<option value="${escHtml(t)}">${escHtml(t)}</option>`).join('') + `<option value="Custom">Odd Case (Custom Comment)</option>`;
+        
+        document.getElementById('cxlCustomReason').style.display = 'none';
+        document.getElementById('cxlCustomReason').value = '';
+        document.getElementById('cancelModal').style.display = 'flex';
     }
 
     // ══════════════════════════════════════════════
@@ -1600,8 +1649,13 @@
           
           const cxlBtn = !isCxl ? `<button class="btn btn-red btn-sm" style="margin-left:8px; padding:2px 6px; font-size:10px;" onclick="openCancelModal('${s.id}')">CXL</button>` : '';
 
-          return `<tr>
-              <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escHtml(s.showName)}">${escHtml(s.showName)}</td>
+          const isPending = statusStr === 'Pending';
+          const dragAttrs = isPending ? `draggable="true" ondragstart="hopperDragStart(event)" data-id="${s.id}" data-status="Pending" style="cursor:grab;"` : `style="opacity:0.6;"`;
+
+          return `<tr ${dragAttrs}>
+              <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escHtml(s.showName)}">
+                  ${isPending ? '↕️ ' : ''}${escHtml(s.showName)}
+              </td>
               <td style="max-width:300px;vertical-align:top;">
                 <div style="max-height:80px;overflow-y:auto;padding-right:4px;">${linksHtml || '—'}</div>
               </td>
@@ -1745,10 +1799,92 @@
         } catch(e) { showToast('❌ Error cancelling show.', 'error'); }
     }
 
+// ══════════════════════════════════════════════
+    //  LIVE FLOOR & QUEUE DRAG-AND-DROP
+    // ══════════════════════════════════════════════
+    let floorData = {};
+    socket.on('floor_update', (data) => {
+        floorData = data;
+        renderFloorMap();
+    });
+
+    function renderFloorMap() {
+        const container = document.getElementById('floorMapContent');
+        const agents = Object.keys(floorData).filter(a => floorData[a].status !== 'Offline');
+        
+        if(agents.length === 0) {
+            container.innerHTML = `<div style="padding:20px; text-align:center; color:var(--text-muted); font-size:12px;">No agents online</div>`;
+            return;
+        }
+
+        container.innerHTML = agents.map(agent => {
+            const d = floorData[agent];
+            let statusCls = 'status-idle';
+            if (d.status === 'Working') statusCls = 'status-working';
+            if (d.status === 'CXL Alerted') statusCls = 'status-cxl';
+            
+            return `
+            <div class="agent-card">
+               <div class="ac-top">
+                  <span style="font-size:13px; font-weight:600; color:var(--text-main);">${escHtml(agent)}</span>
+                  <span class="ac-status ${statusCls}">${d.status}</span>
+               </div>
+               ${d.show ? `<div style="font-size:11px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escHtml(d.show)}</div>` : ''}
+               ${d.startTime ? `<div class="mono floor-timer" data-start="${d.startTime}" style="font-size:12px; color:var(--accent-blue); font-weight:700;">00:00:00</div>` : ''}
+            </div>`;
+        }).join('');
+    }
+
+    // Tick the floor timers every second
+    setInterval(() => {
+        document.querySelectorAll('.floor-timer').forEach(el => {
+            const start = parseInt(el.getAttribute('data-start'));
+            const diff = Math.floor((Date.now() - start) / 1000);
+            const h = String(Math.floor(diff / 3600)).padStart(2, '0');
+            const m = String(Math.floor((diff % 3600) / 60)).padStart(2, '0');
+            const s = String(diff % 60).padStart(2, '0');
+            el.textContent = `${h}:${m}:${s}`;
+        });
+    }, 1000);
+
+    // --- DRAG AND DROP QUEUE ---
+    let draggedRow = null;
+    function hopperDragStart(e) {
+        draggedRow = e.target.closest('tr');
+        e.dataTransfer.effectAllowed = 'move';
+    }
+    
+    // Attach listeners to hopperBody
+    document.addEventListener('DOMContentLoaded', () => {
+        const hBody = document.getElementById('hopperBody');
+        if(hBody) {
+            hBody.addEventListener('dragover', e => {
+                e.preventDefault();
+                const tr = e.target.closest('tr[data-status="Pending"]');
+                if(tr && tr !== draggedRow) {
+                    const bounding = tr.getBoundingClientRect();
+                    const offset = bounding.y + (bounding.height / 2);
+                    if (e.clientY - offset > 0) tr.parentNode.insertBefore(draggedRow, tr.nextSibling);
+                    else tr.parentNode.insertBefore(draggedRow, tr);
+                }
+            });
+
+            hBody.addEventListener('drop', async e => {
+                e.preventDefault();
+                const pendingIds = Array.from(document.querySelectorAll('#hopperBody tr[data-status="Pending"]')).map(tr => tr.dataset.id);
+                try {
+                    await fetch('/api/shows/reorder', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reorderedIds: pendingIds }) });
+                    showToast('🔄 Queue Reordered', 'info');
+                } catch(err) {}
+            });
+        }
+    });
+
     // ── BOOT ─────────────────────────────────────
     fetchTodayData();
     fetchUsers(); // Load users for dropdowns
     initHopperDrag();
+    fetchConfig();
   </script>
 </body>
 

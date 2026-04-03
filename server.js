@@ -10,6 +10,7 @@ const app    = express();
 const server = http.createServer(app);
 const io     = new Server(server);
 const PORT   = 3017;
+const activeFloor = {}; // Tracks agent status and timers
 
 // ─────────────────────────────────────────────
 //  BOOTSTRAP — ensure all required files exist
@@ -23,6 +24,7 @@ const DEFAULT_CONFIG = {
     tempZone: path.join(__dirname, 'temp'),
     usBase:   path.join(__dirname, 'output', 'US'),
     ukBase:   path.join(__dirname, 'output', 'UK'),
+    cxlTags:  ['Pricing', 'Duplicates', 'SameList']
 };
 
 const DEFAULT_USERS = [
@@ -199,11 +201,28 @@ function checkIsRed(font) {
 //  No longer touches any Excel files.
 //  Clears history.json and signals all frontends.
 // ─────────────────────────────────────────────
+// ─────────────────────────────────────────────
+//  DAILY RESET
+//  Clears history.json and wipes today's data from analytics.
+// ─────────────────────────────────────────────
 async function performDailyReset() {
     console.log(`\n> [RESET] Starting daily reset at ${new Date().toISOString()}`);
 
     fs.writeFileSync(historyPath, JSON.stringify({ files: [], logs: [] }, null, 2));
     console.log('> [RESET] history.json cleared.');
+
+    // Wipe today's data from analytics.json so it doesn't reload on refresh
+    try {
+        const dateKey = new Date().toISOString().split('T')[0];
+        const analytics = JSON.parse(fs.readFileSync(analyticsPath));
+        if (analytics[dateKey]) {
+            delete analytics[dateKey];
+            fs.writeFileSync(analyticsPath, JSON.stringify(analytics, null, 2));
+            console.log(`> [RESET] Removed today's (${dateKey}) data from analytics.json.`);
+        }
+    } catch (e) {
+        console.error("> [RESET] Error modifying analytics.json:", e);
+    }
 
     io.emit('daily_reset');
     console.log('> [RESET] daily_reset event broadcast.');
@@ -503,6 +522,27 @@ app.post('/api/shows/update', (req, res) => {
     res.json({ success: true });
 });
 
+app.post('/api/shows/reorder', (req, res) => {
+    const { reorderedIds } = req.body;
+    let currentShows = JSON.parse(fs.readFileSync(showsPath));
+
+    const pendingShows = currentShows.filter(s => s.status === 'Pending' || !s.status);
+    const otherShows = currentShows.filter(s => s.status !== 'Pending' && s.status);
+
+    pendingShows.sort((a, b) => {
+        const idxA = reorderedIds.indexOf(a.id);
+        const idxB = reorderedIds.indexOf(b.id);
+        if(idxA === -1) return 1;
+        if(idxB === -1) return -1;
+        return idxA - idxB;
+    });
+
+    const newShows = [...pendingShows, ...otherShows];
+    fs.writeFileSync(showsPath, JSON.stringify(newShows, null, 2));
+    io.emit('hopper_updated');
+    res.json({ success: true });
+});
+
 app.get('/api/shows/next', (req, res) => {
     const { username } = req.query;
     const currentShows = JSON.parse(fs.readFileSync(showsPath));
@@ -658,6 +698,28 @@ app.post('/api/shows/cancel', (req, res) => {
         } catch(e) {
             console.error("Error reading config for scrubbing:", e);
         }
+
+// --- Save CXL to Analytics Ledger ---
+        try {
+            const dateKey = new Date().toISOString().split('T')[0];
+            const timeStr = new Date().toLocaleTimeString('en-US');
+            const analytics = JSON.parse(fs.readFileSync(analyticsPath));
+            
+            if (!analytics[dateKey]) {
+                analytics[dateKey] = { summary: { totalFiles: 0, totalLeads: 0, totalShown: 0, byAgent: {} }, records: [] };
+            }
+            
+            analytics[dateKey].records.push({
+                transactionId: Date.now().toString(36),
+                time: timeStr,
+                agent: show.agentName || 'Unassigned',
+                mode: `CXL`,
+                filename: show.showName,
+                total: 0, shown: 0, hidden: 0,
+                reason: reason
+            });
+            fs.writeFileSync(analyticsPath, JSON.stringify(analytics, null, 2));
+        } catch(e) { console.error("Error logging CXL to analytics:", e); }
 
         fs.writeFileSync(showsPath, JSON.stringify(currentShows, null, 2));
         
@@ -1034,6 +1096,29 @@ app.post('/api/admin/reset', async (req, res) => {
     } catch (e) {
         res.status(500).json({ success: false, error: e.message });
     }
+});
+
+// ─────────────────────────────────────────────
+//  LIVE FLOOR TRACKING (SOCKET.IO)
+// ─────────────────────────────────────────────
+io.on('connection', (socket) => {
+    socket.on('agent_status', (data) => {
+        // Track the specific socket connection ID with the username
+        socket.username = data.agent;
+        activeFloor[data.agent] = {
+            status: data.status,
+            show: data.show,
+            startTime: data.status === 'Working' ? Date.now() : null
+        };
+        io.emit('floor_update', activeFloor);
+    });
+
+    socket.on('disconnect', () => {
+        if (socket.username && activeFloor[socket.username]) {
+            activeFloor[socket.username].status = 'Offline';
+            io.emit('floor_update', activeFloor);
+        }
+    });
 });
 
 // ─────────────────────────────────────────────

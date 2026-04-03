@@ -1775,7 +1775,7 @@
             currentAssignedShow = null;
             showToast(`🚨 Your active show was cancelled: ${data.reason}`, 'error');
             renderBriefingCard();
-            if (socket) socket.emit('agent_status', { agent: currentUser, status: 'Idle', show: null });
+            if (socket) socket.emit('agent_status', { agent: currentUser, status: 'CXL Alerted', show: null });
         }
       });
     }
@@ -1932,8 +1932,12 @@
     // ─────────────────────────────────────────────
     initTableResizers();
     checkAuth();
-    if (currentUser) initSocket();
-    checkActiveShow(); // <--- Add this here
+    if (currentUser) {
+        initSocket();
+        // Announce presence immediately
+        if (socket) socket.emit('agent_status', { agent: currentUser, status: 'Idle', show: null });
+    }
+    checkActiveShow();
   </script>
 </body>
 
