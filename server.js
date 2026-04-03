@@ -1079,7 +1079,11 @@ app.post('/api/admin/users', (req, res) => {
     try {
         const users = req.body;
         if (!Array.isArray(users)) throw new Error('Payload must be an array of users');
-        if (!users.some(u => u.username === 'Admin')) throw new Error('Cannot remove the Admin user');
+        
+        // Enforce that at least ONE user has the Admin role
+        const adminCount = users.filter(u => u.role === 'Admin').length;
+        if (adminCount === 0) throw new Error('System must have at least one Admin account.');
+        
         fs.writeFileSync(usersPath, JSON.stringify(users, null, 2));
         res.json({ success: true });
     } catch (e) {
