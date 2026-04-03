@@ -9,7 +9,7 @@ const multer  = require('multer');
 const app    = express();
 const server = http.createServer(app);
 const io     = new Server(server);
-const PORT   = 3005;
+const PORT   = 3017;
 
 // ─────────────────────────────────────────────
 //  BOOTSTRAP — ensure all required files exist
@@ -425,8 +425,12 @@ app.get('/api/user/report', (req, res) => {
 //  SHOW HOPPER
 // ─────────────────────────────────────────────
 app.get('/api/shows', (req, res) => {
-    const shows = JSON.parse(fs.readFileSync(showsPath));
-    res.json({ success: true, shows });
+    try {
+        const shows = JSON.parse(fs.readFileSync(showsPath));
+        res.json({ success: true, shows: shows });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
 });
 
 app.post('/api/shows/upload', upload.single('file'), async (req, res) => {
@@ -464,6 +468,7 @@ app.post('/api/shows/upload', upload.single('file'), async (req, res) => {
                         lists: getVal(6),
                         comment: getVal(7),
                         date: getVal(8),
+                        status: 'Pending',
                         pinnedTo: null // for assignment logic
                     };
                     newShows.push(lastShow);
@@ -501,20 +506,174 @@ app.post('/api/shows/update', (req, res) => {
 app.get('/api/shows/next', (req, res) => {
     const { username } = req.query;
     const currentShows = JSON.parse(fs.readFileSync(showsPath));
-    if (currentShows.length === 0) return res.json({ success: false, message: 'No shows available' });
     
-    // Check for pinned
-    const pinnedShowIndex = currentShows.findIndex(s => s.pinnedTo === username);
-    if (pinnedShowIndex !== -1) {
-        const show = currentShows.splice(pinnedShowIndex, 1)[0];
-        fs.writeFileSync(showsPath, JSON.stringify(currentShows, null, 2));
-        return res.json({ success: true, show });
+    // 1. Check if the agent ALREADY has an "In Progress" show
+    const existingInProgressShow = currentShows.find(s => s.agentName === username && s.status === 'In Progress');
+    
+    if (existingInProgressShow) {
+        return res.json({ success: true, show: existingInProgressShow });
     }
     
-    // Default next show
-    const show = currentShows.shift();
+    // 2. Look for a Pending show specifically Pinned/Assigned to this user FIRST
+    const pinnedShow = currentShows.find(s => s.agentName === username && s.status === 'Pending');
+    
+    let showToAssign = null;
+    
+    if (pinnedShow) {
+        showToAssign = pinnedShow;
+    } else {
+        // 3. If no pinned show, look for the first UNASSIGNED Pending show
+        // (Ensures we don't accidentally give away a show pinned to a different agent)
+        const unassignedShow = currentShows.find(s => (!s.agentName || s.agentName.trim() === '') && s.status === 'Pending');
+        
+        if (unassignedShow) {
+            showToAssign = unassignedShow;
+        }
+    }
+    
+    // 4. If nothing was found, let the agent know the queue is empty
+    if (!showToAssign) {
+        return res.json({ success: false, message: 'No shows available' });
+    }
+    
+    // 5. Mark the chosen show as In Progress and officially assign it
+    showToAssign.status = 'In Progress';
+    showToAssign.agentName = username;
+    
     fs.writeFileSync(showsPath, JSON.stringify(currentShows, null, 2));
-    res.json({ success: true, show });
+    io.emit('hopper_updated'); // Notify admin dashboard
+    
+    res.json({ success: true, show: showToAssign });
+});
+
+app.get('/api/shows/active', (req, res) => {
+    const { username } = req.query;
+    const currentShows = JSON.parse(fs.readFileSync(showsPath));
+    const activeShow = currentShows.find(s => s.agentName === username && s.status === 'In Progress');
+    
+    if (activeShow) {
+        res.json({ success: true, show: activeShow });
+    } else {
+        res.json({ success: false });
+    }
+});
+
+app.post('/api/shows/complete', (req, res) => {
+    const { id } = req.body;
+    const currentShows = JSON.parse(fs.readFileSync(showsPath));
+    const show = currentShows.find(s => s.id === id);
+    if (show) {
+        show.status = 'Done';
+        fs.writeFileSync(showsPath, JSON.stringify(currentShows, null, 2));
+        io.emit('hopper_updated');
+        res.json({ success: true });
+    } else {
+        res.status(404).json({ success: false, error: 'Show not found' });
+    }
+});
+
+app.post('/api/shows/clear', (req, res) => {
+    fs.writeFileSync(showsPath, JSON.stringify([], null, 2));
+    io.emit('hopper_updated');
+    res.json({ success: true });
+});
+
+app.get('/api/shows/export', async (req, res) => {
+    try {
+        const currentShows = JSON.parse(fs.readFileSync(showsPath));
+        const wb = new ExcelJS.Workbook();
+        const sheet = wb.addWorksheet('Shows Hopper');
+
+        sheet.columns = [
+            { header: 'Show Name', key: 'showName', width: 30 },
+            { header: 'Link', key: 'link', width: 40 },
+            { header: 'Status', key: 'status', width: 15 },
+            { header: 'Agent Name', key: 'agentName', width: 20 },
+            { header: 'L/D', key: 'ld', width: 15 },
+            { header: 'Name of Lists', key: 'lists', width: 25 },
+            { header: 'Comment', key: 'comment', width: 30 },
+            { header: 'Date', key: 'date', width: 15 },
+        ];
+
+        sheet.getRow(1).font = { bold: true };
+
+        currentShows.forEach(s => {
+            const links = Array.isArray(s.link) ? s.link.join('\n') : (s.link || '');
+            sheet.addRow({
+                showName: s.showName,
+                link: links,
+                status: s.status || 'Pending',
+                agentName: s.agentName || '',
+                ld: s.ld || '',
+                lists: s.lists || '',
+                comment: s.comment || '',
+                date: s.date || ''
+            });
+        });
+
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        const today = new Date().toISOString().split('T')[0];
+        res.setHeader('Content-Disposition', `attachment; filename="Shows_Log_${today}.xlsx"`);
+        await wb.xlsx.write(res);
+        res.end();
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
+app.post('/api/shows/cancel', (req, res) => {
+    const { id, reason } = req.body;
+    const currentShows = JSON.parse(fs.readFileSync(showsPath));
+    const show = currentShows.find(s => s.id === id);
+    
+    if (show) {
+        show.status = `CXL/${reason}`;
+        
+        // --- Automated File Scrubbing ---
+        try {
+            const config = JSON.parse(fs.readFileSync(configPath));
+            const users = JSON.parse(fs.readFileSync(usersPath));
+            const dirsToScrub = [config.usBase, config.ukBase];
+            
+            // Add the specific agent's archive path if assigned
+            if (show.agentName) {
+                const agent = users.find(u => u.username === show.agentName);
+                if (agent && agent.archivePath) dirsToScrub.push(agent.archivePath);
+            }
+            
+            // Scan and delete matching files
+            dirsToScrub.forEach(dir => {
+                if (dir && fs.existsSync(dir)) {
+                    const files = fs.readdirSync(dir);
+                    files.forEach(file => {
+                        // Match files containing the show name
+                        if (file.includes(show.showName)) {
+                            try { 
+                                fs.unlinkSync(path.join(dir, file)); 
+                            } catch(e) { console.error('Scrub failed for:', file); }
+                        }
+                    });
+                }
+            });
+        } catch(e) {
+            console.error("Error reading config for scrubbing:", e);
+        }
+
+        fs.writeFileSync(showsPath, JSON.stringify(currentShows, null, 2));
+        
+        // Broadcast the cancellation to disconnect the agent
+        io.emit('show_cancelled', { 
+            id: show.id, 
+            showName: show.showName, 
+            reason: reason, 
+            agentName: show.agentName 
+        });
+        
+        io.emit('hopper_updated');
+        res.json({ success: true });
+    } else {
+        res.status(404).json({ success: false, error: 'Show not found' });
+    }
 });
 
 // ─────────────────────────────────────────────

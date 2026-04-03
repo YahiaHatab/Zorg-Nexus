@@ -579,6 +579,16 @@
       transition: color 0.15s;
     }
 
+    .mode-warning {
+      background: rgba(245, 158, 11, 0.1);
+      color: var(--warning);
+    }
+
+    .mode-danger {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--danger);
+    }
+
     .search-clear:hover { color: var(--text-main); }
 
     .search-bar.has-value .search-clear { display: block; }
@@ -616,6 +626,28 @@
       <div class="confirm-actions">
         <button class="btn" onclick="closeDeleteModal()">Cancel</button>
         <button class="btn btn-red" id="confirmDeleteBtn" onclick="confirmDeleteRecord()">Delete Record</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="cancelModal" style="display:none; position:fixed; inset:0; background:rgba(11,15,25,0.85); backdrop-filter:blur(4px); z-index:9999; align-items:center; justify-content:center;">
+    <div class="confirm-box">
+      <h3 style="color:var(--danger);">🚫 Cancel Show</h3>
+      <p style="margin-bottom:16px;">Select a reason or type an odd case. This will instantly scrub the file from all system directories.</p>
+      
+      <select id="cxlReasonSelect" class="field-input" style="margin-bottom:12px; font-size:14px; padding:10px;" onchange="if(this.value==='Custom') document.getElementById('cxlCustomReason').style.display='block'; else document.getElementById('cxlCustomReason').style.display='none';">
+         <option value="Pricing">Pricing</option>
+         <option value="Duplicates">Duplicates</option>
+         <option value="SameList">SameList</option>
+         <option value="Custom">Odd Case (Custom Comment)</option>
+      </select>
+      
+      <input type="text" id="cxlCustomReason" class="field-input" placeholder="Type custom reason here..." style="display:none; margin-bottom:20px; font-size:14px; padding:10px;">
+      <input type="hidden" id="cxlShowId">
+      
+      <div class="confirm-actions" style="margin-top:20px;">
+        <button class="btn" onclick="document.getElementById('cancelModal').style.display='none'">Cancel</button>
+        <button class="btn btn-red" onclick="executeCancelShow()">Confirm & Scrub</button>
       </div>
     </div>
   </div>
@@ -662,6 +694,7 @@
                 <th>Shows</th>
                 <th>Gross</th>
                 <th>Net</th>
+                <th>Conv. %</th>
               </tr>
             </thead>
             <tbody id="leaderboardBody"></tbody>
@@ -851,6 +884,8 @@
       <div class="panel-header">
         Show Hopper Queue
         <div style="display:flex; align-items:center; gap:10px;">
+           <button class="btn btn-red" onclick="clearHopper()">✕ Clear Log</button>
+           <button class="btn btn-green" onclick="exportHopper()">⬇ Export Excel</button>
            <input type="file" id="hopperUpload" style="display:none;" accept=".xlsx, .xls" onchange="handleHopperUpload(event)">
            <button class="btn btn-blue" onclick="document.getElementById('hopperUpload').click()">+ Upload Excel</button>
         </div>
@@ -963,14 +998,18 @@
       });
 
       const rows = Object.values(agents).sort((a, b) => b.files - a.files);
-      document.getElementById('leaderboardBody').innerHTML = rows.map(a => `
-        <tr class="leader-row" onclick="viewAgentLogs('${escHtml(a.name)}', this)">
+      document.getElementById('leaderboardBody').innerHTML = rows.map(a => {
+        // Calculate the conversion percentage (Net / Gross * 100)
+        const conversion = a.leads > 0 ? ((a.shown / a.leads) * 100).toFixed(1) : '0.0';
+        
+        return `<tr class="leader-row" onclick="viewAgentLogs('${escHtml(a.name)}', this)">
             <td class="agent-name">${escHtml(a.name)}</td>
             <td style="color:var(--accent-blue);font-weight:600;">${a.files}</td>
             <td style="color:var(--text-muted);">${a.leads}</td>
             <td class="stat-highlight">${a.shown}</td>
-        </tr>
-    `).join('') || `<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:30px;">No activity today yet.</td></tr>`;
+            <td style="color:var(--warning);font-weight:600;">${conversion}%</td>
+        </tr>`;
+      }).join('') || `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:30px;">No activity today yet.</td></tr>`;
 
       resetToGlobalLogs();
     }
@@ -1526,16 +1565,27 @@
         if (json.success) {
           showsData = json.shows || [];
           renderShowsTable();
+        } else {
+          showToast(`❌ Server returned an error: ${json.error}`, 'error');
         }
-      } catch (e) { showToast('Failed to load shows.', 'error'); }
+      } catch (e) { 
+        console.error("Fetch shows error:", e);
+        showToast(`❌ Failed to load shows: ${e.message}`, 'error'); 
+      }
     }
     
     function renderShowsTable() {
       const tbody = document.getElementById('hopperBody');
-      if (!showsData.length) {
+      if (!tbody) {
+          console.error("Missing hopperBody element!");
+          return;
+      }
+      
+      if (!showsData || !showsData.length) {
          tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:40px;">Queue is empty. Drop an Excel file here or click Upload.</td></tr>`;
          return;
       }
+      
       tbody.innerHTML = showsData.map(s => {
           const linksArray = Array.isArray(s.link) ? s.link : [s.link].filter(Boolean);
           const linksHtml = linksArray.map(l => `<a href="${escHtml(l)}" target="_blank" style="color:var(--accent-blue);text-decoration:none;word-break:break-all;font-size:11px;display:block;">${escHtml(l)}</a>`).join('<div style="height:4px;"></div>');
@@ -1543,12 +1593,19 @@
           const agentOptions = `<option value="">— Unassigned —</option>` + 
               usersData.map(u => `<option value="${escHtml(u.username)}" ${s.agentName === u.username ? 'selected' : ''}>${escHtml(u.username)}</option>`).join('');
 
+          // Safely check for CXL status
+          const statusStr = s.status || 'Pending';
+          const isCxl = String(statusStr).startsWith('CXL');
+          const statusClass = isCxl ? 'mode-danger' : (s.status === 'Done' ? 'mode-some' : (s.status === 'In Progress' ? 'mode-warning' : 'mode-standard'));
+          
+          const cxlBtn = !isCxl ? `<button class="btn btn-red btn-sm" style="margin-left:8px; padding:2px 6px; font-size:10px;" onclick="openCancelModal('${s.id}')">CXL</button>` : '';
+
           return `<tr>
               <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escHtml(s.showName)}">${escHtml(s.showName)}</td>
               <td style="max-width:300px;vertical-align:top;">
                 <div style="max-height:80px;overflow-y:auto;padding-right:4px;">${linksHtml || '—'}</div>
               </td>
-              <td><span class="mode-tag mode-standard">Pending</span></td>
+              <td><span class="mode-tag ${statusClass}">${escHtml(statusStr)}</span>${cxlBtn}</td>
               <td style="min-width:140px;">
                 <select class="user-input" style="padding:5px;font-size:12px;" onchange="updateShowAgent('${s.id}', this.value)">
                    ${agentOptions}
@@ -1604,7 +1661,6 @@
         const json = await res.json();
         if (json.success) {
            showToast(`✅ Successfully parsed ${json.added} shows.`, 'success');
-           fetchShows();
         } else {
            showToast(`❌ Upload failed: ${json.error}`, 'error');
         }
@@ -1640,6 +1696,54 @@
       if (currentTab === 'leaderboard') renderDashboard();
       showToast('🔄 Daily reset — live view cleared.', 'info');
     });
+
+    socket.on('hopper_updated', () => {
+      if (currentTab === 'hopper') fetchShows();
+    });
+
+    async function clearHopper() {
+        if (!confirm('Are you sure you want to completely wipe all shows from the queue?')) return;
+        try {
+            const res = await fetch('/api/shows/clear', { method: 'POST' });
+            if ((await res.json()).success) {
+                showToast('✅ Hopper cleared.', 'success');
+                fetchShows();
+            }
+        } catch(e) { showToast('❌ Error clearing hopper.', 'error'); }
+    }
+
+    function exportHopper() {
+        window.location.href = '/api/shows/export';
+    }
+
+    function openCancelModal(id) {
+        document.getElementById('cxlShowId').value = id;
+        document.getElementById('cxlReasonSelect').value = 'Pricing';
+        document.getElementById('cxlCustomReason').style.display = 'none';
+        document.getElementById('cxlCustomReason').value = '';
+        document.getElementById('cancelModal').style.display = 'flex';
+    }
+
+    async function executeCancelShow() {
+        const id = document.getElementById('cxlShowId').value;
+        const selectVal = document.getElementById('cxlReasonSelect').value;
+        const reason = selectVal === 'Custom' ? document.getElementById('cxlCustomReason').value.trim() : selectVal;
+
+        if (!reason) { showToast('Please enter a reason.', 'error'); return; }
+
+        try {
+            const res = await fetch('/api/shows/cancel', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, reason })
+            });
+            if ((await res.json()).success) {
+                document.getElementById('cancelModal').style.display = 'none';
+                showToast('✅ Show Cancelled & Scrubbed.', 'success');
+                fetchShows();
+            }
+        } catch(e) { showToast('❌ Error cancelling show.', 'error'); }
+    }
 
     // ── BOOT ─────────────────────────────────────
     fetchTodayData();

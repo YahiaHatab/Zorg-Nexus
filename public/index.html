@@ -1211,16 +1211,18 @@
                 <h1 style="font-size:24px; font-weight:700; margin-bottom:8px;">Agent Briefing Room</h1>
                 <p id="briefingStatus" style="color:var(--text-muted); font-size:14px;">Waiting for Show...</p>
               </div>
-              <div id="briefingTimer" class="mono" style="font-size:20px; font-weight:700; color:var(--accent-blue); display:none;">00:00:00</div>
+              <div style="display:flex; gap:16px; align-items:center;">
+                 <button onclick="requestDesktopNotifications()" style="cursor:pointer; padding:6px 12px; border-radius:6px; background:transparent; color:var(--text-muted); border:1px solid var(--border); font-size:12px; font-weight:600; transition:color 0.2s;">🔔 Enable Alerts</button>
+                 <div id="briefingTimer" class="mono" style="font-size:20px; font-weight:700; color:var(--accent-blue); display:none;">00:00:00</div>
+              </div>
             </div>
 
             <div id="briefingContent" style="display:none;">
-              <div style="background:var(--bg-base); border: 1px solid var(--border); border-radius:8px; padding:20px; margin-bottom:24px;">
+              <div id="briefingDetailsBlock" style="background:var(--bg-base); border: 1px solid var(--border); border-radius:8px; padding:20px; margin-bottom:24px;">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
                   <h2 id="briefingShowName" style="font-size:16px; font-weight:600; color:var(--text-main); margin-right:16px; line-height:1.4;"></h2>
                   <button id="copyNameBtn" onclick="copySmartName()" class="filter-btn btn-some" style="flex-shrink:0;">📋 Copy Name</button>
                 </div>
-                
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-top:20px; border-top:1px solid var(--border); padding-top:20px;">
                   <div>
                     <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase; font-weight:600; margin-bottom:8px;">Links</div>
@@ -1234,16 +1236,15 @@
               </div>
 
               <div style="display:flex; gap:16px;">
-                <button id="startWorkingBtn" onclick="startWorking()" style="flex:1; background:var(--accent-blue); border:none; color:#fff; font-weight:600; font-size:15px; padding:14px; border-radius:8px; cursor:pointer; transition:background 0.2s;">▶ Confirm & Start</button>
-                <button id="doneWorkingBtn" onclick="finishWorking()" style="flex:1; background:var(--success); border:none; color:#fff; font-weight:600; font-size:15px; padding:14px; border-radius:8px; cursor:pointer; display:none; transition:background 0.2s;">✓ Complete & Next Show</button>
+                <button id="doneWorkingBtn" onclick="finishWorking()" style="flex:1; background:var(--success); border:none; color:#fff; font-weight:600; font-size:15px; padding:14px; border-radius:8px; cursor:pointer; transition:background 0.2s;">✓ Complete</button>
               </div>
             </div>
 
             <div id="briefingEmpty" style="text-align:center; padding:60px 0; color:var(--text-muted);">
               <div style="font-size:48px; margin-bottom:16px; opacity:0.5;">☕</div>
-              <h3 style="font-size:16px; font-weight:600; margin-bottom:8px;">Hopper is Empty</h3>
-              <p style="font-size:13px; max-width:300px; margin:0 auto;">Keep an eye out for new shows coming in.</p>
-              <button onclick="fetchNextShow()" class="filter-btn btn-std" style="margin-top:24px; display:inline-flex; align-items:center; justify-content:center; margin-left:auto; margin-right:auto;">↻ Check Hopper</button>
+              <h3 style="font-size:16px; font-weight:600; margin-bottom:8px;">Ready for your next show?</h3>
+              <p style="font-size:13px; max-width:300px; margin:0 auto;">Press the button below to assign and start your next show.</p>
+              <button onclick="startNextShow()" class="filter-btn btn-std" style="margin-top:24px; display:inline-flex; align-items:center; justify-content:center; margin-left:auto; margin-right:auto; font-size:16px; padding:12px 24px;">▶ Start Next Show</button>
             </div>
           </div>
         </div>
@@ -1758,9 +1759,28 @@
           logout();
         });
       }
+      socket.on('show_cancelled', (data) => {
+        // Only react if THIS agent is currently working on THIS specific show
+        if (currentAssignedShow && currentAssignedShow.id === data.id) {
+            
+            // Fire Desktop Notification
+            if ("Notification" in window && Notification.permission === "granted") {
+                new Notification("🚨 Show Cancelled", {
+                    body: `Admin cancelled "${data.showName}". Reason: ${data.reason}. Please request a new show.`,
+                    requireInteraction: true
+                });
+            }
+            
+            // Rip the show out of the UI
+            currentAssignedShow = null;
+            showToast(`🚨 Your active show was cancelled: ${data.reason}`, 'error');
+            renderBriefingCard();
+            if (socket) socket.emit('agent_status', { agent: currentUser, status: 'Idle', show: null });
+        }
+      });
     }
 
-    async function fetchNextShow() {
+    async function startNextShow() {
       if (!currentUser) return;
       try {
         const res = await fetch('/api/shows/next?username=' + encodeURIComponent(currentUser));
@@ -1770,6 +1790,7 @@
           renderBriefingCard();
         } else {
           currentAssignedShow = null;
+          showToast('❌ No shows available in the hopper.', 'error');
           renderBriefingCard();
         }
       } catch (err) {
@@ -1786,51 +1807,48 @@
         emptyDiv.style.display = 'block';
         contentDiv.style.display = 'none';
         statusEl.textContent = 'Waiting for Show...';
+        stopTimer();
       } else {
         emptyDiv.style.display = 'none';
         contentDiv.style.display = 'block';
-        statusEl.textContent = 'Show Assigned. Pending Handshake.';
+        statusEl.textContent = 'Working on Show...';
         
         document.getElementById('briefingShowName').textContent = currentAssignedShow.showName || 'Unnamed Show';
         
-        // Render links
         const linksHtml = (currentAssignedShow.link || []).map(url => {
           return `<a href="${url}" target="_blank" style="color:var(--accent-blue); text-decoration:none; word-break:break-all; font-size:12px;">${url}</a>`;
         }).join('');
         document.getElementById('briefingLinks').innerHTML = linksHtml || '<span style="color:var(--text-muted);font-style:italic;">No links provided</span>';
         
-        // Render details
         let detailsText = '';
         if (currentAssignedShow.ld) detailsText += `Data: ${currentAssignedShow.ld}\n\n`;
         if (currentAssignedShow.lists) detailsText += `Lists: ${currentAssignedShow.lists}\n\n`;
         if (currentAssignedShow.comment) detailsText += `Comments:\n${currentAssignedShow.comment}\n`;
         document.getElementById('briefingDetails').textContent = detailsText.trim() || 'No additional details.';
-        
-        // Reset working state UI
-        document.getElementById('startWorkingBtn').style.display = 'block';
-        document.getElementById('doneWorkingBtn').style.display = 'none';
-        stopTimer();
+
+        // Notify the server they are actively working on it and start the clock
+        if (socket) socket.emit('agent_status', { agent: currentUser, status: 'Working', show: currentAssignedShow.showName });
+        startTimer();
       }
     }
 
-    function startWorking() {
-      if (!currentAssignedShow || !socket) return;
-      document.getElementById('briefingStatus').textContent = 'Working on Show...';
-      document.getElementById('startWorkingBtn').style.display = 'none';
-      document.getElementById('doneWorkingBtn').style.display = 'block';
+    async function finishWorking() {
+      if (!currentAssignedShow) return;
       
-      // Tell server agent is working
-      socket.emit('agent_status', { agent: currentUser, status: 'Working', show: currentAssignedShow.showName });
-      
-      startTimer();
-    }
+      try {
+        await fetch('/api/shows/complete', {
+           method: 'POST',
+           headers: { 'Content-Type': 'application/json' },
+           body: JSON.stringify({ id: currentAssignedShow.id })
+        });
+      } catch (e) {
+        console.error('Failed to complete show');
+      }
 
-    function finishWorking() {
       stopTimer();
       if (socket) socket.emit('agent_status', { agent: currentUser, status: 'Idle', show: null });
       currentAssignedShow = null;
       renderBriefingCard();
-      fetchNextShow(); // auto-fetch next
     }
 
     function startTimer() {
@@ -1879,12 +1897,43 @@
       });
     }
 
+    async function checkActiveShow() {
+      if (!currentUser) return;
+      try {
+        const res = await fetch('/api/shows/active?username=' + encodeURIComponent(currentUser));
+        const data = await res.json();
+        if (data.success && data.show) {
+          currentAssignedShow = data.show;
+          renderBriefingCard();
+          
+          // Optional: If you want it to immediately jump back to the working state
+          // instead of making them click "Start Show" again, uncomment the line below:
+          // revealShow(); 
+        }
+      } catch (err) {
+        console.error('Failed to check active show', err);
+      }
+    }
+
+    function requestDesktopNotifications() {
+        if (!("Notification" in window)) {
+            showToast("Your browser does not support desktop notifications.", "error");
+        } else if (Notification.permission === "granted") {
+            showToast("Alerts are already enabled!", "info");
+        } else if (Notification.permission !== "denied") {
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") showToast("✅ Desktop alerts enabled.", "success");
+            });
+        }
+    }
+
     // ─────────────────────────────────────────────
     //  BOOT
     // ─────────────────────────────────────────────
     initTableResizers();
     checkAuth();
     if (currentUser) initSocket();
+    checkActiveShow(); // <--- Add this here
   </script>
 </body>
 
