@@ -40,6 +40,10 @@
 
       /* kept for legacy inline refs */
       --bg-base: #f8fafc;
+
+      /* ── Glassmorphism ── */
+      --glass-bg: rgba(255, 255, 255, 0.6);
+      --glass-border: rgba(255, 255, 255, 0.4);
     }
 
     /* ── Dark Mode Override ── */
@@ -53,10 +57,15 @@
       --text-muted: #9ca3af;
       --text-sidebar: #9ca3af;
       --bg-base: #0f172a;
+
+      /* ── Glassmorphism ── */
+      --glass-bg: rgba(31, 41, 55, 0.5);
+      --glass-border: rgba(255, 255, 255, 0.08);
     }
 
     body {
-      background: var(--bg-main);
+      background: linear-gradient(135deg, var(--bg-main) 0%, var(--bg-hover) 100%);
+      background-attachment: fixed;
       color: var(--text-main);
       font-family: 'Inter', sans-serif;
       font-size: 13px;
@@ -94,6 +103,42 @@
       align-items: center;
       justify-content: center;
       flex-direction: column;
+    }
+
+    /* ── GLASSMORPHISM ── */
+    .glass-panel {
+      background: var(--glass-bg) !important;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border: 1px solid var(--glass-border) !important;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .health-pill {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-left: auto;
+      white-space: nowrap;
+    }
+
+    .health-pill span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .health-pill .divider {
+      color: var(--border);
+      font-weight: 300;
     }
 
     .login-box {
@@ -1281,62 +1326,47 @@
 
       <!-- TOP ANALYTICS WIDGET STRIP (Today's numbers, always visible) -->
       <div class="top-widgets" id="topWidgets">
-        <div class="top-widget-card" style="--widget-accent: var(--accent-blue);">
+        <div class="top-widget-card glass-panel" style="--widget-accent: var(--accent-blue);">
           <div class="twc-icon">📁</div>
           <div class="twc-body">
             <div class="twc-val" id="pcFilesToday">—</div>
             <div class="twc-lbl">Shows Today</div>
           </div>
         </div>
-        <div class="top-widget-card" style="--widget-accent: var(--accent-cyan);">
+        <div class="top-widget-card glass-panel" style="--widget-accent: var(--accent-cyan);">
           <div class="twc-icon">✨</div>
           <div class="twc-body">
             <div class="twc-val" id="pcShownToday" style="color:var(--success);">—</div>
             <div class="twc-lbl">Net Today</div>
           </div>
         </div>
-        <div class="top-widget-card" style="--widget-accent: var(--warning);">
+        <div class="top-widget-card glass-panel" style="--widget-accent: var(--warning);">
           <div class="twc-icon">📊</div>
           <div class="twc-body">
             <div class="twc-val" id="pcGrossToday" style="color:var(--warning);">—</div>
             <div class="twc-lbl">Gross Today</div>
           </div>
         </div>
-        <div class="top-widget-card" style="--widget-accent: var(--accent-purple);">
+        <div class="top-widget-card glass-panel" style="--widget-accent: var(--accent-purple);">
           <div class="twc-icon">📅</div>
           <div class="twc-body">
             <div class="twc-val" id="pcShownMonth">—</div>
             <div class="twc-lbl">Net (Month)</div>
           </div>
         </div>
-        <div class="top-widget-card" style="--widget-accent: var(--warning);">
+        <div class="top-widget-card glass-panel" style="--widget-accent: var(--warning);">
           <div class="twc-icon">🗓️</div>
           <div class="twc-body">
             <div class="twc-val" id="pcGrossMonth" style="color:var(--warning);">—</div>
             <div class="twc-lbl">Gross (Month)</div>
           </div>
         </div>
-        <!-- Static system stats -->
-        <div class="top-widget-card" style="--widget-accent: var(--text-muted); margin-left: auto;">
-          <div class="twc-icon">🗄️</div>
-          <div class="twc-body">
-            <div class="twc-val" id="statTotal">0</div>
-            <div class="twc-lbl">Total Files</div>
-          </div>
-        </div>
-        <div class="top-widget-card" style="--widget-accent: var(--success);">
-          <div class="twc-icon">✅</div>
-          <div class="twc-body">
-            <div class="twc-val" id="statSorted" style="color:var(--success);">0</div>
-            <div class="twc-lbl">Processed</div>
-          </div>
-        </div>
-        <div class="top-widget-card" style="--widget-accent: var(--danger);">
-          <div class="twc-icon">⚠️</div>
-          <div class="twc-body">
-            <div class="twc-val" id="statErrors" style="color:var(--danger);">0</div>
-            <div class="twc-lbl">Issues</div>
-          </div>
+        <div class="health-pill">
+          <span>📁 <span id="statTotal">0</span></span>
+          <span class="divider">|</span>
+          <span>✅ <span id="statSorted" style="color:var(--success)">0</span></span>
+          <span class="divider">|</span>
+          <span>⚠️ <span id="statErrors" style="color:var(--danger)">0</span></span>
         </div>
         <div style="display:flex; align-items:center; padding: 0 6px; flex-shrink:0;">
           <div class="clock" id="clock">--:--:--</div>
@@ -1403,9 +1433,9 @@
 
         <!-- ── BRIEFING ROOM VIEW ── -->
         <div class="view-container" id="briefingView"
-          style="display:none; padding:32px; overflow-y:auto; background:var(--bg-base);">
-          <div class="panel"
-            style="max-width:800px; margin:0 auto; padding:32px; border:1px solid var(--border); border-radius:12px; background:var(--bg-panel); position:relative; width:100%;">
+          style="display:none; padding:32px; overflow-y:auto; background:transparent;">
+          <div class="panel glass-panel"
+            style="max-width:800px; margin:0 auto; padding:32px; position:relative; width:100%;">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px;">
               <div>
                 <h1 style="font-size:24px; font-weight:700; margin-bottom:8px;">Agent Briefing Room</h1>

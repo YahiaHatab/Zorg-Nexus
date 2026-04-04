@@ -34,6 +34,10 @@
 
       /* kept for legacy inline refs */
       --bg-base:    #f8fafc;
+
+      /* ── Glassmorphism ── */
+      --glass-bg: rgba(255, 255, 255, 0.6);
+      --glass-border: rgba(255, 255, 255, 0.4);
     }
 
     /* ── Dark Mode Override ── */
@@ -47,10 +51,15 @@
       --text-muted: #9ca3af;
       --text-sidebar: #9ca3af;
       --bg-base:    #0f172a;
+
+      /* ── Glassmorphism ── */
+      --glass-bg: rgba(31, 41, 55, 0.5);
+      --glass-border: rgba(255, 255, 255, 0.08);
     }
 
     body {
-      background: var(--bg-main);
+      background: linear-gradient(135deg, var(--bg-main) 0%, var(--bg-hover) 100%);
+      background-attachment: fixed;
       color: var(--text-main);
       font-family: 'Inter', sans-serif;
       height: 100vh;
@@ -190,7 +199,16 @@
       gap: 20px;
     }
 
-    /* ── PANELS ── */
+    /* ── PANELS & GLASS ── */
+    .glass-panel {
+      background: var(--glass-bg) !important;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border: 1px solid var(--glass-border) !important;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
     .panel {
       background: var(--bg-panel);
       border: 1px solid var(--border);
@@ -234,6 +252,22 @@
       position: sticky;
       top: 0;
       z-index: 1;
+      position: relative;
+    }
+
+    .resizer {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 5px;
+      height: 100%;
+      cursor: col-resize;
+      user-select: none;
+      z-index: 2;
+    }
+
+    .resizer:hover, .resizer.resizing {
+      border-right: 2px solid #3b82f6;
     }
 
     .data-table td {
@@ -435,7 +469,9 @@
     }
 
     .toast {
-      background: var(--bg-panel);
+      background: var(--glass-bg);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
       border: 1px solid var(--border);
       border-left: 4px solid var(--success);
       border-radius: 8px;
@@ -626,9 +662,31 @@
     .custom-dropdown-content button { background: none; border: none; border-radius: 0; width: 100%; text-align: left; padding: 10px 16px; color: var(--text-main); font-size: 12px; font-family: 'Inter', sans-serif; cursor: pointer; }
     .custom-dropdown-content button:hover { background-color: var(--bg-hover); }
 
-    /* ── FILTER SELECTS ── */
-    .hopper-filter { background: var(--bg-base); border: 1px solid var(--border); color: var(--text-main); border-radius: 4px; padding: 2px 4px; font-family: 'Inter', sans-serif; font-size: 10px; outline: none; margin-left: 6px; cursor: pointer; }
-    .hopper-filter:focus { border-color: var(--accent-blue); }
+    /* ── FILTER SELECTS & TABLE DROPDOWNS ── */
+    select.user-input, select.hopper-filter {
+      appearance: none;
+      -webkit-appearance: none;
+      background-color: var(--bg-sidebar);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 32px 6px 12px;
+      background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M5.5%207.5L10%2012L14.5%207.5%22%20stroke%3D%22gray%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      cursor: pointer;
+    }
+
+    select.user-input:focus, select.hopper-filter:focus {
+      border-color: #3b82f6;
+      outline: none;
+    }
+
+    .hopper-filter {
+      font-size: 11px;
+      margin-left: 6px;
+      font-family: 'Inter', sans-serif;
+    }
 
     .floor-sidebar {
       width: 280px;
@@ -842,7 +900,7 @@
 
   <!-- ══════════ TAB: LIVE LEADERBOARD (today only) ══════════ -->
   <div id="tab-leaderboard" class="tab-content active">
-    <div class="panel" style="flex:1; display:flex; flex-direction:column; min-height:0;">
+    <div class="panel glass-panel" style="flex:1; display:flex; flex-direction:column; min-height:0;">
       <div class="panel-header">
         <span>Today's Performance <span id="todayLabel"
             style="color:var(--text-muted); font-weight:400; font-size:12px;"></span></span>
@@ -905,10 +963,10 @@
           </div>
         </div>
 
-        <div id="floorMap" class="floor-sidebar">
+        <div id="floorMap" class="floor-sidebar glass-panel">
           <div
             style="padding:16px; border-bottom:1px solid var(--border); font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em;">
-            Live Floor Map</div>
+            Members</div>
           <div id="floorMapContent" style="overflow-y:auto; flex:1;">
             <div style="padding:20px; text-align:center; color:var(--text-muted); font-size:12px;">Waiting for agents...
             </div>
@@ -920,7 +978,7 @@
 
   <!-- ══════════ TAB: DATA LEDGER ══════════ -->
   <div id="tab-ledger" class="tab-content">
-    <div class="panel">
+    <div class="panel glass-panel">
       <div class="panel-header">
         <span>Report Sheet</span>
         <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
@@ -985,19 +1043,19 @@
 
     <!-- Charts -->
     <div class="chart-grid-3">
-      <div class="panel">
+      <div class="panel glass-panel">
         <div class="panel-header">Net Leads — Last 14 Days</div>
         <div class="panel-body">
           <div class="chart-wrap" style="height:220px;"><canvas id="chartLine"></canvas></div>
         </div>
       </div>
-      <div class="panel">
+      <div class="panel glass-panel">
         <div class="panel-header">Agent Totals (All-Time)</div>
         <div class="panel-body">
           <div class="chart-wrap" style="height:220px;"><canvas id="chartBar"></canvas></div>
         </div>
       </div>
-      <div class="panel">
+      <div class="panel glass-panel">
         <div class="panel-header">Mode Distribution</div>
         <div class="panel-body">
           <div class="chart-wrap" style="height:220px;"><canvas id="chartDonut"></canvas></div>
@@ -1006,7 +1064,7 @@
     </div>
 
     <!-- Per-agent breakdown table -->
-    <div class="panel">
+    <div class="panel glass-panel">
       <div class="panel-header">All-Time Agent Breakdown</div>
       <div style="overflow-x:auto;">
         <table class="data-table">
@@ -1028,7 +1086,7 @@
 
   <!-- ══════════ TAB: CONFIG ══════════ -->
   <div id="tab-config" class="tab-content">
-    <div class="panel">
+    <div class="panel glass-panel">
       <div class="panel-header">Directory Routes</div>
       <div class="panel-body">
         <div id="configFields"></div>
@@ -1041,7 +1099,7 @@
 
   <!-- ══════════ TAB: USERS ══════════ -->
   <div id="tab-users" class="tab-content">
-    <div class="panel">
+    <div class="panel glass-panel">
       <div class="panel-header">
         Access Control
         <button class="btn btn-blue btn-sm admin-only" onclick="addUserRow()">+ Add User</button>
@@ -1068,7 +1126,7 @@
   </div>
   <!-- ══════════ TAB: HOPPER ══════════ -->
   <div id="tab-hopper" class="tab-content">
-    <div class="panel" style="flex:1; display:flex; flex-direction:column; min-height:0;">
+    <div class="panel glass-panel" style="flex:1; display:flex; flex-direction:column; min-height:0;">
       <div class="panel-header" style="justify-content: space-between;">
         <div style="display:flex; align-items:center; gap:12px;">
            <span>The Sheet</span>
@@ -1094,9 +1152,9 @@
         <table class="data-table" style="table-layout: auto;">
           <thead>
             <tr>
-              <th style="resize: horizontal; overflow: hidden; min-width: 180px;">Show Name</th>
-              <th style="resize: horizontal; overflow: hidden; min-width: 120px;">Link</th>
-              <th style="resize: horizontal; overflow: hidden; min-width: 120px;">
+              <th style="min-width: 180px;">Show Name</th>
+              <th style="min-width: 120px;">Link</th>
+              <th style="min-width: 120px;">
                  Status
                  <select id="hopperStatusFilter" class="hopper-filter" onchange="applyHopperFilters()">
                     <option value="All">All</option>
@@ -1107,17 +1165,17 @@
                     <option value="CXL">CXL</option>
                  </select>
               </th>
-              <th style="resize: horizontal; overflow: hidden; min-width: 160px;">
+              <th style="min-width: 160px;">
                  Agent Name
                  <select id="hopperAgentFilter" class="hopper-filter" onchange="applyHopperFilters()">
                     <option value="All">All</option>
                     <option value="Unassigned">Unassigned</option>
                  </select>
               </th>
-              <th style="resize: horizontal; overflow: hidden; min-width: 60px;">L/D</th>
-              <th style="resize: horizontal; overflow: hidden; min-width: 120px;">Name of Lists</th>
-              <th style="resize: horizontal; overflow: hidden; min-width: 140px;">Comment</th>
-              <th style="resize: horizontal; overflow: hidden; min-width: 80px;">Date</th>
+              <th style="min-width: 60px;">L/D</th>
+              <th style="min-width: 120px;">Name of Lists</th>
+              <th style="min-width: 140px;">Comment</th>
+              <th style="min-width: 80px;">Date</th>
             </tr>
           </thead>
           <tbody id="hopperBody">
@@ -1715,8 +1773,8 @@
 
         // Boot them if they aren't authorized for this page at all
         if (myRole !== 'Admin' && myRole !== 'Viewer') {
-          alert('Access Denied: Admin or Viewer privileges required.');
-          window.location.href = '/';
+          showToast('Access Denied: Admin or Viewer privileges required.', 'error');
+          setTimeout(() => { window.location.href = '/'; }, 1500);
           return;
         }
 
@@ -2019,7 +2077,7 @@
         }
 
         const statusDisplay = isAdminRole
-          ? `<select class="user-input" style="padding:2px 4px;font-size:11px;border-radius:4px;width:auto;" onchange="updateShowStatus('${s.id}', this.value)">
+          ? `<select class="user-input" style="font-size:11px;width:110px;" onchange="updateShowStatus('${s.id}', this.value)">
               <option value="Pending" ${statusStr === 'Pending' ? 'selected' : ''}>Pending</option>
               <option value="In Progress" ${statusStr === 'In Progress' ? 'selected' : ''}>In Progress</option>
               <option value="HOLD" ${statusStr === 'HOLD' ? 'selected' : ''}>HOLD</option>
@@ -2030,7 +2088,7 @@
 
         // Lock the agent dropdown if Viewer
         const agentDisplay = isAdminRole
-          ? `<select class="user-input" style="padding:5px;font-size:12px;" onchange="updateShowAgent('${s.id}', this.value)">${agentOptions}</select>`
+          ? `<select class="user-input" style="font-size:12px;width:140px;" onchange="updateShowAgent('${s.id}', this.value)">${agentOptions}</select>`
           : `<div style="padding:5px;font-size:12px;font-weight:600;color:var(--text-main);">${escHtml(s.agentName || '— Unassigned —')}</div>`;
 
         return `<tr ${dragAttrs} style="${trStyle}">
@@ -2048,6 +2106,7 @@
               <td style="color:var(--text-muted);">${escHtml(s.date || '—')}</td>
           </tr>`;
       }).join('');
+      initColumnResizers();
     }
 
     async function updateShowStatus(id, newStatus) {
@@ -2115,6 +2174,7 @@
         const json = await res.json();
         if (json.success) {
           showToast(`✅ Successfully parsed ${json.added} shows.`, 'success');
+          fetchShows();
         } else {
           showToast(`❌ Upload failed: ${json.error}`, 'error');
         }
@@ -2229,18 +2289,24 @@
 
       container.innerHTML = agents.map(agent => {
         const d = floorData[agent];
-        let statusCls = 'status-idle';
-        if (d.status === 'Working') statusCls = 'status-working';
-        if (d.status === 'CXL Alerted') statusCls = 'status-cxl';
+        let dotColor = 'var(--text-muted)';
+        if (d.status === 'Idle' || d.status === 'Online') dotColor = 'var(--success)';
+        else if (d.status === 'Working') dotColor = 'var(--accent-blue)';
+        else if (d.status === 'CXL Alerted') dotColor = 'var(--warning)';
 
         return `
-            <div class="agent-card">
-               <div class="ac-top">
-                  <span style="font-size:13px; font-weight:600; color:var(--text-main);">${escHtml(agent)}</span>
-                  <span class="ac-status ${statusCls}">${d.status}</span>
+            <div class="agent-card" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--border); gap: 12px; transition: background 0.2s;">
+               <div style="flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%; background: var(--bg-hover); display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--text-main);">
+                 🧑‍💻
                </div>
-               ${d.show ? `<div style="font-size:11px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escHtml(d.show)}</div>` : ''}
-               ${d.startTime ? `<div class="mono floor-timer" data-start="${d.startTime}" style="font-size:12px; color:var(--accent-blue); font-weight:700;">00:00:00</div>` : ''}
+               <div style="flex: 1; min-width: 0;">
+                  <div style="font-size: 14px; font-weight: 600; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escHtml(agent)}</div>
+                  ${d.show ? `<div style="font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px;">${escHtml(d.show)}</div>` : `<div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Idle</div>`}
+               </div>
+               <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0;">
+                 <div style="width: 8px; height: 8px; border-radius: 50%; background: ${dotColor};" title="${d.status}"></div>
+                 ${d.startTime ? `<div class="mono floor-timer" data-start="${d.startTime}" style="font-size: 10px; color: var(--accent-blue); font-weight: 700;">00:00:00</div>` : ''}
+               </div>
             </div>`;
       }).join('');
     }
@@ -2290,11 +2356,47 @@
       }
     });
 
+    function initColumnResizers() {
+      const ths = document.querySelectorAll('.data-table th');
+      ths.forEach(th => {
+        if (th.querySelector('.resizer')) return;
+        const resizer = document.createElement('div');
+        resizer.className = 'resizer';
+        th.appendChild(resizer);
+
+        resizer.addEventListener('mousedown', e => {
+          e.preventDefault();
+          const startX = e.pageX;
+          const startWidth = th.offsetWidth;
+          resizer.classList.add('resizing');
+
+          const onMouseMove = e => {
+            const newWidth = startWidth + (e.pageX - startX);
+            th.style.width = newWidth + 'px';
+          };
+          const onMouseUp = () => {
+            resizer.classList.remove('resizing');
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+          };
+          document.addEventListener('mousemove', onMouseMove);
+          document.addEventListener('mouseup', onMouseUp);
+        });
+      });
+    }
+
     // ── BOOT ─────────────────────────────────────
     fetchTodayData();
     fetchUsers(); // Load users for dropdowns
     initHopperDrag();
     fetchConfig();
+    
+    // Polling heartbeat for the active queue
+    setInterval(() => {
+        if (document.getElementById('tab-hopper') && document.getElementById('tab-hopper').classList.contains('active')) {
+            fetchShows();
+        }
+    }, 15000);
   </script>
 
   <!-- ── THEME INIT & TOGGLE ── -->
