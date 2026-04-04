@@ -1010,8 +1010,9 @@
                  <select id="hopperStatusFilter" class="hopper-filter" onchange="applyHopperFilters()">
                     <option value="All">All</option>
                     <option value="Pending">Pending</option>
-                    <option value="Done">Done</option>
                     <option value="In Progress">In Progress</option>
+                    <option value="HOLD">HOLD</option>
+                    <option value="Done">Done</option>
                     <option value="CXL">CXL</option>
                  </select>
               </th>
@@ -1900,7 +1901,7 @@
         // Safely check for CXL status
         const statusStr = s.status || 'Pending';
         const isCxl = String(statusStr).startsWith('CXL');
-        const statusClass = isCxl ? 'mode-danger' : (s.status === 'Done' ? 'mode-some' : (s.status === 'In Progress' ? 'mode-warning' : 'mode-standard'));
+        const statusClass = isCxl ? 'mode-danger' : (statusStr === 'HOLD' ? 'mode-warning' : (statusStr === 'Done' ? 'mode-some' : (statusStr === 'In Progress' ? 'mode-warning' : 'mode-standard')));
 
         const isPending = statusStr === 'Pending';
 
@@ -1910,6 +1911,7 @@
         let rowBgStyle = '';
         if (statusStr === 'Done') rowBgStyle = 'background: rgba(16, 185, 129, 0.1);';
         else if (isCxl) rowBgStyle = 'background: rgba(239, 68, 68, 0.08);';
+        else if (statusStr === 'HOLD') rowBgStyle = 'background: rgba(245, 158, 11, 0.12);';
         else if (!isUSACanada) rowBgStyle = 'background: rgba(59, 130, 246, 0.08);';
 
         const canDrag = isPending && isAdminRole && !isHopperFiltered;
@@ -1923,7 +1925,15 @@
             trStyle += 'opacity:0.6;';
         }
 
-        const cxlBtn = (!isCxl && isAdminRole) ? `<button class="btn btn-red btn-sm" style="margin-left:8px; padding:2px 6px; font-size:10px;" onclick="openCancelModal('${s.id}')">CXL</button>` : '';
+        const statusDisplay = isAdminRole
+          ? `<select class="user-input" style="padding:2px 4px;font-size:11px;border-radius:4px;width:auto;" onchange="updateShowStatus('${s.id}', this.value)">
+              <option value="Pending" ${statusStr === 'Pending' ? 'selected' : ''}>Pending</option>
+              <option value="In Progress" ${statusStr === 'In Progress' ? 'selected' : ''}>In Progress</option>
+              <option value="HOLD" ${statusStr === 'HOLD' ? 'selected' : ''}>HOLD</option>
+              <option value="Done" ${statusStr === 'Done' ? 'selected' : ''}>Done</option>
+              <option value="CXL" ${statusStr.startsWith('CXL') ? 'selected' : ''}>CXL</option>
+             </select>`
+          : `<span class="mode-tag ${statusClass}">${escHtml(statusStr)}</span>`;
 
         // Lock the agent dropdown if Viewer
         const agentDisplay = isAdminRole
@@ -1937,7 +1947,7 @@
               <td style="max-width:300px;vertical-align:top;">
                 <div style="max-height:80px;overflow-y:auto;padding-right:4px;">${linksHtml || '—'}</div>
               </td>
-              <td><span class="mode-tag ${statusClass}">${escHtml(statusStr)}</span>${cxlBtn}</td>
+              <td>${statusDisplay}</td>
               <td style="min-width:140px;">${agentDisplay}</td>
               <td style="white-space:pre-wrap;">${escHtml(s.ld || '—')}</td>
               <td style="white-space:pre-wrap;">${escHtml(s.lists || '—')}</td>
@@ -1945,6 +1955,29 @@
               <td style="color:var(--text-muted);">${escHtml(s.date || '—')}</td>
           </tr>`;
       }).join('');
+    }
+
+    async function updateShowStatus(id, newStatus) {
+      if (newStatus === 'CXL') {
+        openCancelModal(id);
+        renderShowsTable(); // Revert visual dropdown selection until modal confirmed
+        return;
+      }
+
+      const show = showsData.find(s => s.id === id);
+      if (show) {
+        show.status = newStatus;
+        try {
+          const res = await fetch('/api/shows/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ shows: showsData })
+          });
+          if ((await res.json()).success) showToast('✅ Status updated.', 'success');
+          else showToast('❌ Error saving.', 'error');
+        } catch (e) { showToast('❌ Server error.', 'error'); }
+      }
+      renderShowsTable();
     }
 
     async function updateShowAgent(id, newAgent) {
@@ -2030,14 +2063,24 @@
     });
 
     async function clearHopper() {
-      if (!confirm('Are you sure you want to completely wipe all shows from the queue?')) return;
+      if (!confirm('Are you sure you want to clear the Hopper? ALL shows except those on HOLD will be removed.')) return;
+      
+      const updatedShows = showsData.filter(s => {
+          const st = s.status || 'Pending';
+          return st === 'HOLD';
+      });
+
       try {
-        const res = await fetch('/api/shows/clear', { method: 'POST' });
+        const res = await fetch('/api/shows/update', { 
+           method: 'POST', 
+           headers: { 'Content-Type': 'application/json' },
+           body: JSON.stringify({ shows: updatedShows })
+        });
         if ((await res.json()).success) {
-          showToast('✅ Hopper cleared.', 'success');
+          showToast('✅ Non-HOLD shows cleared.', 'success');
           fetchShows();
         }
-      } catch (e) { showToast('❌ Error clearing hopper.', 'error'); }
+      } catch (e) { showToast('❌ Error clearing shows.', 'error'); }
     }
 
     function exportHopper() {
