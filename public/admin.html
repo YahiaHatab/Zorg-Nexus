@@ -589,11 +589,26 @@
       color: var(--danger);
     }
 
-    .search-clear:hover { color: var(--text-main); }
+    .search-clear:hover {
+      color: var(--text-main);
+    }
 
-    .search-bar.has-value .search-clear { display: block; }
+    .search-bar.has-value .search-clear {
+      display: block;
+    }
 
-.floor-sidebar {
+    /* ── CUSTOM DROPDOWN ── */
+    .custom-dropdown { position: relative; display: inline-block; }
+    .custom-dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: var(--bg-panel); min-width: 160px; margin-top: 4px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5); z-index: 100; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+    .custom-dropdown:hover .custom-dropdown-content { display: flex; flex-direction: column; }
+    .custom-dropdown-content button { background: none; border: none; border-radius: 0; width: 100%; text-align: left; padding: 10px 16px; color: var(--text-main); font-size: 12px; font-family: 'Inter', sans-serif; cursor: pointer; }
+    .custom-dropdown-content button:hover { background-color: var(--bg-hover); }
+
+    /* ── FILTER SELECTS ── */
+    .hopper-filter { background: var(--bg-base); border: 1px solid var(--border); color: var(--text-main); border-radius: 4px; padding: 2px 4px; font-family: 'Inter', sans-serif; font-size: 10px; outline: none; margin-left: 6px; cursor: pointer; }
+    .hopper-filter:focus { border-color: var(--accent-blue); }
+
+    .floor-sidebar {
       width: 280px;
       background: var(--bg-panel);
       border-left: 1px solid var(--border);
@@ -601,8 +616,11 @@
       flex-direction: column;
       transition: margin-right 0.3s;
     }
-    .floor-sidebar.collapsed { margin-right: -280px; }
-    
+
+    .floor-sidebar.collapsed {
+      margin-right: -280px;
+    }
+
     .agent-card {
       padding: 12px 16px;
       border-bottom: 1px solid var(--border);
@@ -610,22 +628,43 @@
       flex-direction: column;
       gap: 6px;
     }
-    .agent-card .ac-top { display: flex; justify-content: space-between; align-items: center; }
-    .agent-card .ac-status { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; }
-    .status-working { background: rgba(16, 185, 129, 0.15); color: var(--success); }
-    .status-idle { background: rgba(156, 163, 175, 0.15); color: var(--text-muted); }
-    .status-cxl { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
-    
-    tr.drag-over { border-top: 2px solid var(--accent-blue) !important; }
 
-    .admin-only {
-        display: none !important;
+    .agent-card .ac-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    body.viewer-mode .admin-only {
-        display: none !important;
+    .agent-card .ac-status {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
     }
 
+    .status-working {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+    }
+
+    .status-idle {
+      background: rgba(156, 163, 175, 0.15);
+      color: var(--text-muted);
+    }
+
+    .status-cxl {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+    }
+
+    tr.drag-over {
+      border-top: 2px solid var(--accent-blue) !important;
+    }
+
+    body:not(.admin-mode) .admin-only {
+      display: none !important;
+    }
   </style>
 </head>
 
@@ -664,21 +703,25 @@
     </div>
   </div>
 
-  <div id="cancelModal" style="display:none; position:fixed; inset:0; background:rgba(11,15,25,0.85); backdrop-filter:blur(4px); z-index:9999; align-items:center; justify-content:center;">
+  <div id="cancelModal"
+    style="display:none; position:fixed; inset:0; background:rgba(11,15,25,0.85); backdrop-filter:blur(4px); z-index:9999; align-items:center; justify-content:center;">
     <div class="confirm-box">
       <h3 style="color:var(--danger);">🚫 Cancel Show</h3>
-      <p style="margin-bottom:16px;">Select a reason or type an odd case. This will instantly scrub the file from all system directories.</p>
-      
-      <select id="cxlReasonSelect" class="field-input" style="margin-bottom:12px; font-size:14px; padding:10px;" onchange="if(this.value==='Custom') document.getElementById('cxlCustomReason').style.display='block'; else document.getElementById('cxlCustomReason').style.display='none';">
-         <option value="Pricing">Pricing</option>
-         <option value="Duplicates">Duplicates</option>
-         <option value="SameList">SameList</option>
-         <option value="Custom">Odd Case (Custom Comment)</option>
+      <p style="margin-bottom:16px;">Select a reason or type an odd case. This will instantly scrub the file from all
+        system directories.</p>
+
+      <select id="cxlReasonSelect" class="field-input" style="margin-bottom:12px; font-size:14px; padding:10px;"
+        onchange="if(this.value==='Custom') document.getElementById('cxlCustomReason').style.display='block'; else document.getElementById('cxlCustomReason').style.display='none';">
+        <option value="Pricing">Pricing</option>
+        <option value="Duplicates">Duplicates</option>
+        <option value="SameList">SameList</option>
+        <option value="Custom">Odd Case (Custom Comment)</option>
       </select>
-      
-      <input type="text" id="cxlCustomReason" class="field-input" placeholder="Type custom reason here..." style="display:none; margin-bottom:20px; font-size:14px; padding:10px;">
+
+      <input type="text" id="cxlCustomReason" class="field-input" placeholder="Type custom reason here..."
+        style="display:none; margin-bottom:20px; font-size:14px; padding:10px;">
       <input type="hidden" id="cxlShowId">
-      
+
       <div class="confirm-actions" style="margin-top:20px;">
         <button class="btn" onclick="document.getElementById('cancelModal').style.display='none'">Cancel</button>
         <button class="btn btn-red" onclick="executeCancelShow()">Confirm & Scrub</button>
@@ -689,7 +732,7 @@
   <div class="topbar">
     <div class="logo">Z-LEADS <span>/ Admin</span></div>
     <div class="topbar-right">
-      <button class="btn btn-red admin-only" onclick=""openModal()">⚡ Reset History</button>
+      <button class="btn btn-red admin-only" onclick="openModal()">⚡ Reset History</button>
       <button class="btn" onclick="refreshCurrentTab()">↻ Refresh</button>
       <a href="/" style="text-decoration:none;"><button class="btn btn-blue">← Portal</button></a>
     </div>
@@ -723,41 +766,65 @@
         <div style="display:grid; grid-template-columns:1fr 1fr; flex:1; overflow:hidden;">
           <div style="overflow-y:auto; border-right:1px solid var(--border);">
             <table class="data-table">
-              <thead><tr><th>Agent</th><th>Shows</th><th>Gross</th><th>Net</th><th>Conv. %</th></tr></thead>
+              <thead>
+                <tr>
+                  <th>Agent</th>
+                  <th>Shows</th>
+                  <th>Gross</th>
+                  <th>Net</th>
+                  <th>Conv. %</th>
+                </tr>
+              </thead>
               <tbody id="leaderboardBody"></tbody>
             </table>
           </div>
           <div style="overflow-y:auto; display:flex; flex-direction:column; background:var(--bg-base);">
-            <div style="padding:12px 20px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--bg-base); z-index:10; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
-              <span id="logPanelTitleText" style="font-size:11px; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.05em;">Today's Activity</span>
-              
+            <div
+              style="padding:12px 20px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--bg-base); z-index:10; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+              <span id="logPanelTitleText"
+                style="font-size:11px; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.05em;">Today's
+                Activity</span>
+
               <div style="display:flex; align-items:center; gap:8px; margin-left:auto;">
                 <div class="search-bar" id="logSearchBar" style="min-width:160px;">
                   <span style="color:var(--text-muted);font-size:13px;">🔍</span>
                   <input type="text" id="logSearch" placeholder="Filter..." oninput="onLogSearch(this)">
                   <button class="search-clear" id="logSearchClear" onclick="clearLogSearch()">✕</button>
                 </div>
-                <button id="backToGlobalBtn" class="btn btn-sm btn-blue" style="display:none;" onclick="resetToGlobalLogs()">← All Agents</button>
-                <button onclick="document.getElementById('floorMap').classList.toggle('collapsed')" class="btn btn-sm">🗺 Floor Map</button>
+                <button id="backToGlobalBtn" class="btn btn-sm btn-blue" style="display:none;"
+                  onclick="resetToGlobalLogs()">← All Agents</button>
+                <button onclick="document.getElementById('floorMap').classList.toggle('collapsed')"
+                  class="btn btn-sm">🗺 Floor Map</button>
               </div>
             </div>
             <table class="data-table compact" style="margin-bottom:auto;">
-              <thead><tr><th>Time</th><th>Mode</th><th>Shows</th><th>Gross</th><th>Net</th></tr></thead>
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Mode</th>
+                  <th>Shows</th>
+                  <th>Gross</th>
+                  <th>Net</th>
+                </tr>
+              </thead>
               <tbody id="logBody"></tbody>
             </table>
           </div>
         </div>
-        
+
         <div id="floorMap" class="floor-sidebar">
-           <div style="padding:16px; border-bottom:1px solid var(--border); font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em;">Live Floor Map</div>
-           <div id="floorMapContent" style="overflow-y:auto; flex:1;">
-              <div style="padding:20px; text-align:center; color:var(--text-muted); font-size:12px;">Waiting for agents...</div>
-           </div>
+          <div
+            style="padding:16px; border-bottom:1px solid var(--border); font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em;">
+            Live Floor Map</div>
+          <div id="floorMapContent" style="overflow-y:auto; flex:1;">
+            <div style="padding:20px; text-align:center; color:var(--text-muted); font-size:12px;">Waiting for agents...
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
-    </div>
+  </div>
   </div>
 
   <!-- ══════════ TAB: DATA LEDGER ══════════ -->
@@ -768,7 +835,8 @@
         <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
           <div class="search-bar" id="ledgerSearchBar">
             <span style="color:var(--text-muted);font-size:13px;">🔍</span>
-            <input type="text" id="ledgerSearch" placeholder="Search file, agent or time..." oninput="onLedgerSearch(this)">
+            <input type="text" id="ledgerSearch" placeholder="Search file, agent or time..."
+              oninput="onLedgerSearch(this)">
             <button class="search-clear" id="ledgerSearchClear" onclick="clearLedgerSearch()">✕</button>
           </div>
           <input type="date" id="ledgerDatePicker" class="date-input" onchange="fetchLedgerDay()">
@@ -902,38 +970,69 @@
         </table>
       </div>
       <div class="panel-body" style="padding-top:0;">
-        <div class="save-bar admin-only"><button class="btn btn-green" onclick="saveUsers()">Commit Changes</button></div>
+        <div class="save-bar admin-only"><button class="btn btn-green" onclick="saveUsers()">Commit Changes</button>
+        </div>
       </div>
     </div>
   </div>
   <!-- ══════════ TAB: HOPPER ══════════ -->
   <div id="tab-hopper" class="tab-content">
     <div class="panel" style="flex:1; display:flex; flex-direction:column; min-height:0;">
-      <div class="panel-header">
-        Show Hopper Queue
+      <div class="panel-header" style="justify-content: space-between;">
+        <div style="display:flex; align-items:center; gap:12px;">
+           <span>Show Hopper Queue</span>
+           <span id="disabledDragWarning" style="color:var(--warning); font-size:11px; display:none;">⚠️ Drag-and-Drop disabled while filtered</span>
+        </div>
         <div style="display:flex; align-items:center; gap:10px;">
-           <button class="btn btn-red" onclick="clearHopper()">✕ Clear Log</button>
-           <button class="btn btn-green" onclick="exportHopper()">⬇ Export Excel</button>
-           <input type="file" id="hopperUpload" style="display:none;" accept=".xlsx, .xls" onchange="handleHopperUpload(event)">
-           <button class="btn btn-blue" onclick="document.getElementById('hopperUpload').click()">+ Upload Excel</button>
+          <div class="search-bar" id="hopperSearchBar" style="min-width:200px;">
+            <span style="color:var(--text-muted);font-size:13px;">🔍</span>
+            <input type="text" id="hopperSearch" placeholder="Search shows..." oninput="applyHopperFilters()">
+          </div>
+          <button class="btn btn-red" onclick="clearHopper()">✕ Clear Log</button>
+          <div class="custom-dropdown">
+            <button class="btn btn-green" style="padding: 7px 14px;">📊 Excel ▾</button>
+            <div class="custom-dropdown-content">
+               <button onclick="exportHopper()">⬇ Export Excel</button>
+               <button onclick="document.getElementById('hopperUpload').click()">⬆ Upload Excel</button>
+            </div>
+          </div>
+          <input type="file" id="hopperUpload" style="display:none;" accept=".xlsx, .xls" onchange="handleHopperUpload(event)">
         </div>
       </div>
       <div style="overflow-y:auto; flex:1; transition: background 0.2s;" id="hopperDropZone">
-        <table class="data-table">
+        <table class="data-table" style="table-layout: auto;">
           <thead>
             <tr>
-              <th>Show Name</th>
-              <th>Link</th>
-              <th>Status</th>
-              <th>Agent Name</th>
-              <th>L/D</th>
-              <th>Name of Lists</th>
-              <th>Comment</th>
-              <th>Date</th>
+              <th style="resize: horizontal; overflow: hidden; min-width: 180px;">Show Name</th>
+              <th style="resize: horizontal; overflow: hidden; min-width: 120px;">Link</th>
+              <th style="resize: horizontal; overflow: hidden; min-width: 120px;">
+                 Status
+                 <select id="hopperStatusFilter" class="hopper-filter" onchange="applyHopperFilters()">
+                    <option value="All">All</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Done">Done</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="CXL">CXL</option>
+                 </select>
+              </th>
+              <th style="resize: horizontal; overflow: hidden; min-width: 160px;">
+                 Agent Name
+                 <select id="hopperAgentFilter" class="hopper-filter" onchange="applyHopperFilters()">
+                    <option value="All">All</option>
+                    <option value="Unassigned">Unassigned</option>
+                 </select>
+              </th>
+              <th style="resize: horizontal; overflow: hidden; min-width: 60px;">L/D</th>
+              <th style="resize: horizontal; overflow: hidden; min-width: 120px;">Name of Lists</th>
+              <th style="resize: horizontal; overflow: hidden; min-width: 140px;">Comment</th>
+              <th style="resize: horizontal; overflow: hidden; min-width: 80px;">Date</th>
             </tr>
           </thead>
           <tbody id="hopperBody">
-             <tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:30px;">Queue is empty. Drop an Excel file here or click Upload.</td></tr>
+            <tr>
+              <td colspan="8" style="text-align:center;color:var(--text-muted);padding:30px;">Queue is empty. Drop an
+                Excel file here or click Upload.</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -974,19 +1073,27 @@
         const me = usersData.find(u => u.username === currentUser);
         const myRole = me ? (me.role || 'Agent') : 'Agent';
         isAdminRole = (myRole === 'Admin');
+        if (isAdminRole) document.body.classList.add('admin-mode');
+        else document.body.classList.remove('admin-mode');
         isViewerRole = (myRole === 'Viewer');
 
         // Boot Agents
         if (!isAdminRole && !isViewerRole) {
-            alert('Access Denied: Admin or Viewer privileges required.');
-            window.location.href = '/';
-            return;
+          alert('Access Denied: Admin or Viewer privileges required.');
+          window.location.href = '/';
+          return;
         }
 
         // Lock down UI for Viewers
         if (isViewerRole) {
-            document.body.classList.add('viewer-mode');
-            document.querySelectorAll('#configFields input').forEach(el => el.readOnly = true);
+          document.body.classList.add('viewer-mode');
+          document.querySelectorAll('#configFields input').forEach(el => el.readOnly = true);
+        }
+
+        function updateUserField(idx, field, value) {
+          if (isAdminRole) {
+            usersData[idx][field] = value;
+          }
         }
 
         renderUsersTable();
@@ -1056,7 +1163,7 @@
       document.getElementById('leaderboardBody').innerHTML = rows.map(a => {
         // Calculate the conversion percentage (Net / Gross * 100)
         const conversion = a.leads > 0 ? ((a.shown / a.leads) * 100).toFixed(1) : '0.0';
-        
+
         return `<tr class="leader-row" onclick="viewAgentLogs('${escHtml(a.name)}', this)">
             <td class="agent-name">${escHtml(a.name)}</td>
             <td style="color:var(--accent-blue);font-weight:600;">${a.files}</td>
@@ -1096,10 +1203,10 @@
       const q = (document.getElementById('logSearch')?.value || '').toLowerCase().trim();
       const data = q
         ? _logSource.filter(r =>
-            (r.filename || '').toLowerCase().includes(q) ||
-            (r.agent    || '').toLowerCase().includes(q) ||
-            (r.time     || '').toLowerCase().includes(q)
-          )
+          (r.filename || '').toLowerCase().includes(q) ||
+          (r.agent || '').toLowerCase().includes(q) ||
+          (r.time || '').toLowerCase().includes(q)
+        )
         : _logSource;
 
       // Sort newest first
@@ -1168,22 +1275,22 @@
 
       // Records table — newest first, searchable
       _ledgerSource = [...day.records].sort((a, b) => (b.time || '').localeCompare(a.time || ''));
-      _ledgerDate   = date;
+      _ledgerDate = date;
       applyLedgerFilter();
     }
 
     // Source cache so search never needs to re-fetch
     let _ledgerSource = [];
-    let _ledgerDate   = '';
+    let _ledgerDate = '';
 
     function applyLedgerFilter() {
       const q = (document.getElementById('ledgerSearch')?.value || '').toLowerCase().trim();
       const filtered = q
         ? _ledgerSource.filter(rec =>
-            (rec.filename || '').toLowerCase().includes(q) ||
-            (rec.agent    || '').toLowerCase().includes(q) ||
-            (rec.time     || '').toLowerCase().includes(q)
-          )
+          (rec.filename || '').toLowerCase().includes(q) ||
+          (rec.agent || '').toLowerCase().includes(q) ||
+          (rec.time || '').toLowerCase().includes(q)
+        )
         : _ledgerSource;
 
       const tbody = document.getElementById('ledgerBody');
@@ -1197,7 +1304,7 @@
         const isCxl = rec.mode === 'CXL' || String(rec.status || '').startsWith('CXL');
         const bgStyle = isCxl ? 'background: rgba(239, 68, 68, 0.08);' : '';
         const cls = isCxl ? 'mode-danger' : (rec.mode === 'SOME' ? 'mode-some' : 'mode-standard');
-        
+
         // Add reason tracking for UI display
         const reasonText = rec.reason ? `<br><span style="color:var(--danger); font-size:10px;">Reason: ${escHtml(rec.reason)}</span>` : '';
 
@@ -1434,7 +1541,7 @@
       }).join('') || `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:30px;">No data yet.</td></tr>`;
     }
 
-// ══════════════════════════════════════════════
+    // ══════════════════════════════════════════════
     //  TAB 4: CONFIG
     // ══════════════════════════════════════════════
     const CONFIG_LABELS = { tempZone: 'Temp Zone', usBase: 'US Base Path', ukBase: 'UK Base Path', cxlTags: 'CXL Tags (Comma Separated)' };
@@ -1466,12 +1573,12 @@
     async function saveConfig() {
       const allKeys = new Set([...Object.keys(CONFIG_LABELS), ...Object.keys(configData)]);
       const newConfig = {};
-      allKeys.forEach(key => { 
-          const el = document.getElementById(`cfg_${key}`); 
-          if (el) {
-              if (key === 'cxlTags') newConfig[key] = el.value.split(',').map(s=>s.trim()).filter(Boolean);
-              else newConfig[key] = el.value.trim();
-          }
+      allKeys.forEach(key => {
+        const el = document.getElementById(`cfg_${key}`);
+        if (el) {
+          if (key === 'cxlTags') newConfig[key] = el.value.split(',').map(s => s.trim()).filter(Boolean);
+          else newConfig[key] = el.value.trim();
+        }
       });
       try {
         const res = await fetch('/api/admin/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newConfig) });
@@ -1483,16 +1590,16 @@
 
     // UPDATE MODAL TO USE CONFIG TAGS
     function openCancelModal(id) {
-        document.getElementById('cxlShowId').value = id;
-        
-        // Populate dropdown from config
-        const tags = configData.cxlTags || ['Pricing', 'Duplicates', 'SameList'];
-        const sel = document.getElementById('cxlReasonSelect');
-        sel.innerHTML = tags.map(t => `<option value="${escHtml(t)}">${escHtml(t)}</option>`).join('') + `<option value="Custom">Odd Case (Custom Comment)</option>`;
-        
-        document.getElementById('cxlCustomReason').style.display = 'none';
-        document.getElementById('cxlCustomReason').value = '';
-        document.getElementById('cancelModal').style.display = 'flex';
+      document.getElementById('cxlShowId').value = id;
+
+      // Populate dropdown from config
+      const tags = configData.cxlTags || ['Pricing', 'Duplicates', 'SameList'];
+      const sel = document.getElementById('cxlReasonSelect');
+      sel.innerHTML = tags.map(t => `<option value="${escHtml(t)}">${escHtml(t)}</option>`).join('') + `<option value="Custom">Odd Case (Custom Comment)</option>`;
+
+      document.getElementById('cxlCustomReason').style.display = 'none';
+      document.getElementById('cxlCustomReason').value = '';
+      document.getElementById('cancelModal').style.display = 'flex';
     }
 
     // ══════════════════════════════════════════════
@@ -1509,47 +1616,49 @@
         const me = usersData.find(u => u.username === currentUser);
         const myRole = me ? (me.role || 'Agent') : 'Agent';
         isAdminRole = (myRole === 'Admin');
+        if (isAdminRole) document.body.classList.add('admin-mode');
+        else document.body.classList.remove('admin-mode');
 
         // Boot them if they aren't authorized for this page at all
         if (myRole !== 'Admin' && myRole !== 'Viewer') {
-            alert('Access Denied: Admin or Viewer privileges required.');
-            window.location.href = '/';
-            return;
+          alert('Access Denied: Admin or Viewer privileges required.');
+          window.location.href = '/';
+          return;
         }
 
         // Lock down the Config inputs if they are a Viewer
         if (!isAdminRole) {
-            document.querySelectorAll('#configFields input').forEach(el => el.readOnly = true);
+          document.querySelectorAll('#configFields input').forEach(el => el.readOnly = true);
         }
 
         renderUsersTable();
       } catch (e) { showToast('Failed to load users.', 'error'); }
     }
 
+    function updateUserField(idx, field, value) {
+      if (isAdminRole) {
+        usersData[idx][field] = value;
+      }
+    }
+
     function renderUsersTable() {
       document.getElementById('usersBody').innerHTML = usersData.map((u, i) => {
-        const deleteBtn = isAdminRole 
-            ? `<button class="btn btn-red btn-sm" onclick="deleteUser(${i})">✕</button>` 
-            : `<span style="color:var(--text-muted);font-size:11px;">—</span>`;
-        
-        const roleOpts = ['Admin', 'Viewer', 'Agent'].map(r => `<option value="${r}" ${u.role === r ? 'selected' : ''}>${r}</option>`).join('');
-        
+        const deleteBtn = isAdminRole
+          ? `<button class="btn btn-red btn-sm" onclick="deleteUser(${i})">✕</button>`
+          : `<span style="color:var(--text-muted);font-size:11px;">—</span>`;
+
+        const roleOpts = ['Admin', 'Viewer', 'Agent'].map(r => `<option value="${r}" ${(u.role || 'Agent') === r ? 'selected' : ''}>${r}</option>`).join('');
+
         return `<tr data-index="${i}">
-            <td><input class="user-input" type="text" value="${escHtml(u.username)}" ${!isAdminRole ? 'readonly style="opacity:0.5;"' : ''} data-field="username" data-idx="${i}"></td>
-            <td><input class="user-input" type="password" value="${isAdminRole ? escHtml(u.password) : '********'}" ${!isAdminRole ? 'readonly style="opacity:0.5;"' : ''} data-field="password" data-idx="${i}"></td>
+            <td><input class="user-input" type="text" value="${escHtml(u.username)}" ${!isAdminRole ? 'readonly style="opacity:0.5;"' : ''} oninput="updateUserField(${i}, 'username', this.value)"></td>
+            <td><input class="user-input" type="password" value="${isAdminRole ? escHtml(u.password) : '********'}" ${!isAdminRole ? 'readonly style="opacity:0.5;"' : ''} oninput="updateUserField(${i}, 'password', this.value)"></td>
             <td>
-               ${isAdminRole ? `<select class="user-input" data-field="role" data-idx="${i}">${roleOpts}</select>` : `<input class="user-input" type="text" value="${escHtml(u.role || 'Agent')}" readonly style="opacity:0.5;">`}
+               ${isAdminRole ? `<select class="user-input" onchange="updateUserField(${i}, 'role', this.value)">${roleOpts}</select>` : `<input class="user-input" type="text" value="${escHtml(u.role || 'Agent')}" readonly style="opacity:0.5;">`}
             </td>
-            <td><input class="user-input" type="text" value="${escHtml(u.archivePath || '')}" ${!isAdminRole ? 'readonly style="opacity:0.5;"' : ''} data-field="archivePath" data-idx="${i}"></td>
+            <td><input class="user-input" type="text" value="${escHtml(u.archivePath || '')}" ${!isAdminRole ? 'readonly style="opacity:0.5;"' : ''} oninput="updateUserField(${i}, 'archivePath', this.value)"></td>
             <td style="text-align:center;">${deleteBtn}</td>
         </tr>`;
       }).join('') || `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:24px;">No users.</td></tr>`;
-
-      document.querySelectorAll('.user-input').forEach(input => {
-        input.addEventListener('change', e => {
-          if(isAdminRole) usersData[parseInt(e.target.dataset.idx)][e.target.dataset.field] = e.target.value;
-        });
-      });
     }
 
     function addUserRow() {
@@ -1565,20 +1674,20 @@
 
     function deleteUser(idx) {
       if (!isAdminRole) return;
-      
+
       const userToDelete = usersData[idx];
-      
+
       // Prevent deleting the very last Admin
       if (userToDelete.role === 'Admin') {
-          const adminCount = usersData.filter(u => u.role === 'Admin').length;
-          if (adminCount <= 1) {
-              showToast('❌ Cannot delete the last Admin account.', 'error');
-              return;
-          }
+        const adminCount = usersData.filter(u => u.role === 'Admin').length;
+        if (adminCount <= 1) {
+          showToast('❌ Cannot delete the last Admin account.', 'error');
+          return;
+        }
       }
-      
+
       if (userToDelete.username === currentUser) {
-         if (!confirm("You are about to delete your OWN account. Continue?")) return;
+        if (!confirm("You are about to delete your OWN account. Continue?")) return;
       }
 
       usersData.splice(idx, 1);
@@ -1721,48 +1830,107 @@
         } else {
           showToast(`❌ Server returned an error: ${json.error}`, 'error');
         }
-      } catch (e) { 
+      } catch (e) {
         console.error("Fetch shows error:", e);
-        showToast(`❌ Failed to load shows: ${e.message}`, 'error'); 
+        showToast(`❌ Failed to load shows: ${e.message}`, 'error');
       }
     }
-    
+
+    let isHopperFiltered = false;
+    let filteredShows = [];
+
+    function applyHopperFilters() {
+      const q = document.getElementById('hopperSearch')?.value.toLowerCase() || '';
+      const st = document.getElementById('hopperStatusFilter')?.value || 'All';
+      const ag = document.getElementById('hopperAgentFilter')?.value || 'All';
+
+      isHopperFiltered = (q !== '' || st !== 'All' || ag !== 'All');
+      const warningEl = document.getElementById('disabledDragWarning');
+      if (warningEl) warningEl.style.display = isHopperFiltered ? 'inline-block' : 'none';
+
+      filteredShows = showsData.filter(s => {
+        const name = (s.showName || '').toLowerCase();
+        const statusStr = s.status || 'Pending';
+        const agent = s.agentName || 'Unassigned';
+
+        if (q && !name.includes(q)) return false;
+        if (st !== 'All') {
+          if (st === 'CXL' && !statusStr.startsWith('CXL')) return false;
+          if (st !== 'CXL' && statusStr !== st) return false;
+        }
+        if (ag !== 'All' && agent !== ag) return false;
+        return true;
+      });
+
+      renderShowsTable();
+    }
+
     function renderShowsTable() {
       const tbody = document.getElementById('hopperBody');
       if (!tbody) {
-          console.error("Missing hopperBody element!");
-          return;
+        console.error("Missing hopperBody element!");
+        return;
       }
-      
-      if (!showsData || !showsData.length) {
-         tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:40px;">Queue is empty. Drop an Excel file here or click Upload.</td></tr>`;
-         return;
+
+      // Populate agent filter options dynamically safely
+      const agentFilter = document.getElementById('hopperAgentFilter');
+      if (agentFilter && usersData.length > 0 && agentFilter.options.length <= 2) {
+        usersData.forEach(u => {
+          const opt = document.createElement('option');
+          opt.value = u.username;
+          opt.textContent = u.username;
+          agentFilter.appendChild(opt);
+        });
       }
-      
-      tbody.innerHTML = showsData.map(s => {
-          const linksArray = Array.isArray(s.link) ? s.link : [s.link].filter(Boolean);
-          const linksHtml = linksArray.map(l => `<a href="${escHtml(l)}" target="_blank" style="color:var(--accent-blue);text-decoration:none;word-break:break-all;font-size:11px;display:block;">${escHtml(l)}</a>`).join('<div style="height:4px;"></div>');
-          
-          const agentOptions = `<option value="">— Unassigned —</option>` + 
-              usersData.map(u => `<option value="${escHtml(u.username)}" ${s.agentName === u.username ? 'selected' : ''}>${escHtml(u.username)}</option>`).join('');
 
-          // Safely check for CXL status
-          const statusStr = s.status || 'Pending';
-          const isCxl = String(statusStr).startsWith('CXL');
-          const statusClass = isCxl ? 'mode-danger' : (s.status === 'Done' ? 'mode-some' : (s.status === 'In Progress' ? 'mode-warning' : 'mode-standard'));
-          
-          const isPending = statusStr === 'Pending';
-          
-          // Only allow dragging and CXL if Admin
-          const dragAttrs = (isPending && isAdminRole) ? `draggable="true" ondragstart="hopperDragStart(event)" data-id="${s.id}" data-status="Pending" style="cursor:grab;"` : `style="opacity:0.6;"`;
-          const cxlBtn = (!isCxl && isAdminRole) ? `<button class="btn btn-red btn-sm" style="margin-left:8px; padding:2px 6px; font-size:10px;" onclick="openCancelModal('${s.id}')">CXL</button>` : '';
+      const activeArray = isHopperFiltered ? filteredShows : showsData;
 
-          // Lock the agent dropdown if Viewer
-          const agentDisplay = isAdminRole 
-              ? `<select class="user-input" style="padding:5px;font-size:12px;" onchange="updateShowAgent('${s.id}', this.value)">${agentOptions}</select>`
-              : `<div style="padding:5px;font-size:12px;font-weight:600;color:var(--text-main);">${escHtml(s.agentName || '— Unassigned —')}</div>`;
+      if (!activeArray || !activeArray.length) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:40px;">${isHopperFiltered ? 'No shows match the filters.' : 'Queue is empty. Drop an Excel file here or click Upload.'}</td></tr>`;
+        return;
+      }
 
-          return `<tr ${dragAttrs}>
+      tbody.innerHTML = activeArray.map(s => {
+        const linksArray = Array.isArray(s.link) ? s.link : [s.link].filter(Boolean);
+        const linksHtml = linksArray.map(l => `<a href="${escHtml(l)}" target="_blank" style="color:var(--accent-blue);text-decoration:none;word-break:break-all;font-size:11px;display:block;">${escHtml(l)}</a>`).join('<div style="height:4px;"></div>');
+
+        const agentOptions = `<option value="">— Unassigned —</option>` +
+          usersData.map(u => `<option value="${escHtml(u.username)}" ${s.agentName === u.username ? 'selected' : ''}>${escHtml(u.username)}</option>`).join('');
+
+        // Safely check for CXL status
+        const statusStr = s.status || 'Pending';
+        const isCxl = String(statusStr).startsWith('CXL');
+        const statusClass = isCxl ? 'mode-danger' : (s.status === 'Done' ? 'mode-some' : (s.status === 'In Progress' ? 'mode-warning' : 'mode-standard'));
+
+        const isPending = statusStr === 'Pending';
+
+        // dynamic background based on region + status
+        const nameUpper = (s.showName || '').toUpperCase();
+        const isUSACanada = nameUpper.includes('USA') || nameUpper.includes('CANADA');
+        let rowBgStyle = '';
+        if (statusStr === 'Done') rowBgStyle = 'background: rgba(16, 185, 129, 0.1);';
+        else if (isCxl) rowBgStyle = 'background: rgba(239, 68, 68, 0.08);';
+        else if (!isUSACanada) rowBgStyle = 'background: rgba(59, 130, 246, 0.08);';
+
+        const canDrag = isPending && isAdminRole && !isHopperFiltered;
+        let dragAttrs = '';
+        let trStyle = rowBgStyle;
+
+        if (canDrag) {
+            dragAttrs = `draggable="true" ondragstart="hopperDragStart(event)" data-id="${s.id}" data-status="Pending"`;
+            trStyle += 'cursor:grab;';
+        } else {
+            trStyle += 'opacity:0.6;';
+        }
+
+        const cxlBtn = (!isCxl && isAdminRole) ? `<button class="btn btn-red btn-sm" style="margin-left:8px; padding:2px 6px; font-size:10px;" onclick="openCancelModal('${s.id}')">CXL</button>` : '';
+
+        // Lock the agent dropdown if Viewer
+        const agentDisplay = isAdminRole
+          ? `<select class="user-input" style="padding:5px;font-size:12px;" onchange="updateShowAgent('${s.id}', this.value)">${agentOptions}</select>`
+          : `<div style="padding:5px;font-size:12px;font-weight:600;color:var(--text-main);">${escHtml(s.agentName || '— Unassigned —')}</div>`;
+
+        return `<tr ${dragAttrs} style="${trStyle}">
               <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escHtml(s.showName)}">
                   ${(isPending && isAdminRole) ? '↕️ ' : ''}${escHtml(s.showName)}
               </td>
@@ -1780,26 +1948,26 @@
     }
 
     async function updateShowAgent(id, newAgent) {
-       const show = showsData.find(s => s.id === id);
-       if (show) {
-          show.agentName = newAgent;
-          try {
-             const res = await fetch('/api/shows/update', { 
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/json' }, 
-                body: JSON.stringify({ shows: showsData }) 
-             });
-             if ((await res.json()).success) showToast('✅ Agent updated.', 'success');
-             else showToast('❌ Error saving.', 'error');
-          } catch(e) { showToast('❌ Server error.', 'error'); }
-       }
+      const show = showsData.find(s => s.id === id);
+      if (show) {
+        show.agentName = newAgent;
+        try {
+          const res = await fetch('/api/shows/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ shows: showsData })
+          });
+          if ((await res.json()).success) showToast('✅ Agent updated.', 'success');
+          else showToast('❌ Error saving.', 'error');
+        } catch (e) { showToast('❌ Server error.', 'error'); }
+      }
     }
 
     async function handleHopperUpload(e) {
       if (!e.target.files.length) return;
       uploadShowFile(e.target.files[0]);
     }
-    
+
     function initHopperDrag() {
       const dropZone = document.getElementById('hopperDropZone');
       if (!dropZone) return;
@@ -1820,11 +1988,11 @@
         const res = await fetch('/api/shows/upload', { method: 'POST', body: formData });
         const json = await res.json();
         if (json.success) {
-           showToast(`✅ Successfully parsed ${json.added} shows.`, 'success');
+          showToast(`✅ Successfully parsed ${json.added} shows.`, 'success');
         } else {
-           showToast(`❌ Upload failed: ${json.error}`, 'error');
+          showToast(`❌ Upload failed: ${json.error}`, 'error');
         }
-      } catch(e) { showToast('❌ Server error.', 'error'); }
+      } catch (e) { showToast('❌ Server error.', 'error'); }
     }
 
     // ══════════════════════════════════════════════
@@ -1862,74 +2030,74 @@
     });
 
     async function clearHopper() {
-        if (!confirm('Are you sure you want to completely wipe all shows from the queue?')) return;
-        try {
-            const res = await fetch('/api/shows/clear', { method: 'POST' });
-            if ((await res.json()).success) {
-                showToast('✅ Hopper cleared.', 'success');
-                fetchShows();
-            }
-        } catch(e) { showToast('❌ Error clearing hopper.', 'error'); }
+      if (!confirm('Are you sure you want to completely wipe all shows from the queue?')) return;
+      try {
+        const res = await fetch('/api/shows/clear', { method: 'POST' });
+        if ((await res.json()).success) {
+          showToast('✅ Hopper cleared.', 'success');
+          fetchShows();
+        }
+      } catch (e) { showToast('❌ Error clearing hopper.', 'error'); }
     }
 
     function exportHopper() {
-        window.location.href = '/api/shows/export';
+      window.location.href = '/api/shows/export';
     }
 
     function openCancelModal(id) {
-        document.getElementById('cxlShowId').value = id;
-        document.getElementById('cxlReasonSelect').value = 'Pricing';
-        document.getElementById('cxlCustomReason').style.display = 'none';
-        document.getElementById('cxlCustomReason').value = '';
-        document.getElementById('cancelModal').style.display = 'flex';
+      document.getElementById('cxlShowId').value = id;
+      document.getElementById('cxlReasonSelect').value = 'Pricing';
+      document.getElementById('cxlCustomReason').style.display = 'none';
+      document.getElementById('cxlCustomReason').value = '';
+      document.getElementById('cancelModal').style.display = 'flex';
     }
 
     async function executeCancelShow() {
-        const id = document.getElementById('cxlShowId').value;
-        const selectVal = document.getElementById('cxlReasonSelect').value;
-        const reason = selectVal === 'Custom' ? document.getElementById('cxlCustomReason').value.trim() : selectVal;
+      const id = document.getElementById('cxlShowId').value;
+      const selectVal = document.getElementById('cxlReasonSelect').value;
+      const reason = selectVal === 'Custom' ? document.getElementById('cxlCustomReason').value.trim() : selectVal;
 
-        if (!reason) { showToast('Please enter a reason.', 'error'); return; }
+      if (!reason) { showToast('Please enter a reason.', 'error'); return; }
 
-        try {
-            const res = await fetch('/api/shows/cancel', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id, reason })
-            });
-            if ((await res.json()).success) {
-                document.getElementById('cancelModal').style.display = 'none';
-                showToast('✅ Show Cancelled & Scrubbed.', 'success');
-                fetchShows();
-            }
-        } catch(e) { showToast('❌ Error cancelling show.', 'error'); }
+      try {
+        const res = await fetch('/api/shows/cancel', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id, reason })
+        });
+        if ((await res.json()).success) {
+          document.getElementById('cancelModal').style.display = 'none';
+          showToast('✅ Show Cancelled & Scrubbed.', 'success');
+          fetchShows();
+        }
+      } catch (e) { showToast('❌ Error cancelling show.', 'error'); }
     }
 
-// ══════════════════════════════════════════════
+    // ══════════════════════════════════════════════
     //  LIVE FLOOR & QUEUE DRAG-AND-DROP
     // ══════════════════════════════════════════════
     let floorData = {};
     socket.on('floor_update', (data) => {
-        floorData = data;
-        renderFloorMap();
+      floorData = data;
+      renderFloorMap();
     });
 
     function renderFloorMap() {
-        const container = document.getElementById('floorMapContent');
-        const agents = Object.keys(floorData).filter(a => floorData[a].status !== 'Offline');
-        
-        if(agents.length === 0) {
-            container.innerHTML = `<div style="padding:20px; text-align:center; color:var(--text-muted); font-size:12px;">No agents online</div>`;
-            return;
-        }
+      const container = document.getElementById('floorMapContent');
+      const agents = Object.keys(floorData).filter(a => floorData[a].status !== 'Offline');
 
-        container.innerHTML = agents.map(agent => {
-            const d = floorData[agent];
-            let statusCls = 'status-idle';
-            if (d.status === 'Working') statusCls = 'status-working';
-            if (d.status === 'CXL Alerted') statusCls = 'status-cxl';
-            
-            return `
+      if (agents.length === 0) {
+        container.innerHTML = `<div style="padding:20px; text-align:center; color:var(--text-muted); font-size:12px;">No agents online</div>`;
+        return;
+      }
+
+      container.innerHTML = agents.map(agent => {
+        const d = floorData[agent];
+        let statusCls = 'status-idle';
+        if (d.status === 'Working') statusCls = 'status-working';
+        if (d.status === 'CXL Alerted') statusCls = 'status-cxl';
+
+        return `
             <div class="agent-card">
                <div class="ac-top">
                   <span style="font-size:13px; font-weight:600; color:var(--text-main);">${escHtml(agent)}</span>
@@ -1938,52 +2106,52 @@
                ${d.show ? `<div style="font-size:11px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escHtml(d.show)}</div>` : ''}
                ${d.startTime ? `<div class="mono floor-timer" data-start="${d.startTime}" style="font-size:12px; color:var(--accent-blue); font-weight:700;">00:00:00</div>` : ''}
             </div>`;
-        }).join('');
+      }).join('');
     }
 
     // Tick the floor timers every second
     setInterval(() => {
-        document.querySelectorAll('.floor-timer').forEach(el => {
-            const start = parseInt(el.getAttribute('data-start'));
-            const diff = Math.floor((Date.now() - start) / 1000);
-            const h = String(Math.floor(diff / 3600)).padStart(2, '0');
-            const m = String(Math.floor((diff % 3600) / 60)).padStart(2, '0');
-            const s = String(diff % 60).padStart(2, '0');
-            el.textContent = `${h}:${m}:${s}`;
-        });
+      document.querySelectorAll('.floor-timer').forEach(el => {
+        const start = parseInt(el.getAttribute('data-start'));
+        const diff = Math.floor((Date.now() - start) / 1000);
+        const h = String(Math.floor(diff / 3600)).padStart(2, '0');
+        const m = String(Math.floor((diff % 3600) / 60)).padStart(2, '0');
+        const s = String(diff % 60).padStart(2, '0');
+        el.textContent = `${h}:${m}:${s}`;
+      });
     }, 1000);
 
     // --- DRAG AND DROP QUEUE ---
     let draggedRow = null;
     function hopperDragStart(e) {
-        draggedRow = e.target.closest('tr');
-        e.dataTransfer.effectAllowed = 'move';
+      draggedRow = e.target.closest('tr');
+      e.dataTransfer.effectAllowed = 'move';
     }
-    
+
     // Attach listeners to hopperBody
     document.addEventListener('DOMContentLoaded', () => {
-        const hBody = document.getElementById('hopperBody');
-        if(hBody) {
-            hBody.addEventListener('dragover', e => {
-                e.preventDefault();
-                const tr = e.target.closest('tr[data-status="Pending"]');
-                if(tr && tr !== draggedRow) {
-                    const bounding = tr.getBoundingClientRect();
-                    const offset = bounding.y + (bounding.height / 2);
-                    if (e.clientY - offset > 0) tr.parentNode.insertBefore(draggedRow, tr.nextSibling);
-                    else tr.parentNode.insertBefore(draggedRow, tr);
-                }
-            });
+      const hBody = document.getElementById('hopperBody');
+      if (hBody) {
+        hBody.addEventListener('dragover', e => {
+          e.preventDefault();
+          const tr = e.target.closest('tr[data-status="Pending"]');
+          if (tr && tr !== draggedRow) {
+            const bounding = tr.getBoundingClientRect();
+            const offset = bounding.y + (bounding.height / 2);
+            if (e.clientY - offset > 0) tr.parentNode.insertBefore(draggedRow, tr.nextSibling);
+            else tr.parentNode.insertBefore(draggedRow, tr);
+          }
+        });
 
-            hBody.addEventListener('drop', async e => {
-                e.preventDefault();
-                const pendingIds = Array.from(document.querySelectorAll('#hopperBody tr[data-status="Pending"]')).map(tr => tr.dataset.id);
-                try {
-                    await fetch('/api/shows/reorder', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reorderedIds: pendingIds }) });
-                    showToast('🔄 Queue Reordered', 'info');
-                } catch(err) {}
-            });
-        }
+        hBody.addEventListener('drop', async e => {
+          e.preventDefault();
+          const pendingIds = Array.from(document.querySelectorAll('#hopperBody tr[data-status="Pending"]')).map(tr => tr.dataset.id);
+          try {
+            await fetch('/api/shows/reorder', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reorderedIds: pendingIds }) });
+            showToast('🔄 Queue Reordered', 'info');
+          } catch (err) { }
+        });
+      }
     });
 
     // ── BOOT ─────────────────────────────────────

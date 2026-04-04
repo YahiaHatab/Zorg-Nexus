@@ -1312,15 +1312,19 @@
     // ─────────────────────────────────────────────
     function checkAuth() {
       currentUser = localStorage.getItem('zorg_nexus_user');
+      const currentRole = localStorage.getItem('zorg_nexus_role');
       if (currentUser) {
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('displayUser').innerText = currentUser;
-        if (currentUser === 'Admin') {
+        
+        if (currentRole === 'Admin' || currentRole === 'Viewer') {
           document.getElementById('adminLink').style.display = 'inline-block';
+        } else {
+          document.getElementById('adminLink').style.display = 'none';
         }
-        // Fetch both user files AND the full analytics ledger on load
+        
+        // Fetch user files on load
         fetchUserData();
-        fetchAnalytics();
       }
     }
 
@@ -1331,6 +1335,7 @@
       const data = await res.json();
       if (data.success) {
         localStorage.setItem('zorg_nexus_user', data.username);
+        if (data.role) localStorage.setItem('zorg_nexus_role', data.role);
         checkAuth();
         if (!socket) initSocket();
       } else {
@@ -1355,16 +1360,7 @@
       } catch (e) { console.error('Data fetch failed', e); }
     }
 
-    async function fetchAnalytics() {
-      try {
-        const res = await fetch('/api/analytics');
-        const data = await res.json();
-        if (data.success) {
-          analyticsData = data.data;
-          if (currentView === 'performance') renderPerformanceDashboard();
-        }
-      } catch (e) { console.error('Analytics fetch failed', e); }
-    }
+    // fetchAnalytics removed, API split implemented
 
     // ─────────────────────────────────────────────
     //  UPLOAD LOGIC
@@ -1383,7 +1379,7 @@
         if (data.success) {
           showToast(`✅ ${data.stats.finalFileName}<br>Shown: <b>${data.stats.shown}</b> | Hidden: <b>${data.stats.hidden}</b>`, 'success');
           fetchUserData();
-          fetchAnalytics(); // Refresh analytics ledger after every upload
+          if (currentView === 'performance') loadPerformanceDashboard(); // Refresh stats automatically if open
         } else {
           showToast(`❌ Failed: ${file.name}`, 'error');
         }
@@ -1406,7 +1402,7 @@
         if (data.success) {
           showToast('⏪ Action reversed. File deleted and records scrubbed.', 'info');
           fetchUserData();
-          fetchAnalytics();
+          if (currentView === 'performance') loadPerformanceDashboard();
         } else {
           showToast(`❌ ${data.error || 'Undo time expired.'}`, 'error');
           fetchUserData();
@@ -1525,93 +1521,56 @@
     //  PERFORMANCE DASHBOARD  (personal, filtered)
     // ─────────────────────────────────────────────
 
-    /**
-     * Build the last N calendar days as ISO date strings (YYYY-MM-DD),
-     * from (today - N+1) up to today, inclusive.
-     */
-    function buildDateRange(days) {
-      const result = [];
-      for (let i = days - 1; i >= 0; i--) {
-        const d = new Date();
-        d.setDate(d.getDate() - i);
-        result.push(d.toISOString().split('T')[0]);
-      }
-      return result;
+    async function loadPerformanceDashboard() {
+      try {
+        const res = await fetch(`/api/user/report?username=${encodeURIComponent(currentUser)}`);
+        const json = await res.json();
+        if (json.success) renderPerformanceDashboard(json.data);
+      } catch (e) { console.error('Performance fetch failed', e); }
     }
 
-    function loadPerformanceDashboard() {
-      // Always re-fetch so the data is fresh on tab switch
-      fetchAnalytics().then(() => renderPerformanceDashboard());
-    }
+    function renderPerformanceDashboard(records) {
+      if (!currentUser || !records) return;
 
-    function renderPerformanceDashboard() {
-      if (!currentUser) return;
+      const todayStr = new Date().toISOString().split('T')[0];
+      const nowMonthStr = todayStr.slice(0, 7);
 
-      const today = new Date().toISOString().split('T')[0];
-      const nowMonth = today.slice(0, 7);   // "YYYY-MM"
-      const dates14 = buildDateRange(14);
+      let filesToday = 0, shownToday = 0, grossToday = 0;
+      let shownMonth = 0, grossMonth = 0;
+      const dailyShownMap = {};
 
-      // ── Compute personal stats by scanning ONLY this user's data ──────────
-      let filesToday = 0;
-      let shownToday = 0;   // Net Leads
-      let grossToday = 0;   // Gross Leads (shown + hidden)
-      let shownMonth = 0;
-      let grossMonth = 0;
+      records.forEach(rec => {
+        const isToday = rec.date === todayStr;
+        const isThisMonth = rec.date.startsWith(nowMonthStr);
+        
+        if (isToday) { filesToday++; shownToday += rec.shown; grossToday += rec.total; }
+        if (isThisMonth) { shownMonth += rec.shown; grossMonth += rec.total; }
+        if (!dailyShownMap[rec.date]) dailyShownMap[rec.date] = 0;
+        dailyShownMap[rec.date] += rec.shown;
+      });
 
-      // Map: dateKey -> shown count (personal)
-      const dailyShown = {};
-
-      for (const dateKey of Object.keys(analyticsData)) {
-        const day = analyticsData[dateKey];
-        if (!day || !day.records) continue;
-
-        for (const rec of day.records) {
-          // STRICT FILTER — only count records belonging to currentUser
-          if (rec.agent !== currentUser) continue;
-
-          const recShown = rec.shown || 0;
-          const recTotal = rec.total || (recShown + (rec.hidden || 0));
-
-          // Today
-          if (dateKey === today) {
-            filesToday++;
-            shownToday += recShown;
-            grossToday += recTotal;
-          }
-
-          // This month
-          if (dateKey.startsWith(nowMonth)) {
-            shownMonth += recShown;
-            grossMonth += recTotal;
-          }
-
-          // Daily shown map (for the chart)
-          if (!dailyShown[dateKey]) dailyShown[dateKey] = 0;
-          dailyShown[dateKey] += recShown;
-        }
-      }
-
-      // ── Update subtitle ──
-      const monthLabel = `${monthNames[new Date().getMonth()]} ${new Date().getFullYear()}`;
-      document.getElementById('perfSubtitle').textContent = `Personal stats for ${currentUser} — ${today}`;
+      const d = new Date();
+      const monthLabel = `${monthNames[d.getMonth()]} ${d.getFullYear()}`;
+      document.getElementById('perfSubtitle').textContent = `Personal stats for ${currentUser} — ${todayStr}`;
       document.getElementById('pcMonthLabel').textContent = `Total for ${monthLabel}`;
+      document.getElementById('pcGrossMonthLabel').textContent = `Net + Hidden — ${monthLabel}`;
 
-      // ── Update stat cards ──
       document.getElementById('pcFilesToday').textContent = filesToday;
       document.getElementById('pcShownToday').textContent = shownToday;
       document.getElementById('pcGrossToday').textContent = grossToday;
       document.getElementById('pcShownMonth').textContent = shownMonth;
       document.getElementById('pcGrossMonth').textContent = grossMonth;
-      document.getElementById('pcGrossMonthLabel').textContent = `Net + Hidden — ${monthLabel}`;
 
-      // ── Build chart data (14 days) ──
-      const chartLabels = dates14.map(d => {
-        const parts = d.split('-');
-        return `${parseInt(parts[2])} ${monthNames[parseInt(parts[1]) - 1]}`;
-      });
-      const chartValues = dates14.map(d => dailyShown[d] || 0);
-
-      // ── Render / update Chart.js ──
+      const chartLabels = [], chartValues = [];
+      for (let i = 13; i >= 0; i--) {
+         const tempDate = new Date();
+         tempDate.setDate(tempDate.getDate() - i);
+         const ds = tempDate.toISOString().split('T')[0];
+         const dayNum = parseInt(ds.split('-')[2], 10);
+         const monthStr = monthNames[parseInt(ds.split('-')[1], 10) - 1];
+         chartLabels.push(`${dayNum} ${monthStr}`);
+         chartValues.push(dailyShownMap[ds] || 0);
+      }
       renderChart(chartLabels, chartValues);
     }
 
