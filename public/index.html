@@ -29,30 +29,30 @@
       --warning: #F59E0B;
 
       /* ── Light Mode Theme (default) ── */
-      --bg-main:    #f8fafc;
+      --bg-main: #f8fafc;
       --bg-sidebar: #111827;
-      --bg-panel:   #ffffff;
-      --bg-hover:   #f1f5f9;
-      --border:     #e5e7eb;
-      --text-main:  #1f2937;
+      --bg-panel: #ffffff;
+      --bg-hover: #f1f5f9;
+      --border: #e5e7eb;
+      --text-main: #1f2937;
       --text-muted: #6b7280;
       --text-sidebar: #9ca3af;
 
       /* kept for legacy inline refs */
-      --bg-base:    #f8fafc;
+      --bg-base: #f8fafc;
     }
 
     /* ── Dark Mode Override ── */
     body.dark-mode {
-      --bg-main:    #0f172a;
+      --bg-main: #0f172a;
       --bg-sidebar: #020617;
-      --bg-panel:   #111827;
-      --bg-hover:   #1f2937;
-      --border:     #374151;
-      --text-main:  #f3f4f6;
+      --bg-panel: #111827;
+      --bg-hover: #1f2937;
+      --border: #374151;
+      --text-main: #f3f4f6;
       --text-muted: #9ca3af;
       --text-sidebar: #9ca3af;
-      --bg-base:    #0f172a;
+      --bg-base: #0f172a;
     }
 
     body {
@@ -1043,12 +1043,17 @@
     /* ── SIDEBAR THEME ── */
     .sidebar {
       background: var(--bg-sidebar) !important;
-      border-right-color: rgba(255,255,255,0.08) !important;
+      border-right-color: rgba(255, 255, 255, 0.08) !important;
       color: var(--text-sidebar);
     }
 
-    .sidebar .logo { color: #f9fafb; }
-    .sidebar .logo span { color: var(--text-sidebar); }
+    .sidebar .logo {
+      color: #f9fafb;
+    }
+
+    .sidebar .logo span {
+      color: var(--text-sidebar);
+    }
 
     /* ── SIDEBAR NAV PILLS ── */
     .sidebar-nav .nav-item {
@@ -1059,7 +1064,7 @@
     }
 
     .sidebar-nav .nav-item:hover {
-      background: rgba(255,255,255,0.08);
+      background: rgba(255, 255, 255, 0.08);
       color: #ffffff;
     }
 
@@ -1076,8 +1081,8 @@
     /* ── THEME TOGGLE BUTTON ── */
     .theme-btn {
       width: 100%;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 8px;
       color: var(--text-sidebar);
       padding: 9px 14px;
@@ -1093,8 +1098,124 @@
     }
 
     .theme-btn:hover {
-      background: rgba(255,255,255,0.12);
+      background: rgba(255, 255, 255, 0.12);
       color: #ffffff;
+    }
+
+    /* ── TOP ANALYTICS WIDGET STRIP ── */
+    .top-widgets {
+      display: flex;
+      gap: 12px;
+      padding: 14px 24px;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      overflow-x: auto;
+    }
+
+    .top-widget-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--bg-main);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 18px;
+      min-width: 148px;
+      flex-shrink: 0;
+      transition: border-color 0.2s, transform 0.15s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .top-widget-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--widget-accent, var(--accent-blue));
+      opacity: 0.6;
+    }
+
+    .top-widget-card:hover {
+      border-color: var(--widget-accent, var(--accent-blue));
+      transform: translateY(-1px);
+    }
+
+    .twc-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .twc-body .twc-val {
+      font-size: 22px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-main);
+      line-height: 1;
+    }
+
+    .twc-body .twc-lbl {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    /* ── UPLOAD DROPDOWN ── */
+    .upload-dd {
+      position: relative;
+      display: inline-flex;
+    }
+
+    .upload-dd-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      min-width: 180px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+      z-index: 200;
+      overflow: hidden;
+    }
+
+    .upload-dd:hover .upload-dd-menu,
+    .upload-dd.open .upload-dd-menu {
+      display: block;
+    }
+
+    .upload-dd-menu button {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 10px 16px;
+      background: none;
+      border: none;
+      color: var(--text-main);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      text-align: left;
+      transition: background 0.15s;
+    }
+
+    .upload-dd-menu button:hover {
+      background: var(--bg-hover);
+    }
+
+    .upload-dd-menu .dd-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 4px 0;
     }
   </style>
 </head>
@@ -1128,8 +1249,10 @@
 
   <div class="app-container" style="display: flex; height: 100vh; overflow: hidden;">
     <!-- SIDEBAR -->
-    <aside class="sidebar" style="width: 220px; background: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; height: 100vh;">
-      <div style="padding: 0 24px; height: 64px; display: flex; align-items: center; border-bottom: 1px solid var(--border); flex-shrink: 0;">
+    <aside class="sidebar"
+      style="width: 220px; background: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; height: 100vh;">
+      <div
+        style="padding: 0 24px; height: 64px; display: flex; align-items: center; border-bottom: 1px solid var(--border); flex-shrink: 0;">
         <div class="logo">Z-LEADS <span>/ Sorter</span></div>
         <div class="status-pill" style="margin-left: 12px;">Active</div>
       </div>
@@ -1137,9 +1260,6 @@
       <nav class="sidebar-nav" style="display: flex; flex-direction: column; gap: 8px; padding: 0 12px;">
         <div class="nav-item active" id="navFiles" data-view="files" onclick="setView('files')">
           <span class="nav-icon">📁</span> Today's Shows <span class="nav-badge" id="nbAll">0</span>
-        </div>
-        <div class="nav-item perf-tab" id="navPerf" data-view="performance" onclick="setView('performance')">
-          <span class="nav-icon">📈</span> My Performance
         </div>
         <div class="nav-item" id="navBriefing" data-view="briefing" onclick="setView('briefing')">
           <span class="nav-icon">🎯</span> Briefing Room
@@ -1155,23 +1275,73 @@
     </aside>
 
     <!-- MAIN CONTENT -->
-    <main class="main-content" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; background: var(--bg-base);">
-      <!-- Stats bar inside main -->
-      <div style="display: flex; align-items: center; justify-content: flex-end; gap: 32px; padding: 0 24px; height: 64px; background: var(--bg-panel); border-bottom: 1px solid var(--border); flex-shrink: 0;">
-        <div class="stat-mini">
-          <div class="val" id="statTotal">0</div>
-          <div class="lbl">Total Files</div>
+    <main class="main-content"
+      style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; background: var(--bg-base);">
+      <!-- old stats bar removed, now inside top-widgets strip above -->
+
+      <!-- TOP ANALYTICS WIDGET STRIP (Today's numbers, always visible) -->
+      <div class="top-widgets" id="topWidgets">
+        <div class="top-widget-card" style="--widget-accent: var(--accent-blue);">
+          <div class="twc-icon">📁</div>
+          <div class="twc-body">
+            <div class="twc-val" id="pcFilesToday">—</div>
+            <div class="twc-lbl">Shows Today</div>
+          </div>
         </div>
-        <div class="stat-mini">
-          <div class="val" id="statSorted" style="color:var(--success)">0</div>
-          <div class="lbl">Processed</div>
+        <div class="top-widget-card" style="--widget-accent: var(--accent-cyan);">
+          <div class="twc-icon">✨</div>
+          <div class="twc-body">
+            <div class="twc-val" id="pcShownToday" style="color:var(--success);">—</div>
+            <div class="twc-lbl">Net Today</div>
+          </div>
         </div>
-        <div class="stat-mini">
-          <div class="val" id="statErrors" style="color:var(--danger)">0</div>
-          <div class="lbl">Issues</div>
+        <div class="top-widget-card" style="--widget-accent: var(--warning);">
+          <div class="twc-icon">📊</div>
+          <div class="twc-body">
+            <div class="twc-val" id="pcGrossToday" style="color:var(--warning);">—</div>
+            <div class="twc-lbl">Gross Today</div>
+          </div>
         </div>
-        <div class="clock" id="clock">--:--:--</div>
-        <a id="adminLink" href="/admin.html" class="admin-btn" style="display:none;">Admin Config</a>
+        <div class="top-widget-card" style="--widget-accent: var(--accent-purple);">
+          <div class="twc-icon">📅</div>
+          <div class="twc-body">
+            <div class="twc-val" id="pcShownMonth">—</div>
+            <div class="twc-lbl">Net (Month)</div>
+          </div>
+        </div>
+        <div class="top-widget-card" style="--widget-accent: var(--warning);">
+          <div class="twc-icon">🗓️</div>
+          <div class="twc-body">
+            <div class="twc-val" id="pcGrossMonth" style="color:var(--warning);">—</div>
+            <div class="twc-lbl">Gross (Month)</div>
+          </div>
+        </div>
+        <!-- Static system stats -->
+        <div class="top-widget-card" style="--widget-accent: var(--text-muted); margin-left: auto;">
+          <div class="twc-icon">🗄️</div>
+          <div class="twc-body">
+            <div class="twc-val" id="statTotal">0</div>
+            <div class="twc-lbl">Total Files</div>
+          </div>
+        </div>
+        <div class="top-widget-card" style="--widget-accent: var(--success);">
+          <div class="twc-icon">✅</div>
+          <div class="twc-body">
+            <div class="twc-val" id="statSorted" style="color:var(--success);">0</div>
+            <div class="twc-lbl">Processed</div>
+          </div>
+        </div>
+        <div class="top-widget-card" style="--widget-accent: var(--danger);">
+          <div class="twc-icon">⚠️</div>
+          <div class="twc-body">
+            <div class="twc-val" id="statErrors" style="color:var(--danger);">0</div>
+            <div class="twc-lbl">Issues</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; padding: 0 6px; flex-shrink:0;">
+          <div class="clock" id="clock">--:--:--</div>
+          <a id="adminLink" href="/admin.html" class="admin-btn" style="display:none; margin-left:12px;">Admin</a>
+        </div>
       </div>
 
       <div class="content-wrapper">
@@ -1184,14 +1354,20 @@
               <input type="text" id="searchInput" placeholder="Search by Show name..." oninput="renderTable()">
             </div>
 
+            <!-- Hidden file inputs — IDs and onchange handlers preserved -->
             <input type="file" id="fileStd" style="display:none" accept=".xlsx"
               onchange="manualUpload(this, 'standard')">
             <input type="file" id="fileSome" style="display:none" accept=".xlsx" onchange="manualUpload(this, 'some')">
 
-            <button class="filter-btn btn-std" style="margin-left:auto;"
-              onclick="document.getElementById('fileStd').click()">+ Upload Standard</button>
-            <button class="filter-btn btn-some" onclick="document.getElementById('fileSome').click()">+ Upload
-              Some</button>
+            <!-- Consolidated upload dropdown -->
+            <div class="upload-dd" style="margin-left:auto;">
+              <button class="filter-btn btn-std">⬆ Upload Excel ▾</button>
+              <div class="upload-dd-menu">
+                <button onclick="document.getElementById('fileStd').click()">📄 Standard Mode</button>
+                <div class="dd-divider"></div>
+                <button onclick="document.getElementById('fileSome').click()">📋 Some Mode</button>
+              </div>
+            </div>
           </div>
 
           <div class="table-wrap">
@@ -1224,117 +1400,75 @@
           </div>
         </div>
 
-        <!-- ── MY PERFORMANCE VIEW ── -->
-        <div id="performanceView">
-          <div class="perf-header">
-            <div class="perf-header-left">
-              <h2>📈 My Performance</h2>
-              <p id="perfSubtitle">Loading personal analytics...</p>
-            </div>
-            <div class="perf-header-right">
-              <button class="refresh-btn" onclick="loadPerformanceDashboard()">↻ Refresh</button>
-            </div>
-          </div>
-
-          <div class="perf-body">
-            <!-- STAT CARDS -->
-            <div class="stat-cards-grid" style="grid-template-columns: repeat(5, 1fr);">
-              <div class="stat-card">
-                <div class="sc-icon blue">📁</div>
-                <div class="sc-val" id="pcFilesToday">—</div>
-                <div class="sc-label">Shows Today</div>
-                <div class="sc-sub">Shows processed today</div>
-              </div>
-              <div class="stat-card">
-                <div class="sc-icon cyan">✨</div>
-                <div class="sc-val" id="pcShownToday">—</div>
-                <div class="sc-label">Net Leads Today</div>
-                <div class="sc-sub">Shown (qualified) leads today</div>
-              </div>
-              <div class="stat-card">
-                <div class="sc-icon" style="background:rgba(245,158,11,0.12)">📊</div>
-                <div class="sc-val" id="pcGrossToday" style="color:var(--warning)">—</div>
-                <div class="sc-label">Gross Leads Today</div>
-                <div class="sc-sub">Net + Hidden leads today</div>
-              </div>
-              <div class="stat-card">
-                <div class="sc-icon purple">📅</div>
-                <div class="sc-val" id="pcShownMonth">—</div>
-                <div class="sc-label">Net Leads (Month)</div>
-                <div class="sc-sub" id="pcMonthLabel">This month's total</div>
-              </div>
-              <div class="stat-card">
-                <div class="sc-icon" style="background:rgba(245,158,11,0.12)">🗓️</div>
-                <div class="sc-val" id="pcGrossMonth" style="color:var(--warning)">—</div>
-                <div class="sc-label">Gross Leads (Month)</div>
-                <div class="sc-sub" id="pcGrossMonthLabel">Net + Hidden this month</div>
-              </div>
-            </div>
-
-            <!-- 14-DAY LINE CHART -->
-            <div class="chart-panel">
-              <div class="chart-panel-header">
-                <div>
-                  <h3>Daily Productivity — Last 14 Days</h3>
-                  <p>Net leads extracted per day</p>
-                </div>
-                <div class="chart-legend">Net Leads</div>
-              </div>
-              <div class="chart-wrap">
-                <canvas id="performanceChart"></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
 
         <!-- ── BRIEFING ROOM VIEW ── -->
-        <div class="view-container" id="briefingView" style="display:none; padding:32px; overflow-y:auto; background:var(--bg-base);">
-          <div class="panel" style="max-width:800px; margin:0 auto; padding:32px; border:1px solid var(--border); border-radius:12px; background:var(--bg-panel); position:relative; width:100%;">
+        <div class="view-container" id="briefingView"
+          style="display:none; padding:32px; overflow-y:auto; background:var(--bg-base);">
+          <div class="panel"
+            style="max-width:800px; margin:0 auto; padding:32px; border:1px solid var(--border); border-radius:12px; background:var(--bg-panel); position:relative; width:100%;">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px;">
               <div>
                 <h1 style="font-size:24px; font-weight:700; margin-bottom:8px;">Agent Briefing Room</h1>
                 <p id="briefingStatus" style="color:var(--text-muted); font-size:14px;">Waiting for Show...</p>
               </div>
               <div style="display:flex; gap:16px; align-items:center;">
-                 <button onclick="requestDesktopNotifications()" style="cursor:pointer; padding:6px 12px; border-radius:6px; background:transparent; color:var(--text-muted); border:1px solid var(--border); font-size:12px; font-weight:600; transition:color 0.2s;">🔔 Enable Alerts</button>
-                 <div id="briefingTimer" class="mono" style="font-size:20px; font-weight:700; color:var(--accent-blue); display:none;">00:00:00</div>
+                <button onclick="requestDesktopNotifications()"
+                  style="cursor:pointer; padding:6px 12px; border-radius:6px; background:transparent; color:var(--text-muted); border:1px solid var(--border); font-size:12px; font-weight:600; transition:color 0.2s;">🔔
+                  Enable Alerts</button>
+                <div id="briefingTimer" class="mono"
+                  style="font-size:20px; font-weight:700; color:var(--accent-blue); display:none;">00:00:00</div>
               </div>
             </div>
 
             <div id="briefingContent" style="display:none;">
-              <div id="briefingDetailsBlock" style="background:var(--bg-base); border: 1px solid var(--border); border-radius:8px; padding:20px; margin-bottom:24px;">
+              <div id="briefingDetailsBlock"
+                style="background:var(--bg-base); border: 1px solid var(--border); border-radius:8px; padding:20px; margin-bottom:24px;">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
-                  <h2 id="briefingShowName" style="font-size:16px; font-weight:600; color:var(--text-main); margin-right:16px; line-height:1.4;"></h2>
-                  <button id="copyNameBtn" onclick="copySmartName()" class="filter-btn btn-some" style="flex-shrink:0;">📋 Copy Name</button>
+                  <h2 id="briefingShowName"
+                    style="font-size:16px; font-weight:600; color:var(--text-main); margin-right:16px; line-height:1.4;">
+                  </h2>
+                  <button id="copyNameBtn" onclick="copySmartName()" class="filter-btn btn-some"
+                    style="flex-shrink:0;">📋 Copy Name</button>
                 </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-top:20px; border-top:1px solid var(--border); padding-top:20px;">
+                <div
+                  style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-top:20px; border-top:1px solid var(--border); padding-top:20px;">
                   <div>
-                    <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase; font-weight:600; margin-bottom:8px;">Links</div>
+                    <div
+                      style="font-size:11px; color:var(--text-muted); text-transform:uppercase; font-weight:600; margin-bottom:8px;">
+                      Links</div>
                     <div id="briefingLinks" style="display:flex; flex-direction:column; gap:8px;"></div>
                   </div>
                   <div>
-                    <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase; font-weight:600; margin-bottom:8px;">Details</div>
-                    <div id="briefingDetails" style="font-size:13px; color:var(--text-main); white-space:pre-wrap; line-height:1.5;"></div>
+                    <div
+                      style="font-size:11px; color:var(--text-muted); text-transform:uppercase; font-weight:600; margin-bottom:8px;">
+                      Details</div>
+                    <div id="briefingDetails"
+                      style="font-size:13px; color:var(--text-main); white-space:pre-wrap; line-height:1.5;"></div>
                   </div>
                 </div>
               </div>
 
               <div style="display:flex; gap:16px;">
-                <button id="doneWorkingBtn" onclick="finishWorking()" style="flex:1; background:var(--success); border:none; color:#fff; font-weight:600; font-size:15px; padding:14px; border-radius:8px; cursor:pointer; transition:background 0.2s;">✓ Complete</button>
+                <button id="doneWorkingBtn" onclick="finishWorking()"
+                  style="flex:1; background:var(--success); border:none; color:#fff; font-weight:600; font-size:15px; padding:14px; border-radius:8px; cursor:pointer; transition:background 0.2s;">✓
+                  Complete</button>
               </div>
             </div>
 
             <div id="briefingEmpty" style="text-align:center; padding:60px 0; color:var(--text-muted);">
               <div style="font-size:48px; margin-bottom:16px; opacity:0.5;">☕</div>
               <h3 style="font-size:16px; font-weight:600; margin-bottom:8px;">Ready for your next show?</h3>
-              <p style="font-size:13px; max-width:300px; margin:0 auto;">Press the button below to assign and start your next show.</p>
-              <button onclick="startNextShow()" class="filter-btn btn-std" style="margin-top:24px; display:inline-flex; align-items:center; justify-content:center; margin-left:auto; margin-right:auto; font-size:16px; padding:12px 24px;">▶ Start Next Show</button>
+              <p style="font-size:13px; max-width:300px; margin:0 auto;">Press the button below to assign and start your
+                next show.</p>
+              <button onclick="startNextShow()" class="filter-btn btn-std"
+                style="margin-top:24px; display:inline-flex; align-items:center; justify-content:center; margin-left:auto; margin-right:auto; font-size:16px; padding:12px 24px;">▶
+                Start Next Show</button>
             </div>
           </div>
         </div>
 
       </div>
-    </div>
+  </div>
   </div>
 
   <div id="toastContainer"></div>
@@ -1400,15 +1534,17 @@
       if (currentUser) {
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('displayUser').innerText = currentUser;
-        
+
         if (currentRole === 'Admin' || currentRole === 'Viewer') {
           document.getElementById('adminLink').style.display = 'inline-block';
         } else {
           document.getElementById('adminLink').style.display = 'none';
         }
-        
+
         // Fetch user files on load
         fetchUserData();
+        // Populate the top widget strip immediately
+        loadPerformanceDashboard();
       }
     }
 
@@ -1463,7 +1599,7 @@
         if (data.success) {
           showToast(`✅ ${data.stats.finalFileName}<br>Shown: <b>${data.stats.shown}</b> | Hidden: <b>${data.stats.hidden}</b>`, 'success');
           fetchUserData();
-          if (currentView === 'performance') loadPerformanceDashboard(); // Refresh stats automatically if open
+          loadPerformanceDashboard(); // Always refresh widget strip after upload
         } else {
           showToast(`❌ Failed: ${file.name}`, 'error');
         }
@@ -1486,7 +1622,7 @@
         if (data.success) {
           showToast('⏪ Action reversed. File deleted and records scrubbed.', 'info');
           fetchUserData();
-          if (currentView === 'performance') loadPerformanceDashboard();
+          loadPerformanceDashboard(); // Refresh widget strip after undo
         } else {
           showToast(`❌ ${data.error || 'Undo time expired.'}`, 'error');
           fetchUserData();
@@ -1529,20 +1665,14 @@
       // Update sidebar active states
       document.querySelectorAll('.sidebar .nav-item[data-view]').forEach(n => n.classList.remove('active'));
       const navEl = document.getElementById(
-        view === 'files' ? 'navFiles' : 
-        view === 'performance' ? 'navPerf' :
-        'navBriefing'
+        view === 'files' ? 'navFiles' : 'navBriefing'
       );
       if (navEl) navEl.classList.add('active');
 
       document.getElementById('filesView').style.display = 'none';
-      document.getElementById('performanceView').style.display = 'none';
       document.getElementById('briefingView').style.display = 'none';
 
-      if (view === 'performance') {
-        document.getElementById('performanceView').style.display = 'flex';
-        loadPerformanceDashboard();
-      } else if (view === 'briefing') {
+      if (view === 'briefing') {
         document.getElementById('briefingView').style.display = 'flex';
         if (!currentAssignedShow) fetchNextShow();
       } else {
@@ -1626,36 +1756,19 @@
       records.forEach(rec => {
         const isToday = rec.date === todayStr;
         const isThisMonth = rec.date.startsWith(nowMonthStr);
-        
+
         if (isToday) { filesToday++; shownToday += rec.shown; grossToday += rec.total; }
         if (isThisMonth) { shownMonth += rec.shown; grossMonth += rec.total; }
         if (!dailyShownMap[rec.date]) dailyShownMap[rec.date] = 0;
         dailyShownMap[rec.date] += rec.shown;
       });
 
-      const d = new Date();
-      const monthLabel = `${monthNames[d.getMonth()]} ${d.getFullYear()}`;
-      document.getElementById('perfSubtitle').textContent = `Personal stats for ${currentUser} — ${todayStr}`;
-      document.getElementById('pcMonthLabel').textContent = `Total for ${monthLabel}`;
-      document.getElementById('pcGrossMonthLabel').textContent = `Net + Hidden — ${monthLabel}`;
-
+      // Update top-of-page widget strip (always visible across all views)
       document.getElementById('pcFilesToday').textContent = filesToday;
       document.getElementById('pcShownToday').textContent = shownToday;
       document.getElementById('pcGrossToday').textContent = grossToday;
       document.getElementById('pcShownMonth').textContent = shownMonth;
       document.getElementById('pcGrossMonth').textContent = grossMonth;
-
-      const chartLabels = [], chartValues = [];
-      for (let i = 13; i >= 0; i--) {
-         const tempDate = new Date();
-         tempDate.setDate(tempDate.getDate() - i);
-         const ds = tempDate.toISOString().split('T')[0];
-         const dayNum = parseInt(ds.split('-')[2], 10);
-         const monthStr = monthNames[parseInt(ds.split('-')[1], 10) - 1];
-         chartLabels.push(`${dayNum} ${monthStr}`);
-         chartValues.push(dailyShownMap[ds] || 0);
-      }
-      renderChart(chartLabels, chartValues);
     }
 
     function renderChart(labels, values) {
@@ -1781,9 +1894,14 @@
       document.getElementById('clock').textContent = `${time} ${ampm}`;
     }, 1000);
 
-    // Background refresh: re-render file list every 30s to expire undo buttons
+    // Lightweight heartbeat: refresh file list & widget strip every 30s
     setInterval(() => {
-      if (currentView === 'files') renderTable();
+      if (currentUser) {
+        // Always re-fetch fresh performance data so widgets stay live
+        loadPerformanceDashboard();
+        // Re-render table only when the files view is active (to expire undo buttons)
+        if (currentView === 'files') fetchUserData();
+      }
     }, 30000);
 
     // ─────────────────────────────────────────────
@@ -1793,9 +1911,11 @@
       if (!socket && typeof io !== 'undefined') {
         socket = io();
         socket.on('new_upload', (data) => {
-          // If a new show arrives and we are empty
+          // Refresh widget strip instantly whenever ANY agent submits a show
+          loadPerformanceDashboard();
+          // If a new show arrives in the hopper and we are in briefing with no current show
           if (currentView === 'briefing' && !currentAssignedShow) {
-             fetchNextShow();
+            fetchNextShow();
           }
         });
         socket.on('daily_reset', () => {
@@ -1805,20 +1925,20 @@
       socket.on('show_cancelled', (data) => {
         // Only react if THIS agent is currently working on THIS specific show
         if (currentAssignedShow && currentAssignedShow.id === data.id) {
-            
-            // Fire Desktop Notification
-            if ("Notification" in window && Notification.permission === "granted") {
-                new Notification("🚨 Show Cancelled", {
-                    body: `Admin cancelled "${data.showName}". Reason: ${data.reason}. Please request a new show.`,
-                    requireInteraction: true
-                });
-            }
-            
-            // Rip the show out of the UI
-            currentAssignedShow = null;
-            showToast(`🚨 Your active show was cancelled: ${data.reason}`, 'error');
-            renderBriefingCard();
-            if (socket) socket.emit('agent_status', { agent: currentUser, status: 'CXL Alerted', show: null });
+
+          // Fire Desktop Notification
+          if ("Notification" in window && Notification.permission === "granted") {
+            new Notification("🚨 Show Cancelled", {
+              body: `Admin cancelled "${data.showName}". Reason: ${data.reason}. Please request a new show.`,
+              requireInteraction: true
+            });
+          }
+
+          // Rip the show out of the UI
+          currentAssignedShow = null;
+          showToast(`🚨 Your active show was cancelled: ${data.reason}`, 'error');
+          renderBriefingCard();
+          if (socket) socket.emit('agent_status', { agent: currentUser, status: 'CXL Alerted', show: null });
         }
       });
     }
@@ -1855,14 +1975,14 @@
         emptyDiv.style.display = 'none';
         contentDiv.style.display = 'block';
         statusEl.textContent = 'Working on Show...';
-        
+
         document.getElementById('briefingShowName').textContent = currentAssignedShow.showName || 'Unnamed Show';
-        
+
         const linksHtml = (currentAssignedShow.link || []).map(url => {
           return `<a href="${url}" target="_blank" style="color:var(--accent-blue); text-decoration:none; word-break:break-all; font-size:12px;">${url}</a>`;
         }).join('');
         document.getElementById('briefingLinks').innerHTML = linksHtml || '<span style="color:var(--text-muted);font-style:italic;">No links provided</span>';
-        
+
         let detailsText = '';
         if (currentAssignedShow.ld) detailsText += `Data: ${currentAssignedShow.ld}\n\n`;
         if (currentAssignedShow.lists) detailsText += `Lists: ${currentAssignedShow.lists}\n\n`;
@@ -1877,12 +1997,12 @@
 
     async function finishWorking() {
       if (!currentAssignedShow) return;
-      
+
       try {
         await fetch('/api/shows/complete', {
-           method: 'POST',
-           headers: { 'Content-Type': 'application/json' },
-           body: JSON.stringify({ id: currentAssignedShow.id })
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: currentAssignedShow.id })
         });
       } catch (e) {
         console.error('Failed to complete show');
@@ -1898,13 +2018,13 @@
       workStartTime = Date.now();
       const timerEl = document.getElementById('briefingTimer');
       timerEl.style.display = 'block';
-      
+
       workTimerInterval = setInterval(() => {
-        const diff = Math.floor((Date.now() - workStartTime)/1000);
+        const diff = Math.floor((Date.now() - workStartTime) / 1000);
         const h = Math.floor(diff / 3600);
-        const m = Math.floor((diff % 3600)/60);
+        const m = Math.floor((diff % 3600) / 60);
         const s = diff % 60;
-        timerEl.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        timerEl.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
       }, 1000);
     }
 
@@ -1917,17 +2037,17 @@
     function copySmartName() {
       if (!currentAssignedShow) return;
       let name = currentAssignedShow.showName || '';
-      
+
       // Exclude list ranges: e.g. "(1-500)", "List: 85-90", etc.
       // Usually ranges are like (xxx-yyy)
       name = name.replace(/\([\w\s-]+(?:-|to)[\w\s-]+\)/gi, '');
-      
+
       // Exclude "Do Both" and its variations
       name = name.replace(/do\s+both/gi, '');
-      
+
       // Often asterisk comments are at the end, like "** Not Yet Available"
       name = name.replace(/\*\*.*$/g, '');
-      
+
       // Collapse multiple hyphens or spaces left over
       name = name.replace(/\s+-\s+-\s+/g, ' - ').replace(/\s{2,}/g, ' ');
       // Remove trailing hyphens
@@ -1948,7 +2068,7 @@
         if (data.success && data.show) {
           currentAssignedShow = data.show;
           renderBriefingCard();
-          
+
           // Optional: If you want it to immediately jump back to the working state
           // instead of making them click "Start Show" again, uncomment the line below:
           // revealShow(); 
@@ -1959,15 +2079,15 @@
     }
 
     function requestDesktopNotifications() {
-        if (!("Notification" in window)) {
-            showToast("Your browser does not support desktop notifications.", "error");
-        } else if (Notification.permission === "granted") {
-            showToast("Alerts are already enabled!", "info");
-        } else if (Notification.permission !== "denied") {
-            Notification.requestPermission().then(permission => {
-                if (permission === "granted") showToast("✅ Desktop alerts enabled.", "success");
-            });
-        }
+      if (!("Notification" in window)) {
+        showToast("Your browser does not support desktop notifications.", "error");
+      } else if (Notification.permission === "granted") {
+        showToast("Alerts are already enabled!", "info");
+      } else if (Notification.permission !== "denied") {
+        Notification.requestPermission().then(permission => {
+          if (permission === "granted") showToast("✅ Desktop alerts enabled.", "success");
+        });
+      }
     }
 
     // ─────────────────────────────────────────────
@@ -1976,22 +2096,22 @@
     initTableResizers();
     checkAuth();
     if (currentUser) {
-        initSocket();
-        // Announce presence immediately
-        if (socket) socket.emit('agent_status', { agent: currentUser, status: 'Idle', show: null });
+      initSocket();
+      // Announce presence immediately
+      if (socket) socket.emit('agent_status', { agent: currentUser, status: 'Idle', show: null });
     }
     checkActiveShow();
   </script>
-    </main>
+  </main>
   </div>
   <!-- ── THEME INIT & TOGGLE ── -->
   <script>
-    (function() {
+    (function () {
       if (localStorage.getItem('zorg_theme') === 'dark') document.body.classList.add('dark-mode');
     })();
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       const btn = document.getElementById('themeToggle');
-      if (btn) btn.addEventListener('click', function() {
+      if (btn) btn.addEventListener('click', function () {
         const isDark = document.body.classList.toggle('dark-mode');
         localStorage.setItem('zorg_theme', isDark ? 'dark' : 'light');
         btn.textContent = isDark ? '☀️ Light Mode' : '🌓 Toggle Theme';
@@ -2000,4 +2120,5 @@
     });
   </script>
 </body>
+
 </html>
