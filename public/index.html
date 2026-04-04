@@ -1047,13 +1047,35 @@
     </div>
   </div>
 
-  <div class="root">
-    <div class="topbar">
-      <div class="topbar-left">
+  <div class="app-container" style="display: flex; height: 100vh; overflow: hidden;">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" style="width: 220px; background: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; height: 100vh;">
+      <div style="padding: 0 24px; height: 64px; display: flex; align-items: center; border-bottom: 1px solid var(--border); flex-shrink: 0;">
         <div class="logo">Z-LEADS <span>/ Sorter</span></div>
-        <div class="status-pill">Active System</div>
+        <div class="status-pill" style="margin-left: 12px;">Active</div>
       </div>
-      <div class="topbar-right">
+      <div class="panel-label">Workspace</div>
+      <nav class="sidebar-nav" style="display: flex; flex-direction: column; gap: 8px; padding: 0 12px;">
+        <div class="nav-item active" id="navFiles" data-view="files" onclick="setView('files')">
+          <span class="nav-icon">📁</span> Today's Shows <span class="nav-badge" id="nbAll">0</span>
+        </div>
+        <div class="nav-item perf-tab" id="navPerf" data-view="performance" onclick="setView('performance')">
+          <span class="nav-icon">📈</span> My Performance
+        </div>
+        <div class="nav-item" id="navBriefing" data-view="briefing" onclick="setView('briefing')">
+          <span class="nav-icon">🎯</span> Briefing Room
+        </div>
+      </nav>
+      <div class="agent-display">
+        <span id="displayUser">Loading...</span>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; background: var(--bg-base);">
+      <!-- Stats bar inside main -->
+      <div style="display: flex; align-items: center; justify-content: flex-end; gap: 32px; padding: 0 24px; height: 64px; background: var(--bg-panel); border-bottom: 1px solid var(--border); flex-shrink: 0;">
         <div class="stat-mini">
           <div class="val" id="statTotal">0</div>
           <div class="lbl">Total Files</div>
@@ -1068,26 +1090,6 @@
         </div>
         <div class="clock" id="clock">--:--:--</div>
         <a id="adminLink" href="/admin.html" class="admin-btn" style="display:none;">Admin Config</a>
-      </div>
-    </div>
-
-    <div class="main">
-      <div class="sidebar">
-        <div class="panel-label">Workspace</div>
-        <div class="nav-item active" id="navFiles" data-view="files" onclick="setView('files')">
-          <span class="nav-icon">📁</span> Today's Shows <span class="nav-badge" id="nbAll">0</span>
-        </div>
-        <div class="nav-item perf-tab" id="navPerf" data-view="performance" onclick="setView('performance')">
-          <span class="nav-icon">📈</span> My Performance
-        </div>
-        <div class="nav-item" id="navBriefing" data-view="briefing" onclick="setView('briefing')">
-          <span class="nav-icon">🎯</span> Briefing Room
-        </div>
-
-        <div class="agent-display">
-          <span id="displayUser">Loading...</span>
-          <button class="logout-btn" onclick="logout()">Logout</button>
-        </div>
       </div>
 
       <div class="content-wrapper">
@@ -1898,6 +1900,8 @@
     }
     checkActiveShow();
   </script>
+    </main>
+  </div>
 </body>
 
 </html>

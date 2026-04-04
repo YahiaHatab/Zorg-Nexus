@@ -729,23 +729,29 @@
     </div>
   </div>
 
-  <div class="topbar">
-    <div class="logo">Z-LEADS <span>/ Admin</span></div>
-    <div class="topbar-right">
-      <button class="btn btn-red admin-only" onclick="openModal()">⚡ Reset History</button>
-      <button class="btn" onclick="refreshCurrentTab()">↻ Refresh</button>
-      <a href="/" style="text-decoration:none;"><button class="btn btn-blue">← Portal</button></a>
-    </div>
-  </div>
+  <div class="app-container" style="display: flex; height: 100vh; overflow: hidden;">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" style="width: 220px; background: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; height: 100vh; overflow-y: auto;">
+      <div style="padding: 0 24px; background: var(--bg-panel); border-bottom: 1px solid var(--border); height: 60px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+        <div class="logo">Z-LEADS <span>/ Admin</span></div>
+      </div>
+      <nav class="sidebar-nav" style="display: flex; flex-direction: column; gap: 4px; padding: 16px 12px; flex: 1;">
+        <div class="tab active" onclick="switchTab('leaderboard', this)">📡 Live Leaderboard</div>
+        <div class="tab" onclick="switchTab('ledger', this)">🗂 Report Sheet</div>
+        <div class="tab" onclick="switchTab('analytics', this)">📊 Analytics</div>
+        <div class="tab" onclick="switchTab('hopper', this)">🚀 The Sheet</div>
+        <div class="tab" onclick="switchTab('config', this)">⚙ Config</div>
+        <div class="tab" onclick="switchTab('users', this)">👥 Users</div>
+      </nav>
+      <div style="padding: 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; flex-shrink: 0;">
+        <button class="btn btn-red admin-only" onclick="openModal()">⚡ Reset History</button>
+        <button class="btn" onclick="refreshCurrentTab()">↻ Refresh</button>
+        <a href="/" style="text-decoration:none; width: 100%;"><button class="btn btn-blue" style="width:100%;">← Portal</button></a>
+      </div>
+    </aside>
 
-  <div class="tab-nav">
-    <div class="tab active" onclick="switchTab('leaderboard', this)">📡 Live Leaderboard</div>
-    <div class="tab" onclick="switchTab('ledger', this)">🗂 Data Ledger</div>
-    <div class="tab" onclick="switchTab('analytics', this)">📊 Analytics</div>
-    <div class="tab" onclick="switchTab('hopper', this)">🚀 Show Hopper</div>
-    <div class="tab" onclick="switchTab('config', this)">⚙ Config</div>
-    <div class="tab" onclick="switchTab('users', this)">👥 Users</div>
-  </div>
+    <!-- MAIN CONTENT -->
+    <main class="main-content" style="flex: 1; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column;">
 
   <!-- ══════════ TAB: LIVE LEADERBOARD (today only) ══════════ -->
   <div id="tab-leaderboard" class="tab-content active">
@@ -824,14 +830,12 @@
       </div>
     </div>
   </div>
-  </div>
-  </div>
 
   <!-- ══════════ TAB: DATA LEDGER ══════════ -->
   <div id="tab-ledger" class="tab-content">
     <div class="panel">
       <div class="panel-header">
-        <span>Historical Records</span>
+        <span>Report Sheet</span>
         <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
           <div class="search-bar" id="ledgerSearchBar">
             <span style="color:var(--text-muted);font-size:13px;">🔍</span>
@@ -980,7 +984,7 @@
     <div class="panel" style="flex:1; display:flex; flex-direction:column; min-height:0;">
       <div class="panel-header" style="justify-content: space-between;">
         <div style="display:flex; align-items:center; gap:12px;">
-           <span>Show Hopper Queue</span>
+           <span>The Sheet</span>
            <span id="disabledDragWarning" style="color:var(--warning); font-size:11px; display:none;">⚠️ Drag-and-Drop disabled while filtered</span>
         </div>
         <div style="display:flex; align-items:center; gap:10px;">
@@ -1041,6 +1045,8 @@
   </div>
 
   <div id="toastContainer"></div>
+    </main>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
