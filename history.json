@@ -1,34 +1,4 @@
 {
-  "files": [
-    {
-      "agent": "Yahia",
-      "name": "X Show - NACS Show 2026 (National Association of Convenience Stores Exposition) - October 7-9, 2026 - Las Vegas Convention Center - Las Vegas, NV, USA. Yahia.xlsx",
-      "size": 78076,
-      "mtime": "2026-04-04T02:25:32.537Z",
-      "region": "USA",
-      "destPath": "2026/Apr/4-4/USA",
-      "status": "sorted",
-      "transactionId": "mnjpn62l15q3xi6vp"
-    }
-  ],
-  "logs": [
-    {
-      "agent": "Yahia",
-      "ts": "04:25:32 AM",
-      "msg": "Sorted [STANDARD]: X Show - NACS Show 2026 (National Association of Convenience Stores Exposition) - October 7-9, 2026 - Las Vegas Convention Center - Las Vegas, NV, USA. Yahia.xlsx (Shown: 51, Hidden: 8)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "04:25:22 AM",
-      "msg": "[UNDO] Reverted: X Show - NACS Show 2026 (National Association of Convenience Stores Exposition) - October 7-9, 2026 - Las Vegas Convention Center - Las Vegas, NV, USA. Yahia.xlsx",
-      "type": "warning"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "04:25:19 AM",
-      "msg": "Sorted [STANDARD]: X Show - NACS Show 2026 (National Association of Convenience Stores Exposition) - October 7-9, 2026 - Las Vegas Convention Center - Las Vegas, NV, USA. Yahia.xlsx (Shown: 51, Hidden: 8)",
-      "type": "success"
-    }
-  ]
+  "files": [],
+  "logs": []
 }

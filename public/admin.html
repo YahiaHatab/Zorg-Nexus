@@ -23,17 +23,17 @@
       --warning: #F59E0B;
 
       /* ── Light Mode Theme (default) ── */
-      --bg-main:    #f8fafc;
+      --bg-main: #f8fafc;
       --bg-sidebar: #111827;
-      --bg-panel:   #ffffff;
-      --bg-hover:   #f1f5f9;
-      --border:     #e5e7eb;
-      --text-main:  #1f2937;
+      --bg-panel: #ffffff;
+      --bg-hover: #f1f5f9;
+      --border: #e5e7eb;
+      --text-main: #1f2937;
       --text-muted: #6b7280;
       --text-sidebar: #9ca3af;
 
       /* kept for legacy inline refs */
-      --bg-base:    #f8fafc;
+      --bg-base: #f8fafc;
 
       /* ── Glassmorphism ── */
       --glass-bg: rgba(255, 255, 255, 0.6);
@@ -42,15 +42,15 @@
 
     /* ── Dark Mode Override ── */
     body.dark-mode {
-      --bg-main:    #0f172a;
+      --bg-main: #0f172a;
       --bg-sidebar: #020617;
-      --bg-panel:   #111827;
-      --bg-hover:   #1f2937;
-      --border:     #374151;
-      --text-main:  #f3f4f6;
+      --bg-panel: #111827;
+      --bg-hover: #1f2937;
+      --border: #374151;
+      --text-main: #f3f4f6;
       --text-muted: #9ca3af;
       --text-sidebar: #9ca3af;
-      --bg-base:    #0f172a;
+      --bg-base: #0f172a;
 
       /* ── Glassmorphism ── */
       --glass-bg: rgba(31, 41, 55, 0.5);
@@ -266,7 +266,8 @@
       z-index: 2;
     }
 
-    .resizer:hover, .resizer.resizing {
+    .resizer:hover,
+    .resizer.resizing {
       border-right: 2px solid #3b82f6;
     }
 
@@ -656,14 +657,51 @@
     }
 
     /* ── CUSTOM DROPDOWN ── */
-    .custom-dropdown { position: relative; display: inline-block; }
-    .custom-dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: var(--bg-panel); min-width: 160px; margin-top: 4px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5); z-index: 100; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
-    .custom-dropdown:hover .custom-dropdown-content { display: flex; flex-direction: column; }
-    .custom-dropdown-content button { background: none; border: none; border-radius: 0; width: 100%; text-align: left; padding: 10px 16px; color: var(--text-main); font-size: 12px; font-family: 'Inter', sans-serif; cursor: pointer; }
-    .custom-dropdown-content button:hover { background-color: var(--bg-hover); }
+    .custom-dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .custom-dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 100%;
+      background-color: var(--bg-panel);
+      min-width: 160px;
+      margin-top: 4px;
+      box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .custom-dropdown:hover .custom-dropdown-content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .custom-dropdown-content button {
+      background: none;
+      border: none;
+      border-radius: 0;
+      width: 100%;
+      text-align: left;
+      padding: 10px 16px;
+      color: var(--text-main);
+      font-size: 12px;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+    }
+
+    .custom-dropdown-content button:hover {
+      background-color: var(--bg-hover);
+    }
 
     /* ── FILTER SELECTS & TABLE DROPDOWNS ── */
-    select.user-input, select.hopper-filter {
+    select.user-input,
+    select.hopper-filter {
       appearance: none;
       -webkit-appearance: none;
       background-color: var(--bg-sidebar);
@@ -677,7 +715,8 @@
       cursor: pointer;
     }
 
-    select.user-input:focus, select.hopper-filter:focus {
+    select.user-input:focus,
+    select.hopper-filter:focus {
       border-color: #3b82f6;
       outline: none;
     }
@@ -749,12 +788,17 @@
     /* ── SIDEBAR THEME ── */
     .sidebar {
       background: var(--bg-sidebar) !important;
-      border-right-color: rgba(255,255,255,0.08) !important;
+      border-right-color: rgba(255, 255, 255, 0.08) !important;
       color: var(--text-sidebar);
     }
 
-    .sidebar .logo { color: #f9fafb; }
-    .sidebar .logo span { color: var(--text-sidebar); }
+    .sidebar .logo {
+      color: #f9fafb;
+    }
+
+    .sidebar .logo span {
+      color: var(--text-sidebar);
+    }
 
     /* ── SIDEBAR NAV PILLS ── */
     .sidebar-nav .tab {
@@ -775,7 +819,7 @@
     }
 
     .sidebar-nav .tab:hover {
-      background: rgba(255,255,255,0.08);
+      background: rgba(255, 255, 255, 0.08);
       color: #ffffff;
     }
 
@@ -788,8 +832,8 @@
     /* ── THEME TOGGLE BUTTON ── */
     .theme-btn {
       width: 100%;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 8px;
       color: var(--text-sidebar);
       padding: 9px 14px;
@@ -806,7 +850,7 @@
     }
 
     .theme-btn:hover {
-      background: rgba(255,255,255,0.12);
+      background: rgba(255, 255, 255, 0.12);
       color: #ffffff;
     }
   </style>
@@ -875,8 +919,10 @@
 
   <div class="app-container" style="display: flex; height: 100vh; overflow: hidden;">
     <!-- SIDEBAR -->
-    <aside class="sidebar" style="width: 220px; background: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; height: 100vh; overflow-y: auto;">
-      <div style="padding: 0 24px; background: var(--bg-panel); border-bottom: 1px solid var(--border); height: 60px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+    <aside class="sidebar"
+      style="width: 220px; background: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; height: 100vh; overflow-y: auto;">
+      <div
+        style="padding: 0 24px; background: var(--bg-panel); border-bottom: 1px solid var(--border); height: 60px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
         <div class="logo">Z-LEADS <span>/ Admin</span></div>
       </div>
       <nav class="sidebar-nav" style="display: flex; flex-direction: column; gap: 4px; padding: 16px 12px; flex: 1;">
@@ -887,35 +933,190 @@
         <div class="tab" onclick="switchTab('config', this)">⚙ Config</div>
         <div class="tab" onclick="switchTab('users', this)">👥 Users</div>
       </nav>
-      <div style="padding: 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; flex-shrink: 0;">
+      <div
+        style="padding: 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; flex-shrink: 0;">
         <button class="btn btn-red admin-only" onclick="openModal()">⚡ Reset History</button>
         <button class="btn" onclick="refreshCurrentTab()">↻ Refresh</button>
-        <a href="/" style="text-decoration:none; width: 100%;"><button class="btn btn-blue" style="width:100%;">← Portal</button></a>
+        <a href="/" style="text-decoration:none; width: 100%;"><button class="btn btn-blue" style="width:100%;">←
+            Portal</button></a>
         <button id="themeToggle" class="theme-btn">🌓 Toggle Theme</button>
       </div>
     </aside>
 
     <!-- MAIN CONTENT -->
-    <main class="main-content" style="flex: 1; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column;">
+    <main class="main-content"
+      style="flex: 1; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column;">
 
-  <!-- ══════════ TAB: LIVE LEADERBOARD (today only) ══════════ -->
-  <div id="tab-leaderboard" class="tab-content active">
-    <div class="panel glass-panel" style="flex:1; display:flex; flex-direction:column; min-height:0;">
-      <div class="panel-header">
-        <span>Today's Performance <span id="todayLabel"
-            style="color:var(--text-muted); font-weight:400; font-size:12px;"></span></span>
-        <span style="display:flex; align-items:center; gap:14px;">
-          <span id="liveIndicator"
-            style="font-size:11px; font-weight:600; color:var(--text-muted); display:flex; align-items:center; gap:6px;">
-            <span
-              style="display:inline-block; width:8px; height:8px; background:var(--text-muted); border-radius:50%;"></span>
-            Connecting...
-          </span>
-        </span>
+      <!-- ══════════ TAB: LIVE LEADERBOARD (today only) ══════════ -->
+      <div id="tab-leaderboard" class="tab-content active">
+        <div class="panel glass-panel" style="flex:1; display:flex; flex-direction:column; min-height:0;">
+          <div class="panel-header">
+            <span>Today's Performance <span id="todayLabel"
+                style="color:var(--text-muted); font-weight:400; font-size:12px;"></span></span>
+            <span style="display:flex; align-items:center; gap:14px;">
+              <span id="liveIndicator"
+                style="font-size:11px; font-weight:600; color:var(--text-muted); display:flex; align-items:center; gap:6px;">
+                <span
+                  style="display:inline-block; width:8px; height:8px; background:var(--text-muted); border-radius:50%;"></span>
+                Connecting...
+              </span>
+            </span>
+          </div>
+          <div style="display:flex; flex:1; overflow:hidden; position:relative;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; flex:1; overflow:hidden;">
+              <div style="overflow-y:auto; border-right:1px solid var(--border);">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Agent</th>
+                      <th>Shows</th>
+                      <th>Gross</th>
+                      <th>Net</th>
+                      <th>Conv. %</th>
+                    </tr>
+                  </thead>
+                  <tbody id="leaderboardBody"></tbody>
+                </table>
+              </div>
+              <div style="overflow-y:auto; display:flex; flex-direction:column; background:var(--bg-base);">
+                <div
+                  style="padding:12px 20px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--bg-base); z-index:10; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+                  <span id="logPanelTitleText"
+                    style="font-size:11px; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.05em;">Today's
+                    Activity</span>
+
+                  <div style="display:flex; align-items:center; gap:8px; margin-left:auto;">
+                    <div class="search-bar" id="logSearchBar" style="min-width:160px;">
+                      <span style="color:var(--text-muted);font-size:13px;">🔍</span>
+                      <input type="text" id="logSearch" placeholder="Filter..." oninput="onLogSearch(this)">
+                      <button class="search-clear" id="logSearchClear" onclick="clearLogSearch()">✕</button>
+                    </div>
+                    <button id="backToGlobalBtn" class="btn btn-sm btn-blue" style="display:none;"
+                      onclick="resetToGlobalLogs()">← All Agents</button>
+                    <button onclick="document.getElementById('floorMap').classList.toggle('collapsed')"
+                      class="btn btn-sm">🗺 Agents</button>
+                  </div>
+                </div>
+                <table class="data-table compact" style="margin-bottom:auto;">
+                  <thead>
+                    <tr>
+                      <th>Time</th>
+                      <th>Mode</th>
+                      <th>Shows</th>
+                      <th>Gross</th>
+                      <th>Net</th>
+                    </tr>
+                  </thead>
+                  <tbody id="logBody"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div id="floorMap" class="floor-sidebar glass-panel">
+              <div
+                style="padding:16px; border-bottom:1px solid var(--border); font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em;">
+                Agents</div>
+              <div id="floorMapContent" style="overflow-y:auto; flex:1;">
+                <div style="padding:20px; text-align:center; color:var(--text-muted); font-size:12px;">Waiting for
+                  agents...
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div style="display:flex; flex:1; overflow:hidden; position:relative;">
-        <div style="display:grid; grid-template-columns:1fr 1fr; flex:1; overflow:hidden;">
-          <div style="overflow-y:auto; border-right:1px solid var(--border);">
+
+      <!-- ══════════ TAB: DATA LEDGER ══════════ -->
+      <div id="tab-ledger" class="tab-content">
+        <div class="panel glass-panel">
+          <div class="panel-header">
+            <span>Report Sheet</span>
+            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+              <div class="search-bar" id="ledgerSearchBar">
+                <span style="color:var(--text-muted);font-size:13px;">🔍</span>
+                <input type="text" id="ledgerSearch" placeholder="Search file, agent or time..."
+                  oninput="onLedgerSearch(this)">
+                <button class="search-clear" id="ledgerSearchClear" onclick="clearLedgerSearch()">✕</button>
+              </div>
+              <input type="date" id="ledgerDatePicker" class="date-input" onchange="fetchLedgerDay()">
+              <button class="btn btn-green" onclick="exportDay()">⬇ Export to Excel</button>
+            </div>
+          </div>
+          <div id="ledgerSummaryBar"
+            style="padding:10px 20px; border-bottom:1px solid var(--border); display:none; gap:24px; flex-wrap:wrap; font-size:12px; color:var(--text-muted);">
+            <span>Shows: <b id="ls-files" style="color:var(--text-main);">—</b></span>
+            <span>Gross: <b id="ls-leads" style="color:var(--text-main);">—</b></span>
+            <span>Net: <b id="ls-shown" style="color:var(--success);">—</b></span>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Agent</th>
+                  <th>Mode</th>
+                  <th>Show Name</th>
+                  <th>Gross</th>
+                  <th>Net</th>
+                  <th>Hidden</th>
+                  <th style="width:80px;text-align:center;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="ledgerBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════ TAB: ANALYTICS ══════════ -->
+      <div id="tab-analytics" class="tab-content">
+
+        <!-- Stat cards row -->
+        <div class="stat-grid" id="analyticsStatGrid">
+          <div class="stat-card">
+            <div class="sc-val" id="as-totalFiles" style="color:var(--accent-blue);">—</div>
+            <div class="sc-lbl">Total Shows</div>
+          </div>
+          <div class="stat-card">
+            <div class="sc-val" id="as-totalLeads" style="color:var(--warning);">—</div>
+            <div class="sc-lbl">Gross</div>
+          </div>
+          <div class="stat-card">
+            <div class="sc-val" id="as-totalShown" style="color:var(--success);">—</div>
+            <div class="sc-lbl">Net</div>
+          </div>
+          <div class="stat-card">
+            <div class="sc-val" id="as-totalDays" style="color:var(--accent-cyan);">—</div>
+            <div class="sc-lbl">Active Days</div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="chart-grid-3">
+          <div class="panel glass-panel">
+            <div class="panel-header">Net Leads — Last 14 Days</div>
+            <div class="panel-body">
+              <div class="chart-wrap" style="height:220px;"><canvas id="chartLine"></canvas></div>
+            </div>
+          </div>
+          <div class="panel glass-panel">
+            <div class="panel-header">Agent Totals (All-Time)</div>
+            <div class="panel-body">
+              <div class="chart-wrap" style="height:220px;"><canvas id="chartBar"></canvas></div>
+            </div>
+          </div>
+          <div class="panel glass-panel">
+            <div class="panel-header">Mode Distribution</div>
+            <div class="panel-body">
+              <div class="chart-wrap" style="height:220px;"><canvas id="chartDonut"></canvas></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Per-agent breakdown table -->
+        <div class="panel glass-panel">
+          <div class="panel-header">All-Time Agent Breakdown</div>
+          <div style="overflow-x:auto;">
             <table class="data-table">
               <thead>
                 <tr>
@@ -923,273 +1124,125 @@
                   <th>Shows</th>
                   <th>Gross</th>
                   <th>Net</th>
-                  <th>Conv. %</th>
+                  <th>Hidden</th>
+                  <th>Conversion %</th>
                 </tr>
               </thead>
-              <tbody id="leaderboardBody"></tbody>
+              <tbody id="analyticsAgentTable"></tbody>
             </table>
           </div>
-          <div style="overflow-y:auto; display:flex; flex-direction:column; background:var(--bg-base);">
-            <div
-              style="padding:12px 20px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--bg-base); z-index:10; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
-              <span id="logPanelTitleText"
-                style="font-size:11px; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.05em;">Today's
-                Activity</span>
+        </div>
+      </div>
 
-              <div style="display:flex; align-items:center; gap:8px; margin-left:auto;">
-                <div class="search-bar" id="logSearchBar" style="min-width:160px;">
-                  <span style="color:var(--text-muted);font-size:13px;">🔍</span>
-                  <input type="text" id="logSearch" placeholder="Filter..." oninput="onLogSearch(this)">
-                  <button class="search-clear" id="logSearchClear" onclick="clearLogSearch()">✕</button>
-                </div>
-                <button id="backToGlobalBtn" class="btn btn-sm btn-blue" style="display:none;"
-                  onclick="resetToGlobalLogs()">← All Agents</button>
-                <button onclick="document.getElementById('floorMap').classList.toggle('collapsed')"
-                  class="btn btn-sm">🗺 Floor Map</button>
-              </div>
+      <!-- ══════════ TAB: CONFIG ══════════ -->
+      <div id="tab-config" class="tab-content">
+        <div class="panel glass-panel">
+          <div class="panel-header">Directory Routes</div>
+          <div class="panel-body">
+            <div id="configFields"></div>
+            <div class="save-bar admin-only">
+              <button class="btn btn-blue" onclick="saveConfig()">Save Configuration</button>
             </div>
-            <table class="data-table compact" style="margin-bottom:auto;">
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════ TAB: USERS ══════════ -->
+      <div id="tab-users" class="tab-content">
+        <div class="panel glass-panel">
+          <div class="panel-header">
+            Access Control
+            <button class="btn btn-blue btn-sm admin-only" onclick="addUserRow()">+ Add User</button>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="data-table" id="usersTable">
               <thead>
                 <tr>
-                  <th>Time</th>
-                  <th>Mode</th>
-                  <th>Shows</th>
-                  <th>Gross</th>
-                  <th>Net</th>
+                  <th>Username</th>
+                  <th>Password</th>
+                  <th>Role</th>
+                  <th>Archive Path</th>
+                  <th style="width:100px;text-align:center;">Action</th>
                 </tr>
               </thead>
-              <tbody id="logBody"></tbody>
+              <tbody id="usersBody"></tbody>
+            </table>
+          </div>
+          <div class="panel-body" style="padding-top:0;">
+            <div class="save-bar admin-only"><button class="btn btn-green" onclick="saveUsers()">Commit Changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- ══════════ TAB: HOPPER ══════════ -->
+      <div id="tab-hopper" class="tab-content">
+        <div class="panel glass-panel" style="flex:1; display:flex; flex-direction:column; min-height:0;">
+          <div class="panel-header" style="justify-content: space-between;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <span>The Sheet</span>
+              <span id="disabledDragWarning" style="color:var(--warning); font-size:11px; display:none;">⚠️
+                Drag-and-Drop disabled while filtered</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div class="search-bar" id="hopperSearchBar" style="min-width:200px;">
+                <span style="color:var(--text-muted);font-size:13px;">🔍</span>
+                <input type="text" id="hopperSearch" placeholder="Search shows..." oninput="applyHopperFilters()">
+              </div>
+              <button class="btn btn-red" onclick="clearHopper()">✕ Clear Log</button>
+              <div class="custom-dropdown">
+                <button class="btn btn-green" style="padding: 7px 14px;">📊 Excel ▾</button>
+                <div class="custom-dropdown-content">
+                  <button onclick="exportHopper()">⬇ Export Excel</button>
+                  <button onclick="document.getElementById('hopperUpload').click()">⬆ Upload Excel</button>
+                </div>
+              </div>
+              <input type="file" id="hopperUpload" style="display:none;" accept=".xlsx, .xls"
+                onchange="handleHopperUpload(event)">
+            </div>
+          </div>
+          <div style="overflow-y:auto; flex:1; transition: background 0.2s;" id="hopperDropZone">
+            <table class="data-table" style="table-layout: auto;">
+              <thead>
+                <tr>
+                  <th style="min-width: 180px;">Show Name</th>
+                  <th style="min-width: 120px;">Link</th>
+                  <th style="min-width: 120px;">
+                    Status
+                    <select id="hopperStatusFilter" class="hopper-filter" onchange="applyHopperFilters()">
+                      <option value="All">All</option>
+                      <option value="Pending">Pending</option>
+                      <option value="In Progress">In Progress</option>
+                      <option value="HOLD">HOLD</option>
+                      <option value="Done">Done</option>
+                      <option value="CXL">CXL</option>
+                    </select>
+                  </th>
+                  <th style="min-width: 160px;">
+                    Agent Name
+                    <select id="hopperAgentFilter" class="hopper-filter" onchange="applyHopperFilters()">
+                      <option value="All">All</option>
+                      <option value="Unassigned">Unassigned</option>
+                    </select>
+                  </th>
+                  <th style="min-width: 60px;">L/D</th>
+                  <th style="min-width: 120px;">Name of Lists</th>
+                  <th style="min-width: 140px;">Comment</th>
+                  <th style="min-width: 80px;">Date</th>
+                </tr>
+              </thead>
+              <tbody id="hopperBody">
+                <tr>
+                  <td colspan="8" style="text-align:center;color:var(--text-muted);padding:30px;">Queue is empty. Drop
+                    an
+                    Excel file here or click Upload.</td>
+                </tr>
+              </tbody>
             </table>
           </div>
         </div>
+      </div>
 
-        <div id="floorMap" class="floor-sidebar glass-panel">
-          <div
-            style="padding:16px; border-bottom:1px solid var(--border); font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em;">
-            Members</div>
-          <div id="floorMapContent" style="overflow-y:auto; flex:1;">
-            <div style="padding:20px; text-align:center; color:var(--text-muted); font-size:12px;">Waiting for agents...
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══════════ TAB: DATA LEDGER ══════════ -->
-  <div id="tab-ledger" class="tab-content">
-    <div class="panel glass-panel">
-      <div class="panel-header">
-        <span>Report Sheet</span>
-        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-          <div class="search-bar" id="ledgerSearchBar">
-            <span style="color:var(--text-muted);font-size:13px;">🔍</span>
-            <input type="text" id="ledgerSearch" placeholder="Search file, agent or time..."
-              oninput="onLedgerSearch(this)">
-            <button class="search-clear" id="ledgerSearchClear" onclick="clearLedgerSearch()">✕</button>
-          </div>
-          <input type="date" id="ledgerDatePicker" class="date-input" onchange="fetchLedgerDay()">
-          <button class="btn btn-green" onclick="exportDay()">⬇ Export to Excel</button>
-        </div>
-      </div>
-      <div id="ledgerSummaryBar"
-        style="padding:10px 20px; border-bottom:1px solid var(--border); display:none; gap:24px; flex-wrap:wrap; font-size:12px; color:var(--text-muted);">
-        <span>Shows: <b id="ls-files" style="color:var(--text-main);">—</b></span>
-        <span>Gross: <b id="ls-leads" style="color:var(--text-main);">—</b></span>
-        <span>Net: <b id="ls-shown" style="color:var(--success);">—</b></span>
-      </div>
-      <div style="overflow-x:auto;">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Time</th>
-              <th>Agent</th>
-              <th>Mode</th>
-              <th>Show Name</th>
-              <th>Gross</th>
-              <th>Net</th>
-              <th>Hidden</th>
-              <th style="width:80px;text-align:center;">Action</th>
-            </tr>
-          </thead>
-          <tbody id="ledgerBody"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══════════ TAB: ANALYTICS ══════════ -->
-  <div id="tab-analytics" class="tab-content">
-
-    <!-- Stat cards row -->
-    <div class="stat-grid" id="analyticsStatGrid">
-      <div class="stat-card">
-        <div class="sc-val" id="as-totalFiles" style="color:var(--accent-blue);">—</div>
-        <div class="sc-lbl">Total Shows</div>
-      </div>
-      <div class="stat-card">
-        <div class="sc-val" id="as-totalLeads" style="color:var(--warning);">—</div>
-        <div class="sc-lbl">Gross</div>
-      </div>
-      <div class="stat-card">
-        <div class="sc-val" id="as-totalShown" style="color:var(--success);">—</div>
-        <div class="sc-lbl">Net</div>
-      </div>
-      <div class="stat-card">
-        <div class="sc-val" id="as-totalDays" style="color:var(--accent-cyan);">—</div>
-        <div class="sc-lbl">Active Days</div>
-      </div>
-    </div>
-
-    <!-- Charts -->
-    <div class="chart-grid-3">
-      <div class="panel glass-panel">
-        <div class="panel-header">Net Leads — Last 14 Days</div>
-        <div class="panel-body">
-          <div class="chart-wrap" style="height:220px;"><canvas id="chartLine"></canvas></div>
-        </div>
-      </div>
-      <div class="panel glass-panel">
-        <div class="panel-header">Agent Totals (All-Time)</div>
-        <div class="panel-body">
-          <div class="chart-wrap" style="height:220px;"><canvas id="chartBar"></canvas></div>
-        </div>
-      </div>
-      <div class="panel glass-panel">
-        <div class="panel-header">Mode Distribution</div>
-        <div class="panel-body">
-          <div class="chart-wrap" style="height:220px;"><canvas id="chartDonut"></canvas></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Per-agent breakdown table -->
-    <div class="panel glass-panel">
-      <div class="panel-header">All-Time Agent Breakdown</div>
-      <div style="overflow-x:auto;">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Agent</th>
-              <th>Shows</th>
-              <th>Gross</th>
-              <th>Net</th>
-              <th>Hidden</th>
-              <th>Conversion %</th>
-            </tr>
-          </thead>
-          <tbody id="analyticsAgentTable"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══════════ TAB: CONFIG ══════════ -->
-  <div id="tab-config" class="tab-content">
-    <div class="panel glass-panel">
-      <div class="panel-header">Directory Routes</div>
-      <div class="panel-body">
-        <div id="configFields"></div>
-        <div class="save-bar admin-only">
-          <button class="btn btn-blue" onclick="saveConfig()">Save Configuration</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══════════ TAB: USERS ══════════ -->
-  <div id="tab-users" class="tab-content">
-    <div class="panel glass-panel">
-      <div class="panel-header">
-        Access Control
-        <button class="btn btn-blue btn-sm admin-only" onclick="addUserRow()">+ Add User</button>
-      </div>
-      <div style="overflow-x:auto;">
-        <table class="data-table" id="usersTable">
-          <thead>
-            <tr>
-              <th>Username</th>
-              <th>Password</th>
-              <th>Role</th>
-              <th>Archive Path</th>
-              <th style="width:100px;text-align:center;">Action</th>
-            </tr>
-          </thead>
-          <tbody id="usersBody"></tbody>
-        </table>
-      </div>
-      <div class="panel-body" style="padding-top:0;">
-        <div class="save-bar admin-only"><button class="btn btn-green" onclick="saveUsers()">Commit Changes</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- ══════════ TAB: HOPPER ══════════ -->
-  <div id="tab-hopper" class="tab-content">
-    <div class="panel glass-panel" style="flex:1; display:flex; flex-direction:column; min-height:0;">
-      <div class="panel-header" style="justify-content: space-between;">
-        <div style="display:flex; align-items:center; gap:12px;">
-           <span>The Sheet</span>
-           <span id="disabledDragWarning" style="color:var(--warning); font-size:11px; display:none;">⚠️ Drag-and-Drop disabled while filtered</span>
-        </div>
-        <div style="display:flex; align-items:center; gap:10px;">
-          <div class="search-bar" id="hopperSearchBar" style="min-width:200px;">
-            <span style="color:var(--text-muted);font-size:13px;">🔍</span>
-            <input type="text" id="hopperSearch" placeholder="Search shows..." oninput="applyHopperFilters()">
-          </div>
-          <button class="btn btn-red" onclick="clearHopper()">✕ Clear Log</button>
-          <div class="custom-dropdown">
-            <button class="btn btn-green" style="padding: 7px 14px;">📊 Excel ▾</button>
-            <div class="custom-dropdown-content">
-               <button onclick="exportHopper()">⬇ Export Excel</button>
-               <button onclick="document.getElementById('hopperUpload').click()">⬆ Upload Excel</button>
-            </div>
-          </div>
-          <input type="file" id="hopperUpload" style="display:none;" accept=".xlsx, .xls" onchange="handleHopperUpload(event)">
-        </div>
-      </div>
-      <div style="overflow-y:auto; flex:1; transition: background 0.2s;" id="hopperDropZone">
-        <table class="data-table" style="table-layout: auto;">
-          <thead>
-            <tr>
-              <th style="min-width: 180px;">Show Name</th>
-              <th style="min-width: 120px;">Link</th>
-              <th style="min-width: 120px;">
-                 Status
-                 <select id="hopperStatusFilter" class="hopper-filter" onchange="applyHopperFilters()">
-                    <option value="All">All</option>
-                    <option value="Pending">Pending</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="HOLD">HOLD</option>
-                    <option value="Done">Done</option>
-                    <option value="CXL">CXL</option>
-                 </select>
-              </th>
-              <th style="min-width: 160px;">
-                 Agent Name
-                 <select id="hopperAgentFilter" class="hopper-filter" onchange="applyHopperFilters()">
-                    <option value="All">All</option>
-                    <option value="Unassigned">Unassigned</option>
-                 </select>
-              </th>
-              <th style="min-width: 60px;">L/D</th>
-              <th style="min-width: 120px;">Name of Lists</th>
-              <th style="min-width: 140px;">Comment</th>
-              <th style="min-width: 80px;">Date</th>
-            </tr>
-          </thead>
-          <tbody id="hopperBody">
-            <tr>
-              <td colspan="8" style="text-align:center;color:var(--text-muted);padding:30px;">Queue is empty. Drop an
-                Excel file here or click Upload.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <div id="toastContainer"></div>
+      <div id="toastContainer"></div>
     </main>
   </div>
 
@@ -2070,10 +2123,10 @@
         let trStyle = rowBgStyle;
 
         if (canDrag) {
-            dragAttrs = `draggable="true" ondragstart="hopperDragStart(event)" data-id="${s.id}" data-status="Pending"`;
-            trStyle += 'cursor:grab;';
+          dragAttrs = `draggable="true" ondragstart="hopperDragStart(event)" data-id="${s.id}" data-status="Pending"`;
+          trStyle += 'cursor:grab;';
         } else {
-            trStyle += 'opacity:0.6;';
+          trStyle += 'opacity:0.6;';
         }
 
         const statusDisplay = isAdminRole
@@ -2217,17 +2270,17 @@
 
     async function clearHopper() {
       if (!confirm('Are you sure you want to clear the Hopper? ALL shows except those on HOLD will be removed.')) return;
-      
+
       const updatedShows = showsData.filter(s => {
-          const st = s.status || 'Pending';
-          return st === 'HOLD';
+        const st = s.status || 'Pending';
+        return st === 'HOLD';
       });
 
       try {
-        const res = await fetch('/api/shows/update', { 
-           method: 'POST', 
-           headers: { 'Content-Type': 'application/json' },
-           body: JSON.stringify({ shows: updatedShows })
+        const res = await fetch('/api/shows/update', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ shows: updatedShows })
         });
         if ((await res.json()).success) {
           showToast('✅ Non-HOLD shows cleared.', 'success');
@@ -2390,23 +2443,23 @@
     fetchUsers(); // Load users for dropdowns
     initHopperDrag();
     fetchConfig();
-    
+
     // Polling heartbeat for the active queue
     setInterval(() => {
-        if (document.getElementById('tab-hopper') && document.getElementById('tab-hopper').classList.contains('active')) {
-            fetchShows();
-        }
+      if (document.getElementById('tab-hopper') && document.getElementById('tab-hopper').classList.contains('active')) {
+        fetchShows();
+      }
     }, 15000);
   </script>
 
   <!-- ── THEME INIT & TOGGLE ── -->
   <script>
-    (function() {
+    (function () {
       if (localStorage.getItem('zorg_theme') === 'dark') document.body.classList.add('dark-mode');
     })();
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       const btn = document.getElementById('themeToggle');
-      if (btn) btn.addEventListener('click', function() {
+      if (btn) btn.addEventListener('click', function () {
         const isDark = document.body.classList.toggle('dark-mode');
         localStorage.setItem('zorg_theme', isDark ? 'dark' : 'light');
         btn.textContent = isDark ? '☀️ Light Mode' : '🌓 Toggle Theme';
@@ -2417,4 +2470,5 @@
     });
   </script>
 </body>
+
 </html>
