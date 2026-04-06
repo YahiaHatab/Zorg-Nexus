@@ -1347,6 +1347,11 @@
       right: 40px;
       width: 500px;
       height: 700px;
+      /* min / max so the resize handle stays sane */
+      min-width: 320px;
+      min-height: 300px;
+      max-width: 98vw;
+      max-height: 96vh;
       overflow: hidden;
       border-radius: 14px;
       border: 1px solid rgba(139, 92, 246, 0.45);
@@ -1438,34 +1443,66 @@
     .portal-iframe-clip {
       flex: 1;
       overflow: hidden;
+      /* Fill the full portal width — no flex shrinkage gaps */
+      width: 100%;
+      min-width: 0;
+      /* Contain the absolutely-positioned iframe */
       position: relative;
     }
 
     #zorgScraperFrame {
       /*
-        ZOOM-OUT CLIPPER — scale(0.8) approach
-        ───────────────────────────────────────
-        The iframe is rendered at 125% of the portal dimensions
-        (625 × 875 px) so the scraper's internal layout sees a
-        full desktop-width viewport. The 0.8× CSS scale then
-        shrinks everything back to exactly 500 × 700 px visually,
-        with no scrollbars and no clipping of the main content area.
-
-        Fine-tune `top` / `left` below if you need to scroll the
-        scraper's viewport up/down to reveal a specific section.
+        The iframe is 100% of the portal width so the ZORG Scraper's
+        browser engine reports a viewport equal to the portal's width
+        (default 500px), triggering @media (max-width: 600px).
+        Scrolling is enabled so agents can reach content below the fold.
       */
+      display: block;          /* Kill inline bottom-gap */
       position: absolute;
       top: 0;
       left: 0;
-      width: 625px;       /* 500px portal ÷ 0.8 = 625px — full render width */
-      height: 875px;      /* 700px portal ÷ 0.8 = 875px — full render height */
+      width: 100% !important;  /* Inherits portal width, stays flush */
+      height: 100% !important; /* Fill clip area */
+      min-width: 0 !important;
+      margin: 0;
+      padding: 0;
       border: none;
       background: #0a0a0f;
       pointer-events: all;
+      /* Allow vertical scrolling inside the iframe */
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
 
-      /* ── The zoom-out magic ── */
-      transform: scale(0.8);
-      transform-origin: top left;
+    /* ── Resize grip (bottom-right corner) ── */
+    .portal-resize-handle {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 18px;
+      height: 18px;
+      cursor: nwse-resize;
+      z-index: 10;
+      /* Subtle visual indicator — three diagonal lines */
+      background:
+        linear-gradient(
+          -45deg,
+          transparent 30%,
+          rgba(139, 92, 246, 0.55) 30%, rgba(139, 92, 246, 0.55) 40%,
+          transparent 40%,
+          transparent 55%,
+          rgba(139, 92, 246, 0.55) 55%, rgba(139, 92, 246, 0.55) 65%,
+          transparent 65%,
+          transparent 80%,
+          rgba(139, 92, 246, 0.55) 80%, rgba(139, 92, 246, 0.55) 90%,
+          transparent 90%
+        );
+      border-bottom-right-radius: 14px;
+      transition: opacity 0.2s;
+      opacity: 0.55;
+    }
+    .portal-resize-handle:hover {
+      opacity: 1;
     }
   </style>
 </head>
@@ -1731,10 +1768,14 @@
         id="zorgScraperFrame"
         src="http://localhost:3000"
         title="ZORG Scraper"
+        width="100%"
+        loading="eager"
         allowfullscreen
         sandbox="allow-same-origin allow-scripts allow-forms allow-downloads allow-popups"
       ></iframe>
     </div>
+    <!-- Resize grip — draggable bottom-right corner -->
+    <div class="portal-resize-handle" id="portalResizeHandle"></div>
   </div>
 
   <div id="toastContainer"></div>
@@ -2376,13 +2417,16 @@
     }
 
     // ─────────────────────────────────────────────
-    //  ZORG SCRAPER PORTAL — Toggle & Drag
+    //  ZORG SCRAPER PORTAL — Toggle, Drag & Resize
     // ─────────────────────────────────────────────
     (function () {
-      const portal   = document.getElementById('zorgPortal');
-      const header   = document.getElementById('portalHeader');
-      const btnOpen  = document.getElementById('btn-open-zorg');
-      const btnClose = document.getElementById('btn-close-zorg');
+      const portal      = document.getElementById('zorgPortal');
+      const header      = document.getElementById('portalHeader');
+      const btnOpen     = document.getElementById('btn-open-zorg');
+      const btnClose    = document.getElementById('btn-close-zorg');
+      const resizeGrip  = document.getElementById('portalResizeHandle');
+
+      const MIN_W = 320, MIN_H = 300;
 
       // ── Toggle open / close ──
       btnOpen.addEventListener('click', () => {
@@ -2397,7 +2441,6 @@
       let dragOffsetX = 0, dragOffsetY = 0;
 
       header.addEventListener('mousedown', (e) => {
-        // Ignore clicks on the close button
         if (e.target.closest('#btn-close-zorg')) return;
         isDragging = true;
         const rect = portal.getBoundingClientRect();
@@ -2407,25 +2450,58 @@
         document.body.style.userSelect = 'none';
       });
 
-      document.addEventListener('mousemove', (e) => {
-        if (!isDragging) return;
-        const vw = window.innerWidth;
-        const vh = window.innerHeight;
-        let newLeft = e.clientX - dragOffsetX;
-        let newTop  = e.clientY - dragOffsetY;
-        // Clamp within the viewport
-        newLeft = Math.max(0, Math.min(newLeft, vw - portal.offsetWidth));
-        newTop  = Math.max(0, Math.min(newTop,  vh - portal.offsetHeight));
-        portal.style.left   = newLeft + 'px';
-        portal.style.top    = newTop  + 'px';
-        portal.style.right  = 'unset';
-        portal.style.bottom = 'unset';
+      // ── Resize logic ──
+      let isResizing   = false;
+      let resizeStartX = 0, resizeStartY = 0;
+      let resizeStartW = 0, resizeStartH = 0;
+
+      resizeGrip.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        e.stopPropagation(); // don't accidentally trigger drag
+        isResizing   = true;
+        resizeStartX = e.clientX;
+        resizeStartY = e.clientY;
+        resizeStartW = portal.offsetWidth;
+        resizeStartH = portal.offsetHeight;
+        document.body.style.userSelect = 'none';
+        document.body.style.cursor = 'nwse-resize';
       });
 
+      // ── Shared mousemove ──
+      document.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+          const vw = window.innerWidth;
+          const vh = window.innerHeight;
+          let newLeft = e.clientX - dragOffsetX;
+          let newTop  = e.clientY - dragOffsetY;
+          newLeft = Math.max(0, Math.min(newLeft, vw - portal.offsetWidth));
+          newTop  = Math.max(0, Math.min(newTop,  vh - portal.offsetHeight));
+          portal.style.left   = newLeft + 'px';
+          portal.style.top    = newTop  + 'px';
+          portal.style.right  = 'unset';
+          portal.style.bottom = 'unset';
+        }
+
+        if (isResizing) {
+          const dx = e.clientX - resizeStartX;
+          const dy = e.clientY - resizeStartY;
+          const newW = Math.max(MIN_W, Math.min(resizeStartW + dx, window.innerWidth  * 0.98));
+          const newH = Math.max(MIN_H, Math.min(resizeStartH + dy, window.innerHeight * 0.96));
+          portal.style.width  = newW + 'px';
+          portal.style.height = newH + 'px';
+        }
+      });
+
+      // ── Shared mouseup ──
       document.addEventListener('mouseup', () => {
-        if (!isDragging) return;
-        isDragging = false;
-        portal.classList.remove('dragging');
+        if (isDragging) {
+          isDragging = false;
+          portal.classList.remove('dragging');
+        }
+        if (isResizing) {
+          isResizing = false;
+          document.body.style.cursor = '';
+        }
         document.body.style.userSelect = '';
       });
     })();
