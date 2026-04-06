@@ -504,13 +504,13 @@
       border: 1px solid var(--border);
       padding: 8px 16px;
       border-radius: 8px;
-      flex: 1;
-      max-width: 360px;
-      transition: border 0.2s;
+      width: 250px;
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .search-box:focus-within {
       border-color: var(--accent-blue);
+      width: 450px;
     }
 
     .search-box input {
@@ -580,10 +580,15 @@
       padding: 12px 16px;
       text-align: left;
       border-bottom: 1px solid var(--border);
+      border-right: 1px solid rgba(255, 255, 255, 0.08); /* Vertical header separator */
       position: sticky;
       top: 0;
       background: var(--bg-base);
       z-index: 10;
+    }
+
+    .file-table th:last-child {
+      border-right: none;
     }
 
     .file-table td {
@@ -1150,12 +1155,26 @@
     /* ── TOP ANALYTICS WIDGET STRIP ── */
     .top-widgets {
       display: flex;
+      align-items: center;
       gap: 12px;
       padding: 14px 24px;
       background: var(--bg-panel);
       border-bottom: 1px solid var(--border);
       flex-shrink: 0;
       overflow-x: auto;
+    }
+
+    .widget-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Vertical Divider for 'Today' group */
+    .widget-group.today {
+      border-right: 1px solid var(--border);
+      padding-right: 20px;
+      margin-right: 8px;
     }
 
     .top-widget-card {
@@ -1209,6 +1228,28 @@
       letter-spacing: 0.4px;
       color: var(--text-muted);
       margin-top: 3px;
+    }
+
+    /* ── PACING GHOST ── */
+    .pacing-ghost {
+      font-size: 0.72rem;
+      font-weight: 600;
+      margin: 0;
+      margin-top: 1px;
+      transition: all 0.2s;
+    }
+
+    .pacing-ghost.ahead {
+      color: #10b981; /* Emerald */
+    }
+
+    .pacing-ghost.behind {
+      color: #9ca3af; /* Muted gray */
+    }
+
+    .pacing-ghost:hover {
+      opacity: 0.8;
+      transform: translateX(2px);
     }
 
     /* ── UPLOAD DROPDOWN ── */
@@ -1326,39 +1367,47 @@
 
       <!-- TOP ANALYTICS WIDGET STRIP (Today's numbers, always visible) -->
       <div class="top-widgets" id="topWidgets">
-        <div class="top-widget-card glass-panel" style="--widget-accent: var(--accent-blue);">
-          <div class="twc-icon">📁</div>
-          <div class="twc-body">
-            <div class="twc-val" id="pcFilesToday">—</div>
-            <div class="twc-lbl">Shows Today</div>
+        <!-- GROUP: TODAY'S PROGRESS -->
+        <div class="widget-group today">
+          <div class="top-widget-card glass-panel" style="--widget-accent: var(--accent-blue);">
+            <div class="twc-icon">📁</div>
+            <div class="twc-body">
+              <div class="twc-val" id="pcFilesToday">—</div>
+              <div class="twc-lbl">Shows Today</div>
+            </div>
+          </div>
+          <div class="top-widget-card glass-panel" style="--widget-accent: var(--accent-cyan);">
+            <div class="twc-icon">✨</div>
+            <div class="twc-body">
+              <div class="twc-val" id="pcShownToday" style="color:var(--success);">—</div>
+              <div class="pacing-ghost" id="pacingGhostNet"></div>
+              <div class="twc-lbl">Net Today</div>
+            </div>
+          </div>
+          <div class="top-widget-card glass-panel" style="--widget-accent: var(--warning);">
+            <div class="twc-icon">📊</div>
+            <div class="twc-body">
+              <div class="twc-val" id="pcGrossToday" style="color:var(--warning);">—</div>
+              <div class="twc-lbl">Gross Today</div>
+            </div>
           </div>
         </div>
-        <div class="top-widget-card glass-panel" style="--widget-accent: var(--accent-cyan);">
-          <div class="twc-icon">✨</div>
-          <div class="twc-body">
-            <div class="twc-val" id="pcShownToday" style="color:var(--success);">—</div>
-            <div class="twc-lbl">Net Today</div>
+
+        <!-- GROUP: MONTHLY CUMULATIVE -->
+        <div class="widget-group month">
+          <div class="top-widget-card glass-panel" style="--widget-accent: var(--accent-purple);">
+            <div class="twc-icon">📅</div>
+            <div class="twc-body">
+              <div class="twc-val" id="pcShownMonth">—</div>
+              <div class="twc-lbl">Net (Month)</div>
+            </div>
           </div>
-        </div>
-        <div class="top-widget-card glass-panel" style="--widget-accent: var(--warning);">
-          <div class="twc-icon">📊</div>
-          <div class="twc-body">
-            <div class="twc-val" id="pcGrossToday" style="color:var(--warning);">—</div>
-            <div class="twc-lbl">Gross Today</div>
-          </div>
-        </div>
-        <div class="top-widget-card glass-panel" style="--widget-accent: var(--accent-purple);">
-          <div class="twc-icon">📅</div>
-          <div class="twc-body">
-            <div class="twc-val" id="pcShownMonth">—</div>
-            <div class="twc-lbl">Net (Month)</div>
-          </div>
-        </div>
-        <div class="top-widget-card glass-panel" style="--widget-accent: var(--warning);">
-          <div class="twc-icon">🗓️</div>
-          <div class="twc-body">
-            <div class="twc-val" id="pcGrossMonth" style="color:var(--warning);">—</div>
-            <div class="twc-lbl">Gross (Month)</div>
+          <div class="top-widget-card glass-panel" style="--widget-accent: var(--warning);">
+            <div class="twc-icon">🗓️</div>
+            <div class="twc-body">
+              <div class="twc-val" id="pcGrossMonth" style="color:var(--warning);">—</div>
+              <div class="twc-lbl">Gross (Month)</div>
+            </div>
           </div>
         </div>
         <div class="health-pill">
@@ -1799,6 +1848,25 @@
       document.getElementById('pcGrossToday').textContent = grossToday;
       document.getElementById('pcShownMonth').textContent = shownMonth;
       document.getElementById('pcGrossMonth').textContent = grossMonth;
+
+      // Pacing Ghost (mocked average: 12)
+      updatePacingGhost(shownToday, 12);
+    }
+
+    function updatePacingGhost(currentNet, averageNet) {
+      const el = document.getElementById('pacingGhostNet');
+      if (!el) return;
+
+      const diff = currentNet - averageNet;
+      el.classList.remove('ahead', 'behind');
+
+      if (diff >= 0) {
+        el.classList.add('ahead');
+        el.innerHTML = `↑ +${diff} vs usual pace`;
+      } else {
+        el.classList.add('behind');
+        el.innerHTML = `↓ ${diff} behind pace`;
+      }
     }
 
     function renderChart(labels, values) {
@@ -2131,6 +2199,68 @@
       if (socket) socket.emit('agent_status', { agent: currentUser, status: 'Idle', show: null });
     }
     checkActiveShow();
+
+    // ─────────────────────────────────────────────
+    //  GLOBAL KEYBOARD SHORTCUTS
+    // ─────────────────────────────────────────────
+    document.addEventListener('keydown', (e) => {
+      const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
+
+      // ESC: Universal Blur & Dismiss
+      if (e.key === 'Escape') {
+        document.activeElement.blur();
+        document.querySelectorAll('.toast').forEach(t => t.remove());
+        document.querySelector('.upload-dd')?.classList.remove('open');
+        if (typeof toggleLogs === 'function') {
+          const footer = document.getElementById('logFooter');
+          if (footer && footer.classList.contains('expanded')) toggleLogs();
+        }
+        return;
+      }
+
+      // Ctrl + F: Focus Search
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') {
+        e.preventDefault();
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+          if (currentView !== 'files') setView('files');
+          setTimeout(() => searchInput.focus(), 50);
+        }
+        return;
+      }
+
+      // Alt + 1-2: View Switching
+      if (e.altKey && (e.key === '1' || e.key === '2')) {
+        e.preventDefault();
+        if (e.key === '1') setView('files');
+        if (e.key === '2') setView('briefing');
+        return;
+      }
+
+      // Ctrl + C: Smart Copy Show Name
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c') {
+        if (window.getSelection().toString() === '' && currentAssignedShow) {
+          e.preventDefault();
+          if (typeof copySmartName === 'function') copySmartName();
+        }
+        return;
+      }
+
+      // Enter: Contextual Actions (Only if not typing)
+      if (e.key === 'Enter' && !isTyping) {
+        if (currentView === 'briefing') {
+          const empty = document.getElementById('briefingEmpty');
+          const content = document.getElementById('briefingContent');
+          if (empty && empty.style.display !== 'none') {
+            e.preventDefault();
+            if (typeof startNextShow === 'function') startNextShow();
+          } else if (content && content.style.display !== 'none') {
+            e.preventDefault();
+            if (typeof finishWorking === 'function') finishWorking();
+          }
+        }
+      }
+    });
   </script>
   </main>
   </div>
