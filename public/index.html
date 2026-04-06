@@ -1303,6 +1303,159 @@
       background: var(--border);
       margin: 4px 0;
     }
+
+    /* ══════════════════════════════════════
+       ZORG SCRAPER PORTAL
+    ══════════════════════════════════════ */
+
+    /* ── Purple action button ── */
+    .zorg-purple-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      background: rgba(139, 92, 246, 0.18);
+      border: 1px solid rgba(139, 92, 246, 0.45);
+      color: #c4b5fd;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .zorg-purple-btn:hover {
+      background: rgba(139, 92, 246, 0.32);
+      border-color: rgba(139, 92, 246, 0.75);
+      box-shadow: 0 0 18px rgba(139, 92, 246, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .zorg-purple-btn:active {
+      transform: translateY(0);
+    }
+
+    /* ── Floating portal window ── */
+    .zorg-portal-window {
+      position: fixed;
+      top: 80px;
+      right: 40px;
+      width: 500px;
+      height: 700px;
+      overflow: hidden;
+      border-radius: 14px;
+      border: 1px solid rgba(139, 92, 246, 0.45);
+      background: rgba(15, 12, 30, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 8px 48px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(139, 92, 246, 0.1), inset 0 1px 0 rgba(255,255,255,0.05);
+      z-index: 9990;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+      transition: box-shadow 0.25s;
+    }
+
+    .zorg-portal-window.hidden {
+      display: none !important;
+    }
+
+    /* Glow when being dragged */
+    .zorg-portal-window.dragging {
+      box-shadow: 0 16px 64px rgba(0, 0, 0, 0.7), 0 0 32px rgba(139, 92, 246, 0.35);
+    }
+
+    /* ── Portal header (drag handle) ── */
+    .portal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.25) 0%, rgba(88, 28, 235, 0.15) 100%);
+      border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+      cursor: grab;
+      flex-shrink: 0;
+    }
+
+    .portal-header:active {
+      cursor: grabbing;
+    }
+
+    .portal-header-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #c4b5fd;
+      letter-spacing: 0.3px;
+      pointer-events: none;
+    }
+
+    .portal-header-title .portal-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #8b5cf6;
+      box-shadow: 0 0 8px rgba(139, 92, 246, 0.8);
+      animation: portalPulse 2.2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes portalPulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(139, 92, 246, 0.8); }
+      50%       { opacity: 0.5; box-shadow: 0 0 4px rgba(139, 92, 246, 0.3); }
+    }
+
+    .portal-close-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      background: rgba(139, 92, 246, 0.1);
+      color: #a78bfa;
+      font-size: 14px;
+      cursor: pointer;
+      line-height: 1;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .portal-close-btn:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+
+    /* ── iframe clipper ── */
+    .portal-iframe-clip {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #zorgScraperFrame {
+      /* The scraper page at port 3000 has a scraperView div.
+         We shift the iframe so that scraperView/div[2] is centred
+         inside the 500×662px visible area.
+         Adjust these offsets if the scraper layout changes. */
+      position: absolute;
+      top: -100px;        /* crop top nav/header */
+      left: -10px;        /* horizontal trim */
+      width: 520px;       /* slightly wider to hide scroll-bars */
+      height: 880px;      /* tall enough to capture the form */
+      border: none;
+      background: #0a0a0f;
+      /* Remove pointer-events restriction so user can interact */
+      pointer-events: all;
+    }
   </style>
 </head>
 
@@ -1490,7 +1643,8 @@
                 <h1 style="font-size:24px; font-weight:700; margin-bottom:8px;">Agent Briefing Room</h1>
                 <p id="briefingStatus" style="color:var(--text-muted); font-size:14px;">Waiting for Show...</p>
               </div>
-              <div style="display:flex; gap:16px; align-items:center;">
+              <div style="display:flex; gap:10px; align-items:center;">
+                <button id="btn-open-zorg" class="zorg-purple-btn">✨ ZORG Scrape</button>
                 <button onclick="requestDesktopNotifications()"
                   style="cursor:pointer; padding:6px 12px; border-radius:6px; background:transparent; color:var(--text-muted); border:1px solid var(--border); font-size:12px; font-weight:600; transition:color 0.2s;">🔔
                   Enable Alerts</button>
@@ -1548,6 +1702,28 @@
 
       </div>
   </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       ZORG SCRAPER FLOATING PORTAL
+  ══════════════════════════════════════ -->
+  <div id="zorgPortal" class="zorg-portal-window hidden">
+    <div class="portal-header" id="portalHeader">
+      <div class="portal-header-title">
+        <span class="portal-dot"></span>
+        ZORG Scraper
+      </div>
+      <button class="portal-close-btn" id="btn-close-zorg" title="Close portal">✕</button>
+    </div>
+    <div class="portal-iframe-clip">
+      <iframe
+        id="zorgScraperFrame"
+        src="http://localhost:3000"
+        title="ZORG Scraper"
+        allowfullscreen
+        sandbox="allow-same-origin allow-scripts allow-forms allow-downloads allow-popups"
+      ></iframe>
+    </div>
   </div>
 
   <div id="toastContainer"></div>
@@ -2187,6 +2363,61 @@
         });
       }
     }
+
+    // ─────────────────────────────────────────────
+    //  ZORG SCRAPER PORTAL — Toggle & Drag
+    // ─────────────────────────────────────────────
+    (function () {
+      const portal   = document.getElementById('zorgPortal');
+      const header   = document.getElementById('portalHeader');
+      const btnOpen  = document.getElementById('btn-open-zorg');
+      const btnClose = document.getElementById('btn-close-zorg');
+
+      // ── Toggle open / close ──
+      btnOpen.addEventListener('click', () => {
+        portal.classList.remove('hidden');
+      });
+      btnClose.addEventListener('click', () => {
+        portal.classList.add('hidden');
+      });
+
+      // ── Dragging logic ──
+      let isDragging = false;
+      let dragOffsetX = 0, dragOffsetY = 0;
+
+      header.addEventListener('mousedown', (e) => {
+        // Ignore clicks on the close button
+        if (e.target.closest('#btn-close-zorg')) return;
+        isDragging = true;
+        const rect = portal.getBoundingClientRect();
+        dragOffsetX = e.clientX - rect.left;
+        dragOffsetY = e.clientY - rect.top;
+        portal.classList.add('dragging');
+        document.body.style.userSelect = 'none';
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        let newLeft = e.clientX - dragOffsetX;
+        let newTop  = e.clientY - dragOffsetY;
+        // Clamp within the viewport
+        newLeft = Math.max(0, Math.min(newLeft, vw - portal.offsetWidth));
+        newTop  = Math.max(0, Math.min(newTop,  vh - portal.offsetHeight));
+        portal.style.left   = newLeft + 'px';
+        portal.style.top    = newTop  + 'px';
+        portal.style.right  = 'unset';
+        portal.style.bottom = 'unset';
+      });
+
+      document.addEventListener('mouseup', () => {
+        if (!isDragging) return;
+        isDragging = false;
+        portal.classList.remove('dragging');
+        document.body.style.userSelect = '';
+      });
+    })();
 
     // ─────────────────────────────────────────────
     //  BOOT
