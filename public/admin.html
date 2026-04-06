@@ -251,8 +251,7 @@
       background: rgba(0, 0, 0, 0.15);
       position: sticky;
       top: 0;
-      z-index: 1;
-      position: relative;
+      z-index: 10;
     }
 
     .resizer {
@@ -396,10 +395,188 @@
       transition: all 0.2s;
     }
 
-    .user-input:hover,
-    .user-input:focus {
+    /* ══════════════════════════════════════════════
+       THE SHEET — POLISH STYLES
+       All rules cover both light-mode (default) and
+       dark-mode (body.dark-mode) explicitly.
+    ══════════════════════════════════════════════ */
+
+    /* ── 1. TRUNCATED LINKS (Link column) ── */
+    /* The wrapper <td> clips the cell */
+    td.hopper-link-cell {
+      max-width: 200px;
+      overflow: hidden;
+      padding-right: 8px;
+      /* small breathing room */
+    }
+
+    /* The flex column that holds one or more links */
+    td.hopper-link-cell>div {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      overflow: hidden;
+    }
+
+    /* Each individual anchor */
+    .hopper-link {
+      display: block;
+      /* block so max-width works naturally */
+      max-width: 100%;
+      /* fills the cell width */
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 11px;
+      color: var(--accent-blue);
+      text-decoration: none;
+      transition: color 0.15s;
+      vertical-align: middle;
+    }
+
+    .hopper-link:hover {
+      color: var(--accent-cyan);
+      text-decoration: underline;
+    }
+
+    /* ── 2. DRAG HANDLES (fade in on row hover) ── */
+    .drag-handle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      /* Hidden by default — revealed only when mouse is on the row */
+      opacity: 0;
+      transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: grab;
+      user-select: none;
+      margin-right: 4px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    /* Fade in when the parent <tr> is hovered */
+    tr:hover .drag-handle {
+      opacity: 1;
+    }
+
+    /* While actively dragging, keep it visible */
+    tr[draggable="true"]:active .drag-handle {
+      opacity: 1;
+      cursor: grabbing;
+    }
+
+    /* ── 3. GHOST DROPDOWNS (Status & Agent selects inside the table) ── */
+    /*
+      Base state: completely invisible — blends into the row.
+      The custom SVG arrow is the only visual cue that it's interactive.
+    */
+    select.user-input {
+      /* Reset browser chrome */
+      appearance: none;
+      -webkit-appearance: none;
+
+      /* Ghost look */
+      background-color: transparent;
+      border: 1px solid transparent;
+      border-radius: 5px;
+      color: var(--text-main);
+      padding: 5px 28px 5px 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      cursor: pointer;
+      outline: none;
+      transition: background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+
+      /* Custom SVG chevron — neutral grey works in both modes */
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5.5 7.5L10 12.5L14.5 7.5' stroke='%239CA3AF' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 6px center;
+      background-size: 16px 16px;
+    }
+
+    /* ── Light-mode hover / focus reveal ── */
+    select.user-input:hover,
+    select.user-input:focus {
+      background-color: rgba(0, 0, 0, 0.04);
       border-color: var(--border);
-      background: var(--bg-panel);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.08);
+    }
+
+    /* ── Dark-mode hover / focus reveal ── */
+    body.dark-mode select.user-input:hover,
+    body.dark-mode select.user-input:focus {
+      background-color: rgba(255, 255, 255, 0.06);
+      border-color: var(--border);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+    }
+
+    /* The native <option> elements need a solid background so they're
+       readable in both modes — browsers render these outside our control,
+       so we set explicit colours to avoid invisible-text in dark-mode. */
+    select.user-input option {
+      background-color: var(--bg-panel);
+      color: var(--text-main);
+    }
+
+    /* ── 4. HOPPER HEADER — true 3-column layout ── */
+    /*
+      Left:   title + warning text  (takes available space on the left)
+      Center: search bar            (absolutely centred in the full header)
+      Right:  action buttons        (takes available space on the right, right-aligned)
+    */
+    .panel-header.hopper-header {
+      display: grid !important;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 16px;
+      padding: 10px 20px;
+    }
+
+    /* Right slot: push its children to the far right */
+    .panel-header.hopper-header>div:last-child {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    /* Center slot: the search bar wrapper */
+    .hopper-header-center {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /*
+      Search bar base — light mode: very subtle frosted look.
+      Expands smoothly when focused.
+    */
+    #hopperSearchBar {
+      min-width: 200px;
+      max-width: 340px;
+      width: 100%;
+      transition:
+        min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+      background: rgba(0, 0, 0, 0.04);
+    }
+
+    body.dark-mode #hopperSearchBar {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    #hopperSearchBar:focus-within {
+      min-width: 320px;
+      background: var(--bg-hover);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    body.dark-mode #hopperSearchBar:focus-within {
+      background: var(--bg-hover);
+      box-shadow: 0 2px 14px rgba(0, 0, 0, 0.3);
     }
 
     /* ── SAVE BAR ── */
@@ -699,32 +876,46 @@
       background-color: var(--bg-hover);
     }
 
-    /* ── FILTER SELECTS & TABLE DROPDOWNS ── */
-    select.user-input,
+    /* ── HEADER-EMBEDDED FILTER SELECTS (inside <th> column headers) ── */
+    /*
+      These are the small "All / Pending / Done…" dropdowns sitting
+      inside the Status and Agent Name <th> cells. They need a solid
+      background so they're legible against the sticky header.
+    */
     select.hopper-filter {
       appearance: none;
       -webkit-appearance: none;
-      background-color: var(--bg-sidebar);
-      color: var(--text-main);
+      background-color: var(--bg-panel);
+      color: var(--text-muted);
       border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 6px 32px 6px 12px;
-      background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M5.5%207.5L10%2012L14.5%207.5%22%20stroke%3D%22gray%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E");
-      background-repeat: no-repeat;
-      background-position: right 8px center;
-      cursor: pointer;
-    }
-
-    select.user-input:focus,
-    select.hopper-filter:focus {
-      border-color: #3b82f6;
-      outline: none;
-    }
-
-    .hopper-filter {
-      font-size: 11px;
-      margin-left: 6px;
+      border-radius: 5px;
+      padding: 3px 22px 3px 7px;
+      font-size: 10px;
+      font-weight: 600;
       font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      outline: none;
+      margin-left: 6px;
+      transition: border-color 0.15s, color 0.15s;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5.5 7.5L10 12.5L14.5 7.5' stroke='%239CA3AF' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 4px center;
+      background-size: 13px 13px;
+    }
+
+    select.hopper-filter:hover,
+    select.hopper-filter:focus {
+      border-color: var(--accent-blue);
+      color: var(--text-main);
+    }
+
+    body.dark-mode select.hopper-filter {
+      background-color: var(--bg-hover);
+    }
+
+    select.hopper-filter option {
+      background-color: var(--bg-panel);
+      color: var(--text-main);
     }
 
     .floor-sidebar {
@@ -1177,17 +1368,24 @@
       <!-- ══════════ TAB: HOPPER ══════════ -->
       <div id="tab-hopper" class="tab-content">
         <div class="panel glass-panel" style="flex:1; display:flex; flex-direction:column; min-height:0;">
-          <div class="panel-header" style="justify-content: space-between;">
+          <div class="panel-header hopper-header">
+            <!-- Left: Title & Status -->
             <div style="display:flex; align-items:center; gap:12px;">
               <span>The Sheet</span>
               <span id="disabledDragWarning" style="color:var(--warning); font-size:11px; display:none;">⚠️
                 Drag-and-Drop disabled while filtered</span>
             </div>
-            <div style="display:flex; align-items:center; gap:10px;">
-              <div class="search-bar" id="hopperSearchBar" style="min-width:200px;">
+
+            <!-- Center: Search Bar — perfectly centred via grid -->
+            <div class="hopper-header-center">
+              <div class="search-bar" id="hopperSearchBar">
                 <span style="color:var(--text-muted);font-size:13px;">🔍</span>
                 <input type="text" id="hopperSearch" placeholder="Search shows..." oninput="applyHopperFilters()">
               </div>
+            </div>
+
+            <!-- Right: Actions -->
+            <div style="display:flex; align-items:center; gap:10px; justify-content: flex-end;">
               <button class="btn btn-red" onclick="clearHopper()">✕ Clear Log</button>
               <div class="custom-dropdown">
                 <button class="btn btn-green" style="padding: 7px 14px;">📊 Excel ▾</button>
@@ -2097,7 +2295,7 @@
 
       tbody.innerHTML = activeArray.map(s => {
         const linksArray = Array.isArray(s.link) ? s.link : [s.link].filter(Boolean);
-        const linksHtml = linksArray.map(l => `<a href="${escHtml(l)}" target="_blank" style="color:var(--accent-blue);text-decoration:none;word-break:break-all;font-size:11px;display:block;">${escHtml(l)}</a>`).join('<div style="height:4px;"></div>');
+        const linksHtml = linksArray.map(l => `<a href="${escHtml(l)}" target="_blank" class="hopper-link" title="${escHtml(l)}">${escHtml(l)}</a>`).join('');
 
         const agentOptions = `<option value="">— Unassigned —</option>` +
           usersData.map(u => `<option value="${escHtml(u.username)}" ${s.agentName === u.username ? 'selected' : ''}>${escHtml(u.username)}</option>`).join('');
@@ -2146,17 +2344,17 @@
 
         return `<tr ${dragAttrs} style="${trStyle}">
               <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escHtml(s.showName)}">
-                  ${(isPending && isAdminRole) ? '↕️ ' : ''}${escHtml(s.showName)}
+                  ${(isPending && isAdminRole) ? '<span class="drag-handle">↕️</span>' : ''}${escHtml(s.showName)}
               </td>
-              <td style="max-width:300px;vertical-align:top;">
-                <div style="max-height:80px;overflow-y:auto;padding-right:4px;">${linksHtml || '—'}</div>
+              <td class="hopper-link-cell">
+                <div>${linksHtml || '—'}</div>
               </td>
-              <td>${statusDisplay}</td>
-              <td style="min-width:140px;">${agentDisplay}</td>
-              <td style="white-space:pre-wrap;">${escHtml(s.ld || '—')}</td>
-              <td style="white-space:pre-wrap;">${escHtml(s.lists || '—')}</td>
-              <td style="color:var(--warning);white-space:pre-wrap;">${escHtml(s.comment || '—')}</td>
-              <td style="color:var(--text-muted);">${escHtml(s.date || '—')}</td>
+              <td style="vertical-align:middle;">${statusDisplay}</td>
+              <td style="min-width:140px; vertical-align:middle;">${agentDisplay}</td>
+              <td style="white-space:pre-wrap; vertical-align:middle;">${escHtml(s.ld || '—')}</td>
+              <td style="white-space:pre-wrap; vertical-align:middle;">${escHtml(s.lists || '—')}</td>
+              <td style="color:var(--warning);white-space:pre-wrap; vertical-align:middle;">${escHtml(s.comment || '—')}</td>
+              <td style="color:var(--text-muted); vertical-align:middle;">${escHtml(s.date || '—')}</td>
           </tr>`;
       }).join('');
       initColumnResizers();
@@ -2450,6 +2648,68 @@
         fetchShows();
       }
     }, 15000);
+
+    // ── POWER-USER ERGONOMICS (GLOBAL SHORTCUTS) ──
+    document.addEventListener('keydown', (e) => {
+      // 1. Ctrl + F (Search Focus - Auto-switches to The Sheet)
+      if (e.ctrlKey && (e.key === 'f' || e.key === 'F')) {
+        const searchInput = document.getElementById('hopperSearch');
+        if (searchInput) {
+          e.preventDefault();
+          const hopperTab = document.querySelector('.tab[onclick*="hopper"]');
+          if (hopperTab && !hopperTab.classList.contains('active')) {
+            switchTab('hopper', hopperTab);
+          }
+          setTimeout(() => {
+            searchInput.focus();
+            searchInput.select();
+          }, 50);
+        }
+      }
+
+      // 2. Escape (Close Modals, Dropdowns, Toasts, Blur)
+      if (e.key === 'Escape') {
+        ['confirmModal', 'deleteRecordModal', 'cancelModal'].forEach(id => {
+          const m = document.getElementById(id);
+          if (m) {
+            m.classList.remove('open');
+            m.style.display = 'none';
+          }
+        });
+        const toastContainer = document.getElementById('toastContainer');
+        if (toastContainer) toastContainer.innerHTML = '';
+        if (document.activeElement) document.activeElement.blur();
+      }
+
+      // 3. Enter (Primary Action on Active Modal)
+      if (e.key === 'Enter') {
+        const modals = [
+          { id: 'confirmModal', action: typeof executeReset !== 'undefined' ? executeReset : null },
+          { id: 'deleteRecordModal', action: typeof confirmDeleteRecord !== 'undefined' ? confirmDeleteRecord : null },
+          { id: 'cancelModal', action: typeof executeCancelShow !== 'undefined' ? executeCancelShow : null }
+        ];
+        const openModal = modals.find(m => {
+          const el = document.getElementById(m.id);
+          if (!el) return false;
+          const isVisible = el.classList.contains('open') || (el.style.display !== 'none' && el.style.display !== '');
+          return isVisible;
+        });
+        if (openModal && openModal.action) {
+          e.preventDefault();
+          openModal.action();
+        }
+      }
+
+      // 4. Alt + 1-5 (Sequential Tab Navigation)
+      if (e.altKey && !isNaN(e.key) && e.key >= '1' && e.key <= '5') {
+        const tabs = document.querySelectorAll('.sidebar-nav .tab');
+        const index = parseInt(e.key) - 1;
+        if (tabs[index]) {
+          e.preventDefault();
+          tabs[index].click();
+        }
+      }
+    });
   </script>
 
   <!-- ── THEME INIT & TOGGLE ── -->
