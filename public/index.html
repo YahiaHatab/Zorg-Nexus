@@ -1442,19 +1442,30 @@
     }
 
     #zorgScraperFrame {
-      /* The scraper page at port 3000 has a scraperView div.
-         We shift the iframe so that scraperView/div[2] is centred
-         inside the 500×662px visible area.
-         Adjust these offsets if the scraper layout changes. */
+      /*
+        ZOOM-OUT CLIPPER — scale(0.8) approach
+        ───────────────────────────────────────
+        The iframe is rendered at 125% of the portal dimensions
+        (625 × 875 px) so the scraper's internal layout sees a
+        full desktop-width viewport. The 0.8× CSS scale then
+        shrinks everything back to exactly 500 × 700 px visually,
+        with no scrollbars and no clipping of the main content area.
+
+        Fine-tune `top` / `left` below if you need to scroll the
+        scraper's viewport up/down to reveal a specific section.
+      */
       position: absolute;
-      top: -100px;        /* crop top nav/header */
-      left: -10px;        /* horizontal trim */
-      width: 520px;       /* slightly wider to hide scroll-bars */
-      height: 880px;      /* tall enough to capture the form */
+      top: 0;
+      left: 0;
+      width: 625px;       /* 500px portal ÷ 0.8 = 625px — full render width */
+      height: 875px;      /* 700px portal ÷ 0.8 = 875px — full render height */
       border: none;
       background: #0a0a0f;
-      /* Remove pointer-events restriction so user can interact */
       pointer-events: all;
+
+      /* ── The zoom-out magic ── */
+      transform: scale(0.8);
+      transform-origin: top left;
     }
   </style>
 </head>
