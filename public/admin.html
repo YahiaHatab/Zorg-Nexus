@@ -470,7 +470,7 @@
     /* ── 3. GHOST DROPDOWNS (Status & Agent selects inside the table) ── */
     /*
       Base state: completely invisible — blends into the row.
-      The custom SVG arrow is the only visual cue that it's interactive.
+      The custom SVG arrow is hidden by default and revealed only on row hover.
     */
     select.user-input {
       /* Reset browser chrome */
@@ -482,21 +482,73 @@
       border: 1px solid transparent;
       border-radius: 5px;
       color: var(--text-main);
-      padding: 5px 28px 5px 8px;
+      padding: 5px 8px; /* Reduced right padding initially */
       font-family: 'Inter', sans-serif;
       font-size: 12px;
       cursor: pointer;
       outline: none;
-      transition: background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
-
-      /* Custom SVG chevron — neutral grey works in both modes */
-      background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5.5 7.5L10 12.5L14.5 7.5' stroke='%239CA3AF' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 6px center;
-      background-size: 16px 16px;
+      transition: background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, padding-right 0.2s ease;
+      background-image: none !important; /* Hide original arrow initially */
     }
 
-    /* ── Light-mode hover / focus reveal ── */
+    /* ── Reveal arrow only on row hover or focus ── */
+    tr:hover select.user-input,
+    select.user-input:focus {
+      padding-right: 28px;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5.5 7.5L10 12.5L14.5 7.5' stroke='%239CA3AF' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+      background-repeat: no-repeat !important;
+      background-position: right 6px center !important;
+      background-size: 16px 16px !important;
+    }
+
+    /* ── 4. AGENT AVATAR & WRAPPER (Empty Avatar Layout) ── */
+    .agent-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .agent-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Unassigned: Dash-border (empty slot) */
+    .agent-wrapper.unassigned .agent-avatar {
+      border: 1.5px dashed rgba(255, 255, 255, 0.2);
+      background: transparent;
+    }
+
+    .agent-wrapper.unassigned select.user-input {
+      color: var(--text-muted) !important;
+      opacity: 0.6;
+    }
+
+    /* Assigned: Filled background + User silhouette */
+    .agent-wrapper.assigned .agent-avatar {
+      border: 1.5px solid transparent;
+      background-color: var(--accent-blue);
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'%3E%3C/path%3E%3Ccircle cx='12' cy='7' r='4'%3E%3C/circle%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 14px;
+      opacity: 0.85;
+    }
+
+    .agent-wrapper.assigned select.user-input {
+      color: var(--text-main) !important;
+      font-weight: 500;
+      opacity: 1;
+    }
+
+    /* ── Light-mode adjustments ── */
     select.user-input:hover,
     select.user-input:focus {
       background-color: rgba(0, 0, 0, 0.04);
@@ -577,6 +629,111 @@
     body.dark-mode #hopperSearchBar:focus-within {
       background: var(--bg-hover);
       box-shadow: 0 2px 14px rgba(0, 0, 0, 0.3);
+    }
+
+    /* ── 5. SAAS "ACCENT EDGE" STATUSES (The Sheet) ── */
+    /* Emerald: Done */
+    tr[data-status="Done"] {
+      box-shadow: inset 4px 0 0 0 #10b981;
+      background-color: rgba(16, 185, 129, 0.08);
+    }
+
+    tr[data-status="Done"] select.user-input {
+      color: #10b981;
+      font-weight: 600;
+    }
+
+    /* Rose: CXL */
+    tr[data-status="CXL"] {
+      box-shadow: inset 4px 0 0 0 #ef4444;
+      background-color: rgba(239, 68, 68, 0.08);
+    }
+
+    tr[data-status="CXL"] select.user-input {
+      color: #ef4444;
+      font-weight: 600;
+    }
+
+    /* Amber: HOLD */
+    tr[data-status="HOLD"] {
+      box-shadow: inset 4px 0 0 0 #f59e0b;
+      background-color: rgba(245, 158, 11, 0.08);
+    }
+
+    tr[data-status="HOLD"] select.user-input {
+      color: #f59e0b;
+      font-weight: 600;
+    }
+
+    /* Blue: In Progress */
+    tr[data-status="In Progress"] {
+      box-shadow: inset 4px 0 0 0 #3b82f6;
+      background-color: rgba(59, 130, 246, 0.08);
+    }
+
+    tr[data-status="In Progress"] select.user-input {
+      color: #3b82f6;
+      font-weight: 600;
+    }
+
+    /* ── 6. ICON-ONLY ACTION BUTTONS (Hover Reveal) ── */
+    .row-actions-container {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      opacity: 0;
+      transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-left: 4px;
+      flex-shrink: 0;
+    }
+
+    tr:hover .row-actions-container {
+      opacity: 1;
+    }
+
+    .icon-btn {
+      width: 26px;
+      height: 26px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 11px;
+      line-height: 1;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-muted);
+    }
+
+    .icon-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    /* CXL Button: Rose Red */
+    .icon-btn.cxl-btn {
+      color: #ef4444;
+      border-color: rgba(239, 68, 68, 0.3);
+      background: rgba(239, 68, 68, 0.08);
+    }
+
+    .icon-btn.cxl-btn:hover {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: #ef4444;
+    }
+
+    /* HOLD Button: Amber Orange */
+    .icon-btn.hold-btn {
+      color: #f59e0b;
+      border-color: rgba(245, 158, 11, 0.3);
+      background: rgba(245, 158, 11, 0.08);
+    }
+
+    .icon-btn.hold-btn:hover {
+      background: rgba(245, 158, 11, 0.15);
+      border-color: #f59e0b;
     }
 
     /* ── SAVE BAR ── */
@@ -2186,8 +2343,9 @@
       if (e.key === 'Escape') { document.querySelectorAll('.toast').forEach(dismissToast); return; }
       if (isTyping) return;
 
-      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
         e.preventDefault();
+        if (currentTab === 'hopper') exportHopper();
         if (currentTab === 'config') saveConfig();
         if (currentTab === 'users') saveUsers();
         return;
@@ -2297,59 +2455,72 @@
         const linksArray = Array.isArray(s.link) ? s.link : [s.link].filter(Boolean);
         const linksHtml = linksArray.map(l => `<a href="${escHtml(l)}" target="_blank" class="hopper-link" title="${escHtml(l)}">${escHtml(l)}</a>`).join('');
 
-        const agentOptions = `<option value="">— Unassigned —</option>` +
+        const agentOptions = `<option value="">Unassigned</option>` +
           usersData.map(u => `<option value="${escHtml(u.username)}" ${s.agentName === u.username ? 'selected' : ''}>${escHtml(u.username)}</option>`).join('');
 
         // Safely check for CXL status
-        const statusStr = s.status || 'Pending';
-        const isCxl = String(statusStr).startsWith('CXL');
-        const statusClass = isCxl ? 'mode-danger' : (statusStr === 'HOLD' ? 'mode-warning' : (statusStr === 'Done' ? 'mode-some' : (statusStr === 'In Progress' ? 'mode-warning' : 'mode-standard')));
+        const statusStr = (s.status || 'Pending').startsWith('CXL') ? 'CXL' : (s.status || 'Pending');
+        const statusClass = statusStr === 'CXL' ? 'mode-danger' : (statusStr === 'HOLD' ? 'mode-warning' : (statusStr === 'Done' ? 'mode-some' : (statusStr === 'In Progress' ? 'mode-warning' : 'mode-standard')));
 
         const isPending = statusStr === 'Pending';
 
-        // dynamic background based on region + status
-        const nameUpper = (s.showName || '').toUpperCase();
-        const isUSACanada = nameUpper.includes('USA') || nameUpper.includes('CANADA');
-        let rowBgStyle = '';
-        if (statusStr === 'Done') rowBgStyle = 'background: rgba(16, 185, 129, 0.1);';
-        else if (isCxl) rowBgStyle = 'background: rgba(239, 68, 68, 0.08);';
-        else if (statusStr === 'HOLD') rowBgStyle = 'background: rgba(245, 158, 11, 0.12);';
-        else if (!isUSACanada) rowBgStyle = 'background: rgba(59, 130, 246, 0.08);';
-
         const canDrag = isPending && isAdminRole && !isHopperFiltered;
         let dragAttrs = '';
-        let trStyle = rowBgStyle;
+        let trStyle = '';
 
         if (canDrag) {
           dragAttrs = `draggable="true" ondragstart="hopperDragStart(event)" data-id="${s.id}" data-status="Pending"`;
-          trStyle += 'cursor:grab;';
+          trStyle = 'cursor:grab;';
         } else {
-          trStyle += 'opacity:0.6;';
+          trStyle = 'opacity:0.6;';
         }
 
+        // Add CXL/HOLD options dynamically if they are the current status
+        const extraOptions = (statusStr === 'CXL' || statusStr === 'HOLD')
+          ? `<option value="${statusStr}" selected disabled>${statusStr}</option>`
+          : '';
+
         const statusDisplay = isAdminRole
-          ? `<select class="user-input" style="font-size:11px;width:110px;" onchange="updateShowStatus('${s.id}', this.value)">
+          ? `<select class="user-input" style="font-size:11px;width:100px;" onchange="updateShowStatus('${s.id}', this.value)">
+              ${extraOptions}
               <option value="Pending" ${statusStr === 'Pending' ? 'selected' : ''}>Pending</option>
               <option value="In Progress" ${statusStr === 'In Progress' ? 'selected' : ''}>In Progress</option>
-              <option value="HOLD" ${statusStr === 'HOLD' ? 'selected' : ''}>HOLD</option>
               <option value="Done" ${statusStr === 'Done' ? 'selected' : ''}>Done</option>
-              <option value="CXL" ${statusStr.startsWith('CXL') ? 'selected' : ''}>CXL</option>
              </select>`
           : `<span class="mode-tag ${statusClass}">${escHtml(statusStr)}</span>`;
 
+        const agentName = s.agentName || '';
+        const isAssigned = agentName !== '' && agentName !== 'Unassigned' && agentName !== 'All';
+        const agentWrapperClass = isAssigned ? 'assigned' : 'unassigned';
+
         // Lock the agent dropdown if Viewer
         const agentDisplay = isAdminRole
-          ? `<select class="user-input" style="font-size:12px;width:140px;" onchange="updateShowAgent('${s.id}', this.value)">${agentOptions}</select>`
-          : `<div style="padding:5px;font-size:12px;font-weight:600;color:var(--text-main);">${escHtml(s.agentName || '— Unassigned —')}</div>`;
+          ? `<div class="agent-wrapper ${agentWrapperClass}">
+              <div class="agent-avatar"></div>
+              <select class="user-input" style="font-size:12px;width:140px;" onchange="updateShowAgent('${s.id}', this.value)">${agentOptions}</select>
+             </div>`
+          : `<div class="agent-wrapper ${agentWrapperClass}">
+              <div class="agent-avatar"></div>
+              <div style="padding:5px;font-size:12px;font-weight:600;color:var(--text-main);">${escHtml(s.agentName || 'Unassigned')}</div>
+             </div>`;
 
-        return `<tr ${dragAttrs} style="${trStyle}">
+        return `<tr ${dragAttrs} data-status="${statusStr}" style="${trStyle}">
               <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escHtml(s.showName)}">
                   ${(isPending && isAdminRole) ? '<span class="drag-handle">↕️</span>' : ''}${escHtml(s.showName)}
               </td>
               <td class="hopper-link-cell">
                 <div>${linksHtml || '—'}</div>
               </td>
-              <td style="vertical-align:middle;">${statusDisplay}</td>
+              <td style="vertical-align:middle;">
+                <div style="display:flex; align-items:center;">
+                  ${statusDisplay}
+                  <!-- Hover Actions: CXL & HOLD -->
+                  <div class="row-actions-container">
+                    <button class="icon-btn hold-btn" onclick="updateShowStatus('${s.id}', 'HOLD')" title="Hold Show"><span style="margin-top:-1px;">⏸</span></button>
+                    <button class="icon-btn cxl-btn" onclick="openCancelModal('${s.id}')" title="Cancel Show">✖</button>
+                  </div>
+                </div>
+              </td>
               <td style="min-width:140px; vertical-align:middle;">${agentDisplay}</td>
               <td style="white-space:pre-wrap; vertical-align:middle;">${escHtml(s.ld || '—')}</td>
               <td style="white-space:pre-wrap; vertical-align:middle;">${escHtml(s.lists || '—')}</td>
@@ -2489,14 +2660,6 @@
 
     function exportHopper() {
       window.location.href = '/api/shows/export';
-    }
-
-    function openCancelModal(id) {
-      document.getElementById('cxlShowId').value = id;
-      document.getElementById('cxlReasonSelect').value = 'Pricing';
-      document.getElementById('cxlCustomReason').style.display = 'none';
-      document.getElementById('cxlCustomReason').value = '';
-      document.getElementById('cancelModal').style.display = 'flex';
     }
 
     async function executeCancelShow() {

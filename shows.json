@@ -11,7 +11,7 @@
     "lists": "",
     "comment": "Do This",
     "date": "2026-04-02",
-    "status": "Pending",
+    "status": "Done",
     "pinnedTo": null
   },
   {
@@ -25,7 +25,7 @@
     "lists": "",
     "comment": "",
     "date": "2026-04-02",
-    "status": "Pending",
+    "status": "CXL/Pricing",
     "pinnedTo": null
   },
   {
@@ -39,7 +39,7 @@
     "lists": "",
     "comment": "Sponsors",
     "date": "2026-04-02",
-    "status": "Pending",
+    "status": "HOLD",
     "pinnedTo": null
   },
   {
@@ -53,7 +53,7 @@
     "lists": "",
     "comment": "",
     "date": "2026-04-02",
-    "status": "Pending",
+    "status": "CXL/Pricing",
     "pinnedTo": null
   },
   {
@@ -68,7 +68,7 @@
     "lists": "",
     "comment": "Do Contact Number",
     "date": "2026-04-02",
-    "status": "Pending",
+    "status": "HOLD",
     "pinnedTo": null
   },
   {
@@ -77,12 +77,12 @@
     "link": [
       "https://www.conferenceharvester.com/floorplan/v2/index.asp?EventKey=EQOJVTKR"
     ],
-    "agentName": "",
+    "agentName": "Admin",
     "ld": "List: 37",
     "lists": "",
     "comment": "",
     "date": "2026-04-02",
-    "status": "Pending",
+    "status": "Done",
     "pinnedTo": null
   },
   {
