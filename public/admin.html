@@ -682,6 +682,22 @@
       font-weight: 600;
     }
 
+    /* ── 5b. INITIAL HIGHLIGHT (New Shows Only) ── */
+    /* Only standard shows use this highlight (X Shows remain default) */
+    tr.new-show-row {
+      border-left: 4px solid #8b5cf6; /* Purple */
+      background: linear-gradient(90deg, rgba(139, 92, 246, 0.08) 0%, transparent 100%);
+    }
+
+    /* ── 5c. TERMINAL OVERRIDES (High Priority) ── */
+    /* Terminal statuses always clear the initial highlight */
+    tr.status-done,
+    tr.status-cxl,
+    tr.status-hold {
+      border-left: 4px solid transparent !important;
+      background-image: none !important;
+    }
+
     /* ── 6. ICON-ONLY ACTION BUTTONS (Hover Reveal) ── */
     .row-actions-container {
       display: flex;
@@ -2510,7 +2526,11 @@
               <div style="padding:5px;font-size:12px;font-weight:600;color:var(--text-main);">${escHtml(s.agentName || 'Unassigned')}</div>
              </div>`;
 
-        return `<tr ${dragAttrs} data-status="${statusStr}" style="${trStyle}">
+        const isXShow = s.showName.includes('X Show') || s.showName.includes('XZ Show');
+        const initialClass = isXShow ? '' : 'new-show-row';
+        const trStatusClass = 'status-' + statusStr.toLowerCase().replace(' ', '-');
+
+        return `<tr ${dragAttrs} class="${initialClass} ${trStatusClass}" data-status="${statusStr}" style="${trStyle}">
               <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escHtml(s.showName)}">
                   ${(isPending && isAdminRole) ? '<span class="drag-handle">↕️</span>' : ''}${escHtml(s.showName)}
               </td>
