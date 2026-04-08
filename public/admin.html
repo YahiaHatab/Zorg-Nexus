@@ -2794,7 +2794,7 @@
 
         const checkboxHtml = isTerminal ? '<div></div>' : `
           <input type="checkbox" class="dispatch-checkbox hidden" 
-            ${selectedShowIds.has(s.id) ? 'checked' : ''} 
+            ${selectedShowsForDispatch.includes(s.id) ? 'checked' : ''} 
             onchange="onShowCheck('${s.id}', this.checked)">`;
 
         // Add CXL/HOLD options dynamically if they are the current status
@@ -3044,9 +3044,8 @@
     });
 
     // ── BULK DISPATCH LOGIC ──
-    let isBulkDispatchActive = false;
-    let targetAgent = null;
-    let selectedShowIds = new Set();
+    let activeDispatchAgent = null;
+    let selectedShowsForDispatch = [];
 
     function updateAgentRoster() {
       const rosterList = document.getElementById('agents-top-list');
@@ -3066,7 +3065,7 @@
         else if (d.status === 'Working') dotColor = 'var(--accent-blue)';
         else if (d.status === 'CXL Alerted') dotColor = 'var(--warning)';
 
-        const isActive = targetAgent === agent;
+        const isActive = activeDispatchAgent === agent;
 
         return `
           <div class="agent-pill ${isActive ? 'active' : ''}" onclick="toggleBulkDispatch('${escHtml(agent)}')">
@@ -3080,48 +3079,56 @@
     function toggleBulkDispatch(agentName) {
       if (!isAdminRole) return;
       
-      if (targetAgent === agentName) {
+      if (activeDispatchAgent === agentName) {
         cancelBulkDispatch();
         return;
       }
       
-      targetAgent = agentName;
-      isBulkDispatchActive = true;
-      selectedShowIds.clear();
+      activeDispatchAgent = agentName;
+      selectedShowsForDispatch = [];
       
       document.body.classList.add('dispatch-mode-active');
-      document.getElementById('dispatch-action-bar').classList.remove('hidden');
+      const actionBar = document.getElementById('dispatch-action-bar');
+      if (actionBar) actionBar.classList.remove('hidden');
       
-      updateSelectionCount();
+      updateSelectionUI();
       updateAgentRoster();
-      renderShowsTable(); // Unhide checkboxes
+      renderShowsTable(); // Reveal checkboxes
     }
 
     function cancelBulkDispatch() {
-      targetAgent = null;
-      isBulkDispatchActive = false;
-      selectedShowIds.clear();
+      activeDispatchAgent = null;
+      selectedShowsForDispatch = [];
+      
+      // Uncheck all boxes in the DOM
+      document.querySelectorAll('.dispatch-checkbox').forEach(cb => cb.checked = false);
       
       document.body.classList.remove('dispatch-mode-active');
-      document.getElementById('dispatch-action-bar').classList.add('hidden');
+      const actionBar = document.getElementById('dispatch-action-bar');
+      if (actionBar) actionBar.classList.add('hidden');
       
       updateAgentRoster();
       renderShowsTable(); // Hide checkboxes
     }
 
     function onShowCheck(id, checked) {
-      if (checked) selectedShowIds.add(id);
-      else selectedShowIds.delete(id);
-      updateSelectionCount();
+      if (checked) {
+        if (!selectedShowsForDispatch.includes(id)) {
+          selectedShowsForDispatch.push(id);
+        }
+      } else {
+        selectedShowsForDispatch = selectedShowsForDispatch.filter(sid => sid !== id);
+      }
+      updateSelectionUI();
     }
 
-    function updateSelectionCount() {
-      const count = selectedShowIds.size;
+    function updateSelectionUI() {
+      const count = selectedShowsForDispatch.length;
       const targetEl = document.getElementById('dispatch-target-text');
       const deployBtn = document.getElementById('btn-deploy-shows');
       
       if (targetEl) {
-        targetEl.innerHTML = `Target: <b>${targetAgent || 'None'}</b> | ${count} Selected`;
+        targetEl.innerHTML = `Target: <b>${activeDispatchAgent || 'None'}</b> | ${count} Selected`;
       }
       
       if (deployBtn) {
@@ -3130,35 +3137,18 @@
     }
 
     async function deployBulkShows() {
-      if (!targetAgent || selectedShowIds.size === 0) return;
+      if (!activeDispatchAgent || selectedShowsForDispatch.length === 0) return;
       
-      const count = selectedShowIds.size;
-      if (!confirm(`Are you sure you want to deploy ${count} shows to ${targetAgent}?`)) return;
+      const count = selectedShowsForDispatch.length;
+      if (!confirm(`Are you sure you want to deploy ${count} shows to ${activeDispatchAgent}?`)) return;
 
-      // Update showsData locally
-      showsData.forEach(s => {
-        if (selectedShowIds.has(s.id)) {
-          s.agentName = targetAgent;
-        }
+      socket.emit('bulkAssignShows', { 
+        agentId: activeDispatchAgent, 
+        showIds: selectedShowsForDispatch 
       });
 
-      try {
-        const res = await fetch('/api/shows/update', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ shows: showsData })
-        });
-        const json = await res.json();
-        if (json.success) {
-          showToast(`🚀 Successfully deployed ${count} shows to ${targetAgent}.`, 'success');
-          cancelBulkDispatch();
-          fetchShows();
-        } else {
-          showToast('❌ Failed to deploy shows.', 'error');
-        }
-      } catch (err) {
-        showToast('❌ Server error during deployment.', 'error');
-      }
+      showToast(`🚀 Successfully deployed ${count} shows to ${activeDispatchAgent}.`, 'success');
+      cancelBulkDispatch();
     }
 
     function renderFloorMap() {

@@ -547,50 +547,43 @@ app.post('/api/shows/reorder', (req, res) => {
 
 app.get('/api/shows/next', (req, res) => {
     const { username } = req.query;
-
-    if (!isAutoDispatch) {
-        return res.json({ success: false, message: 'MANUAL_MODE', error: 'System is currently in Manual Dispatch mode.' });
-    }
-
     const currentShows = JSON.parse(fs.readFileSync(showsPath));
     
     // 1. Check if the agent ALREADY has an "In Progress" show
     const existingInProgressShow = currentShows.find(s => s.agentName === username && s.status === 'In Progress');
-    
     if (existingInProgressShow) {
         return res.json({ success: true, show: existingInProgressShow });
     }
     
-    // 2. Look for a Pending show specifically Pinned/Assigned to this user FIRST
+    // 2. Look for a Pending show specifically Pinned/Assigned to this user
+    // We allow fetching of pinned shows even if Manual Mode is active.
     const pinnedShow = currentShows.find(s => s.agentName === username && s.status === 'Pending');
     
-    let showToAssign = null;
-    
     if (pinnedShow) {
-        showToAssign = pinnedShow;
-    } else {
-        // 3. If no pinned show, look for the first UNASSIGNED Pending show
-        // (Ensures we don't accidentally give away a show pinned to a different agent)
-        const unassignedShow = currentShows.find(s => (!s.agentName || s.agentName.trim() === '') && s.status === 'Pending');
-        
-        if (unassignedShow) {
-            showToAssign = unassignedShow;
-        }
+        pinnedShow.status = 'In Progress';
+        fs.writeFileSync(showsPath, JSON.stringify(currentShows, null, 2));
+        io.emit('hopper_updated');
+        return res.json({ success: true, show: pinnedShow });
+    }
+
+    // 3. If no pinned show, check the Global Dispatch Mode
+    if (!isAutoDispatch) {
+        return res.json({ success: false, message: 'MANUAL_MODE', error: 'System is currently in Manual Dispatch mode. Please wait for an assignment.' });
+    }
+
+    // 4. Automated assignment: Look for the first UNASSIGNED Pending show
+    const unassignedShow = currentShows.find(s => (!s.agentName || s.agentName.trim() === '') && (s.status === 'Pending' || !s.status));
+    
+    if (unassignedShow) {
+        unassignedShow.status = 'In Progress';
+        unassignedShow.agentName = username;
+        fs.writeFileSync(showsPath, JSON.stringify(currentShows, null, 2));
+        io.emit('hopper_updated');
+        return res.json({ success: true, show: unassignedShow });
     }
     
-    // 4. If nothing was found, let the agent know the queue is empty
-    if (!showToAssign) {
-        return res.json({ success: false, message: 'No shows available' });
-    }
-    
-    // 5. Mark the chosen show as In Progress and officially assign it
-    showToAssign.status = 'In Progress';
-    showToAssign.agentName = username;
-    
-    fs.writeFileSync(showsPath, JSON.stringify(currentShows, null, 2));
-    io.emit('hopper_updated'); // Notify admin dashboard
-    
-    res.json({ success: true, show: showToAssign });
+    // 5. If nothing was found, let the agent know the queue is empty
+    return res.json({ success: false, message: 'No shows available' });
 });
 
 app.get('/api/shows/active', (req, res) => {
@@ -1136,6 +1129,39 @@ io.on('connection', (socket) => {
     socket.on('requestManualShow', (agentData) => {
         console.log(`> [DISPATCH] Manual show requested by: ${agentData.name} (${agentData.id})`);
         io.emit('manual_show_requested', agentData);
+    });
+
+    socket.on('bulkAssignShows', (data) => {
+        const { agentId, showIds } = data; // agentId is the username string
+        if (!agentId || !showIds || !Array.isArray(showIds)) return;
+
+        console.log(`> [DISPATCH] Bulk assignment for ${agentId}: ${showIds.length} shows`);
+
+        try {
+            let currentShows = JSON.parse(fs.readFileSync(showsPath));
+            
+            currentShows.forEach(s => {
+                if (showIds.includes(s.id)) {
+                    s.agentName = agentId;
+                    s.status = 'Pending';
+                }
+            });
+
+            fs.writeFileSync(showsPath, JSON.stringify(currentShows, null, 2));
+            
+            // 1. Broadcast to all admins that the table needs refresh
+            io.emit('hopper_updated');
+
+            // 2. Notify the specific agent so their Briefing Room updates
+            for (const [id, s] of io.of("/").sockets) {
+                if (s.username === agentId) {
+                    s.emit('showsAssigned');
+                    console.log(`> [DISPATCH] Notified targeted agent: ${agentId}`);
+                }
+            }
+        } catch (err) {
+            console.error('[DISPATCH] Error during bulk assignment:', err);
+        }
     });
 
     socket.on('disconnect', () => {

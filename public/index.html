@@ -2256,6 +2256,24 @@
           isAutoDispatch = status;
           updateBriefingModeDisplay();
         });
+
+        socket.on('showsAssigned', async () => {
+          console.log('> [DISPATCH] New shows assigned by admin.');
+          
+          // 1. Notify the agent
+          if ("Notification" in window && Notification.permission === "granted") {
+            new Notification("📥 Shows Assigned", {
+              body: "Admin has assigned new shows to your hopper.",
+              icon: "/favicon.ico"
+            });
+          }
+          showToast('📥 Admin has assigned new shows to you!', 'success');
+
+          // 2. Refresh the briefing room to pull the new show
+          if (currentView === 'briefing') {
+            await startNextShow();
+          }
+        });
       }
       socket.on('show_cancelled', (data) => {
         // Only react if THIS agent is currently working on THIS specific show
@@ -2400,6 +2418,9 @@
       if (socket) socket.emit('agent_status', { agent: currentUser, status: 'Idle', show: null });
       currentAssignedShow = null;
       renderBriefingCard();
+
+      // Automatically pull the next show if one was assigned by the admin
+      await startNextShow();
     }
 
     function startTimer() {
