@@ -1411,6 +1411,21 @@
       letter-spacing: 0.02em;
     }
 
+    .sidebar-signature {
+      text-align: center;
+      padding: 10px 20px;
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.4);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+
+    .sidebar-signature span {
+      color: #8b5cf6;
+      font-weight: 700;
+    }
+
     /* ── FLOATING ACTION BAR ── */
     #dispatch-action-bar {
       position: fixed;
@@ -1584,8 +1599,9 @@
         <button class="btn" onclick="refreshCurrentTab()">↻ Refresh</button>
         <a href="/" style="text-decoration:none; width: 100%;"><button class="btn btn-blue" style="width:100%;">←
             Portal</button></a>
-        <button id="themeToggle" class="theme-btn">🌓 Toggle Theme</button>
+        </button>
       </div>
+      <div class="sidebar-signature">Powered By <span>YahiaH</span></div>
     </aside>
 
     <!-- MAIN CONTENT -->
