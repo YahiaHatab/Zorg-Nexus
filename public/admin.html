@@ -94,8 +94,9 @@
 
     .topbar-right {
       display: flex;
-      gap: 10px;
       align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
     }
 
     /* ── BUTTONS ── */
@@ -1301,6 +1302,189 @@
     input:checked + .slider:before {
       transform: translateX(22px);
     }
+
+    /* ── TOPBAR REFACTOR ── */
+    .topbar {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 0 24px;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      height: 60px;
+      gap: 20px;
+    }
+
+    #agents-top-list {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow-x: auto;
+      max-width: 600px;
+      padding: 4px 10px;
+      scrollbar-width: none;
+    }
+    #agents-top-list::-webkit-scrollbar { display: none; }
+
+    .agent-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .agent-pill:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
+    }
+
+    .agent-pill.active {
+      background: rgba(59, 130, 246, 0.15);
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+      filter: brightness(1.2);
+    }
+
+    .agent-pill .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .agent-pill .name {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: var(--text-main);
+    }
+
+    .agent-pill .status-text {
+      font-size: 9px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* ── CHECKBOX TRICK ── */
+    .dispatch-checkbox {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent-blue);
+      cursor: pointer;
+    }
+
+    body.dispatch-mode-active .dispatch-checkbox {
+      display: inline-block !important;
+    }
+
+    body.dispatch-mode-active .drag-handle {
+      display: none !important;
+    }
+
+    .roster-agent-card .status-text {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── FLOATING ACTION BAR ── */
+    #dispatch-action-bar {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(120px);
+      z-index: 9999;
+      background: #0f172a;
+      border: 1px solid var(--accent-blue);
+      box-shadow: 0 0 30px rgba(59, 130, 246, 0.4), 0 10px 30px rgba(0, 0, 0, 0.5);
+      padding: 12px 24px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    #dispatch-action-bar:not(.hidden) {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    #dispatch-target-text {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    #dispatch-target-text b {
+      color: var(--accent-blue);
+    }
+
+    .dispatch-btn {
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    #btn-deploy-shows {
+      background: var(--accent-blue);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    #btn-deploy-shows:hover {
+      background: #2563eb;
+      transform: scale(1.05);
+    }
+
+    #btn-deploy-shows:disabled {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    #btn-cancel-dispatch {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    #btn-cancel-dispatch:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-main);
+    }
+
+    /* ── CHECKBOX TRICK ── */
+    .dispatch-checkbox {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent-blue);
+      cursor: pointer;
+    }
+
+    body.dispatch-mode-active .dispatch-checkbox {
+      display: inline-block !important;
+    }
+
+    body.dispatch-mode-active .drag-handle {
+      display: none !important;
+    }
   </style>
 </head>
 
@@ -1400,6 +1584,11 @@
         <div style="font-size: 13px; font-weight: 600; color: var(--text-muted);">
           System Status: <span id="systemStatusText" style="color: var(--success);">Automated</span>
         </div>
+
+        <div id="agents-top-list">
+          <!-- Populated by updateAgentRoster() -->
+        </div>
+
         <div class="topbar-right">
           <div class="dispatch-toggle">
             <label for="autoDispatchToggle">Auto-Dispatch</label>
@@ -1640,80 +1829,89 @@
       </div>
       <!-- ══════════ TAB: HOPPER ══════════ -->
       <div id="tab-hopper" class="tab-content">
-        <div class="panel glass-panel" style="flex:1; display:flex; flex-direction:column; min-height:0;">
+        <!-- The Sheet Panel -->
+        <div class="panel glass-panel" style="flex:1; display:flex; flex-direction:column; min-width:0; min-height:0;">
           <div class="panel-header hopper-header">
-            <!-- Left: Title & Status -->
-            <div style="display:flex; align-items:center; gap:12px;">
-              <span>The Sheet</span>
-              <span id="disabledDragWarning" style="color:var(--warning); font-size:11px; display:none;">⚠️
-                Drag-and-Drop disabled while filtered</span>
-            </div>
-
-            <!-- Center: Search Bar — perfectly centred via grid -->
-            <div class="hopper-header-center">
-              <div class="search-bar" id="hopperSearchBar">
-                <span style="color:var(--text-muted);font-size:13px;">🔍</span>
-                <input type="text" id="hopperSearch" placeholder="Search shows..." oninput="applyHopperFilters()">
+              <!-- Left: Title & Status -->
+              <div style="display:flex; align-items:center; gap:12px;">
+                <span>The Sheet</span>
+                <span id="disabledDragWarning" style="color:var(--warning); font-size:11px; display:none;">⚠️
+                  Drag-and-Drop disabled while filtered</span>
               </div>
-            </div>
 
-            <!-- Right: Actions -->
-            <div style="display:flex; align-items:center; gap:10px; justify-content: flex-end;">
-              <button class="btn btn-red" onclick="clearHopper()">✕ Clear Log</button>
-              <div class="custom-dropdown">
-                <button class="btn btn-green" style="padding: 7px 14px;">📊 Excel ▾</button>
-                <div class="custom-dropdown-content">
-                  <button onclick="exportHopper()">⬇ Export Excel</button>
-                  <button onclick="document.getElementById('hopperUpload').click()">⬆ Upload Excel</button>
+              <!-- Center: Search Bar — perfectly centred via grid -->
+              <div class="hopper-header-center">
+                <div class="search-bar" id="hopperSearchBar">
+                  <span style="color:var(--text-muted);font-size:13px;">🔍</span>
+                  <input type="text" id="hopperSearch" placeholder="Search shows..." oninput="applyHopperFilters()">
                 </div>
               </div>
-              <input type="file" id="hopperUpload" style="display:none;" accept=".xlsx, .xls"
-                onchange="handleHopperUpload(event)">
+
+              <!-- Right: Actions -->
+              <div style="display:flex; align-items:center; gap:10px; justify-content: flex-end;">
+                <button class="btn btn-red" onclick="clearHopper()">✕ Clear Log</button>
+                <div class="custom-dropdown">
+                  <button class="btn btn-green" style="padding: 7px 14px;">📊 Excel ▾</button>
+                  <div class="custom-dropdown-content">
+                    <button onclick="exportHopper()">⬇ Export Excel</button>
+                    <button onclick="document.getElementById('hopperUpload').click()">⬆ Upload Excel</button>
+                  </div>
+                </div>
+                <input type="file" id="hopperUpload" style="display:none;" accept=".xlsx, .xls"
+                  onchange="handleHopperUpload(event)">
+              </div>
+            </div>
+            <div style="overflow-y:auto; flex:1; transition: background 0.2s;" id="hopperDropZone">
+              <table class="data-table" style="table-layout: auto;">
+                <thead>
+                  <tr>
+                    <th class="dispatch-checkbox-head hidden" style="width:40px;">Sel</th>
+                    <th style="min-width: 180px;">Show Name</th>
+                    <th style="min-width: 120px;">Link</th>
+                    <th style="min-width: 120px;">
+                      Status
+                      <select id="hopperStatusFilter" class="hopper-filter" onchange="applyHopperFilters()">
+                        <option value="All">All</option>
+                        <option value="Pending">Pending</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="HOLD">HOLD</option>
+                        <option value="Done">Done</option>
+                        <option value="CXL">CXL</option>
+                      </select>
+                    </th>
+                    <th style="min-width: 160px;">
+                      Agent Name
+                      <select id="hopperAgentFilter" class="hopper-filter" onchange="applyHopperFilters()">
+                        <option value="All">All</option>
+                        <option value="Unassigned">Unassigned</option>
+                      </select>
+                    </th>
+                    <th style="min-width: 60px;">L/D</th>
+                    <th style="min-width: 120px;">Name of Lists</th>
+                    <th style="min-width: 140px;">Comment</th>
+                    <th style="min-width: 80px;">Date</th>
+                  </tr>
+                </thead>
+                <tbody id="hopperBody">
+                  <tr>
+                    <td colspan="9" style="text-align:center;color:var(--text-muted);padding:30px;">Queue is empty. Drop
+                      an Excel file here or click Upload.</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
-          <div style="overflow-y:auto; flex:1; transition: background 0.2s;" id="hopperDropZone">
-            <table class="data-table" style="table-layout: auto;">
-              <thead>
-                <tr>
-                  <th style="min-width: 180px;">Show Name</th>
-                  <th style="min-width: 120px;">Link</th>
-                  <th style="min-width: 120px;">
-                    Status
-                    <select id="hopperStatusFilter" class="hopper-filter" onchange="applyHopperFilters()">
-                      <option value="All">All</option>
-                      <option value="Pending">Pending</option>
-                      <option value="In Progress">In Progress</option>
-                      <option value="HOLD">HOLD</option>
-                      <option value="Done">Done</option>
-                      <option value="CXL">CXL</option>
-                    </select>
-                  </th>
-                  <th style="min-width: 160px;">
-                    Agent Name
-                    <select id="hopperAgentFilter" class="hopper-filter" onchange="applyHopperFilters()">
-                      <option value="All">All</option>
-                      <option value="Unassigned">Unassigned</option>
-                    </select>
-                  </th>
-                  <th style="min-width: 60px;">L/D</th>
-                  <th style="min-width: 120px;">Name of Lists</th>
-                  <th style="min-width: 140px;">Comment</th>
-                  <th style="min-width: 80px;">Date</th>
-                </tr>
-              </thead>
-              <tbody id="hopperBody">
-                <tr>
-                  <td colspan="8" style="text-align:center;color:var(--text-muted);padding:30px;">Queue is empty. Drop
-                    an
-                    Excel file here or click Upload.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
         </div>
-      </div>
 
-      <div id="toastContainer"></div>
+      <div id="dispatch-action-bar" class="hidden">
+    <span id="dispatch-target-text">Target: <b>None</b> | 0 Selected</span>
+    <div style="display:flex; gap:12px;">
+      <button id="btn-cancel-dispatch" class="dispatch-btn" onclick="cancelBulkDispatch()">Cancel</button>
+      <button id="btn-deploy-shows" class="dispatch-btn" onclick="deployBulkShows()" disabled>Deploy Shows</button>
+    </div>
+  </div>
+
+  <div id="toastContainer"></div>
     </main>
   </div>
 
@@ -2563,7 +2761,7 @@
       const activeArray = isHopperFiltered ? filteredShows : showsData;
 
       if (!activeArray || !activeArray.length) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:40px;">${isHopperFiltered ? 'No shows match the filters.' : 'Queue is empty. Drop an Excel file here or click Upload.'}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:var(--text-muted);padding:40px;">${isHopperFiltered ? 'No shows match the filters.' : 'Queue is empty. Drop an Excel file here or click Upload.'}</td></tr>`;
         return;
       }
 
@@ -2579,6 +2777,7 @@
         const statusClass = statusStr === 'CXL' ? 'mode-danger' : (statusStr === 'HOLD' ? 'mode-warning' : (statusStr === 'Done' ? 'mode-some' : (statusStr === 'In Progress' ? 'mode-warning' : 'mode-standard')));
 
         const isPending = statusStr === 'Pending';
+        const isTerminal = statusStr === 'Done' || statusStr === 'CXL';
 
         const canDrag = isPending && isAdminRole && !isHopperFiltered;
         let dragAttrs = '';
@@ -2587,9 +2786,16 @@
         if (canDrag) {
           dragAttrs = `draggable="true" ondragstart="hopperDragStart(event)" data-id="${s.id}" data-status="Pending"`;
           trStyle = 'cursor:grab;';
-        } else {
+        } else if (!isPending && !isTerminal) {
+          trStyle = 'opacity:0.8;';
+        } else if (isTerminal) {
           trStyle = 'opacity:0.6;';
         }
+
+        const checkboxHtml = isTerminal ? '<div></div>' : `
+          <input type="checkbox" class="dispatch-checkbox hidden" 
+            ${selectedShowIds.has(s.id) ? 'checked' : ''} 
+            onchange="onShowCheck('${s.id}', this.checked)">`;
 
         // Add CXL/HOLD options dynamically if they are the current status
         const extraOptions = (statusStr === 'CXL' || statusStr === 'HOLD')
@@ -2625,6 +2831,7 @@
         const trStatusClass = 'status-' + statusStr.toLowerCase().replace(' ', '-');
 
         return `<tr ${dragAttrs} class="${initialClass} ${trStatusClass}" data-status="${statusStr}" style="${trStyle}">
+              <td style="text-align:center; vertical-align:middle;">${checkboxHtml}</td>
               <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escHtml(s.showName)}">
                   ${(isPending && isAdminRole) ? '<span class="drag-handle">↕️</span>' : ''}${escHtml(s.showName)}
               </td>
@@ -2833,7 +3040,126 @@
     socket.on('floor_update', (data) => {
       floorData = data;
       renderFloorMap();
+      updateAgentRoster();
     });
+
+    // ── BULK DISPATCH LOGIC ──
+    let isBulkDispatchActive = false;
+    let targetAgent = null;
+    let selectedShowIds = new Set();
+
+    function updateAgentRoster() {
+      const rosterList = document.getElementById('agents-top-list');
+      if (!rosterList) return;
+
+      const onlineAgents = Object.keys(floorData).filter(a => floorData[a].status !== 'Offline');
+      
+      if (onlineAgents.length === 0) {
+        rosterList.innerHTML = `<div style="font-size:10px; color:var(--text-muted); padding:0 20px;">No agents online</div>`;
+        return;
+      }
+
+      rosterList.innerHTML = onlineAgents.map(agent => {
+        const d = floorData[agent];
+        let dotColor = 'var(--text-muted)';
+        if (d.status === 'Idle' || d.status === 'Online') dotColor = 'var(--success)';
+        else if (d.status === 'Working') dotColor = 'var(--accent-blue)';
+        else if (d.status === 'CXL Alerted') dotColor = 'var(--warning)';
+
+        const isActive = targetAgent === agent;
+
+        return `
+          <div class="agent-pill ${isActive ? 'active' : ''}" onclick="toggleBulkDispatch('${escHtml(agent)}')">
+            <div class="status-dot" style="background:${dotColor}"></div>
+            <div class="name">${escHtml(agent)}</div>
+            <div class="status-text">${d.status}</div>
+          </div>`;
+      }).join('');
+    }
+
+    function toggleBulkDispatch(agentName) {
+      if (!isAdminRole) return;
+      
+      if (targetAgent === agentName) {
+        cancelBulkDispatch();
+        return;
+      }
+      
+      targetAgent = agentName;
+      isBulkDispatchActive = true;
+      selectedShowIds.clear();
+      
+      document.body.classList.add('dispatch-mode-active');
+      document.getElementById('dispatch-action-bar').classList.remove('hidden');
+      
+      updateSelectionCount();
+      updateAgentRoster();
+      renderShowsTable(); // Unhide checkboxes
+    }
+
+    function cancelBulkDispatch() {
+      targetAgent = null;
+      isBulkDispatchActive = false;
+      selectedShowIds.clear();
+      
+      document.body.classList.remove('dispatch-mode-active');
+      document.getElementById('dispatch-action-bar').classList.add('hidden');
+      
+      updateAgentRoster();
+      renderShowsTable(); // Hide checkboxes
+    }
+
+    function onShowCheck(id, checked) {
+      if (checked) selectedShowIds.add(id);
+      else selectedShowIds.delete(id);
+      updateSelectionCount();
+    }
+
+    function updateSelectionCount() {
+      const count = selectedShowIds.size;
+      const targetEl = document.getElementById('dispatch-target-text');
+      const deployBtn = document.getElementById('btn-deploy-shows');
+      
+      if (targetEl) {
+        targetEl.innerHTML = `Target: <b>${targetAgent || 'None'}</b> | ${count} Selected`;
+      }
+      
+      if (deployBtn) {
+        deployBtn.disabled = (count === 0);
+      }
+    }
+
+    async function deployBulkShows() {
+      if (!targetAgent || selectedShowIds.size === 0) return;
+      
+      const count = selectedShowIds.size;
+      if (!confirm(`Are you sure you want to deploy ${count} shows to ${targetAgent}?`)) return;
+
+      // Update showsData locally
+      showsData.forEach(s => {
+        if (selectedShowIds.has(s.id)) {
+          s.agentName = targetAgent;
+        }
+      });
+
+      try {
+        const res = await fetch('/api/shows/update', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ shows: showsData })
+        });
+        const json = await res.json();
+        if (json.success) {
+          showToast(`🚀 Successfully deployed ${count} shows to ${targetAgent}.`, 'success');
+          cancelBulkDispatch();
+          fetchShows();
+        } else {
+          showToast('❌ Failed to deploy shows.', 'error');
+        }
+      } catch (err) {
+        showToast('❌ Server error during deployment.', 'error');
+      }
+    }
 
     function renderFloorMap() {
       const container = document.getElementById('floorMapContent');
