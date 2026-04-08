@@ -11,6 +11,7 @@ const server = http.createServer(app);
 const io     = new Server(server);
 const PORT   = 3017;
 const activeFloor = {}; // Tracks agent status and timers
+let isAutoDispatch = true; // Global toggle for Automated vs Manual show assignment
 
 // ─────────────────────────────────────────────
 //  BOOTSTRAP — ensure all required files exist
@@ -546,6 +547,11 @@ app.post('/api/shows/reorder', (req, res) => {
 
 app.get('/api/shows/next', (req, res) => {
     const { username } = req.query;
+
+    if (!isAutoDispatch) {
+        return res.json({ success: false, message: 'MANUAL_MODE', error: 'System is currently in Manual Dispatch mode.' });
+    }
+
     const currentShows = JSON.parse(fs.readFileSync(showsPath));
     
     // 1. Check if the agent ALREADY has an "In Progress" show
@@ -1107,6 +1113,9 @@ app.post('/api/admin/reset', async (req, res) => {
 //  LIVE FLOOR TRACKING (SOCKET.IO)
 // ─────────────────────────────────────────────
 io.on('connection', (socket) => {
+    // Sync current dispatch mode on connection
+    socket.emit('dispatchModeChanged', isAutoDispatch);
+
     socket.on('agent_status', (data) => {
         // Track the specific socket connection ID with the username
         socket.username = data.agent;
@@ -1116,6 +1125,17 @@ io.on('connection', (socket) => {
             startTime: data.status === 'Working' ? Date.now() : null
         };
         io.emit('floor_update', activeFloor);
+    });
+
+    socket.on('toggleDispatchMode', (status) => {
+        isAutoDispatch = status;
+        console.log(`> [DISPATCH] Mode changed to: ${isAutoDispatch ? 'AUTOMATED' : 'MANUAL'}`);
+        io.emit('dispatchModeChanged', isAutoDispatch);
+    });
+
+    socket.on('requestManualShow', (agentData) => {
+        console.log(`> [DISPATCH] Manual show requested by: ${agentData.name} (${agentData.id})`);
+        io.emit('manual_show_requested', agentData);
     });
 
     socket.on('disconnect', () => {

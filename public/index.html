@@ -1504,6 +1504,8 @@
     .portal-resize-handle:hover {
       opacity: 1;
     }
+
+    .hidden { display: none !important; }
   </style>
 </head>
 
@@ -1744,6 +1746,8 @@
               <button onclick="startNextShow()" class="filter-btn btn-std"
                 style="margin-top:24px; display:inline-flex; align-items:center; justify-content:center; margin-left:auto; margin-right:auto; font-size:16px; padding:12px 24px;">▶
                 Start Next Show</button>
+              <button id="btn-request-show" class="filter-btn btn-some hidden" onclick="requestManualShow()"
+                style="margin-top:24px; display:inline-flex; align-items:center; justify-content:center; margin-left:auto; margin-right:auto; font-size:16px; padding:12px 24px; background:var(--accent-purple-glow); border-color:var(--accent-purple);">🖐️ Request Show</button>
             </div>
           </div>
         </div>
@@ -2247,6 +2251,11 @@
         socket.on('daily_reset', () => {
           logout();
         });
+
+        socket.on('dispatchModeChanged', (status) => {
+          isAutoDispatch = status;
+          updateBriefingModeDisplay();
+        });
       }
       socket.on('show_cancelled', (data) => {
         // Only react if THIS agent is currently working on THIS specific show
@@ -2274,6 +2283,13 @@
       try {
         const res = await fetch('/api/shows/next?username=' + encodeURIComponent(currentUser));
         const data = await res.json();
+        
+        if (data.message === 'MANUAL_MODE') {
+            showToast('⚠️ System is in Manual Dispatch mode. Please request a show.', 'warning');
+            updateBriefingModeDisplay();
+            return;
+        }
+
         if (data.success && data.show) {
           currentAssignedShow = data.show;
           renderBriefingCard();
@@ -2285,6 +2301,51 @@
       } catch (err) {
         console.error('Failed to fetch next show', err);
       }
+    }
+
+    function updateBriefingModeDisplay() {
+      const reqBtn = document.getElementById('btn-request-show');
+      const startBtn = document.querySelector('#briefingEmpty .filter-btn.btn-std');
+      const statusDesc = document.querySelector('#briefingEmpty p');
+      const briefingStatus = document.getElementById('briefingStatus');
+      
+      if (!isAutoDispatch) {
+        // Manual mode
+        if (!currentAssignedShow) {
+          if (reqBtn) reqBtn.classList.remove('hidden');
+          if (startBtn) startBtn.classList.add('hidden');
+          if (statusDesc) statusDesc.textContent = 'System is in Manual Dispatch mode. Please request a show and wait for assignment.';
+          if (briefingStatus) briefingStatus.textContent = 'Awaiting Dispatch';
+        }
+      } else {
+        // Auto mode
+        if (reqBtn) {
+            reqBtn.classList.add('hidden');
+            reqBtn.disabled = false;
+            reqBtn.textContent = '🖐️ Request Show';
+        }
+        if (startBtn) startBtn.classList.remove('hidden');
+        if (statusDesc) statusDesc.textContent = 'Press the button below to assign and start your next show.';
+        if (!currentAssignedShow && briefingStatus) {
+           briefingStatus.textContent = 'Waiting for Show...';
+        }
+      }
+    }
+
+    function requestManualShow() {
+      if (!currentUser) return;
+      const btn = document.getElementById('btn-request-show');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Request Sent...';
+      }
+      
+      socket.emit('requestManualShow', {
+        id: socket.id,
+        name: currentUser
+      });
+      
+      showToast('🖐️ Show request sent to administrators.', 'info');
     }
 
     function renderBriefingCard() {
@@ -2319,6 +2380,7 @@
         if (socket) socket.emit('agent_status', { agent: currentUser, status: 'Working', show: currentAssignedShow.showName });
         startTimer();
       }
+      updateBriefingModeDisplay();
     }
 
     async function finishWorking() {
