@@ -267,6 +267,7 @@ async function processExcelFile(filePath, originalName, mode) {
     let finalVisibleRed = 0;
     let finalHidden     = 0;
     const isSomeMode    = mode === 'some';
+    const isNA          = /\bUSA\b|\bCANADA\b/i.test(originalName);
 
     if (isSomeMode) {
         const sheet2 = workbook.worksheets[1];
@@ -275,7 +276,7 @@ async function processExcelFile(filePath, originalName, mode) {
             let highestSomeNum = -1;
             let latestSomeKey  = "Some";
             let foundAnySome   = false;
-
+ 
             sheet2.eachRow((row) => {
                 let hasSomeInRow = false;
                 let rowSomeKey   = null;
@@ -300,18 +301,30 @@ async function processExcelFile(filePath, originalName, mode) {
 
                 if (hasSomeInRow) {
                     if (rowSomeNum > highestSomeNum) { highestSomeNum = rowSomeNum; latestSomeKey = rowSomeKey; }
-                    if (!stats[rowSomeKey]) stats[rowSomeKey] = { shown: 0, hidden: 0 };
+                    if (!stats[rowSomeKey]) stats[rowSomeKey] = { shown: 0, hidden: 0, shownLocal: 0, hiddenLocal: 0 };
                     let col2Value = row.getCell(2).value;
                     if (col2Value && typeof col2Value === 'object' && col2Value.result !== undefined) col2Value = col2Value.result;
                     const col2Str = col2Value !== null && col2Value !== undefined ? col2Value.toString().trim() : '';
-                    if (/\d/.test(col2Str)) stats[rowSomeKey].shown++;
-                    else stats[rowSomeKey].hidden++;
+                    
+                    const isLocal = col2Str.toLowerCase().includes('local');
+                    if (/\d/.test(col2Str)) {
+                        stats[rowSomeKey].shown++;
+                        if (isLocal) stats[rowSomeKey].shownLocal++;
+                    } else {
+                        stats[rowSomeKey].hidden++;
+                        if (isLocal) stats[rowSomeKey].hiddenLocal++;
+                    }
                 }
             });
 
             if (foundAnySome) {
                 finalVisibleRed = stats[latestSomeKey].shown;
                 finalHidden     = stats[latestSomeKey].hidden;
+
+                if (!isNA && (finalVisibleRed + finalHidden) >= 200) {
+                    finalVisibleRed = Math.max(0, finalVisibleRed - stats[latestSomeKey].shownLocal);
+                    finalHidden     = Math.max(0, finalHidden - stats[latestSomeKey].hiddenLocal);
+                }
             }
         }
     } else {
@@ -323,6 +336,8 @@ async function processExcelFile(filePath, originalName, mode) {
             let foundAnyNew   = false;
             let globalHidden  = 0;
             let globalVisible = 0;
+            let globalHiddenLocal  = 0;
+            let globalVisibleLocal = 0;
 
             sheet.eachRow((row) => {
                 const isHidden  = row.hidden;
@@ -332,6 +347,12 @@ async function processExcelFile(filePath, originalName, mode) {
                 let hasRedFont  = false;
                 const col1      = row.getCell(1).value;
                 const hasData   = col1 !== null && col1 !== undefined && col1.toString().trim() !== '';
+
+                // Count "local" entries in Column 2
+                let col2Value = row.getCell(2).value;
+                if (col2Value && typeof col2Value === 'object' && col2Value.result !== undefined) col2Value = col2Value.result;
+                const col2Str = col2Value !== null && col2Value !== undefined ? col2Value.toString().trim() : '';
+                const isLocal = col2Str.toLowerCase().includes('local');
 
                 row.eachCell((cell) => {
                     let cellText = '';
@@ -351,23 +372,43 @@ async function processExcelFile(filePath, originalName, mode) {
                     if (isRed) hasRedFont = true;
                 });
 
-                if (isHidden) globalHidden++;
-                else if (hasData) globalVisible++;
+                if (isHidden) {
+                    globalHidden++;
+                    if (isLocal) globalHiddenLocal++;
+                } else if (hasData) {
+                    globalVisible++;
+                    if (isLocal) globalVisibleLocal++;
+                }
 
                 if (hasNewInRow) {
                     if (rowNewNum > highestNewNum) { highestNewNum = rowNewNum; latestNewKey = rowNewKey; }
-                    if (!stats[rowNewKey]) stats[rowNewKey] = { visibleRed: 0, hidden: 0 };
-                    if (isHidden) stats[rowNewKey].hidden++;
-                    else if (hasRedFont) stats[rowNewKey].visibleRed++;
+                    if (!stats[rowNewKey]) stats[rowNewKey] = { visibleRed: 0, hidden: 0, visibleRedLocal: 0, hiddenLocal: 0 };
+                    if (isHidden) {
+                        stats[rowNewKey].hidden++;
+                        if (isLocal) stats[rowNewKey].hiddenLocal++;
+                    } else if (hasRedFont) {
+                        stats[rowNewKey].visibleRed++;
+                        if (isLocal) stats[rowNewKey].visibleRedLocal++;
+                    }
                 }
             });
 
             if (foundAnyNew) {
                 finalVisibleRed = stats[latestNewKey].visibleRed;
                 finalHidden     = stats[latestNewKey].hidden;
+
+                if (!isNA && (finalVisibleRed + finalHidden) >= 200) {
+                    finalVisibleRed = Math.max(0, finalVisibleRed - stats[latestNewKey].visibleRedLocal);
+                    finalHidden     = Math.max(0, finalHidden - stats[latestNewKey].hiddenLocal);
+                }
             } else {
                 finalVisibleRed = globalVisible;
                 finalHidden     = globalHidden;
+
+                if (!isNA && (finalVisibleRed + finalHidden) >= 200) {
+                    finalVisibleRed = Math.max(0, finalVisibleRed - globalVisibleLocal);
+                    finalHidden     = Math.max(0, finalHidden - globalHiddenLocal);
+                }
             }
         }
     }

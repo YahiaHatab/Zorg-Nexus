@@ -1,4 +1,22 @@
 {
-  "files": [],
-  "logs": []
+  "files": [
+    {
+      "agent": "Admin",
+      "name": "X Show - WOC Brussels 2026 (WORLD OF COFFEE) - June 25 -27, 2026 - Brussels Expo - Brussels, Belgium. YahiaH - Copy.xlsx",
+      "size": 38944,
+      "mtime": "2026-04-09T21:33:15.179Z",
+      "region": "UK",
+      "destPath": "2026/Apr/9-4/UK",
+      "status": "sorted",
+      "transactionId": "mnrzue5rlf6bqijws"
+    }
+  ],
+  "logs": [
+    {
+      "agent": "Admin",
+      "ts": "11:33:15 PM",
+      "msg": "Sorted [STANDARD]: X Show - WOC Brussels 2026 (WORLD OF COFFEE) - June 25 -27, 2026 - Brussels Expo - Brussels, Belgium. YahiaH - Copy.xlsx (Shown: 53, Hidden: 19)",
+      "type": "success"
+    }
+  ]
 }
