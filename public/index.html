@@ -775,7 +775,7 @@
       color: var(--accent-blue);
     }
 
-    /* COLLAPSIBLE LOG FOOTER */
+    /* ── MONTHLY HISTORY FOOTER ── */
     .log-footer {
       background: var(--bg-panel);
       border-top: 1px solid var(--border);
@@ -807,12 +807,13 @@
     }
 
     .log-badge {
-      background: rgba(255, 255, 255, 0.08);
+      background: var(--accent-blue-glow);
       padding: 2px 8px;
       border-radius: 999px;
       font-size: 10px;
-      color: var(--text-muted);
+      color: var(--accent-blue);
       font-family: 'Inter', sans-serif;
+      margin-left: 12px;
     }
 
     .log-toggle-icon {
@@ -828,7 +829,7 @@
     }
 
     .log-footer.expanded .log-inner-wrap {
-      height: 220px;
+      height: 280px; /* Increased height for table */
       border-top: 1px solid var(--border);
     }
 
@@ -837,32 +838,49 @@
     }
 
     .log-inner {
-      padding: 12px 24px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
+      padding: 0;
       overflow-y: auto;
       height: 100%;
     }
 
-    .log-entry {
-      display: flex;
-      gap: 16px;
-      padding: 4px 0;
+    /* HISTORY TABLE STYLES */
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+
+    .history-table th {
+      position: sticky;
+      top: 0;
+      background: var(--bg-hover);
+      text-align: left;
+      padding: 10px 16px;
       color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border);
+      z-index: 10;
     }
 
-    .log-time {
-      color: #6B7280;
-      flex-shrink: 0;
+    .history-table td {
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-main);
+      white-space: nowrap;
     }
 
-    .log-msg.success {
-      color: var(--success);
+    .history-table tr:hover td {
+      background: var(--bg-hover);
     }
 
-    .log-msg.error {
-      color: var(--danger);
-    }
+    .history-date { color: var(--text-muted); font-family: 'JetBrains Mono'; }
+    .history-mode { font-weight: 600; font-size: 9px; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; }
+    .history-mode.std { background: var(--accent-blue-glow); color: var(--accent-blue); }
+    .history-mode.some { background: var(--accent-cyan-glow); color: var(--accent-cyan); }
+    .history-mode.cxl { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+    .history-val { font-weight: 700; color: var(--success); font-family: 'JetBrains Mono'; }
 
     /* ═══════════════════════════════════════════════
      PERFORMANCE DASHBOARD
@@ -2036,6 +2054,10 @@
 
         <!-- ── TODAY'S FILES VIEW ── -->
         <div class="view-container" id="filesView">
+          <div style="padding: 24px 24px 0; display: flex; align-items: center; justify-content: space-between;">
+             <h2 style="font-size: 18px; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px;">Today's Workspace 📂</h2>
+             <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 1px;">Daily Reset Active</div>
+          </div>
           <div class="toolbar">
             <div class="search-box">
               <span style="color:var(--text-muted)">🔍</span>
@@ -2077,13 +2099,16 @@
           <div class="log-footer" id="logFooter">
             <div class="log-header" onclick="toggleLogs()">
               <div class="log-title">
-                <span style="margin-right: 12px;">System Activity Terminal</span>
-                <span class="log-badge" id="logCount">0 entries</span>
+                <span style="font-size: 15px; margin-right: 8px;">🗓️</span>
+                <span>Personal Monthly History</span>
+                <span class="log-badge" id="historyCount">0 shows</span>
               </div>
               <span class="log-toggle-icon">▲</span>
             </div>
             <div class="log-inner-wrap">
-              <div class="log-inner" id="logInner"></div>
+              <div class="log-inner" id="historyBody">
+                <!-- History table content will be injected here -->
+              </div>
             </div>
           </div>
         </div>
@@ -2307,9 +2332,9 @@
         const res = await fetch(`/api/user/data?username=${currentUser}`);
         const data = await res.json();
         files = data.files.map(f => ({ ...f, mtime: new Date(f.mtime) }));
-        logs = data.logs;
         if (currentView === 'files') renderTable();
-        renderLog();
+        // Fetch and render the monthly history for the terminal area
+        fetchMonthlyHistory();
         updateStats();
       } catch (e) { console.error('Data fetch failed', e); }
     }
@@ -2449,15 +2474,62 @@
       }).join('');
     }
 
-    function renderLog() {
-      const logInner = document.getElementById('logInner');
-      const logCount = document.getElementById('logCount');
-      if (!logInner || !logCount) return;
-      logInner.innerHTML = logs.map(l =>
-        `<div class="log-entry"><span class="log-time">${l.ts}</span><span class="log-msg ${l.type}">${l.msg}</span></div>`
-      ).join('');
-      logCount.textContent = `${logs.length} entries`;
-      logInner.scrollTop = logInner.scrollHeight;
+    // ─────────────────────────────────────────────
+    //  MONTHLY HISTORY RENDER
+    // ─────────────────────────────────────────────
+    async function fetchMonthlyHistory() {
+      try {
+        const res = await fetch(`/api/user/report?username=${encodeURIComponent(currentUser)}`);
+        const json = await res.json();
+        if (json.success) renderHistoryTable(json.data);
+      } catch (e) { console.error('History fetch failed', e); }
+    }
+
+    function renderHistoryTable(allData) {
+      const historyBody = document.getElementById('historyBody');
+      const historyCount = document.getElementById('historyCount');
+      if (!historyBody || !historyCount) return;
+
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+
+      // Filter for current month only
+      const monthData = allData.filter(item => {
+        const d = new Date(item.date);
+        return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+      });
+
+      historyCount.textContent = `${monthData.length} shows`;
+
+      if (monthData.length === 0) {
+        historyBody.innerHTML = `<div style="padding:40px; text-align:center; color:var(--text-muted); font-size:12px;">No shows recorded for ${monthNames[currentMonth]} ${currentYear}.</div>`;
+        return;
+      }
+
+      let html = `<table class="history-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Show Name</th>
+            <th>Mode</th>
+            <th>Net Leads</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+      html += monthData.map(item => {
+        const modeClass = item.mode.toLowerCase().includes('some') ? 'some' : (item.mode.toLowerCase().includes('cxl') ? 'cxl' : 'std');
+        return `<tr>
+          <td class="history-date">${item.date}</td>
+          <td title="${item.filename}" style="max-width:300px; overflow:hidden; text-overflow:ellipsis;">${item.filename}</td>
+          <td><span class="history-mode ${modeClass}">${item.mode}</span></td>
+          <td class="history-val">${item.shown}</td>
+        </tr>`;
+      }).join('');
+
+      html += `</tbody></table>`;
+      historyBody.innerHTML = html;
     }
 
     function updateStats() {
