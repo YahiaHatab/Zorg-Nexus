@@ -939,6 +939,31 @@ app.get('/api/analytics', (req, res) => {
 });
 
 // ─────────────────────────────────────────────
+//  LEADERBOARD — Today's top agents
+// ─────────────────────────────────────────────
+app.get('/api/leaderboard', (req, res) => {
+    try {
+        const data = loadAnalytics();
+        const todayKey = new Date().toISOString().split('T')[0];
+        const day = data[todayKey];
+        if (!day || !day.summary || !day.summary.byAgent) {
+            return res.json({ success: true, leaderboard: [] });
+        }
+        
+        const leaderboard = Object.entries(day.summary.byAgent).map(([name, stats]) => ({
+            name,
+            shown: stats.shown,
+            files: stats.files,
+            leads: stats.leads
+        })).sort((a, b) => b.shown - a.shown);
+        
+        res.json({ success: true, leaderboard });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
+// ─────────────────────────────────────────────
 //  ADMIN — DELETE SINGLE RECORD
 //  Body: { dateKey: "YYYY-MM-DD", transactionId: "..." }
 // ─────────────────────────────────────────────
