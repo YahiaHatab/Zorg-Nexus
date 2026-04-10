@@ -1513,6 +1513,41 @@
     body.dispatch-mode-active .drag-handle {
       display: none !important;
     }
+
+    /* ── ROLE RESTRICTIONS ── */
+    .admin-only {
+      display: none !important;
+    }
+    body.admin-mode .admin-only {
+      display: flex !important;
+    }
+    body.admin-mode button.admin-only {
+      display: inline-flex !important;
+    }
+
+    /* ── PASSWORD TOGGLE ── */
+    .pass-cell-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .pass-toggle-btn {
+      position: absolute;
+      right: 6px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 12px;
+      padding: 4px;
+      opacity: 0.5;
+      transition: all 0.2s;
+      z-index: 5;
+    }
+    .pass-toggle-btn:hover {
+      opacity: 1;
+      color: var(--accent-blue);
+    }
   </style>
 </head>
 
@@ -2467,13 +2502,15 @@
         return `
         <div class="field-row">
             <div class="field-label">${CONFIG_LABELS[key] || key}</div>
-            <input class="field-input" type="text" id="cfg_${key}" value="${escHtml(val)}" placeholder="Enter path or tags...">
+            <input class="field-input" type="text" id="cfg_${key}" value="${escHtml(val)}" 
+                   placeholder="Enter path or tags..." ${!isAdminRole ? 'readonly style="opacity:0.7; pointer-events:none;"' : ''}>
             <span style="font-size:11px;color:var(--text-muted);white-space:nowrap;font-family:'JetBrains Mono';">${key}</span>
         </div>`;
       }).join('');
     }
 
     async function saveConfig() {
+      if (!isAdminRole) return;
       const allKeys = new Set([...Object.keys(CONFIG_LABELS), ...Object.keys(configData)]);
       const newConfig = {};
       allKeys.forEach(key => {
@@ -2544,6 +2581,17 @@
       }
     }
 
+    function togglePasswordVisibility(btn) {
+      const input = btn.parentElement.querySelector('input');
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🔒';
+      } else {
+        input.type = 'password';
+        btn.textContent = '👁️';
+      }
+    }
+
     function renderUsersTable() {
       document.getElementById('usersBody').innerHTML = usersData.map((u, i) => {
         const deleteBtn = isAdminRole
@@ -2552,9 +2600,16 @@
 
         const roleOpts = ['Admin', 'Viewer', 'Agent'].map(r => `<option value="${r}" ${(u.role || 'Agent') === r ? 'selected' : ''}>${r}</option>`).join('');
 
+        const passwordInput = isAdminRole
+          ? `<div class="pass-cell-wrapper">
+               <input class="user-input" type="password" value="${escHtml(u.password)}" oninput="updateUserField(${i}, 'password', this.value)">
+               <button class="pass-toggle-btn" onclick="togglePasswordVisibility(this)" title="Toggle Visibility">👁️</button>
+             </div>`
+          : `<input class="user-input" type="password" value="********" readonly style="opacity:0.5;">`;
+
         return `<tr data-index="${i}">
             <td><input class="user-input" type="text" value="${escHtml(u.username)}" ${!isAdminRole ? 'readonly style="opacity:0.5;"' : ''} oninput="updateUserField(${i}, 'username', this.value)"></td>
-            <td><input class="user-input" type="password" value="${isAdminRole ? escHtml(u.password) : '********'}" ${!isAdminRole ? 'readonly style="opacity:0.5;"' : ''} oninput="updateUserField(${i}, 'password', this.value)"></td>
+            <td>${passwordInput}</td>
             <td>
                ${isAdminRole ? `<select class="user-input" onchange="updateUserField(${i}, 'role', this.value)">${roleOpts}</select>` : `<input class="user-input" type="text" value="${escHtml(u.role || 'Agent')}" readonly style="opacity:0.5;">`}
             </td>

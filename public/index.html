@@ -1291,33 +1291,128 @@
       background: #4B5563;
     }
 
-    /* ── LEADERBOARD STYLES ── */
-    .leaderboard-card {
-      background: var(--bg-panel);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 20px 24px;
+    /* ── MINI LEADERBOARD (SIDEBAR) ── */
+    .mini-leaderboard {
+      /* Dynamic height - only takes what it needs */
+      padding: 16px 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .ml-title {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-sidebar);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      padding: 0 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .ml-title:hover {
+      color: #fff;
+    }
+
+    .ml-toggle-icon {
+      font-size: 8px;
+      transition: transform 0.3s;
+      opacity: 0.6;
+    }
+
+    .mini-leaderboard.collapsed .ml-toggle-icon {
+      transform: rotate(-90deg);
+    }
+
+    .ml-wrapper {
+      max-height: 500px; /* Sufficient for top 5 */
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+      opacity: 1;
+    }
+
+    .mini-leaderboard.collapsed .ml-wrapper {
+      max-height: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .mini-leaderboard.collapsed {
+      padding-bottom: 4px;
+    }
+
+    .mini-leaderboard.collapsed .ml-title {
+      margin-bottom: 0;
+    }
+
+    .ml-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .ml-item {
       display: flex;
       align-items: center;
-      gap: 20px;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
+      gap: 10px;
+      padding: 8px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.03);
+      transition: all 0.2s;
+    }
+
+    .ml-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateX(4px);
+    }
+
+    .ml-item.is-me {
+      background: var(--accent-purple-glow);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+    }
+
+    .ml-rank {
+      width: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-sidebar);
+      text-align: center;
+    }
+
+    .ml-item:nth-child(1) .ml-rank { color: #fbbf24; }
+    .ml-item:nth-child(2) .ml-rank { color: #94a3b8; }
+    .ml-item:nth-child(3) .ml-rank { color: #b45309; }
+
+    .ml-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .ml-name {
+      font-size: 12px;
+      font-weight: 500;
+      color: #f9fafb;
+      white-space: nowrap;
       overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .leaderboard-card:hover {
-      transform: translateX(8px);
-      border-color: var(--accent-blue);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    .ml-stats {
+      font-size: 10px;
+      color: var(--text-sidebar);
+      margin-top: 1px;
     }
 
-    .leaderboard-card.top-rank::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 4px;
-      height: 100%;
+    .ml-val {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent-blue);
+      font-weight: 700;
+      font-size: 13px;
+    }
       background: linear-gradient(to bottom, var(--accent-purple), var(--accent-blue));
     }
 
@@ -1841,10 +1936,20 @@
         <div class="nav-item" id="navBriefing" data-view="briefing" onclick="setView('briefing')">
           <span class="nav-icon">🎯</span> Briefing Room
         </div>
-        <div class="nav-item" id="navLeaderboard" data-view="leaderboard" onclick="setView('leaderboard')">
-          <span class="nav-icon">🏆</span> Team Leaderboard
-        </div>
       </nav>
+      
+      <!-- MINI LEADERBOARD -->
+      <div class="mini-leaderboard" id="miniLeaderboard">
+        <div class="ml-title" onclick="toggleLeaderboard()">
+          <span>🏆 Rankings <span class="ml-toggle-icon">▼</span></span>
+          <span id="lbLastUpdate" style="font-size:8px; opacity:0.6; font-family:'JetBrains Mono';">Sync...</span>
+        </div>
+        <div class="ml-wrapper" id="mlWrapper">
+          <div class="ml-list" id="sidebarLeaderboard">
+            <!-- Hydrated by JS -->
+          </div>
+        </div>
+      </div>
       <div class="sidebar-signature">Powered By <span>YahiaH</span></div>
     </aside>
 
@@ -2053,26 +2158,6 @@
           </div>
         </div>
 
-        <!-- ── LEADERBOARD VIEW ── -->
-        <div class="view-container" id="leaderboardView" style="display:none; padding:32px; overflow-y:auto; background:transparent;">
-          <div class="panel glass-panel" style="max-width:800px; margin:0 auto; padding:32px; width:100%;">
-            <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:32px; border-bottom:1px solid var(--border); padding-bottom:24px;">
-              <div>
-                <h1 style="font-size:24px; font-weight:700; margin-bottom:8px;">Team Leaderboard</h1>
-                <p style="color:var(--text-muted); font-size:14px;">Today's real-time performance rankings</p>
-              </div>
-              <div id="lbLastUpdate" style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; font-family:'JetBrains Mono';">Sync: Active</div>
-            </div>
-            
-            <div id="leaderboardList" style="display:flex; flex-direction:column; gap:12px;">
-              <!-- Hydrated by JS -->
-              <div style="text-align:center; padding:40px; color:var(--text-muted);">
-                <div style="font-size:32px; margin-bottom:12px;">⏳</div>
-                <p>Calculating standings...</p>
-              </div>
-            </div>
-          </div>
-        </div>
 
       </div>
   </div>
@@ -2192,6 +2277,8 @@
         fetchUserData();
         // Populate the top widget strip immediately
         loadPerformanceDashboard();
+        // Initial leaderboard fetch
+        fetchLeaderboard();
       }
     }
 
@@ -2314,20 +2401,16 @@
       // Update sidebar active states
       document.querySelectorAll('.sidebar .nav-item[data-view]').forEach(n => n.classList.remove('active'));
       const navEl = document.getElementById(
-        view === 'files' ? 'navFiles' : (view === 'leaderboard' ? 'navLeaderboard' : 'navBriefing')
+        view === 'files' ? 'navFiles' : 'navBriefing'
       );
       if (navEl) navEl.classList.add('active');
 
       document.getElementById('filesView').style.display = 'none';
       document.getElementById('briefingView').style.display = 'none';
-      document.getElementById('leaderboardView').style.display = 'none';
 
       if (view === 'briefing') {
         document.getElementById('briefingView').style.display = 'flex';
         if (!currentAssignedShow) fetchNextShow();
-      } else if (view === 'leaderboard') {
-        document.getElementById('leaderboardView').style.display = 'flex';
-        fetchLeaderboard();
       } else {
         document.getElementById('filesView').style.display = 'flex';
         renderTable();
@@ -2407,42 +2490,45 @@
       } catch (e) { console.error('Leaderboard fetch failed', e); }
     }
 
+    function toggleLeaderboard() {
+      const el = document.getElementById('miniLeaderboard');
+      if (!el) return;
+      const isCollapsed = el.classList.toggle('collapsed');
+      localStorage.setItem('zorg_leaderboard_collapsed', isCollapsed);
+    }
+
+    function initLeaderboardToggle() {
+      const el = document.getElementById('miniLeaderboard');
+      if (!el) return;
+      const isCollapsed = localStorage.getItem('zorg_leaderboard_collapsed') === 'true';
+      if (isCollapsed) el.classList.add('collapsed');
+    }
+
     function renderLeaderboard(list) {
-      const container = document.getElementById('leaderboardList');
+      const container = document.getElementById('sidebarLeaderboard');
       if (!container) return;
 
       if (!list || list.length === 0) {
         container.innerHTML = `
-          <div style="text-align:center; padding:60px 0; color:var(--text-muted);">
-            <div style="font-size:48px; margin-bottom:16px; opacity:0.3;">🏆</div>
-            <h3 style="font-size:16px; font-weight:600; margin-bottom:8px;">No activity yet today</h3>
-            <p style="font-size:13px;">The first agent to upload a file takes the #1 spot!</p>
+          <div style="text-align:center; padding:8px 12px; color:var(--text-sidebar); font-size:10px; opacity:0.5;">
+            Awaiting activity...
           </div>`;
         return;
       }
 
-      container.innerHTML = list.map((agent, index) => {
+      // Show top 5 for sidebar
+      container.innerHTML = list.slice(0, 5).map((agent, index) => {
         const rank = index + 1;
-        const isTop = rank <= 3;
         const isMe = agent.name === currentUser;
         
         return `
-          <div class="leaderboard-card ${isTop ? 'top-rank' : ''}" style="${isMe ? 'border-color:var(--accent-purple); background:var(--accent-purple-glow);' : ''}">
-            <div class="rank-circle">${rank}</div>
-            <div class="leaderboard-user">
-              <div class="name">${agent.name} ${isMe ? '<span style="font-size:10px; background:var(--accent-purple); color:#fff; padding:2px 6px; border-radius:4px; margin-left:8px;">YOU</span>' : ''}</div>
-              <div class="sub">${agent.files} files processed today</div>
+          <div class="ml-item ${isMe ? 'is-me' : ''}" title="${agent.name}: ${agent.shown} shown / ${agent.leads} gross">
+            <div class="ml-rank">${rank}</div>
+            <div class="ml-info">
+              <div class="ml-name">${agent.name}</div>
+              <div class="ml-stats">${agent.files} files</div>
             </div>
-            <div class="leaderboard-stats">
-              <div class="ls-item">
-                <div class="val">${agent.shown}</div>
-                <div class="lbl">Shown</div>
-              </div>
-              <div class="ls-item">
-                <div class="val" style="color:var(--text-muted); opacity:0.6;">${agent.leads}</div>
-                <div class="lbl">Gross</div>
-              </div>
-            </div>
+            <div class="ml-val">${agent.shown}</div>
           </div>
         `;
       }).join('');
@@ -2450,7 +2536,7 @@
       const updateEl = document.getElementById('lbLastUpdate');
       if (updateEl) {
         const now = new Date();
-        updateEl.textContent = `Sync: ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+        updateEl.textContent = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
       }
     }
 
@@ -3012,6 +3098,7 @@
     // ─────────────────────────────────────────────
     initTableResizers();
     checkAuth();
+    initLeaderboardToggle();
     if (currentUser) {
       initSocket();
       // Announce presence immediately
