@@ -252,6 +252,7 @@
       letter-spacing: 1px;
       text-transform: uppercase;
       flex-shrink: 0;
+      margin-top: auto;
     }
 
     .sidebar-signature span {
@@ -349,11 +350,98 @@
       letter-spacing: 0.5px;
     }
 
-    .clock {
-      font-size: 16px;
+    /* ── USER DROPDOWN AREA ── */
+    .user-dropdown {
+      position: relative;
+      display: inline-block;
+      margin-left: 12px;
+    }
+
+    .user-trigger {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .user-trigger:hover {
+      background: var(--bg-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .user-name-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .user-menu {
+      opacity: 0;
+      visibility: hidden;
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      min-width: 200px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      z-index: 1000;
+      padding: 8px;
+      transform: translateY(-10px);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(12px);
+    }
+
+    .user-dropdown:hover .user-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .user-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      color: var(--text-main);
+      font-size: 13px;
       font-weight: 500;
-      font-family: 'JetBrains Mono';
-      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      text-decoration: none;
+      width: 100%;
+      border: none;
+      background: transparent;
+      text-align: left;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .user-menu-item:hover {
+      background: var(--bg-hover);
+      color: var(--accent-blue);
+    }
+
+    .user-menu-item span {
+      font-size: 16px;
+    }
+
+    .user-menu-item.logout:hover {
+      color: var(--danger);
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .user-menu-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 6px 8px;
     }
 
     .admin-btn {
@@ -367,6 +455,9 @@
       font-weight: 600;
       text-decoration: none;
       transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .admin-btn:hover {
@@ -453,34 +544,6 @@
       color: #fff;
     }
 
-    .agent-display {
-      padding: 16px 20px;
-      border-top: 1px solid var(--border);
-      margin-top: auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: rgba(0, 0, 0, 0.2);
-    }
-
-    #displayUser {
-      font-weight: 600;
-      color: var(--text-main);
-    }
-
-    .logout-btn {
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      font-size: 12px;
-      cursor: pointer;
-      font-weight: 500;
-      transition: color 0.2s;
-    }
-
-    .logout-btn:hover {
-      color: var(--danger);
-    }
 
     /* CONTENT AREA */
     .content-wrapper {
@@ -1386,7 +1449,7 @@
       background: var(--bg-panel);
       border-bottom: 1px solid var(--border);
       flex-shrink: 0;
-      overflow-x: auto;
+      overflow: visible;
     }
 
     .widget-group {
@@ -1782,13 +1845,6 @@
           <span class="nav-icon">🏆</span> Team Leaderboard
         </div>
       </nav>
-      <div class="agent-display">
-        <span id="displayUser">Loading...</span>
-        <button class="logout-btn" onclick="logout()">Logout</button>
-      </div>
-      <div style="padding: 12px; flex-shrink: 0;">
-        <button id="themeToggle" class="theme-btn">🌓 Toggle Theme</button>
-      </div>
       <div class="sidebar-signature">Powered By <span>YahiaH</span></div>
     </aside>
 
@@ -1850,8 +1906,24 @@
           <span>⚠️ <span id="statErrors" style="color:var(--danger)">0</span></span>
         </div>
         <div style="display:flex; align-items:center; padding: 0 6px; flex-shrink:0;">
-          <div class="clock" id="clock">--:--:--</div>
-          <a id="adminLink" href="/admin.html" class="admin-btn" style="display:none; margin-left:12px;">Admin</a>
+          <div class="user-dropdown">
+            <div class="user-trigger">
+              <span class="user-name-label" id="displayUser">Loading...</span>
+              <span style="font-size: 10px; color: var(--text-muted); margin-left: 4px;">▾</span>
+            </div>
+            <div class="user-menu">
+              <button id="themeToggle" class="user-menu-item">
+                <span>🌓</span> Toggle Theme
+              </button>
+              <a id="adminLink" href="/admin.html" class="user-menu-item" style="display:none;">
+                <span>⚙️</span> Admin Dashboard
+              </a>
+              <div class="user-menu-divider"></div>
+              <button class="user-menu-item logout" onclick="logout()">
+                <span>🚪</span> Logout
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -2567,17 +2639,6 @@
       if (e.key === 'Escape') document.querySelectorAll('.toast').forEach(t => dismissToast(t));
     });
 
-    // ─────────────────────────────────────────────
-    //  CLOCK
-    // ─────────────────────────────────────────────
-    setInterval(() => {
-      const now = new Date();
-      const h = now.getHours();
-      const ampm = h < 12 ? 'AM' : 'PM';
-      const h12 = h % 12 || 12;
-      const time = [h12, now.getMinutes(), now.getSeconds()].map(n => String(n).padStart(2, '0')).join(':');
-      document.getElementById('clock').textContent = `${time} ${ampm}`;
-    }, 1000);
 
     // Lightweight heartbeat: refresh file list & widget strip every 30s
     setInterval(() => {
@@ -3032,9 +3093,11 @@
       if (btn) btn.addEventListener('click', function () {
         const isDark = document.body.classList.toggle('dark-mode');
         localStorage.setItem('zorg_theme', isDark ? 'dark' : 'light');
-        btn.textContent = isDark ? '☀️ Light Mode' : '🌓 Toggle Theme';
+        btn.innerHTML = isDark ? '<span>☀️</span> Light Mode' : '<span>🌓</span> Toggle Theme';
       });
-      if (btn && document.body.classList.contains('dark-mode')) btn.textContent = '☀️ Light Mode';
+      if (btn && document.body.classList.contains('dark-mode')) {
+        btn.innerHTML = '<span>☀️</span> Light Mode';
+      }
     });
   </script>
 </body>
