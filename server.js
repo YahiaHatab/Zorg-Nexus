@@ -891,6 +891,136 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
 });
 
 // ─────────────────────────────────────────────
+//  BULK UPLOAD
+// ─────────────────────────────────────────────
+app.post('/api/upload-bulk', upload.array('files', 20), async (req, res) => {
+    if (!req.files || req.files.length === 0) return res.status(400).json({ error: 'No files uploaded.' });
+
+    const username = req.body.username;
+    const mode = req.body.mode || 'standard';
+
+    try {
+        reloadConfig();
+        const users = JSON.parse(fs.readFileSync(usersPath));
+        const activeUser = users.find(u => u.username === username);
+        if (!activeUser || !activeUser.archivePath) throw new Error(`Archive path missing for ${username}`);
+
+        const results = [];
+
+        for (const file of req.files) {
+            const originalName = Buffer.from(file.originalname, 'latin1').toString('utf8');
+            const tempPath = file.path;
+
+            try {
+                // Pure extraction — no report file written
+                const stats = await processExcelFile(tempPath, originalName);
+                const date = new Date();
+                const dateKey = date.toISOString().split('T')[0];
+                const folderName = `${date.getDate()}-${date.getMonth() + 1}`;
+                const month = monthNames[date.getMonth()];
+                const year = date.getFullYear().toString();
+                const isNA = /\bUSA\b|\bCANADA\b/i.test(originalName);
+                const region = isNA ? 'USA' : 'UK';
+                const h12upload = date.getHours() % 12 || 12;
+                const amPmUpload = date.getHours() < 12 ? 'AM' : 'PM';
+                const timeStr = `${String(h12upload).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')} ${amPmUpload}`;
+                const totalCount = stats.shown + stats.hidden;
+
+                // ── Copy files ──
+                const personalDir = path.join(activeUser.archivePath, year, month, folderName, region);
+                if (!fs.existsSync(personalDir)) fs.mkdirSync(personalDir, { recursive: true });
+                const finalPersonalPath = path.join(personalDir, stats.finalFileName);
+                const savedPaths = [finalPersonalPath];
+
+                const regionBase = isNA ? config.usBase : config.ukBase;
+                const regionDir = path.join(regionBase, year, month, folderName);
+                if (!fs.existsSync(regionDir)) fs.mkdirSync(regionDir, { recursive: true });
+                const regionDest = path.join(regionDir, stats.finalFileName);
+                
+                fs.copyFileSync(tempPath, finalPersonalPath);
+                fs.copyFileSync(tempPath, regionDest);
+                savedPaths.push(regionDest);
+
+                fs.unlinkSync(tempPath);
+
+                // ── Transaction ID ──
+                const transactionId = Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+
+                // ── Write to analytics.json ──
+                analyticsAddRecord(dateKey, username, {
+                    transactionId,
+                    agent: username,
+                    filename: stats.finalFileName,
+                    mode: mode.toUpperCase(),
+                    shown: stats.shown,
+                    hidden: stats.hidden,
+                    total: totalCount,
+                    time: timeStr,
+                    newShown: stats.newShown || 0,
+                    newHidden: stats.newHidden || 0,
+                    someShown: stats.someShown || 0,
+                    someHidden: stats.someHidden || 0
+                });
+
+                // ── Write to history.json ──
+                saveHistory(
+                    { agent: username, name: stats.finalFileName, size: file.size, mtime: date.toISOString(), region, destPath: `${year}/${month}/${folderName}/${region}`, status: 'sorted', transactionId },
+                    { agent: username, ts: timeStr, msg: `Sorted [${mode.toUpperCase()}]: ${stats.finalFileName} (Shown: ${stats.shown}, Hidden: ${stats.hidden})`, type: 'success' }
+                );
+
+                // ── Undo registry ──
+                undoRegistry.set(transactionId, {
+                    timestamp: Date.now(),
+                    username,
+                    filename: stats.finalFileName,
+                    dateKey,
+                    savedPaths
+                });
+
+                // ── Broadcast to admin dashboard ──
+                io.emit('new_upload', {
+                    agent: username,
+                    total: totalCount,
+                    shown: stats.shown,
+                    hidden: stats.hidden,
+                    filename: stats.finalFileName,
+                    date: dateKey,
+                    mode: mode.toUpperCase(),
+                    newShown: stats.newShown || 0,
+                    newHidden: stats.newHidden || 0,
+                    someShown: stats.someShown || 0,
+                    someHidden: stats.someHidden || 0
+                });
+
+                results.push({ success: true, filename: stats.finalFileName, stats, transactionId });
+            } catch (fileError) {
+                if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+                const errDate = new Date();
+                const h12err = errDate.getHours() % 12 || 12;
+                const amPmErr = errDate.getHours() < 12 ? 'AM' : 'PM';
+                const timeStr = `${String(h12err).padStart(2, '0')}:${String(errDate.getMinutes()).padStart(2, '0')}:${String(errDate.getSeconds()).padStart(2, '0')} ${amPmErr}`;
+                
+                saveHistory(
+                    { agent: username, name: originalName, size: file.size, mtime: new Date().toISOString(), region: 'UNK', destPath: 'ERROR', status: 'error' },
+                    { agent: username, ts: timeStr, msg: `Error in bulk upload for ${originalName}: ${fileError.message}`, type: 'error' }
+                );
+                
+                results.push({ success: false, filename: originalName, error: fileError.message });
+            }
+        }
+
+        res.json({ success: true, results });
+    } catch (globalError) {
+        if (req.files) {
+            req.files.forEach(file => {
+                if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
+            });
+        }
+        res.status(500).json({ success: false, error: globalError.message });
+    }
+});
+
+// ─────────────────────────────────────────────
 //  UNDO
 // ─────────────────────────────────────────────
 app.post('/api/undo', async (req, res) => {

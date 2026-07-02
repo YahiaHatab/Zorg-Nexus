@@ -2,6 +2,86 @@
   "files": [
     {
       "agent": "Admin",
+      "name": "XZShow - SCTE Cable-Tec Expo 2026 - September 29- October 1, 2026 - Georgia World Congress Center - Atlanta, GA, USA. Yahia.xlsx",
+      "size": 32085,
+      "mtime": "2026-07-02T18:46:50.917Z",
+      "region": "USA",
+      "destPath": "2026/Jul/2-7/USA",
+      "status": "sorted",
+      "transactionId": "mr3uvy94fsdery5s2"
+    },
+    {
+      "agent": "Admin",
+      "name": "WISPAPALOOZA 2026 - November 2 - 5, 2026 - Caesars Palace - Las Vegas, Nv USA. Yahia.xlsx",
+      "size": 17969,
+      "mtime": "2026-07-02T18:46:50.879Z",
+      "region": "USA",
+      "destPath": "2026/Jul/2-7/USA",
+      "status": "sorted",
+      "transactionId": "mr3uvy81n0yq2nidq"
+    },
+    {
+      "agent": "Admin",
+      "name": "ZShow - Tennessee Tow Show 2026 - October 16 – 17, 2026 - Chattanooga Convention Center - Chattanooga, TN, USA. Yahia.xlsx",
+      "size": 15076,
+      "mtime": "2026-07-02T18:46:50.853Z",
+      "region": "USA",
+      "destPath": "2026/Jul/2-7/USA",
+      "status": "sorted",
+      "transactionId": "mr3uvy7b1ft7i8g3o"
+    },
+    {
+      "agent": "Admin",
+      "name": "XZShow - Ai4 2026 - North America's largest artificial intelligence industry event - AUGUST 4-6, 2026 - the venetian - Las vegas, Nv, USA Yahia.xlsx",
+      "size": 378960,
+      "mtime": "2026-07-02T18:46:50.819Z",
+      "region": "USA",
+      "destPath": "2026/Jul/2-7/USA",
+      "status": "sorted",
+      "transactionId": "mr3uvy6ef14eq0ial"
+    },
+    {
+      "agent": "Admin",
+      "name": "XShow - AAFPRS 2026 - American Academy of Facial Plastic and Reconstructive Surgery - September 23-26, 2026 - Fontainebleau Las Vegas - LAS VEGAS, Nv, USA. Yahia.xlsx",
+      "size": 18406,
+      "mtime": "2026-07-02T18:46:50.427Z",
+      "region": "USA",
+      "destPath": "2026/Jul/2-7/USA",
+      "status": "sorted",
+      "transactionId": "mr3uvxvjqi2ain2y0"
+    },
+    {
+      "agent": "Admin",
+      "name": "XShow - RNG WORKS 2026 - September 15-17, 2026 - Baird Center - MILWAUKEE-WI, USA Yahia.xlsx",
+      "size": 15971,
+      "mtime": "2026-07-02T18:46:50.392Z",
+      "region": "USA",
+      "destPath": "2026/Jul/2-7/USA",
+      "status": "sorted",
+      "transactionId": "mr3uvxuiep7btycym"
+    },
+    {
+      "agent": "Admin",
+      "name": "XZShow - Ai4 2026 - North America's largest artificial intelligence industry event - AUGUST 4-6, 2026 - the venetian - Las vegas, Nv, USA Yahia.xlsx",
+      "size": 378960,
+      "mtime": "2026-07-02T18:40:12.447Z",
+      "region": "USA",
+      "destPath": "2026/Jul/2-7/USA",
+      "status": "sorted",
+      "transactionId": "mr3uneusgriy7lyrs"
+    },
+    {
+      "agent": "Admin",
+      "name": "XShow - RSNA 2026 - Radiological Society of North America - November 29 - December 2, 2026 - McCormick Place - Chicago, IL, USA. Yahia.xlsx",
+      "size": 77082,
+      "mtime": "2026-07-02T18:40:11.810Z",
+      "region": "USA",
+      "destPath": "2026/Jul/2-7/USA",
+      "status": "sorted",
+      "transactionId": "mr3uneatld7yo59u1"
+    },
+    {
+      "agent": "Admin",
       "name": "XZShow - Ai4 2026 - North America's largest artificial intelligence industry event - AUGUST 4-6, 2026 - the venetian - Las vegas, Nv, USA Yahia.xlsx",
       "size": 378960,
       "mtime": "2026-07-02T18:15:28.462Z",
@@ -12,6 +92,66 @@
     }
   ],
   "logs": [
+    {
+      "agent": "Admin",
+      "ts": "09:46:50 PM",
+      "msg": "Sorted [STANDARD]: XZShow - SCTE Cable-Tec Expo 2026 - September 29- October 1, 2026 - Georgia World Congress Center - Atlanta, GA, USA. Yahia.xlsx (Shown: 5, Hidden: 5)",
+      "type": "success"
+    },
+    {
+      "agent": "Admin",
+      "ts": "09:46:50 PM",
+      "msg": "Sorted [STANDARD]: WISPAPALOOZA 2026 - November 2 - 5, 2026 - Caesars Palace - Las Vegas, Nv USA. Yahia.xlsx (Shown: 83, Hidden: 32)",
+      "type": "success"
+    },
+    {
+      "agent": "Admin",
+      "ts": "09:46:50 PM",
+      "msg": "Sorted [STANDARD]: ZShow - Tennessee Tow Show 2026 - October 16 – 17, 2026 - Chattanooga Convention Center - Chattanooga, TN, USA. Yahia.xlsx (Shown: 43, Hidden: 42)",
+      "type": "success"
+    },
+    {
+      "agent": "Admin",
+      "ts": "09:46:50 PM",
+      "msg": "Sorted [STANDARD]: XZShow - Ai4 2026 - North America's largest artificial intelligence industry event - AUGUST 4-6, 2026 - the venetian - Las vegas, Nv, USA Yahia.xlsx (Shown: 77, Hidden: 198)",
+      "type": "success"
+    },
+    {
+      "agent": "Admin",
+      "ts": "09:46:50 PM",
+      "msg": "Sorted [STANDARD]: XShow - AAFPRS 2026 - American Academy of Facial Plastic and Reconstructive Surgery - September 23-26, 2026 - Fontainebleau Las Vegas - LAS VEGAS, Nv, USA. Yahia.xlsx (Shown: 4, Hidden: 1)",
+      "type": "success"
+    },
+    {
+      "agent": "Admin",
+      "ts": "09:46:50 PM",
+      "msg": "Sorted [STANDARD]: XShow - RNG WORKS 2026 - September 15-17, 2026 - Baird Center - MILWAUKEE-WI, USA Yahia.xlsx (Shown: 9, Hidden: 2)",
+      "type": "success"
+    },
+    {
+      "agent": "Admin",
+      "ts": "09:46:41 PM",
+      "msg": "[UNDO] Reverted: XShow - RE+ 2026 - Largest energy event in North America - November 17-19, 2026 - Las Vegas Convention Center - Las Vegas, NV, USA Ammar.xlsx",
+      "type": "warning"
+    },
+    {
+      "agent": "Admin",
+      "ts": "09:46:02 PM",
+      "msg": "Sorted [STANDARD]: XShow - RE+ 2026 - Largest energy event in North America - November 17-19, 2026 - Las Vegas Convention Center - Las Vegas, NV, USA Ammar.xlsx (Shown: 281, Hidden: 91)",
+      "type": "success"
+    },
+    {
+      "agent": "Admin",
+      "ts": "09:40:12 PM",
+      "msg": "Sorted [STANDARD]: XZShow - Ai4 2026 - North America's largest artificial intelligence industry event - AUGUST 4-6, 2026 - the venetian - Las vegas, Nv, USA Yahia.xlsx (Shown: 77, Hidden: 198)",
+      "type": "success"
+    },
+    {
+      "agent": "Admin",
+      "ts": "09:40:11 PM",
+      "msg": "Sorted [STANDARD]: XShow - RSNA 2026 - Radiological Society of North America - November 29 - December 2, 2026 - McCormick Place - Chicago, IL, USA. Yahia.xlsx (Shown: 182, Hidden: 118)",
+      "type": "success"
+    },
     {
       "agent": "Admin",
       "ts": "09:15:28 PM",

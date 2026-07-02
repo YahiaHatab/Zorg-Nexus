@@ -321,9 +321,16 @@
         opacity: 0.4;
       }
 
-      100% {
-        opacity: 1;
-      }
+    }
+
+    @keyframes progressInfinite {
+      0% { left: -100%; width: 50%; }
+      50% { left: 25%; width: 75%; }
+      100% { left: 100%; width: 50%; }
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
     }
 
     .topbar-right {
@@ -1929,7 +1936,17 @@
   <div id="dragOverlay">
     <div class="drop-half std" id="dropStd" style="width: 100%;">
       <h1>Upload Excel</h1>
-      <p>Drop file here to extract 'New' and 'Some' records.</p>
+      <p>Drop one or more Excel files here to extract 'New' and 'Some' records.</p>
+    </div>
+  </div>
+
+  <!-- ── BULK UPLOAD PROGRESS OVERLAY ── -->
+  <div id="bulkOverlay" style="display: none; position: fixed; inset: 0; z-index: 9996; background: rgba(11, 15, 25, 0.85); backdrop-filter: blur(8px); flex-direction: column; align-items: center; justify-content: center; gap: 20px;">
+    <div style="font-size: 48px; animation: bounce 1.5s infinite;">📤</div>
+    <h2 style="color: var(--text-main); font-weight: 600; font-size: 20px; margin: 0;" id="bulkOverlayTitle">Uploading Files...</h2>
+    <p style="color: var(--text-muted); font-size: 14px; margin: 0;">Processing Excel sheets, please wait...</p>
+    <div style="width: 200px; height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; position: relative;">
+      <div style="position: absolute; height: 100%; width: 50%; background: var(--accent-blue); border-radius: 3px; animation: progressInfinite 1.5s infinite ease-in-out;"></div>
     </div>
   </div>
 
@@ -2061,7 +2078,7 @@
             </div>
 
             <!-- Hidden file input -->
-            <input type="file" id="fileStd" style="display:none" accept=".xlsx"
+            <input type="file" id="fileStd" style="display:none" accept=".xlsx" multiple
               onchange="manualUpload(this, 'standard')">
 
             <!-- Upload Excel button -->
@@ -2215,6 +2232,22 @@
       <div class="error-actions">
         <button class="error-btn error-btn-primary" onclick="hideErrorOverlay()">Got it, I'll try again</button>
       </div>
+  </div>
+
+  <!-- ── BULK UPLOAD SUMMARY MODAL ── -->
+  <div id="bulkModal" style="display: none; position: fixed; inset: 0; z-index: 9997; background: rgba(11, 15, 25, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); align-items: center; justify-content: center; padding: 24px; animation: fadeIn 0.3s ease-out;">
+    <div style="background: var(--bg-panel); border: 1px solid var(--border); border-radius: 20px; padding: 32px; width: 100%; max-width: 550px; text-align: left; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); display: flex; flex-direction: column; gap: 20px; max-height: 80vh;">
+      <div style="display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); padding-bottom: 16px;">
+        <span style="font-size: 24px;">📊</span>
+        <h2 style="color: var(--text-main); font-size: 18px; font-weight: 600; margin: 0;">Bulk Upload Summary</h2>
+        <button onclick="hideBulkModal()" style="margin-left: auto; background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px; line-height: 1;">✕</button>
+      </div>
+      <div id="bulkSummaryList" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding-right: 4px;">
+        <!-- Filled dynamically -->
+      </div>
+      <div style="border-top: 1px solid var(--border); padding-top: 16px; display: flex; justify-content: flex-end;">
+        <button class="filter-btn btn-std" onclick="hideBulkModal()" style="padding: 10px 24px; font-size: 13px; font-weight: 600; border-radius: 8px;">Got it</button>
+      </div>
     </div>
   </div>
 
@@ -2332,29 +2365,83 @@
     // ─────────────────────────────────────────────
     //  UPLOAD LOGIC
     // ─────────────────────────────────────────────
-    async function uploadFile(file, mode) {
+    async function uploadFiles(files, mode) {
+      if (!files || files.length === 0) return;
+
       const formData = new FormData();
-      formData.append('file', file);
+      for (let i = 0; i < files.length; i++) {
+        formData.append('files', files[i]);
+      }
       formData.append('username', currentUser);
       formData.append('mode', mode);
 
-      showToast(`Uploading ${file.name}...`, 'info');
+      showBulkOverlay(files.length);
 
       try {
-        const res = await fetch('/api/upload', { method: 'POST', body: formData });
+        const res = await fetch('/api/upload-bulk', { method: 'POST', body: formData });
         const data = await res.json();
+        
+        hideBulkOverlay();
+
         if (data.success) {
-          showToast(`✅ ${data.stats.finalFileName}<br>Shown: <b>${data.stats.shown}</b> | Hidden: <b>${data.stats.hidden}</b>`, 'success');
+          showBulkSummaryModal(data.results);
           fetchUserData();
-          loadPerformanceDashboard(); // Always refresh widget strip after upload
+          loadPerformanceDashboard();
         } else {
-          // Prominent warning on logic failure
-          showErrorOverlay('Upload Failed', `The server could not process "${file.name}".`, data.error || 'Check if the file format is correct and try again.');
+          showErrorOverlay('Upload Failed', 'The server could not process the upload request.', data.error || 'Please try again.');
         }
       } catch (err) {
-        // Prominent warning on connection/system failure
+        hideBulkOverlay();
         showErrorOverlay('Server Error', 'A critical error occurred while communicating with the server.', err.message || 'The server might be down or your connection was interrupted.');
       }
+    }
+
+    function showBulkOverlay(totalCount) {
+      document.getElementById('bulkOverlayTitle').textContent = `Uploading ${totalCount} File${totalCount > 1 ? 's' : ''}...`;
+      document.getElementById('bulkOverlay').style.display = 'flex';
+    }
+
+    function hideBulkOverlay() {
+      document.getElementById('bulkOverlay').style.display = 'none';
+    }
+
+    function showBulkSummaryModal(results) {
+      const listEl = document.getElementById('bulkSummaryList');
+      listEl.innerHTML = results.map(result => {
+        if (result.success) {
+          const stats = result.stats;
+          return `
+            <div style="background: rgba(16, 185, 129, 0.06); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 10px; padding: 12px 16px; display: flex; flex-direction: column; gap: 4px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                <span style="color: var(--success); font-weight: 600; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 340px;" title="${result.filename}">✅ ${result.filename}</span>
+                <span style="font-size: 11px; background: rgba(16, 185, 129, 0.12); color: var(--success); padding: 2px 8px; border-radius: 20px; font-weight: 600; flex-shrink: 0;">Success</span>
+              </div>
+              <div style="display: flex; gap: 16px; font-size: 11px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; margin-top: 2px;">
+                <span>Gross: <b style="color: var(--text-main);">${stats.shown + stats.hidden}</b></span>
+                <span>Net: <b style="color: var(--success);">${stats.shown}</b></span>
+                <span>Hidden: <b style="color: var(--danger);">${stats.hidden}</b></span>
+              </div>
+            </div>
+          `;
+        } else {
+          return `
+            <div style="background: rgba(239, 68, 68, 0.06); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 10px; padding: 12px 16px; display: flex; flex-direction: column; gap: 4px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                <span style="color: var(--danger); font-weight: 600; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 340px;" title="${result.filename}">❌ ${result.filename}</span>
+                <span style="font-size: 11px; background: rgba(239, 68, 68, 0.12); color: var(--danger); padding: 2px 8px; border-radius: 20px; font-weight: 600; flex-shrink: 0;">Failed</span>
+              </div>
+              <div style="font-size: 11px; color: var(--danger); margin-top: 2px; font-style: italic;">
+                ${result.error}
+              </div>
+            </div>
+          `;
+        }
+      }).join('');
+      document.getElementById('bulkModal').style.display = 'flex';
+    }
+
+    function hideBulkModal() {
+      document.getElementById('bulkModal').style.display = 'none';
     }
 
     // ─────────────────────────────────────────────
@@ -2382,7 +2469,7 @@
     }
 
     function manualUpload(inputEl, mode) {
-      if (inputEl.files.length > 0) { uploadFile(inputEl.files[0], mode); inputEl.value = ''; }
+      if (inputEl.files.length > 0) { uploadFiles(inputEl.files, mode); inputEl.value = ''; }
     }
 
     // ─────────────────────────────────────────────
@@ -2400,7 +2487,7 @@
       zone.addEventListener('dragleave', e => { e.preventDefault(); zone.classList.remove('dragover'); });
       zone.addEventListener('drop', e => {
         e.preventDefault(); zone.classList.remove('dragover');
-        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) uploadFile(e.dataTransfer.files[0], mode);
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) uploadFiles(e.dataTransfer.files, mode);
       });
     }
     setupZone('dropStd', 'standard');
