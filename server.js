@@ -1,31 +1,31 @@
 const express = require('express');
-const http    = require('http');
+const http = require('http');
 const { Server } = require('socket.io');
-const fs      = require('fs');
-const path    = require('path');
+const fs = require('fs');
+const path = require('path');
 const ExcelJS = require('exceljs');
-const multer  = require('multer');
+const multer = require('multer');
 
-const app    = express();
+const app = express();
 const server = http.createServer(app);
-const io     = new Server(server);
-const PORT   = 3017;
+const io = new Server(server);
+const PORT = 3005;
 const activeFloor = {}; // Tracks agent status and timers
 let isAutoDispatch = true; // Global toggle for Automated vs Manual show assignment
 
 // ─────────────────────────────────────────────
 //  BOOTSTRAP — ensure all required files exist
 // ─────────────────────────────────────────────
-const configPath    = path.join(__dirname, 'config.json');
-const usersPath     = path.join(__dirname, 'users.json');
-const historyPath   = path.join(__dirname, 'history.json');
+const configPath = path.join(__dirname, 'config.json');
+const usersPath = path.join(__dirname, 'users.json');
+const historyPath = path.join(__dirname, 'history.json');
 const analyticsPath = path.join(__dirname, 'analytics.json');
 
 const DEFAULT_CONFIG = {
     tempZone: path.join(__dirname, 'temp'),
-    usBase:   path.join(__dirname, 'output', 'US'),
-    ukBase:   path.join(__dirname, 'output', 'UK'),
-    cxlTags:  ['Pricing', 'Duplicates', 'SameList']
+    usBase: path.join(__dirname, 'output', 'US'),
+    ukBase: path.join(__dirname, 'output', 'UK'),
+    cxlTags: ['Pricing', 'Duplicates', 'SameList']
 };
 
 const DEFAULT_USERS = [
@@ -62,8 +62,8 @@ let config = JSON.parse(fs.readFileSync(configPath));
     if (dir && !fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
 
-const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-const upload     = multer({ dest: config.tempZone });
+const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const upload = multer({ dest: config.tempZone });
 
 // ─────────────────────────────────────────────
 //  UNDO REGISTRY (5-Minute Window)
@@ -87,9 +87,9 @@ function reloadConfig() {
 function saveHistory(newFile, newLog) {
     const history = JSON.parse(fs.readFileSync(historyPath));
     if (newFile) history.files.unshift(newFile);
-    if (newLog)  history.logs.unshift(newLog);
+    if (newLog) history.logs.unshift(newLog);
     if (history.files.length > 500) history.files.pop();
-    if (history.logs.length  > 500) history.logs.pop();
+    if (history.logs.length > 500) history.logs.pop();
     fs.writeFileSync(historyPath, JSON.stringify(history, null, 2));
 }
 
@@ -158,7 +158,7 @@ function analyticsRemoveRecord(dateKey, transactionId) {
     const data = loadAnalytics();
     if (!data[dateKey]) return;
 
-    const day    = data[dateKey];
+    const day = data[dateKey];
     const recIdx = day.records.findIndex(r => r.transactionId === transactionId);
     if (recIdx === -1) return;
 
@@ -235,7 +235,7 @@ async function performDailyReset() {
 // ─────────────────────────────────────────────
 function scheduleMidnightReset() {
     function msUntilMidnight() {
-        const now  = new Date();
+        const now = new Date();
         const next = new Date(now);
         next.setHours(24, 0, 0, 0);
         return next - now;
@@ -260,164 +260,177 @@ scheduleMidnightReset();
 //  Pure extraction — returns { finalFileName, shown, hidden }.
 //  No longer writes any report file.
 // ─────────────────────────────────────────────
-async function processExcelFile(filePath, originalName, mode) {
+async function processExcelFile(filePath, originalName) {
     const workbook = new ExcelJS.Workbook();
     await workbook.xlsx.readFile(filePath);
 
     let finalVisibleRed = 0;
-    let finalHidden     = 0;
-    const isSomeMode    = mode === 'some';
-    const isNA          = /\bUSA\b|\bCANADA\b/i.test(originalName);
+    let finalHidden = 0;
+    let newShown = 0;
+    let newHidden = 0;
+    let someShown = 0;
+    let someHidden = 0;
+    const isNA = /\bUSA\b|\bCANADA\b/i.test(originalName);
 
-    if (isSomeMode) {
-        const sheet2 = workbook.worksheets[1];
-        if (sheet2) {
-            let stats          = {};
-            let highestSomeNum = -1;
-            let latestSomeKey  = "Some";
-            let foundAnySome   = false;
- 
-            sheet2.eachRow((row) => {
-                let hasSomeInRow = false;
-                let rowSomeKey   = null;
-                let rowSomeNum   = -1;
+    const sheet = workbook.getWorksheet('Sheet1') || workbook.worksheets[0];
+    if (sheet) {
+        let stats = {};
+        let highestNewNum = -1;
+        let latestNewKey = "New";
+        let foundAnyNew = false;
 
-                row.eachCell((cell) => {
-                    let cellText = '';
-                    let isRed    = false;
-                    if (cell.value && cell.value.richText) {
-                        cell.value.richText.forEach(rt => { cellText += rt.text; if (checkIsRed(rt.font)) isRed = true; });
-                    } else {
-                        cellText = cell.value ? cell.value.toString() : '';
-                        if (checkIsRed(cell.font)) isRed = true;
-                    }
-                    const match = cellText.trim().match(/^some(\d*)$/i);
-                    if (match && isRed) {
-                        hasSomeInRow = true; foundAnySome = true;
-                        const num = match[1] === "" ? 0 : parseInt(match[1], 10);
-                        if (num > rowSomeNum) { rowSomeNum = num; rowSomeKey = num === 0 ? "Some" : `Some${num}`; }
-                    }
-                });
+        let highestSomeNum = -1;
+        let latestSomeKey = "Some";
+        let foundAnySome = false;
 
-                if (hasSomeInRow) {
-                    if (rowSomeNum > highestSomeNum) { highestSomeNum = rowSomeNum; latestSomeKey = rowSomeKey; }
-                    if (!stats[rowSomeKey]) stats[rowSomeKey] = { shown: 0, hidden: 0, shownLocal: 0, hiddenLocal: 0 };
-                    let col2Value = row.getCell(2).value;
-                    if (col2Value && typeof col2Value === 'object' && col2Value.result !== undefined) col2Value = col2Value.result;
-                    const col2Str = col2Value !== null && col2Value !== undefined ? col2Value.toString().trim() : '';
-                    
-                    const isLocal = col2Str.toLowerCase().includes('local');
-                    if (/\d/.test(col2Str)) {
-                        stats[rowSomeKey].shown++;
-                        if (isLocal) stats[rowSomeKey].shownLocal++;
-                    } else {
-                        stats[rowSomeKey].hidden++;
-                        if (isLocal) stats[rowSomeKey].hiddenLocal++;
+        let globalHidden = 0;
+        let globalVisible = 0;
+        let globalHiddenLocal = 0;
+        let globalVisibleLocal = 0;
+
+        sheet.eachRow((row) => {
+            const isHidden = row.hidden;
+            let hasNewInRow = false;
+            let rowNewKey = null;
+            let rowNewNum = -1;
+
+            let hasSomeInRow = false;
+            let rowSomeKey = null;
+            let rowSomeNum = -1;
+
+            let hasRedFont = false;
+            const col1 = row.getCell(1).value;
+            const hasData = col1 !== null && col1 !== undefined && col1.toString().trim() !== '';
+
+            // Count "local" entries in Column 2
+            let col2Value = row.getCell(2).value;
+            if (col2Value && typeof col2Value === 'object' && col2Value.result !== undefined) col2Value = col2Value.result;
+            const col2Str = col2Value !== null && col2Value !== undefined ? col2Value.toString().trim() : '';
+            const isLocal = col2Str.toLowerCase().includes('local');
+
+            row.eachCell((cell) => {
+                let cellText = '';
+                let isRed = false;
+                if (cell.value && cell.value.richText) {
+                    cell.value.richText.forEach(rt => { cellText += rt.text; if (checkIsRed(rt.font)) isRed = true; });
+                } else {
+                    cellText = cell.value ? cell.value.toString() : '';
+                    if (checkIsRed(cell.font)) isRed = true;
+                }
+
+                const matchNew = cellText.trim().match(/^new(\d*)$/i);
+                if (matchNew) {
+                    hasNewInRow = true;
+                    foundAnyNew = true;
+                    const num = matchNew[1] === "" ? 0 : parseInt(matchNew[1], 10);
+                    if (num > rowNewNum) {
+                        rowNewNum = num;
+                        rowNewKey = num === 0 ? "New" : `New${num}`;
                     }
                 }
+
+                const matchSome = cellText.trim().match(/^some(\d*)$/i);
+                if (matchSome) {
+                    hasSomeInRow = true;
+                    foundAnySome = true;
+                    const num = matchSome[1] === "" ? 0 : parseInt(matchSome[1], 10);
+                    if (num > rowSomeNum) {
+                        rowSomeNum = num;
+                        rowSomeKey = num === 0 ? "Some" : `Some${num}`;
+                    }
+                }
+
+                if (isRed) hasRedFont = true;
             });
 
-            if (foundAnySome) {
-                finalVisibleRed = stats[latestSomeKey].shown;
-                finalHidden     = stats[latestSomeKey].hidden;
-
-                if (!isNA && (finalVisibleRed + finalHidden) >= 200) {
-                    finalVisibleRed = Math.max(0, finalVisibleRed - stats[latestSomeKey].shownLocal);
-                    finalHidden     = Math.max(0, finalHidden - stats[latestSomeKey].hiddenLocal);
-                }
+            if (isHidden) {
+                globalHidden++;
+                if (isLocal) globalHiddenLocal++;
+            } else if (hasData) {
+                globalVisible++;
+                if (isLocal) globalVisibleLocal++;
             }
-        }
-    } else {
-        const sheet = workbook.getWorksheet('Sheet1');
-        if (sheet) {
-            let stats         = {};
-            let highestNewNum = -1;
-            let latestNewKey  = "New";
-            let foundAnyNew   = false;
-            let globalHidden  = 0;
-            let globalVisible = 0;
-            let globalHiddenLocal  = 0;
-            let globalVisibleLocal = 0;
 
-            sheet.eachRow((row) => {
-                const isHidden  = row.hidden;
-                let hasNewInRow = false;
-                let rowNewKey   = null;
-                let rowNewNum   = -1;
-                let hasRedFont  = false;
-                const col1      = row.getCell(1).value;
-                const hasData   = col1 !== null && col1 !== undefined && col1.toString().trim() !== '';
-
-                // Count "local" entries in Column 2
-                let col2Value = row.getCell(2).value;
-                if (col2Value && typeof col2Value === 'object' && col2Value.result !== undefined) col2Value = col2Value.result;
-                const col2Str = col2Value !== null && col2Value !== undefined ? col2Value.toString().trim() : '';
-                const isLocal = col2Str.toLowerCase().includes('local');
-
-                row.eachCell((cell) => {
-                    let cellText = '';
-                    let isRed    = false;
-                    if (cell.value && cell.value.richText) {
-                        cell.value.richText.forEach(rt => { cellText += rt.text; if (checkIsRed(rt.font)) isRed = true; });
-                    } else {
-                        cellText = cell.value ? cell.value.toString() : '';
-                        if (checkIsRed(cell.font)) isRed = true;
-                    }
-                    const match = cellText.trim().match(/^new(\d*)$/i);
-                    if (match) {
-                        hasNewInRow = true; foundAnyNew = true;
-                        const num = match[1] === "" ? 0 : parseInt(match[1], 10);
-                        if (num > rowNewNum) { rowNewNum = num; rowNewKey = num === 0 ? "New" : `New${num}`; }
-                    }
-                    if (isRed) hasRedFont = true;
-                });
-
+            if (hasNewInRow) {
+                if (rowNewNum > highestNewNum) {
+                    highestNewNum = rowNewNum;
+                    latestNewKey = rowNewKey;
+                }
+                if (!stats[rowNewKey]) stats[rowNewKey] = { visibleRed: 0, hidden: 0, visibleRedLocal: 0, hiddenLocal: 0 };
                 if (isHidden) {
-                    globalHidden++;
-                    if (isLocal) globalHiddenLocal++;
-                } else if (hasData) {
-                    globalVisible++;
-                    if (isLocal) globalVisibleLocal++;
-                }
-
-                if (hasNewInRow) {
-                    if (rowNewNum > highestNewNum) { highestNewNum = rowNewNum; latestNewKey = rowNewKey; }
-                    if (!stats[rowNewKey]) stats[rowNewKey] = { visibleRed: 0, hidden: 0, visibleRedLocal: 0, hiddenLocal: 0 };
-                    if (isHidden) {
-                        stats[rowNewKey].hidden++;
-                        if (isLocal) stats[rowNewKey].hiddenLocal++;
-                    } else if (hasRedFont) {
-                        stats[rowNewKey].visibleRed++;
-                        if (isLocal) stats[rowNewKey].visibleRedLocal++;
-                    }
-                }
-            });
-
-            if (foundAnyNew) {
-                finalVisibleRed = stats[latestNewKey].visibleRed;
-                finalHidden     = stats[latestNewKey].hidden;
-
-                if (!isNA && (finalVisibleRed + finalHidden) >= 200) {
-                    finalVisibleRed = Math.max(0, finalVisibleRed - stats[latestNewKey].visibleRedLocal);
-                    finalHidden     = Math.max(0, finalHidden - stats[latestNewKey].hiddenLocal);
-                }
-            } else {
-                finalVisibleRed = globalVisible;
-                finalHidden     = globalHidden;
-
-                if (!isNA && (finalVisibleRed + finalHidden) >= 200) {
-                    finalVisibleRed = Math.max(0, finalVisibleRed - globalVisibleLocal);
-                    finalHidden     = Math.max(0, finalHidden - globalHiddenLocal);
+                    stats[rowNewKey].hidden++;
+                    if (isLocal) stats[rowNewKey].hiddenLocal++;
+                } else if (hasRedFont) {
+                    stats[rowNewKey].visibleRed++;
+                    if (isLocal) stats[rowNewKey].visibleRedLocal++;
                 }
             }
+
+            if (hasSomeInRow) {
+                if (rowSomeNum > highestSomeNum) {
+                    highestSomeNum = rowSomeNum;
+                    latestSomeKey = rowSomeKey;
+                }
+                if (!stats[rowSomeKey]) stats[rowSomeKey] = { visibleRed: 0, hidden: 0, visibleRedLocal: 0, hiddenLocal: 0 };
+                if (isHidden) {
+                    stats[rowSomeKey].hidden++;
+                    if (isLocal) stats[rowSomeKey].hiddenLocal++;
+                } else if (hasRedFont) {
+                    stats[rowSomeKey].visibleRed++;
+                    if (isLocal) stats[rowSomeKey].visibleRedLocal++;
+                }
+            }
+        });
+
+        let newShownLocal = 0;
+        let newHiddenLocal = 0;
+        let someShownLocal = 0;
+        let someHiddenLocal = 0;
+
+        if (foundAnyNew || foundAnySome) {
+            if (foundAnyNew) {
+                newShown = stats[latestNewKey].visibleRed;
+                newHidden = stats[latestNewKey].hidden;
+                newShownLocal = stats[latestNewKey].visibleRedLocal;
+                newHiddenLocal = stats[latestNewKey].hiddenLocal;
+            }
+            if (foundAnySome) {
+                someShown = stats[latestSomeKey].visibleRed;
+                someHidden = stats[latestSomeKey].hidden;
+                someShownLocal = stats[latestSomeKey].visibleRedLocal;
+                someHiddenLocal = stats[latestSomeKey].hiddenLocal;
+            }
+
+            // Apply regional deduction (local threshold >= 200) combined
+            if (!isNA && (newShown + newHidden + someShown + someHidden) >= 200) {
+                newShown = Math.max(0, newShown - newShownLocal);
+                newHidden = Math.max(0, newHidden - newHiddenLocal);
+                someShown = Math.max(0, someShown - someShownLocal);
+                someHidden = Math.max(0, someHidden - someHiddenLocal);
+            }
+        } else {
+            newShown = globalVisible;
+            newHidden = globalHidden;
+
+            if (!isNA && (newShown + newHidden) >= 200) {
+                newShown = Math.max(0, newShown - globalVisibleLocal);
+                newHidden = Math.max(0, newHidden - globalHiddenLocal);
+            }
         }
+
+        finalVisibleRed = newShown + someShown;
+        finalHidden = newHidden + someHidden;
     }
 
-    const ext           = path.extname(originalName);
-    const baseName      = path.basename(originalName, ext);
-    const finalFileName = isSomeMode ? `Some ${baseName}${ext}` : originalName;
-
-    return { finalFileName, shown: finalVisibleRed, hidden: finalHidden };
+    return {
+        finalFileName: originalName,
+        shown: finalVisibleRed,
+        hidden: finalHidden,
+        newShown,
+        newHidden,
+        someShown,
+        someHidden
+    };
 }
 
 // ─────────────────────────────────────────────
@@ -432,10 +445,10 @@ app.use(express.json());
 app.post('/api/login', (req, res) => {
     const { username, password } = req.body;
     const users = JSON.parse(fs.readFileSync(usersPath));
-    const user  = users.find(u => u.username === username && u.password === password);
+    const user = users.find(u => u.username === username && u.password === password);
     // Return the role, fallback to Agent if they don't have one yet
     if (user) res.json({ success: true, username: user.username, role: user.role || 'Agent' });
-    else       res.json({ success: false, message: 'Invalid credentials' });
+    else res.json({ success: false, message: 'Invalid credentials' });
 });
 
 // ─────────────────────────────────────────────
@@ -443,11 +456,11 @@ app.post('/api/login', (req, res) => {
 // ─────────────────────────────────────────────
 app.get('/api/user/data', (req, res) => {
     const username = req.query.username;
-    const history  = JSON.parse(fs.readFileSync(historyPath));
+    const history = JSON.parse(fs.readFileSync(historyPath));
     res.json({
         success: true,
         files: history.files.filter(f => f.agent === username),
-        logs:  history.logs.filter(l  => l.agent === username)
+        logs: history.logs.filter(l => l.agent === username)
     });
 });
 
@@ -457,8 +470,8 @@ app.get('/api/user/data', (req, res) => {
 app.get('/api/user/report', (req, res) => {
     try {
         const username = req.query.username;
-        const data     = loadAnalytics();
-        const result   = [];
+        const data = loadAnalytics();
+        const result = [];
 
         // Newest date first
         for (const dateKey of Object.keys(data).sort((a, b) => b.localeCompare(a))) {
@@ -467,11 +480,11 @@ app.get('/api/user/report', (req, res) => {
             for (const rec of [...day.records].reverse()) {
                 if (rec.agent === username) {
                     result.push({
-                        date:     dateKey,
-                        mode:     rec.mode,
+                        date: dateKey,
+                        mode: rec.mode,
                         filename: rec.filename,
-                        shown:    rec.shown,
-                        total:    rec.total
+                        shown: rec.shown,
+                        total: rec.total
                     });
                 }
             }
@@ -502,11 +515,11 @@ app.post('/api/shows/upload', upload.single('file'), async (req, res) => {
         await workbook.xlsx.readFile(req.file.path);
         const sheet = workbook.worksheets[0];
         const newShows = [];
-        
+
         let lastShow = null;
         sheet.eachRow((row, rowNumber) => {
             if (rowNumber === 1) return; // skip header
-            
+
             const getVal = (col) => {
                 let cell = row.getCell(col).value;
                 if (!cell) return '';
@@ -514,11 +527,11 @@ app.post('/api/shows/upload', upload.single('file'), async (req, res) => {
                 if (typeof cell === 'object' && cell.hyperlink) return cell.hyperlink;
                 return cell.toString();
             };
-            
+
             const showName = getVal(1).trim();
             const link = getVal(2).trim();
             const status = getVal(3).trim();
-            
+
             if (showName) {
                 if (!status) {
                     lastShow = {
@@ -546,12 +559,12 @@ app.post('/api/shows/upload', upload.single('file'), async (req, res) => {
                 if (comment) lastShow.comment += (lastShow.comment ? '\n' : '') + comment;
             }
         });
-        
+
         fs.unlinkSync(req.file.path);
         const currentShows = JSON.parse(fs.readFileSync(showsPath));
         const updatedShows = [...currentShows, ...newShows];
         fs.writeFileSync(showsPath, JSON.stringify(updatedShows, null, 2));
-        
+
         res.json({ success: true, added: newShows.length, shows: updatedShows });
     } catch (error) {
         if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
@@ -575,8 +588,8 @@ app.post('/api/shows/reorder', (req, res) => {
     pendingShows.sort((a, b) => {
         const idxA = reorderedIds.indexOf(a.id);
         const idxB = reorderedIds.indexOf(b.id);
-        if(idxA === -1) return 1;
-        if(idxB === -1) return -1;
+        if (idxA === -1) return 1;
+        if (idxB === -1) return -1;
         return idxA - idxB;
     });
 
@@ -589,17 +602,17 @@ app.post('/api/shows/reorder', (req, res) => {
 app.get('/api/shows/next', (req, res) => {
     const { username } = req.query;
     const currentShows = JSON.parse(fs.readFileSync(showsPath));
-    
+
     // 1. Check if the agent ALREADY has an "In Progress" show
     const existingInProgressShow = currentShows.find(s => s.agentName === username && s.status === 'In Progress');
     if (existingInProgressShow) {
         return res.json({ success: true, show: existingInProgressShow });
     }
-    
+
     // 2. Look for a Pending show specifically Pinned/Assigned to this user
     // We allow fetching of pinned shows even if Manual Mode is active.
     const pinnedShow = currentShows.find(s => s.agentName === username && s.status === 'Pending');
-    
+
     if (pinnedShow) {
         pinnedShow.status = 'In Progress';
         fs.writeFileSync(showsPath, JSON.stringify(currentShows, null, 2));
@@ -614,7 +627,7 @@ app.get('/api/shows/next', (req, res) => {
 
     // 4. Automated assignment: Look for the first UNASSIGNED Pending show
     const unassignedShow = currentShows.find(s => (!s.agentName || s.agentName.trim() === '') && (s.status === 'Pending' || !s.status));
-    
+
     if (unassignedShow) {
         unassignedShow.status = 'In Progress';
         unassignedShow.agentName = username;
@@ -622,7 +635,7 @@ app.get('/api/shows/next', (req, res) => {
         io.emit('hopper_updated');
         return res.json({ success: true, show: unassignedShow });
     }
-    
+
     // 5. If nothing was found, let the agent know the queue is empty
     return res.json({ success: false, message: 'No shows available' });
 });
@@ -631,7 +644,7 @@ app.get('/api/shows/active', (req, res) => {
     const { username } = req.query;
     const currentShows = JSON.parse(fs.readFileSync(showsPath));
     const activeShow = currentShows.find(s => s.agentName === username && s.status === 'In Progress');
-    
+
     if (activeShow) {
         res.json({ success: true, show: activeShow });
     } else {
@@ -706,22 +719,22 @@ app.post('/api/shows/cancel', (req, res) => {
     const { id, reason } = req.body;
     const currentShows = JSON.parse(fs.readFileSync(showsPath));
     const show = currentShows.find(s => s.id === id);
-    
+
     if (show) {
         show.status = `CXL/${reason}`;
-        
+
         // --- Automated File Scrubbing ---
         try {
             const config = JSON.parse(fs.readFileSync(configPath));
             const users = JSON.parse(fs.readFileSync(usersPath));
             const dirsToScrub = [config.usBase, config.ukBase];
-            
+
             // Add the specific agent's archive path if assigned
             if (show.agentName) {
                 const agent = users.find(u => u.username === show.agentName);
                 if (agent && agent.archivePath) dirsToScrub.push(agent.archivePath);
             }
-            
+
             // Scan and delete matching files
             dirsToScrub.forEach(dir => {
                 if (dir && fs.existsSync(dir)) {
@@ -729,27 +742,27 @@ app.post('/api/shows/cancel', (req, res) => {
                     files.forEach(file => {
                         // Match files containing the show name
                         if (file.includes(show.showName)) {
-                            try { 
-                                fs.unlinkSync(path.join(dir, file)); 
-                            } catch(e) { console.error('Scrub failed for:', file); }
+                            try {
+                                fs.unlinkSync(path.join(dir, file));
+                            } catch (e) { console.error('Scrub failed for:', file); }
                         }
                     });
                 }
             });
-        } catch(e) {
+        } catch (e) {
             console.error("Error reading config for scrubbing:", e);
         }
 
-// --- Save CXL to Analytics Ledger ---
+        // --- Save CXL to Analytics Ledger ---
         try {
             const dateKey = new Date().toISOString().split('T')[0];
             const timeStr = new Date().toLocaleTimeString('en-US');
             const analytics = JSON.parse(fs.readFileSync(analyticsPath));
-            
+
             if (!analytics[dateKey]) {
                 analytics[dateKey] = { summary: { totalFiles: 0, totalLeads: 0, totalShown: 0, byAgent: {} }, records: [] };
             }
-            
+
             analytics[dateKey].records.push({
                 transactionId: Date.now().toString(36),
                 time: timeStr,
@@ -760,18 +773,18 @@ app.post('/api/shows/cancel', (req, res) => {
                 reason: reason
             });
             fs.writeFileSync(analyticsPath, JSON.stringify(analytics, null, 2));
-        } catch(e) { console.error("Error logging CXL to analytics:", e); }
+        } catch (e) { console.error("Error logging CXL to analytics:", e); }
 
         fs.writeFileSync(showsPath, JSON.stringify(currentShows, null, 2));
-        
+
         // Broadcast the cancellation to disconnect the agent
-        io.emit('show_cancelled', { 
-            id: show.id, 
-            showName: show.showName, 
-            reason: reason, 
-            agentName: show.agentName 
+        io.emit('show_cancelled', {
+            id: show.id,
+            showName: show.showName,
+            reason: reason,
+            agentName: show.agentName
         });
-        
+
         io.emit('hopper_updated');
         res.json({ success: true });
     } else {
@@ -785,47 +798,44 @@ app.post('/api/shows/cancel', (req, res) => {
 app.post('/api/upload', upload.single('file'), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'No file uploaded.' });
 
-    const { username, mode } = req.body;
-    const originalName       = req.file.originalname;
-    const tempPath           = req.file.path;
+    const username = req.body.username;
+    const mode = req.body.mode || 'standard';
+    const originalName = req.file.originalname;
+    const tempPath = req.file.path;
 
     try {
         reloadConfig();
-        const users      = JSON.parse(fs.readFileSync(usersPath));
+        const users = JSON.parse(fs.readFileSync(usersPath));
         const activeUser = users.find(u => u.username === username);
         if (!activeUser || !activeUser.archivePath) throw new Error(`Archive path missing for ${username}`);
 
         // Pure extraction — no report file written
-        const stats      = await processExcelFile(tempPath, originalName, mode);
-        const date       = new Date();
-        const dateKey    = date.toISOString().split('T')[0];
+        const stats = await processExcelFile(tempPath, originalName);
+        const date = new Date();
+        const dateKey = date.toISOString().split('T')[0];
         const folderName = `${date.getDate()}-${date.getMonth() + 1}`;
-        const month      = monthNames[date.getMonth()];
-        const year       = date.getFullYear().toString();
-        const isNA       = /\bUSA\b|\bCANADA\b/i.test(originalName);
-        const region     = isNA ? 'USA' : 'UK';
-        const h12upload  = date.getHours() % 12 || 12;
+        const month = monthNames[date.getMonth()];
+        const year = date.getFullYear().toString();
+        const isNA = /\bUSA\b|\bCANADA\b/i.test(originalName);
+        const region = isNA ? 'USA' : 'UK';
+        const h12upload = date.getHours() % 12 || 12;
         const amPmUpload = date.getHours() < 12 ? 'AM' : 'PM';
-        const timeStr    = `${String(h12upload).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}:${String(date.getSeconds()).padStart(2,'0')} ${amPmUpload}`;
+        const timeStr = `${String(h12upload).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')} ${amPmUpload}`;
         const totalCount = stats.shown + stats.hidden;
 
         // ── Copy files ──
         const personalDir = path.join(activeUser.archivePath, year, month, folderName, region);
         if (!fs.existsSync(personalDir)) fs.mkdirSync(personalDir, { recursive: true });
         const finalPersonalPath = path.join(personalDir, stats.finalFileName);
-        const savedPaths        = [finalPersonalPath];
+        const savedPaths = [finalPersonalPath];
 
-        if (mode === 'some') {
-            fs.copyFileSync(tempPath, finalPersonalPath);
-        } else {
-            const regionBase = isNA ? config.usBase : config.ukBase;
-            const regionDir  = path.join(regionBase, year, month, folderName);
-            if (!fs.existsSync(regionDir)) fs.mkdirSync(regionDir, { recursive: true });
-            const regionDest = path.join(regionDir, stats.finalFileName);
-            fs.copyFileSync(tempPath, finalPersonalPath);
-            fs.copyFileSync(tempPath, regionDest);
-            savedPaths.push(regionDest);
-        }
+        const regionBase = isNA ? config.usBase : config.ukBase;
+        const regionDir = path.join(regionBase, year, month, folderName);
+        if (!fs.existsSync(regionDir)) fs.mkdirSync(regionDir, { recursive: true });
+        const regionDest = path.join(regionDir, stats.finalFileName);
+        fs.copyFileSync(tempPath, finalPersonalPath);
+        fs.copyFileSync(tempPath, regionDest);
+        savedPaths.push(regionDest);
 
         fs.unlinkSync(tempPath);
 
@@ -835,13 +845,17 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
         // ── Write to analytics.json ──
         analyticsAddRecord(dateKey, username, {
             transactionId,
-            agent:    username,
+            agent: username,
             filename: stats.finalFileName,
-            mode:     mode.toUpperCase(),
-            shown:    stats.shown,
-            hidden:   stats.hidden,
-            total:    totalCount,
-            time:     timeStr
+            mode: mode.toUpperCase(),
+            shown: stats.shown,
+            hidden: stats.hidden,
+            total: totalCount,
+            time: timeStr,
+            newShown: stats.newShown || 0,
+            newHidden: stats.newHidden || 0,
+            someShown: stats.someShown || 0,
+            someHidden: stats.someHidden || 0
         });
 
         // ── Write to history.json ──
@@ -854,20 +868,24 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
         undoRegistry.set(transactionId, {
             timestamp: Date.now(),
             username,
-            filename:  stats.finalFileName,
+            filename: stats.finalFileName,
             dateKey,
             savedPaths
         });
 
         // ── Broadcast to admin dashboard ──
         io.emit('new_upload', {
-            agent:    username,
-            total:    totalCount,
-            shown:    stats.shown,
-            hidden:   stats.hidden,
+            agent: username,
+            total: totalCount,
+            shown: stats.shown,
+            hidden: stats.hidden,
             filename: stats.finalFileName,
-            date:     dateKey,
-            mode:     mode.toUpperCase()
+            date: dateKey,
+            mode: mode.toUpperCase(),
+            newShown: stats.newShown || 0,
+            newHidden: stats.newHidden || 0,
+            someShown: stats.someShown || 0,
+            someHidden: stats.someHidden || 0
         });
 
         res.json({ success: true, stats, transactionId });
@@ -875,9 +893,9 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
     } catch (error) {
         if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
         const errDate = new Date();
-        const h12err  = errDate.getHours() % 12 || 12;
+        const h12err = errDate.getHours() % 12 || 12;
         const amPmErr = errDate.getHours() < 12 ? 'AM' : 'PM';
-        const timeStr = `${String(h12err).padStart(2,'0')}:${String(errDate.getMinutes()).padStart(2,'0')}:${String(errDate.getSeconds()).padStart(2,'0')} ${amPmErr}`;
+        const timeStr = `${String(h12err).padStart(2, '0')}:${String(errDate.getMinutes()).padStart(2, '0')}:${String(errDate.getSeconds()).padStart(2, '0')} ${amPmErr}`;
         saveHistory(
             { agent: username, name: originalName, size: req.file.size, mtime: new Date().toISOString(), region: 'UNK', destPath: 'ERROR', status: 'error' },
             { agent: username, ts: timeStr, msg: `Error: ${error.message}`, type: 'error' }
@@ -910,10 +928,10 @@ app.post('/api/undo', async (req, res) => {
         const fileIdx = history.files.findIndex(f => f.transactionId === transactionId);
         if (fileIdx > -1) history.files.splice(fileIdx, 1);
 
-        const now     = new Date();
-        const h12undo  = now.getHours() % 12 || 12;
+        const now = new Date();
+        const h12undo = now.getHours() % 12 || 12;
         const amPmUndo = now.getHours() < 12 ? 'AM' : 'PM';
-        const timeStr  = `${String(h12undo).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')} ${amPmUndo}`;
+        const timeStr = `${String(h12undo).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')} ${amPmUndo}`;
         history.logs.unshift({ agent: username, ts: timeStr, msg: `[UNDO] Reverted: ${record.filename}`, type: 'warning' });
         fs.writeFileSync(historyPath, JSON.stringify(history, null, 2));
 
@@ -949,14 +967,14 @@ app.get('/api/leaderboard', (req, res) => {
         if (!day || !day.summary || !day.summary.byAgent) {
             return res.json({ success: true, leaderboard: [] });
         }
-        
+
         const leaderboard = Object.entries(day.summary.byAgent).map(([name, stats]) => ({
             name,
             shown: stats.shown,
             files: stats.files,
             leads: stats.leads
         })).sort((a, b) => b.shown - a.shown);
-        
+
         res.json({ success: true, leaderboard });
     } catch (e) {
         res.status(500).json({ success: false, error: e.message });
@@ -998,69 +1016,81 @@ app.delete('/api/admin/record', (req, res) => {
 app.get('/api/export/:date', async (req, res) => {
     try {
         const dateKey = req.params.date;
-        const data    = loadAnalytics();
-        const day     = data[dateKey];
+        const data = loadAnalytics();
+        const day = data[dateKey];
 
         if (!day || !day.records || day.records.length === 0) {
             return res.status(404).json({ success: false, error: `No data found for ${dateKey}` });
         }
 
-        const wb    = new ExcelJS.Workbook();
+        const wb = new ExcelJS.Workbook();
         const sheet = wb.addWorksheet('Report');
 
-        // Column definitions — identical layout to the old Z-Report
+        // Column definitions
         sheet.columns = [
-            { header: 'Agent',                  key: 'agent',    width: 15 },
-            { header: 'Total (Hidden + Shown)',  key: 'total',    width: 28 },
-            { header: 'Shown Count',             key: 'shown',    width: 18 },
-            { header: 'File Name',               key: 'filename', width: 50 },
-            { header: 'Date',                    key: 'date',     width: 15 },
-            { header: 'Mode',                    key: 'mode',     width: 15 },
-            { header: 'Time',                    key: 'time',     width: 12 },
+            { header: 'Agent', key: 'agent', width: 15 },
+            { header: 'Total Gross', key: 'total', width: 18 },
+            { header: 'Total Net', key: 'shown', width: 18 },
+            { header: 'New Net', key: 'newShown', width: 15 },
+            { header: 'New Hidden', key: 'newHidden', width: 15 },
+            { header: 'Some Net', key: 'someShown', width: 15 },
+            { header: 'Some Hidden', key: 'someHidden', width: 15 },
+            { header: 'File Name', key: 'filename', width: 50 },
+            { header: 'Date', key: 'date', width: 15 },
+            { header: 'Mode', key: 'mode', width: 15 },
+            { header: 'Time', key: 'time', width: 12 },
         ];
 
         // Style header row
         const headerRow = sheet.getRow(1);
         headerRow.eachCell((cell) => {
-            cell.font      = { name: 'Arial', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
-            cell.fill      = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4F81BD' } };
+            cell.font = { name: 'Arial', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
+            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4F81BD' } };
             cell.alignment = { vertical: 'middle', horizontal: 'center' };
-            cell.border    = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
+            cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
         });
 
         // Data rows
         for (const rec of day.records) {
             const row = sheet.addRow({
-                agent:    rec.agent,
-                total:    rec.total,
-                shown:    rec.shown,
+                agent: rec.agent,
+                total: rec.total,
+                shown: rec.shown,
+                newShown: rec.newShown || 0,
+                newHidden: rec.newHidden || 0,
+                someShown: rec.someShown || 0,
+                someHidden: rec.someHidden || 0,
                 filename: rec.filename,
-                date:     dateKey,
-                mode:     rec.mode,
-                time:     rec.time || '',
+                date: dateKey,
+                mode: rec.mode,
+                time: rec.time || '',
             });
             row.eachCell((cell, colNumber) => {
-                cell.font      = { name: 'Arial', size: 11 };
-                cell.alignment = { vertical: 'middle', horizontal: colNumber === 4 ? 'left' : 'center' };
-                cell.border    = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
+                cell.font = { name: 'Arial', size: 11 };
+                cell.alignment = { vertical: 'middle', horizontal: colNumber === 8 ? 'left' : 'center' };
+                cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
             });
         }
 
         // Summary row at the bottom
         const summaryRow = sheet.addRow({
-            agent:    'TOTAL',
-            total:    day.summary.totalLeads,
-            shown:    day.summary.totalShown,
+            agent: 'TOTAL',
+            total: day.summary.totalLeads,
+            shown: day.summary.totalShown,
+            newShown: day.records.reduce((sum, r) => sum + (r.newShown || 0), 0),
+            newHidden: day.records.reduce((sum, r) => sum + (r.newHidden || 0), 0),
+            someShown: day.records.reduce((sum, r) => sum + (r.someShown || 0), 0),
+            someHidden: day.records.reduce((sum, r) => sum + (r.someHidden || 0), 0),
             filename: `${day.summary.totalFiles} file(s) processed`,
-            date:     dateKey,
-            mode:     '—',
-            time:     '—',
+            date: dateKey,
+            mode: '—',
+            time: '—',
         });
         summaryRow.eachCell((cell) => {
-            cell.font      = { name: 'Arial', size: 11, bold: true };
-            cell.fill      = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD9E1F2' } };
+            cell.font = { name: 'Arial', size: 11, bold: true };
+            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD9E1F2' } };
             cell.alignment = { vertical: 'middle', horizontal: 'center' };
-            cell.border    = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
+            cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
         });
 
         // Stream directly to browser as a download
@@ -1081,18 +1111,18 @@ app.get('/api/export/:date', async (req, res) => {
 // ─────────────────────────────────────────────
 app.get('/api/admin/report', (req, res) => {
     try {
-        const data    = loadAnalytics();
+        const data = loadAnalytics();
         const records = [];
 
         for (const dateKey of Object.keys(data).sort((a, b) => b.localeCompare(a))) {
             for (const rec of [...data[dateKey].records].reverse()) {
                 records.push({
-                    agent:    rec.agent,
-                    total:    rec.total,
-                    shown:    rec.shown,
+                    agent: rec.agent,
+                    total: rec.total,
+                    shown: rec.shown,
                     filename: rec.filename,
-                    date:     dateKey,
-                    mode:     rec.mode
+                    date: dateKey,
+                    mode: rec.mode
                 });
             }
         }
@@ -1144,11 +1174,11 @@ app.post('/api/admin/users', (req, res) => {
     try {
         const users = req.body;
         if (!Array.isArray(users)) throw new Error('Payload must be an array of users');
-        
+
         // Enforce that at least ONE user has the Admin role
         const adminCount = users.filter(u => u.role === 'Admin').length;
         if (adminCount === 0) throw new Error('System must have at least one Admin account.');
-        
+
         fs.writeFileSync(usersPath, JSON.stringify(users, null, 2));
         res.json({ success: true });
     } catch (e) {
@@ -1205,7 +1235,7 @@ io.on('connection', (socket) => {
 
         try {
             let currentShows = JSON.parse(fs.readFileSync(showsPath));
-            
+
             currentShows.forEach(s => {
                 if (showIds.includes(s.id)) {
                     s.agentName = agentId;
@@ -1214,7 +1244,7 @@ io.on('connection', (socket) => {
             });
 
             fs.writeFileSync(showsPath, JSON.stringify(currentShows, null, 2));
-            
+
             // 1. Broadcast to all admins that the table needs refresh
             io.emit('hopper_updated');
 

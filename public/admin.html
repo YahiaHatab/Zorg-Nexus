@@ -1641,7 +1641,7 @@
 
     <!-- MAIN CONTENT -->
     <main class="main-content"
-      style="flex: 1; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column;">
+      style="flex: 1; overflow: hidden; display: flex; flex-direction: column;">
 
       <!-- ── TOPBAR ── -->
       <div class="topbar">
@@ -1796,11 +1796,24 @@
           </div>
           <div class="stat-card">
             <div class="sc-val" id="as-totalLeads" style="color:var(--warning);">—</div>
+            <div style="font-size:10px; color:var(--text-muted); margin-bottom:6px; font-family:'JetBrains Mono',monospace;">
+              New: <span id="as-newLeads" style="font-weight:600; color:var(--text-main);">—</span> | Some: <span id="as-someLeads" style="font-weight:600; color:var(--text-main);">—</span>
+            </div>
             <div class="sc-lbl">Gross</div>
           </div>
           <div class="stat-card">
             <div class="sc-val" id="as-totalShown" style="color:var(--success);">—</div>
+            <div style="font-size:10px; color:var(--text-muted); margin-bottom:6px; font-family:'JetBrains Mono',monospace;">
+              New: <span id="as-newShown" style="font-weight:600; color:var(--success);">—</span> | Some: <span id="as-someShown" style="font-weight:600; color:var(--success);">—</span>
+            </div>
             <div class="sc-lbl">Net</div>
+          </div>
+          <div class="stat-card">
+            <div class="sc-val" id="as-totalHidden" style="color:var(--danger);">—</div>
+            <div style="font-size:10px; color:var(--text-muted); margin-bottom:6px; font-family:'JetBrains Mono',monospace;">
+              New: <span id="as-newHidden" style="font-weight:600; color:var(--danger);">—</span> | Some: <span id="as-someHidden" style="font-weight:600; color:var(--danger);">—</span>
+            </div>
+            <div class="sc-lbl">Hidden</div>
           </div>
           <div class="stat-card">
             <div class="sc-val" id="as-totalDays" style="color:var(--accent-cyan);">—</div>
@@ -2246,14 +2259,24 @@
         // Add reason tracking for UI display
         const reasonText = rec.reason ? `<br><span style="color:var(--danger); font-size:10px;">Reason: ${escHtml(rec.reason)}</span>` : '';
 
+        // Separate sums fallback
+        const newShown = rec.newShown !== undefined ? rec.newShown : (rec.mode === 'SOME' ? 0 : rec.shown);
+        const newHidden = rec.newHidden !== undefined ? rec.newHidden : (rec.mode === 'SOME' ? 0 : rec.hidden);
+        const someShown = rec.someShown !== undefined ? rec.someShown : (rec.mode === 'SOME' ? rec.shown : 0);
+        const someHidden = rec.someHidden !== undefined ? rec.someHidden : (rec.mode === 'SOME' ? rec.hidden : 0);
+
+        const grossBreakdown = `<div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">N: ${newShown + newHidden} | S: ${someShown + someHidden}</div>`;
+        const netBreakdown = `<div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">N: ${newShown} | S: ${someShown}</div>`;
+        const hiddenBreakdown = `<div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">N: ${newHidden} | S: ${someHidden}</div>`;
+
         return `<tr style="${bgStyle}">
             <td style="color:var(--text-muted);font-family:'JetBrains Mono',monospace;font-size:12px;">${rec.time || '—'}</td>
             <td class="agent-name">${escHtml(rec.agent)}</td>
             <td><span class="mode-tag ${cls}">${rec.mode}</span></td>
             <td style="max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escHtml(rec.filename)}">${escHtml(rec.filename)}${reasonText}</td>
-            <td style="color:var(--text-muted);">${rec.total}</td>
-            <td class="stat-highlight">${rec.shown}</td>
-            <td style="color:var(--danger);">${rec.hidden}</td>
+            <td style="color:var(--text-muted);">${rec.total}${grossBreakdown}</td>
+            <td class="stat-highlight">${rec.shown}${netBreakdown}</td>
+            <td style="color:var(--danger);">${rec.hidden}${hiddenBreakdown}</td>
             <td style="text-align:center;">
               ${isAdminRole ? `<button class="btn btn-red btn-sm" onclick="deleteRecord('${date}','${escHtml(rec.transactionId)}')" title="Delete this record permanently">🗑</button>` : `<span style="color:var(--text-muted);font-size:10px;font-weight:600;">VIEW ONLY</span>`}
             </td>
@@ -2351,7 +2374,10 @@
     function renderAnalytics(data) {
       // ── Aggregate all-time totals ──
       let totalFiles = 0, totalLeads = 0, totalShown = 0;
-      const agentMap = {}; // agent → { files, leads, shown }
+      let totalNewShown = 0, totalNewHidden = 0, totalNewLeads = 0;
+      let totalSomeShown = 0, totalSomeHidden = 0, totalSomeLeads = 0;
+
+      const agentMap = {}; // agent → { files, leads, shown, newLeads, newShown, newHidden, someLeads, someShown, someHidden }
       const modeMap = { STANDARD: 0, SOME: 0 };
       const dateKeys = Object.keys(data).sort();
 
@@ -2361,7 +2387,13 @@
         totalShown += day.summary.totalShown;
 
         for (const [agent, stats] of Object.entries(day.summary.byAgent || {})) {
-          if (!agentMap[agent]) agentMap[agent] = { files: 0, leads: 0, shown: 0 };
+          if (!agentMap[agent]) {
+            agentMap[agent] = {
+              files: 0, leads: 0, shown: 0,
+              newLeads: 0, newShown: 0, newHidden: 0,
+              someLeads: 0, someShown: 0, someHidden: 0
+            };
+          }
           agentMap[agent].files += stats.files;
           agentMap[agent].leads += stats.leads;
           agentMap[agent].shown += stats.shown;
@@ -2370,13 +2402,55 @@
         for (const rec of (day.records || [])) {
           if (rec.mode === 'SOME') modeMap.SOME++;
           else modeMap.STANDARD++;
+
+          const recNewShown = rec.newShown !== undefined ? rec.newShown : (rec.mode === 'SOME' ? 0 : rec.shown);
+          const recNewHidden = rec.newHidden !== undefined ? rec.newHidden : (rec.mode === 'SOME' ? 0 : rec.hidden);
+          const recSomeShown = rec.someShown !== undefined ? rec.someShown : (rec.mode === 'SOME' ? rec.shown : 0);
+          const recSomeHidden = rec.someHidden !== undefined ? rec.someHidden : (rec.mode === 'SOME' ? rec.hidden : 0);
+
+          totalNewShown += recNewShown;
+          totalNewHidden += recNewHidden;
+          totalNewLeads += (recNewShown + recNewHidden);
+
+          totalSomeShown += recSomeShown;
+          totalSomeHidden += recSomeHidden;
+          totalSomeLeads += (recSomeShown + recSomeHidden);
+
+          const agent = rec.agent;
+          if (agent) {
+            if (!agentMap[agent]) {
+              agentMap[agent] = {
+                files: 0, leads: 0, shown: 0,
+                newLeads: 0, newShown: 0, newHidden: 0,
+                someLeads: 0, someShown: 0, someHidden: 0
+              };
+            }
+            agentMap[agent].newShown += recNewShown;
+            agentMap[agent].newHidden += recNewHidden;
+            agentMap[agent].newLeads += (recNewShown + recNewHidden);
+
+            agentMap[agent].someShown += recSomeShown;
+            agentMap[agent].someHidden += recSomeHidden;
+            agentMap[agent].someLeads += (recSomeShown + recSomeHidden);
+          }
         }
       }
 
       // Stat cards
       document.getElementById('as-totalFiles').textContent = totalFiles;
+      
       document.getElementById('as-totalLeads').textContent = totalLeads;
+      document.getElementById('as-newLeads').textContent = totalNewLeads;
+      document.getElementById('as-someLeads').textContent = totalSomeLeads;
+
       document.getElementById('as-totalShown').textContent = totalShown;
+      document.getElementById('as-newShown').textContent = totalNewShown;
+      document.getElementById('as-someShown').textContent = totalSomeShown;
+
+      document.getElementById('as-totalHidden').textContent = totalLeads - totalShown;
+      document.getElementById('as-newHidden').textContent = totalNewHidden;
+      document.getElementById('as-someHidden').textContent = totalSomeHidden;
+
       document.getElementById('as-totalDays').textContent = dateKeys.length;
 
       // ── Line chart — shown leads over last 14 days ──
@@ -2447,6 +2521,7 @@
         type: 'doughnut',
         data: {
           labels: ['Standard', 'Some'],
+          data: [modeMap.STANDARD, modeMap.SOME],
           datasets: [{
             data: [modeMap.STANDARD, modeMap.SOME],
             backgroundColor: ['#3B82F6', '#06B6D4'],
@@ -2468,12 +2543,17 @@
       document.getElementById('analyticsAgentTable').innerHTML = agentEntries.map(([name, s]) => {
         const hidden = s.leads - s.shown;
         const conversion = s.leads > 0 ? ((s.shown / s.leads) * 100).toFixed(1) : '0.0';
+
+        const grossBreakdown = `<div style="font-size: 10px; color: var(--text-muted); margin-top: 2px; font-family:'JetBrains Mono',monospace;">N: ${s.newLeads} | S: ${s.someLeads}</div>`;
+        const netBreakdown = `<div style="font-size: 10px; color: var(--text-muted); margin-top: 2px; font-family:'JetBrains Mono',monospace;">N: ${s.newShown} | S: ${s.someShown}</div>`;
+        const hiddenBreakdown = `<div style="font-size: 10px; color: var(--text-muted); margin-top: 2px; font-family:'JetBrains Mono',monospace;">N: ${s.newHidden} | S: ${s.someHidden}</div>`;
+
         return `<tr>
             <td class="agent-name">${escHtml(name)}</td>
             <td style="color:var(--accent-blue);font-weight:600;">${s.files}</td>
-            <td>${s.leads}</td>
-            <td class="stat-highlight">${s.shown}</td>
-            <td style="color:var(--danger);">${hidden}</td>
+            <td>${s.leads}${grossBreakdown}</td>
+            <td class="stat-highlight">${s.shown}${netBreakdown}</td>
+            <td style="color:var(--danger);">${hidden}${hiddenBreakdown}</td>
             <td style="color:var(--warning);font-weight:600;">${conversion}%</td>
         </tr>`;
       }).join('') || `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:30px;">No data yet.</td></tr>`;

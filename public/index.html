@@ -1927,13 +1927,9 @@
   </div>
 
   <div id="dragOverlay">
-    <div class="drop-half std" id="dropStd">
-      <h1>Standard Mode</h1>
-      <p>Drop file to extract 'New' records.</p>
-    </div>
-    <div class="drop-half some" id="dropSome">
-      <h1>Some Mode</h1>
-      <p>Drop file to extract 'Some' records.</p>
+    <div class="drop-half std" id="dropStd" style="width: 100%;">
+      <h1>Upload Excel</h1>
+      <p>Drop file here to extract 'New' and 'Some' records.</p>
     </div>
   </div>
 
@@ -2064,20 +2060,12 @@
               <input type="text" id="searchInput" placeholder="Search by Show name..." oninput="renderTable()">
             </div>
 
-            <!-- Hidden file inputs — IDs and onchange handlers preserved -->
+            <!-- Hidden file input -->
             <input type="file" id="fileStd" style="display:none" accept=".xlsx"
               onchange="manualUpload(this, 'standard')">
-            <input type="file" id="fileSome" style="display:none" accept=".xlsx" onchange="manualUpload(this, 'some')">
 
-            <!-- Consolidated upload dropdown -->
-            <div class="upload-dd" style="margin-left:auto;">
-              <button class="filter-btn btn-std">⬆ Upload Excel ▾</button>
-              <div class="upload-dd-menu">
-                <button onclick="document.getElementById('fileStd').click()">📄 Standard Mode</button>
-                <div class="dd-divider"></div>
-                <button onclick="document.getElementById('fileSome').click()">📋 Some Mode</button>
-              </div>
-            </div>
+            <!-- Upload Excel button -->
+            <button class="filter-btn btn-std" style="margin-left:auto;" onclick="document.getElementById('fileStd').click()">⬆ Upload Excel</button>
           </div>
 
           <div class="table-wrap">
@@ -2407,6 +2395,7 @@
 
     function setupZone(id, mode) {
       const zone = document.getElementById(id);
+      if (!zone) return;
       zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
       zone.addEventListener('dragleave', e => { e.preventDefault(); zone.classList.remove('dragover'); });
       zone.addEventListener('drop', e => {
@@ -2415,7 +2404,6 @@
       });
     }
     setupZone('dropStd', 'standard');
-    setupZone('dropSome', 'some');
 
     // ─────────────────────────────────────────────
     //  NAVIGATION
