@@ -2,48 +2,20 @@
   "files": [
     {
       "agent": "Admin",
-      "name": "XShow - RSNA 2026 - Radiological Society of North America - November 29 - December 2, 2026 - McCormick Place - Chicago, IL, USA. Yahia.xlsx",
-      "size": 77082,
-      "mtime": "2026-07-02T17:22:10.632Z",
+      "name": "XZShow - Ai4 2026 - North America's largest artificial intelligence industry event - AUGUST 4-6, 2026 - the venetian - Las vegas, Nv, USA Yahia.xlsx",
+      "size": 378960,
+      "mtime": "2026-07-02T18:15:28.462Z",
       "region": "USA",
       "destPath": "2026/Jul/2-7/USA",
       "status": "sorted",
-      "transactionId": "mr3rv2a5vdj1hn1pg"
-    },
-    {
-      "agent": "Yahia",
-      "name": "Eurocine 2026 (European film and technology exhibition) - May 8 - 9, 2026 - Hungexpo Budapest Congress and Exhibition Centre - Budapest, Hungary. YahiaH.xlsx",
-      "size": 17180,
-      "mtime": "2026-04-10T21:00:31.503Z",
-      "region": "UK",
-      "destPath": "2026/Apr/10-4/UK",
-      "status": "sorted",
-      "transactionId": "mnted5pyzc3686xuj"
+      "transactionId": "mr3trlqp2nnjp547o"
     }
   ],
   "logs": [
     {
       "agent": "Admin",
-      "ts": "08:22:10 PM",
-      "msg": "Sorted [STANDARD]: XShow - RSNA 2026 - Radiological Society of North America - November 29 - December 2, 2026 - McCormick Place - Chicago, IL, USA. Yahia.xlsx (Shown: 182, Hidden: 118)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "11:07:31 PM",
-      "msg": "Sorted [STANDARD]: Eurocine 2026 (European film and technology exhibition) - May 8 - 9, 2026 - Hungexpo Budapest Congress and Exhibition Centre - Budapest, Hungary. YahiaH.xlsx (Shown: 43, Hidden: 94)",
-      "type": "success"
-    },
-    {
-      "agent": "Admin",
-      "ts": "10:48:01 PM",
-      "msg": "[UNDO] Reverted: Eurocine 2026 (European film and technology exhibition) - May 8 - 9, 2026 - Hungexpo Budapest Congress and Exhibition Centre - Budapest, Hungary. YahiaH.xlsx",
-      "type": "warning"
-    },
-    {
-      "agent": "Admin",
-      "ts": "12:47:33 AM",
-      "msg": "Sorted [STANDARD]: Eurocine 2026 (European film and technology exhibition) - May 8 - 9, 2026 - Hungexpo Budapest Congress and Exhibition Centre - Budapest, Hungary. YahiaH.xlsx (Shown: 43, Hidden: 94)",
+      "ts": "09:15:28 PM",
+      "msg": "Sorted [STANDARD]: XZShow - Ai4 2026 - North America's largest artificial intelligence industry event - AUGUST 4-6, 2026 - the venetian - Las vegas, Nv, USA Yahia.xlsx (Shown: 77, Hidden: 198)",
       "type": "success"
     }
   ]

@@ -275,13 +275,13 @@ async function processExcelFile(filePath, originalName) {
     const sheet = workbook.getWorksheet('Sheet1') || workbook.worksheets[0];
     if (sheet) {
         let stats = {};
-        let highestNewNum = -1;
+        let latestNewSuffix = -1;
         let latestNewKey = "New";
-        let foundAnyNew = false;
+        let isLatestNewRed = false;
 
-        let highestSomeNum = -1;
+        let latestSomeSuffix = -1;
         let latestSomeKey = "Some";
-        let foundAnySome = false;
+        let isLatestSomeRed = false;
 
         let globalHidden = 0;
         let globalVisible = 0;
@@ -290,14 +290,6 @@ async function processExcelFile(filePath, originalName) {
 
         sheet.eachRow((row) => {
             const isHidden = row.hidden;
-            let hasNewInRow = false;
-            let rowNewKey = null;
-            let rowNewNum = -1;
-
-            let hasSomeInRow = false;
-            let rowSomeKey = null;
-            let rowSomeNum = -1;
-
             let hasRedFont = false;
             const col1 = row.getCell(1).value;
             const hasData = col1 !== null && col1 !== undefined && col1.toString().trim() !== '';
@@ -307,6 +299,8 @@ async function processExcelFile(filePath, originalName) {
             if (col2Value && typeof col2Value === 'object' && col2Value.result !== undefined) col2Value = col2Value.result;
             const col2Str = col2Value !== null && col2Value !== undefined ? col2Value.toString().trim() : '';
             const isLocal = col2Str.toLowerCase().includes('local');
+
+            let rowKeys = new Set();
 
             row.eachCell((cell) => {
                 let cellText = '';
@@ -320,23 +314,31 @@ async function processExcelFile(filePath, originalName) {
 
                 const matchNew = cellText.trim().match(/^new(\d*)$/i);
                 if (matchNew) {
-                    hasNewInRow = true;
-                    foundAnyNew = true;
                     const num = matchNew[1] === "" ? 0 : parseInt(matchNew[1], 10);
-                    if (num > rowNewNum) {
-                        rowNewNum = num;
-                        rowNewKey = num === 0 ? "New" : `New${num}`;
+                    const key = num === 0 ? "New" : `New${num}`;
+                    rowKeys.add(key);
+
+                    if (num > latestNewSuffix) {
+                        latestNewSuffix = num;
+                        latestNewKey = key;
+                        isLatestNewRed = isRed && !isHidden;
+                    } else if (num === latestNewSuffix) {
+                        if (isRed && !isHidden) isLatestNewRed = true;
                     }
                 }
 
                 const matchSome = cellText.trim().match(/^some(\d*)$/i);
                 if (matchSome) {
-                    hasSomeInRow = true;
-                    foundAnySome = true;
                     const num = matchSome[1] === "" ? 0 : parseInt(matchSome[1], 10);
-                    if (num > rowSomeNum) {
-                        rowSomeNum = num;
-                        rowSomeKey = num === 0 ? "Some" : `Some${num}`;
+                    const key = num === 0 ? "Some" : `Some${num}`;
+                    rowKeys.add(key);
+
+                    if (num > latestSomeSuffix) {
+                        latestSomeSuffix = num;
+                        latestSomeKey = key;
+                        isLatestSomeRed = isRed && !isHidden;
+                    } else if (num === latestSomeSuffix) {
+                        if (isRed && !isHidden) isLatestSomeRed = true;
                     }
                 }
 
@@ -351,33 +353,14 @@ async function processExcelFile(filePath, originalName) {
                 if (isLocal) globalVisibleLocal++;
             }
 
-            if (hasNewInRow) {
-                if (rowNewNum > highestNewNum) {
-                    highestNewNum = rowNewNum;
-                    latestNewKey = rowNewKey;
-                }
-                if (!stats[rowNewKey]) stats[rowNewKey] = { visibleRed: 0, hidden: 0, visibleRedLocal: 0, hiddenLocal: 0 };
+            for (const key of rowKeys) {
+                if (!stats[key]) stats[key] = { visibleRed: 0, hidden: 0, visibleRedLocal: 0, hiddenLocal: 0 };
                 if (isHidden) {
-                    stats[rowNewKey].hidden++;
-                    if (isLocal) stats[rowNewKey].hiddenLocal++;
+                    stats[key].hidden++;
+                    if (isLocal) stats[key].hiddenLocal++;
                 } else if (hasRedFont) {
-                    stats[rowNewKey].visibleRed++;
-                    if (isLocal) stats[rowNewKey].visibleRedLocal++;
-                }
-            }
-
-            if (hasSomeInRow) {
-                if (rowSomeNum > highestSomeNum) {
-                    highestSomeNum = rowSomeNum;
-                    latestSomeKey = rowSomeKey;
-                }
-                if (!stats[rowSomeKey]) stats[rowSomeKey] = { visibleRed: 0, hidden: 0, visibleRedLocal: 0, hiddenLocal: 0 };
-                if (isHidden) {
-                    stats[rowSomeKey].hidden++;
-                    if (isLocal) stats[rowSomeKey].hiddenLocal++;
-                } else if (hasRedFont) {
-                    stats[rowSomeKey].visibleRed++;
-                    if (isLocal) stats[rowSomeKey].visibleRedLocal++;
+                    stats[key].visibleRed++;
+                    if (isLocal) stats[key].visibleRedLocal++;
                 }
             }
         });
@@ -387,14 +370,17 @@ async function processExcelFile(filePath, originalName) {
         let someShownLocal = 0;
         let someHiddenLocal = 0;
 
-        if (foundAnyNew || foundAnySome) {
-            if (foundAnyNew) {
+        const countNew = (latestNewSuffix >= 0 && isLatestNewRed && stats[latestNewKey]);
+        const countSome = (latestSomeSuffix >= 0 && isLatestSomeRed && stats[latestSomeKey]);
+
+        if (countNew || countSome) {
+            if (countNew) {
                 newShown = stats[latestNewKey].visibleRed;
                 newHidden = stats[latestNewKey].hidden;
                 newShownLocal = stats[latestNewKey].visibleRedLocal;
                 newHiddenLocal = stats[latestNewKey].hiddenLocal;
             }
-            if (foundAnySome) {
+            if (countSome) {
                 someShown = stats[latestSomeKey].visibleRed;
                 someHidden = stats[latestSomeKey].hidden;
                 someShownLocal = stats[latestSomeKey].visibleRedLocal;
@@ -800,7 +786,7 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
 
     const username = req.body.username;
     const mode = req.body.mode || 'standard';
-    const originalName = req.file.originalname;
+    const originalName = Buffer.from(req.file.originalname, 'latin1').toString('utf8');
     const tempPath = req.file.path;
 
     try {
