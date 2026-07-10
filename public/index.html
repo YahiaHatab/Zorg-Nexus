@@ -2280,6 +2280,7 @@
     let currentView = 'files';
     let analyticsData = {};    // full ledger from /api/analytics
     let perfChart = null;   // Chart.js instance
+    let cachedPerformanceRecords = null;
 
     let socket = null;
     let currentAssignedShow = null;
@@ -2612,6 +2613,10 @@
           <td class="status-cell">${statusHtml[f.status] || f.status}${undoBtnHtml}</td>
         </tr>`;
       }).join('');
+
+      if (typeof renderPerformanceDashboard === 'function') {
+        renderPerformanceDashboard();
+      }
     }
 
     // ─────────────────────────────────────────────
@@ -2693,7 +2698,10 @@
       try {
         const res = await fetch(`/api/user/report?username=${encodeURIComponent(currentUser)}`);
         const json = await res.json();
-        if (json.success) renderPerformanceDashboard(json.data);
+        if (json.success) {
+          cachedPerformanceRecords = json.data;
+          renderPerformanceDashboard();
+        }
       } catch (e) { console.error('Performance fetch failed', e); }
     }
 
@@ -2758,22 +2766,34 @@
       }
     }
 
-    function renderPerformanceDashboard(records) {
-      if (!currentUser || !records) return;
+    function renderPerformanceDashboard() {
+      if (!currentUser || !cachedPerformanceRecords) return;
 
-      const todayStr = new Date().toISOString().split('T')[0];
+      const today = new Date();
+      const todayStr = today.toISOString().split('T')[0];
       const nowMonthStr = todayStr.slice(0, 7);
+
+      const dateInput = document.getElementById('uploadDate');
+      const selectedDateStr = dateInput && dateInput.value ? dateInput.value : todayStr;
 
       let filesToday = 0, shownToday = 0, grossToday = 0;
       let shownMonth = 0, grossMonth = 0;
       const dailyShownMap = {};
 
-      records.forEach(rec => {
-        const isToday = rec.date === todayStr;
+      cachedPerformanceRecords.forEach(rec => {
+        const isSelectedDate = rec.date === selectedDateStr;
         const isThisMonth = rec.date.startsWith(nowMonthStr);
 
-        if (isToday) { filesToday++; shownToday += rec.shown; grossToday += rec.total; }
-        if (isThisMonth) { shownMonth += rec.shown; grossMonth += rec.total; }
+        if (isSelectedDate) { 
+          filesToday++; 
+          shownToday += rec.shown; 
+          grossToday += rec.total; 
+        }
+        if (isThisMonth) { 
+          shownMonth += rec.shown; 
+          grossMonth += rec.total; 
+        }
+        
         if (!dailyShownMap[rec.date]) dailyShownMap[rec.date] = 0;
         dailyShownMap[rec.date] += rec.shown;
       });
@@ -2785,8 +2805,12 @@
       document.getElementById('pcShownMonth').textContent = shownMonth;
       document.getElementById('pcGrossMonth').textContent = grossMonth;
 
-      // Pacing Ghost (mocked average: 12)
-      updatePacingGhost(shownToday, 12);
+      // Pacing Ghost (dynamic average)
+      const dailyTotals = Object.values(dailyShownMap);
+      const totalDays = dailyTotals.length;
+      const averageNet = totalDays > 0 ? Math.round(dailyTotals.reduce((sum, val) => sum + val, 0) / totalDays) : 12;
+
+      updatePacingGhost(shownToday, averageNet);
     }
 
     function updatePacingGhost(currentNet, averageNet) {
@@ -2798,10 +2822,10 @@
 
       if (diff >= 0) {
         el.classList.add('ahead');
-        el.innerHTML = `↑ +${diff} vs usual pace`;
+        el.innerHTML = `↑ +${diff} vs usual pace (${averageNet} avg)`;
       } else {
         el.classList.add('behind');
-        el.innerHTML = `↓ ${diff} behind pace`;
+        el.innerHTML = `↓ ${Math.abs(diff)} behind pace (${averageNet} avg)`;
       }
     }
 
