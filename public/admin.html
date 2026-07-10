@@ -836,7 +836,7 @@
       padding: 13px 36px 13px 15px;
       font-size: 13px;
       line-height: 1.5;
-      animation: slideIn 0.25s forwards, slideOut 0.25s forwards 3.75s;
+      animation: slideIn 0.25s forwards;
       cursor: pointer;
       position: relative;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
@@ -1765,7 +1765,7 @@
             <span>Gross: <b id="ls-leads" style="color:var(--text-main);">—</b></span>
             <span>Net: <b id="ls-shown" style="color:var(--success);">—</b></span>
           </div>
-          <div style="overflow-x:auto;">
+          <div style="overflow-x:auto; overflow-y:auto; max-height: calc(100vh - 280px);">
             <table class="data-table">
               <thead>
                 <tr>
@@ -2782,6 +2782,7 @@
     }
 
     function dismissToast(toast) {
+      if (!toast || !toast.parentNode) return;
       toast.style.animation = 'none';
       toast.style.transition = 'transform 0.15s, opacity 0.15s';
       requestAnimationFrame(() => { toast.style.transform = 'translateX(110%)'; toast.style.opacity = '0'; });
@@ -2791,11 +2792,11 @@
     function showToast(msg, type = 'success') {
       const c = document.getElementById('toastContainer');
       const toast = document.createElement('div');
-      toast.className = `toast ${type}`;
+      toast.className = `toast ${type || ''}`;
       toast.innerHTML = msg;
       toast.addEventListener('click', () => dismissToast(toast));
       c.appendChild(toast);
-      setTimeout(() => { if (toast.parentNode) toast.remove(); }, 4000);
+      setTimeout(() => dismissToast(toast), 5000);
     }
 
     // ══════════════════════════════════════════════
@@ -3116,6 +3117,15 @@
         if (currentTab === 'leaderboard') renderDashboard();
       }
       showToast(`⚡ <b>${escHtml(row.agent)}</b> — ${escHtml(row.filename)}<br>Shown: ${row.shown}`, 'info');
+    });
+
+    socket.on('record_deleted', (data) => {
+      // Remove the deleted record from local masterData
+      masterData = masterData.filter(row => row.transactionId !== data.transactionId);
+      // Refresh dashboard metrics & leaderboard if active
+      if (currentTab === 'leaderboard') renderDashboard();
+      // Refresh ledger tab table if we are viewing the ledger
+      if (currentTab === 'ledger') fetchLedgerDay();
     });
 
     socket.on('daily_reset', () => {

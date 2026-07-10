@@ -607,6 +607,24 @@
       width: 100%;
     }
 
+    .date-input {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      outline: none;
+      transition: all 0.2s;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .date-input:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+    }
+
     .filter-btn {
       font-size: 12px;
       font-weight: 600;
@@ -1134,7 +1152,7 @@
       box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
       font-size: 13px;
       color: var(--text-main);
-      animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards, slideOut 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards 5.7s;
+      animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
       cursor: pointer;
       position: relative;
     }
@@ -2081,8 +2099,11 @@
             <input type="file" id="fileStd" style="display:none" accept=".xlsx" multiple
               onchange="manualUpload(this, 'standard')">
 
+            <!-- Date Picker -->
+            <input type="date" id="uploadDate" class="date-input" style="margin-left:auto; margin-right:8px;" onchange="renderTable()">
+
             <!-- Upload Excel button -->
-            <button class="filter-btn btn-std" style="margin-left:auto;" onclick="document.getElementById('fileStd').click()">⬆ Upload Excel</button>
+            <button class="filter-btn btn-std" onclick="document.getElementById('fileStd').click()">⬆ Upload Excel</button>
           </div>
 
           <div class="table-wrap">
@@ -2108,6 +2129,7 @@
                 <span>Personal Monthly History</span>
                 <span class="log-badge" id="historyCount">0 shows</span>
               </div>
+              <input type="text" id="historySearch" placeholder="Search shows..." onclick="event.stopPropagation()" oninput="renderHistoryTable()" style="margin-left:auto; margin-right:16px; padding:4px 8px; border-radius:4px; border:1px solid var(--border); background:var(--bg-panel); color:var(--text-main); font-size:12px; outline:none;" />
               <span class="log-toggle-icon">▲</span>
             </div>
             <div class="log-inner-wrap">
@@ -2319,6 +2341,15 @@
           document.getElementById('adminLink').style.display = 'none';
         }
 
+        const dateInput = document.getElementById('uploadDate');
+        if (dateInput && !dateInput.value) {
+            const today = new Date();
+            const y = today.getFullYear();
+            const m = String(today.getMonth() + 1).padStart(2, '0');
+            const d = String(today.getDate()).padStart(2, '0');
+            dateInput.value = `${y}-${m}-${d}`;
+        }
+
         // Fetch user files on load
         fetchUserData();
         // Populate the top widget strip immediately
@@ -2375,6 +2406,11 @@
       formData.append('username', currentUser);
       formData.append('mode', mode);
 
+      const uploadDateInput = document.getElementById('uploadDate');
+      if (uploadDateInput && uploadDateInput.value) {
+        formData.append('uploadDate', uploadDateInput.value);
+      }
+
       showBulkOverlay(files.length);
 
       try {
@@ -2387,6 +2423,12 @@
           showBulkSummaryModal(data.results);
           fetchUserData();
           loadPerformanceDashboard();
+          data.results.forEach(result => {
+            if (result.success) {
+              const stats = result.stats;
+              showToast(`✅ <b>Upload Successful</b><br>${result.filename}<br>Shown: ${stats.shown} | Hidden: ${stats.hidden}`, 'success');
+            }
+          });
         } else {
           showErrorOverlay('Upload Failed', 'The server could not process the upload request.', data.error || 'Please try again.');
         }
@@ -2525,7 +2567,20 @@
 
     function renderTable() {
       const q = document.getElementById('searchInput').value.toLowerCase();
-      const list = files.filter(f => !q || f.name.toLowerCase().includes(q));
+      const dateVal = document.getElementById('uploadDate') ? document.getElementById('uploadDate').value : '';
+      let targetDate = new Date();
+      if (dateVal) {
+        const [y, m, d] = dateVal.split('-');
+        targetDate = new Date(y, m - 1, d);
+      }
+
+      const list = files.filter(f => {
+        const matchQ = !q || f.name.toLowerCase().includes(q);
+        const matchD = f.mtime.getFullYear() === targetDate.getFullYear() &&
+                       f.mtime.getMonth() === targetDate.getMonth() &&
+                       f.mtime.getDate() === targetDate.getDate();
+        return matchQ && matchD;
+      });
 
       const tbody = document.getElementById('tableBody');
       const statusHtml = { sorted: '<span class="status-icon ok">✓ Sorted</span>', error: '<span class="status-icon err">✕ Error</span>' };
@@ -2534,7 +2589,17 @@
       tbody.innerHTML = list.map(f => {
         let ext = f.name.lastIndexOf('.') > -1 ? f.name.slice(f.name.lastIndexOf('.')) : '';
         let base = f.name.slice(0, f.name.length - ext.length);
-        let canUndo = (nowMs - new Date(f.mtime).getTime()) < 300000 && f.transactionId;
+        let uploadTime = f.uploadTime ? new Date(f.uploadTime).getTime() : 0;
+        if (!uploadTime && f.transactionId) {
+          try {
+            const base36Timestamp = f.transactionId.substring(0, 8);
+            const decodedTime = parseInt(base36Timestamp, 36);
+            if (decodedTime > 1735689600000 && decodedTime < 2524608000000) {
+              uploadTime = decodedTime;
+            }
+          } catch (e) {}
+        }
+        let canUndo = uploadTime && (nowMs - uploadTime) < 300000 && f.transactionId;
         let undoBtnHtml = canUndo
           ? `<span title="Revert upload (within 5 min)" onclick="undoUpload('${f.transactionId}')" style="cursor:pointer; margin-left:12px; display:inline-flex; align-items:center; justify-content:center; background:rgba(239,68,68,0.1); color:var(--danger); border-radius:4px; padding:2px 6px; font-size:10px; font-weight:700; letter-spacing:0.5px; transition:all 0.2s;" onmouseover="this.style.background='var(--danger)'; this.style.color='#fff';" onmouseout="this.style.background='rgba(239,68,68,0.1)'; this.style.color='var(--danger)';">↩ UNDO</span>`
           : '';
@@ -2561,6 +2626,9 @@
     }
 
     function renderHistoryTable(allData) {
+      if (allData) window.lastHistoryData = allData;
+      else allData = window.lastHistoryData || [];
+
       const historyBody = document.getElementById('historyBody');
       const historyCount = document.getElementById('historyCount');
       if (!historyBody || !historyCount) return;
@@ -2569,16 +2637,20 @@
       const currentMonth = now.getMonth();
       const currentYear = now.getFullYear();
 
-      // Filter for current month only
+      const searchQ = document.getElementById('historySearch') ? document.getElementById('historySearch').value.toLowerCase() : '';
+
+      // Filter for current month only and search
       const monthData = allData.filter(item => {
         const d = new Date(item.date);
-        return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+        const inMonth = d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+        const matchesSearch = !searchQ || item.filename.toLowerCase().includes(searchQ);
+        return inMonth && matchesSearch;
       });
 
       historyCount.textContent = `${monthData.length} shows`;
 
       if (monthData.length === 0) {
-        historyBody.innerHTML = `<div style="padding:40px; text-align:center; color:var(--text-muted); font-size:12px;">No shows recorded for ${monthNames[currentMonth]} ${currentYear}.</div>`;
+        historyBody.innerHTML = `<div style="padding:40px; text-align:center; color:var(--text-muted); font-size:12px;">No shows found.</div>`;
         return;
       }
 
@@ -2587,18 +2659,17 @@
           <tr>
             <th>Date</th>
             <th>Show Name</th>
-            <th>Mode</th>
+            <th>Gross Leads</th>
             <th>Net Leads</th>
           </tr>
         </thead>
         <tbody>`;
 
       html += monthData.map(item => {
-        const modeClass = item.mode.toLowerCase().includes('some') ? 'some' : (item.mode.toLowerCase().includes('cxl') ? 'cxl' : 'std');
         return `<tr>
           <td class="history-date">${item.date}</td>
           <td title="${item.filename}" style="max-width:300px; overflow:hidden; text-overflow:ellipsis;">${item.filename}</td>
-          <td><span class="history-mode ${modeClass}">${item.mode}</span></td>
+          <td class="history-val">${item.total}</td>
           <td class="history-val">${item.shown}</td>
         </tr>`;
       }).join('');
@@ -2809,7 +2880,7 @@
     //  TOAST
     // ─────────────────────────────────────────────
     function dismissToast(toast) {
-      if (!toast) return;
+      if (!toast || !toast.parentNode) return;
       toast.style.animation = 'none';
       toast.style.transition = 'transform 0.15s ease, opacity 0.15s ease';
       requestAnimationFrame(() => { toast.style.transform = 'translateX(120%)'; toast.style.opacity = '0'; });
@@ -2823,7 +2894,7 @@
       toast.innerHTML = htmlMsg;
       toast.addEventListener('click', () => dismissToast(toast));
       container.appendChild(toast);
-      setTimeout(() => { if (toast.parentNode) toast.remove(); }, 5000);
+      setTimeout(() => dismissToast(toast), 5000);
     }
 
     // ─────────────────────────────────────────────
@@ -2898,6 +2969,13 @@
           if (currentView === 'briefing' && !currentAssignedShow) {
             fetchNextShow();
           }
+        });
+        socket.on('record_deleted', (data) => {
+          if (data.agent === currentUser) {
+            fetchUserData();
+          }
+          loadPerformanceDashboard();
+          fetchLeaderboard();
         });
         socket.on('daily_reset', () => {
           logout();
@@ -3245,6 +3323,17 @@
     // ─────────────────────────────────────────────
     initTableResizers();
     checkAuth();
+
+    // Set default uploadDate to local today's date YYYY-MM-DD
+    const uploadDateInput = document.getElementById('uploadDate');
+    if (uploadDateInput) {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      uploadDateInput.value = `${yyyy}-${mm}-${dd}`;
+    }
+
     initLeaderboardToggle();
     if (currentUser) {
       initSocket();

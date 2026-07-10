@@ -191,7 +191,9 @@ function checkIsRed(font) {
     if (!font || !font.color) return false;
     if (font.color.argb) {
         const argb = font.color.argb.toUpperCase();
-        if (argb.includes('FF0000') || argb === 'FFFF0000' || argb === 'FFC00000') return true;
+        // Match standard red (FFFF0000), dark red (FFC00000), or missing alpha red (FF0000)
+        // Explicitly avoiding .includes('FF0000') which matches solid black (FF000000)
+        if (argb === 'FFFF0000' || argb === 'FFC00000' || argb === 'FF0000') return true;
     }
     if (font.color.indexed === 10 || font.color.indexed === 2) return true;
     return false;
@@ -275,13 +277,14 @@ async function processExcelFile(filePath, originalName) {
     const sheet = workbook.getWorksheet('Sheet1') || workbook.worksheets[0];
     if (sheet) {
         let stats = {};
-        let latestNewSuffix = -1;
-        let latestNewKey = "New";
-        let isLatestNewRed = false;
-
-        let latestSomeSuffix = -1;
-        let latestSomeKey = "Some";
-        let isLatestSomeRed = false;
+        
+        let highestNewNum = -1;
+        let latestNewKey  = "New";
+        let foundAnyNew   = false;
+        
+        let highestSomeNum = -1;
+        let latestSomeKey  = "Some";
+        let foundAnySome   = false;
 
         let globalHidden = 0;
         let globalVisible = 0;
@@ -289,8 +292,17 @@ async function processExcelFile(filePath, originalName) {
         let globalVisibleLocal = 0;
 
         sheet.eachRow((row) => {
-            const isHidden = row.hidden;
-            let hasRedFont = false;
+            const isHidden  = row.hidden;
+            let hasRedFont  = false;
+            
+            let hasNewInRow = false;
+            let rowNewKey   = null;
+            let rowNewNum   = -1;
+            
+            let hasSomeInRow = false;
+            let rowSomeKey   = null;
+            let rowSomeNum   = -1;
+
             const col1 = row.getCell(1).value;
             const hasData = col1 !== null && col1 !== undefined && col1.toString().trim() !== '';
 
@@ -300,49 +312,31 @@ async function processExcelFile(filePath, originalName) {
             const col2Str = col2Value !== null && col2Value !== undefined ? col2Value.toString().trim() : '';
             const isLocal = col2Str.toLowerCase().includes('local');
 
-            let rowKeys = new Set();
-
             row.eachCell((cell) => {
                 let cellText = '';
-                let isRed = false;
+                let isRed    = false;
                 if (cell.value && cell.value.richText) {
                     cell.value.richText.forEach(rt => { cellText += rt.text; if (checkIsRed(rt.font)) isRed = true; });
                 } else {
                     cellText = cell.value ? cell.value.toString() : '';
                     if (checkIsRed(cell.font)) isRed = true;
                 }
-
+                
                 const matchNew = cellText.trim().match(/^new(\d*)$/i);
                 if (matchNew) {
+                    hasNewInRow = true; foundAnyNew = true;
                     const num = matchNew[1] === "" ? 0 : parseInt(matchNew[1], 10);
-                    const key = num === 0 ? "New" : `New${num}`;
-                    rowKeys.add(key);
-
-                    if (num > latestNewSuffix) {
-                        latestNewSuffix = num;
-                        latestNewKey = key;
-                        isLatestNewRed = isRed && !isHidden;
-                    } else if (num === latestNewSuffix) {
-                        if (isRed && !isHidden) isLatestNewRed = true;
-                    }
+                    if (num > rowNewNum) { rowNewNum = num; rowNewKey = num === 0 ? "New" : `New${num}`; }
+                    if (isRed) hasRedFont = true;
                 }
 
                 const matchSome = cellText.trim().match(/^some(\d*)$/i);
                 if (matchSome) {
+                    hasSomeInRow = true; foundAnySome = true;
                     const num = matchSome[1] === "" ? 0 : parseInt(matchSome[1], 10);
-                    const key = num === 0 ? "Some" : `Some${num}`;
-                    rowKeys.add(key);
-
-                    if (num > latestSomeSuffix) {
-                        latestSomeSuffix = num;
-                        latestSomeKey = key;
-                        isLatestSomeRed = isRed && !isHidden;
-                    } else if (num === latestSomeSuffix) {
-                        if (isRed && !isHidden) isLatestSomeRed = true;
-                    }
+                    if (num > rowSomeNum) { rowSomeNum = num; rowSomeKey = num === 0 ? "Some" : `Some${num}`; }
+                    if (isRed) hasRedFont = true;
                 }
-
-                if (isRed) hasRedFont = true;
             });
 
             if (isHidden) {
@@ -353,14 +347,27 @@ async function processExcelFile(filePath, originalName) {
                 if (isLocal) globalVisibleLocal++;
             }
 
-            for (const key of rowKeys) {
-                if (!stats[key]) stats[key] = { visibleRed: 0, hidden: 0, visibleRedLocal: 0, hiddenLocal: 0 };
+            if (hasNewInRow) {
+                if (rowNewNum > highestNewNum) { highestNewNum = rowNewNum; latestNewKey = rowNewKey; }
+                if (!stats[rowNewKey]) stats[rowNewKey] = { visibleRed: 0, hidden: 0, visibleRedLocal: 0, hiddenLocal: 0 };
                 if (isHidden) {
-                    stats[key].hidden++;
-                    if (isLocal) stats[key].hiddenLocal++;
+                    stats[rowNewKey].hidden++;
+                    if (isLocal) stats[rowNewKey].hiddenLocal++;
                 } else if (hasRedFont) {
-                    stats[key].visibleRed++;
-                    if (isLocal) stats[key].visibleRedLocal++;
+                    stats[rowNewKey].visibleRed++;
+                    if (isLocal) stats[rowNewKey].visibleRedLocal++;
+                }
+            }
+
+            if (hasSomeInRow) {
+                if (rowSomeNum > highestSomeNum) { highestSomeNum = rowSomeNum; latestSomeKey = rowSomeKey; }
+                if (!stats[rowSomeKey]) stats[rowSomeKey] = { visibleRed: 0, hidden: 0, visibleRedLocal: 0, hiddenLocal: 0 };
+                if (isHidden) {
+                    stats[rowSomeKey].hidden++;
+                    if (isLocal) stats[rowSomeKey].hiddenLocal++;
+                } else if (hasRedFont) {
+                    stats[rowSomeKey].visibleRed++;
+                    if (isLocal) stats[rowSomeKey].visibleRedLocal++;
                 }
             }
         });
@@ -370,29 +377,34 @@ async function processExcelFile(filePath, originalName) {
         let someShownLocal = 0;
         let someHiddenLocal = 0;
 
-        const countNew = (latestNewSuffix >= 0 && isLatestNewRed && stats[latestNewKey]);
-        const countSome = (latestSomeSuffix >= 0 && isLatestSomeRed && stats[latestSomeKey]);
-
-        if (countNew || countSome) {
-            if (countNew) {
+        if (foundAnyNew || foundAnySome) {
+            if (foundAnyNew) {
                 newShown = stats[latestNewKey].visibleRed;
                 newHidden = stats[latestNewKey].hidden;
                 newShownLocal = stats[latestNewKey].visibleRedLocal;
                 newHiddenLocal = stats[latestNewKey].hiddenLocal;
             }
-            if (countSome) {
+            if (foundAnySome) {
                 someShown = stats[latestSomeKey].visibleRed;
                 someHidden = stats[latestSomeKey].hidden;
                 someShownLocal = stats[latestSomeKey].visibleRedLocal;
                 someHiddenLocal = stats[latestSomeKey].hiddenLocal;
+                
+                if (someShown === 0) {
+                    someHidden = 0;
+                    someHiddenLocal = 0;
+                }
             }
 
-            // Apply regional deduction (local threshold >= 200) combined
             if (!isNA && (newShown + newHidden + someShown + someHidden) >= 200) {
                 newShown = Math.max(0, newShown - newShownLocal);
                 newHidden = Math.max(0, newHidden - newHiddenLocal);
                 someShown = Math.max(0, someShown - someShownLocal);
                 someHidden = Math.max(0, someHidden - someHiddenLocal);
+            }
+
+            if (someShown === 0) {
+                someHidden = 0;
             }
         } else {
             newShown = globalVisible;
@@ -797,7 +809,11 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
 
         // Pure extraction — no report file written
         const stats = await processExcelFile(tempPath, originalName);
-        const date = new Date();
+        let date = new Date();
+        if (req.body.uploadDate) {
+            const [y, m, d] = req.body.uploadDate.split('-').map(Number);
+            date = new Date(y, m - 1, d, 12, 0, 0);
+        }
         const dateKey = date.toISOString().split('T')[0];
         const folderName = `${date.getDate()}-${date.getMonth() + 1}`;
         const month = monthNames[date.getMonth()];
@@ -846,7 +862,7 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
 
         // ── Write to history.json ──
         saveHistory(
-            { agent: username, name: stats.finalFileName, size: req.file.size, mtime: date.toISOString(), region, destPath: `${year}/${month}/${folderName}/${region}`, status: 'sorted', transactionId },
+            { agent: username, name: stats.finalFileName, size: req.file.size, mtime: date.toISOString(), uploadTime: Date.now(), region, destPath: `${year}/${month}/${folderName}/${region}`, status: 'sorted', transactionId },
             { agent: username, ts: timeStr, msg: `Sorted [${mode.toUpperCase()}]: ${stats.finalFileName} (Shown: ${stats.shown}, Hidden: ${stats.hidden})`, type: 'success' }
         );
 
@@ -907,6 +923,12 @@ app.post('/api/upload-bulk', upload.array('files', 20), async (req, res) => {
 
         const results = [];
 
+        let date = new Date();
+        if (req.body.uploadDate) {
+            const [y, m, d] = req.body.uploadDate.split('-').map(Number);
+            date = new Date(y, m - 1, d, 12, 0, 0);
+        }
+
         for (const file of req.files) {
             const originalName = Buffer.from(file.originalname, 'latin1').toString('utf8');
             const tempPath = file.path;
@@ -914,7 +936,6 @@ app.post('/api/upload-bulk', upload.array('files', 20), async (req, res) => {
             try {
                 // Pure extraction — no report file written
                 const stats = await processExcelFile(tempPath, originalName);
-                const date = new Date();
                 const dateKey = date.toISOString().split('T')[0];
                 const folderName = `${date.getDate()}-${date.getMonth() + 1}`;
                 const month = monthNames[date.getMonth()];
@@ -964,7 +985,7 @@ app.post('/api/upload-bulk', upload.array('files', 20), async (req, res) => {
 
                 // ── Write to history.json ──
                 saveHistory(
-                    { agent: username, name: stats.finalFileName, size: file.size, mtime: date.toISOString(), region, destPath: `${year}/${month}/${folderName}/${region}`, status: 'sorted', transactionId },
+                    { agent: username, name: stats.finalFileName, size: file.size, mtime: date.toISOString(), uploadTime: Date.now(), region, destPath: `${year}/${month}/${folderName}/${region}`, status: 'sorted', transactionId },
                     { agent: username, ts: timeStr, msg: `Sorted [${mode.toUpperCase()}]: ${stats.finalFileName} (Shown: ${stats.shown}, Hidden: ${stats.hidden})`, type: 'success' }
                 );
 
@@ -1111,12 +1132,26 @@ app.delete('/api/admin/record', (req, res) => {
         if (!data[dateKey]) {
             return res.status(404).json({ success: false, error: `No data for date ${dateKey}.` });
         }
-        const recIdx = data[dateKey].records.findIndex(r => r.transactionId === transactionId);
-        if (recIdx === -1) {
+        const rec = data[dateKey].records.find(r => r.transactionId === transactionId);
+        if (!rec) {
             return res.status(404).json({ success: false, error: 'Record not found.' });
         }
-        // Reuse existing helper — deducts summaries and removes the record
+        const agent = rec.agent;
+
+        // Reuse existing helper — deducts summaries and removes the record from analytics
         analyticsRemoveRecord(dateKey, transactionId);
+
+        // Remove from history.json so it is deleted from the agent's main page uploads
+        const history = JSON.parse(fs.readFileSync(historyPath));
+        const fileIdx = history.files.findIndex(f => f.transactionId === transactionId);
+        if (fileIdx > -1) {
+            history.files.splice(fileIdx, 1);
+            fs.writeFileSync(historyPath, JSON.stringify(history, null, 2));
+        }
+
+        // Broadcast to both agent and admin frontends for real-time synchronization
+        io.emit('record_deleted', { transactionId, dateKey, agent });
+
         console.log(`> [ADMIN] Deleted record ${transactionId} from ${dateKey}`);
         res.json({ success: true });
     } catch (e) {
