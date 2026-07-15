@@ -224,18 +224,9 @@
       color: var(--accent-blue);
     }
 
-    .drop-half.some {
-      color: var(--accent-cyan);
-    }
-
     .drop-half.dragover.std {
       background: var(--accent-blue-glow);
       border-color: var(--accent-blue);
-    }
-
-    .drop-half.dragover.some {
-      background: var(--accent-cyan-glow);
-      border-color: var(--accent-cyan);
     }
 
     .drop-half h1 {
@@ -324,13 +315,32 @@
     }
 
     @keyframes progressInfinite {
-      0% { left: -100%; width: 50%; }
-      50% { left: 25%; width: 75%; }
-      100% { left: 100%; width: 50%; }
+      0% {
+        left: -100%;
+        width: 50%;
+      }
+
+      50% {
+        left: 25%;
+        width: 75%;
+      }
+
+      100% {
+        left: 100%;
+        width: 50%;
+      }
     }
+
     @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
     }
 
     .topbar-right {
@@ -683,7 +693,8 @@
       padding: 12px 16px;
       text-align: left;
       border-bottom: 1px solid var(--border);
-      border-right: 1px solid rgba(255, 255, 255, 0.08); /* Vertical header separator */
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      /* Vertical header separator */
       position: sticky;
       top: 0;
       background: var(--bg-base);
@@ -790,11 +801,6 @@
       font-weight: 600;
     }
 
-    .mode-some {
-      background: var(--accent-cyan-glow);
-      color: var(--accent-cyan);
-    }
-
     .mode-standard {
       background: var(--accent-blue-glow);
       color: var(--accent-blue);
@@ -854,7 +860,8 @@
     }
 
     .log-footer.expanded .log-inner-wrap {
-      height: 280px; /* Increased height for table */
+      height: 280px;
+      /* Increased height for table */
       border-top: 1px solid var(--border);
     }
 
@@ -900,12 +907,34 @@
       background: var(--bg-hover);
     }
 
-    .history-date { color: var(--text-muted); font-family: 'JetBrains Mono'; }
-    .history-mode { font-weight: 600; font-size: 9px; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; }
-    .history-mode.std { background: var(--accent-blue-glow); color: var(--accent-blue); }
-    .history-mode.some { background: var(--accent-cyan-glow); color: var(--accent-cyan); }
-    .history-mode.cxl { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
-    .history-val { font-weight: 700; color: var(--success); font-family: 'JetBrains Mono'; }
+    .history-date {
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono';
+    }
+
+    .history-mode {
+      font-weight: 600;
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .history-mode.std {
+      background: var(--accent-blue-glow);
+      color: var(--accent-blue);
+    }
+
+    .history-mode.cxl {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--danger);
+    }
+
+    .history-val {
+      font-weight: 700;
+      color: var(--success);
+      font-family: 'JetBrains Mono';
+    }
 
     /* ═══════════════════════════════════════════════
      PERFORMANCE DASHBOARD
@@ -1301,19 +1330,42 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
     }
 
     @keyframes popIn {
-      from { opacity: 0; transform: scale(0.9) translateY(20px); }
-      to { opacity: 1; transform: scale(1) translateY(0); }
+      from {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
     }
 
     @keyframes pulseAlert {
-      0% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.1); opacity: 0.8; }
-      100% { transform: scale(1); opacity: 1; }
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
     }
 
     ::-webkit-scrollbar {
@@ -1372,7 +1424,8 @@
     }
 
     .ml-wrapper {
-      max-height: 500px; /* Sufficient for top 5 */
+      max-height: 500px;
+      /* Sufficient for top 5 */
       overflow: hidden;
       transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
       opacity: 1;
@@ -1426,9 +1479,17 @@
       text-align: center;
     }
 
-    .ml-item:nth-child(1) .ml-rank { color: #fbbf24; }
-    .ml-item:nth-child(2) .ml-rank { color: #94a3b8; }
-    .ml-item:nth-child(3) .ml-rank { color: #b45309; }
+    .ml-item:nth-child(1) .ml-rank {
+      color: #fbbf24;
+    }
+
+    .ml-item:nth-child(2) .ml-rank {
+      color: #94a3b8;
+    }
+
+    .ml-item:nth-child(3) .ml-rank {
+      color: #b45309;
+    }
 
     .ml-info {
       flex: 1;
@@ -1456,7 +1517,8 @@
       font-weight: 700;
       font-size: 13px;
     }
-      background: linear-gradient(to bottom, var(--accent-purple), var(--accent-blue));
+
+    background: linear-gradient(to bottom, var(--accent-purple), var(--accent-blue));
     }
 
     .rank-circle {
@@ -1474,9 +1536,23 @@
       color: var(--text-muted);
     }
 
-    .leaderboard-card:nth-child(1) .rank-circle { border-color: #fbbf24; color: #fbbf24; background: rgba(251, 191, 36, 0.1); }
-    .leaderboard-card:nth-child(2) .rank-circle { border-color: #94a3b8; color: #94a3b8; background: rgba(148, 163, 184, 0.1); }
-    .leaderboard-card:nth-child(3) .rank-circle { border-color: #b45309; color: #b45309; background: rgba(180, 83, 9, 0.1); }
+    .leaderboard-card:nth-child(1) .rank-circle {
+      border-color: #fbbf24;
+      color: #fbbf24;
+      background: rgba(251, 191, 36, 0.1);
+    }
+
+    .leaderboard-card:nth-child(2) .rank-circle {
+      border-color: #94a3b8;
+      color: #94a3b8;
+      background: rgba(148, 163, 184, 0.1);
+    }
+
+    .leaderboard-card:nth-child(3) .rank-circle {
+      border-color: #b45309;
+      color: #b45309;
+      background: rgba(180, 83, 9, 0.1);
+    }
 
     .leaderboard-user {
       flex: 1;
@@ -1666,11 +1742,13 @@
     }
 
     .pacing-ghost.ahead {
-      color: #10b981; /* Emerald */
+      color: #10b981;
+      /* Emerald */
     }
 
     .pacing-ghost.behind {
-      color: #9ca3af; /* Muted gray */
+      color: #9ca3af;
+      /* Muted gray */
     }
 
     .pacing-ghost:hover {
@@ -1784,7 +1862,7 @@
       background: rgba(15, 12, 30, 0.92);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      box-shadow: 0 8px 48px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(139, 92, 246, 0.1), inset 0 1px 0 rgba(255,255,255,0.05);
+      box-shadow: 0 8px 48px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(139, 92, 246, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.05);
       z-index: 9990;
       display: flex;
       flex-direction: column;
@@ -1839,8 +1917,17 @@
     }
 
     @keyframes portalPulse {
-      0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(139, 92, 246, 0.8); }
-      50%       { opacity: 0.5; box-shadow: 0 0 4px rgba(139, 92, 246, 0.3); }
+
+      0%,
+      100% {
+        opacity: 1;
+        box-shadow: 0 0 8px rgba(139, 92, 246, 0.8);
+      }
+
+      50% {
+        opacity: 0.5;
+        box-shadow: 0 0 4px rgba(139, 92, 246, 0.3);
+      }
     }
 
     .portal-close-btn {
@@ -1883,12 +1970,15 @@
         (default 500px), triggering @media (max-width: 600px).
         Scrolling is enabled so agents can reach content below the fold.
       */
-      display: block;          /* Kill inline bottom-gap */
+      display: block;
+      /* Kill inline bottom-gap */
       position: absolute;
       top: 0;
       left: 0;
-      width: 100% !important;  /* Inherits portal width, stays flush */
-      height: 100% !important; /* Fill clip area */
+      width: 100% !important;
+      /* Inherits portal width, stays flush */
+      height: 100% !important;
+      /* Fill clip area */
       min-width: 0 !important;
       margin: 0;
       padding: 0;
@@ -1911,8 +2001,7 @@
       z-index: 10;
       /* Subtle visual indicator — three diagonal lines */
       background:
-        linear-gradient(
-          -45deg,
+        linear-gradient(-45deg,
           transparent 30%,
           rgba(139, 92, 246, 0.55) 30%, rgba(139, 92, 246, 0.55) 40%,
           transparent 40%,
@@ -1921,17 +2010,19 @@
           transparent 65%,
           transparent 80%,
           rgba(139, 92, 246, 0.55) 80%, rgba(139, 92, 246, 0.55) 90%,
-          transparent 90%
-        );
+          transparent 90%);
       border-bottom-right-radius: 14px;
       transition: opacity 0.2s;
       opacity: 0.55;
     }
+
     .portal-resize-handle:hover {
       opacity: 1;
     }
 
-    .hidden { display: none !important; }
+    .hidden {
+      display: none !important;
+    }
   </style>
 </head>
 
@@ -1954,17 +2045,22 @@
   <div id="dragOverlay">
     <div class="drop-half std" id="dropStd" style="width: 100%;">
       <h1>Upload Excel</h1>
-      <p>Drop one or more Excel files here to extract 'New' and 'Some' records.</p>
+      <p>Drop one or more Excel files here to extract records.</p>
     </div>
   </div>
 
   <!-- ── BULK UPLOAD PROGRESS OVERLAY ── -->
-  <div id="bulkOverlay" style="display: none; position: fixed; inset: 0; z-index: 9996; background: rgba(11, 15, 25, 0.85); backdrop-filter: blur(8px); flex-direction: column; align-items: center; justify-content: center; gap: 20px;">
+  <div id="bulkOverlay"
+    style="display: none; position: fixed; inset: 0; z-index: 9996; background: rgba(11, 15, 25, 0.85); backdrop-filter: blur(8px); flex-direction: column; align-items: center; justify-content: center; gap: 20px;">
     <div style="font-size: 48px; animation: bounce 1.5s infinite;">📤</div>
-    <h2 style="color: var(--text-main); font-weight: 600; font-size: 20px; margin: 0;" id="bulkOverlayTitle">Uploading Files...</h2>
+    <h2 style="color: var(--text-main); font-weight: 600; font-size: 20px; margin: 0;" id="bulkOverlayTitle">Uploading
+      Files...</h2>
     <p style="color: var(--text-muted); font-size: 14px; margin: 0;">Processing Excel sheets, please wait...</p>
-    <div style="width: 200px; height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; position: relative;">
-      <div style="position: absolute; height: 100%; width: 50%; background: var(--accent-blue); border-radius: 3px; animation: progressInfinite 1.5s infinite ease-in-out;"></div>
+    <div
+      style="width: 200px; height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; position: relative;">
+      <div
+        style="position: absolute; height: 100%; width: 50%; background: var(--accent-blue); border-radius: 3px; animation: progressInfinite 1.5s infinite ease-in-out;">
+      </div>
     </div>
   </div>
 
@@ -1986,7 +2082,7 @@
           <span class="nav-icon">🎯</span> Briefing Room
         </div>
       </nav>
-      
+
       <!-- MINI LEADERBOARD -->
       <div class="mini-leaderboard" id="miniLeaderboard">
         <div class="ml-title" onclick="toggleLeaderboard()">
@@ -2086,8 +2182,11 @@
         <!-- ── TODAY'S FILES VIEW ── -->
         <div class="view-container" id="filesView">
           <div style="padding: 24px 24px 0; display: flex; align-items: center; justify-content: space-between;">
-             <h2 style="font-size: 18px; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px;">Today's Workspace 📂</h2>
-             <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 1px;">Daily Reset Active</div>
+            <h2 style="font-size: 18px; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px;">Today's
+              Workspace 📂</h2>
+            <div
+              style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 1px;">
+              Daily Reset Active</div>
           </div>
           <div class="toolbar">
             <div class="search-box">
@@ -2100,22 +2199,25 @@
               onchange="manualUpload(this, 'standard')">
 
             <!-- Date Picker -->
-            <input type="date" id="uploadDate" class="date-input" style="margin-left:auto; margin-right:8px;" onchange="renderTable()">
+            <input type="date" id="uploadDate" class="date-input" style="margin-left:auto; margin-right:8px;"
+              onchange="renderTable()">
 
             <!-- Upload Excel button -->
-            <button class="filter-btn btn-std" onclick="document.getElementById('fileStd').click()">⬆ Upload Excel</button>
+            <button class="filter-btn btn-std" onclick="document.getElementById('fileStd').click()">⬆ Upload
+              Excel</button>
           </div>
 
           <div class="table-wrap">
             <table class="file-table" id="mainTable">
               <thead>
                 <tr>
-                  <th style="width: 30%;">Filename</th>
+                  <th style="width: 25%;">Filename</th>
                   <th style="width: 15%;">Modified</th>
-                  <th style="width: 10%;">Size</th>
-                  <th style="width: 10%;">Region</th>
-                  <th style="width: 20%;">Destination</th>
-                  <th style="width: 15%;">Status</th>
+                  <th style="width: 8%;">Size</th>
+                  <th style="width: 8%;">Region</th>
+                  <th style="width: 17%;">Destination</th>
+                  <th style="width: 12%;">Status</th>
+                  <th style="width: 15%;">Notes</th>
                 </tr>
               </thead>
               <tbody id="tableBody"></tbody>
@@ -2129,7 +2231,9 @@
                 <span>Personal Monthly History</span>
                 <span class="log-badge" id="historyCount">0 shows</span>
               </div>
-              <input type="text" id="historySearch" placeholder="Search shows..." onclick="event.stopPropagation()" oninput="renderHistoryTable()" style="margin-left:auto; margin-right:16px; padding:4px 8px; border-radius:4px; border:1px solid var(--border); background:var(--bg-panel); color:var(--text-main); font-size:12px; outline:none;" />
+              <input type="text" id="historySearch" placeholder="Search shows..." onclick="event.stopPropagation()"
+                oninput="renderHistoryTable()"
+                style="margin-left:auto; margin-right:16px; padding:4px 8px; border-radius:4px; border:1px solid var(--border); background:var(--bg-panel); color:var(--text-main); font-size:12px; outline:none;" />
               <span class="log-toggle-icon">▲</span>
             </div>
             <div class="log-inner-wrap">
@@ -2205,7 +2309,8 @@
                 style="margin-top:24px; display:inline-flex; align-items:center; justify-content:center; margin-left:auto; margin-right:auto; font-size:16px; padding:12px 24px;">▶
                 Start Next Show</button>
               <button id="btn-request-show" class="filter-btn btn-some hidden" onclick="requestManualShow()"
-                style="margin-top:24px; display:inline-flex; align-items:center; justify-content:center; margin-left:auto; margin-right:auto; font-size:16px; padding:12px 24px; background:var(--accent-purple-glow); border-color:var(--accent-purple);">🖐️ Request Show</button>
+                style="margin-top:24px; display:inline-flex; align-items:center; justify-content:center; margin-left:auto; margin-right:auto; font-size:16px; padding:12px 24px; background:var(--accent-purple-glow); border-color:var(--accent-purple);">🖐️
+                Request Show</button>
             </div>
           </div>
         </div>
@@ -2228,15 +2333,8 @@
       <button class="portal-close-btn" id="btn-close-zorg" title="Close portal">✕</button>
     </div>
     <div class="portal-iframe-clip">
-      <iframe
-        id="zorgScraperFrame"
-        src="http://localhost:3000"
-        title="ZORG Scraper"
-        width="100%"
-        loading="eager"
-        allowfullscreen
-        sandbox="allow-same-origin allow-scripts allow-forms allow-downloads allow-popups"
-      ></iframe>
+      <iframe id="zorgScraperFrame" src="http://localhost:3000" title="ZORG Scraper" width="100%" loading="eager"
+        allowfullscreen sandbox="allow-same-origin allow-scripts allow-forms allow-downloads allow-popups"></iframe>
     </div>
     <!-- Resize grip — draggable bottom-right corner -->
     <div class="portal-resize-handle" id="portalResizeHandle"></div>
@@ -2254,206 +2352,258 @@
       <div class="error-actions">
         <button class="error-btn error-btn-primary" onclick="hideErrorOverlay()">Got it, I'll try again</button>
       </div>
-  </div>
+    </div>
 
-  <!-- ── BULK UPLOAD SUMMARY MODAL ── -->
-  <div id="bulkModal" style="display: none; position: fixed; inset: 0; z-index: 9997; background: rgba(11, 15, 25, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); align-items: center; justify-content: center; padding: 24px; animation: fadeIn 0.3s ease-out;">
-    <div style="background: var(--bg-panel); border: 1px solid var(--border); border-radius: 20px; padding: 32px; width: 100%; max-width: 550px; text-align: left; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); display: flex; flex-direction: column; gap: 20px; max-height: 80vh;">
-      <div style="display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); padding-bottom: 16px;">
-        <span style="font-size: 24px;">📊</span>
-        <h2 style="color: var(--text-main); font-size: 18px; font-weight: 600; margin: 0;">Bulk Upload Summary</h2>
-        <button onclick="hideBulkModal()" style="margin-left: auto; background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px; line-height: 1;">✕</button>
-      </div>
-      <div id="bulkSummaryList" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding-right: 4px;">
-        <!-- Filled dynamically -->
-      </div>
-      <div style="border-top: 1px solid var(--border); padding-top: 16px; display: flex; justify-content: flex-end;">
-        <button class="filter-btn btn-std" onclick="hideBulkModal()" style="padding: 10px 24px; font-size: 13px; font-weight: 600; border-radius: 8px;">Got it</button>
+    <!-- ── BULK UPLOAD SUMMARY MODAL ── -->
+    <div id="bulkModal"
+      style="display: none; position: fixed; inset: 0; z-index: 9997; background: rgba(11, 15, 25, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); align-items: center; justify-content: center; padding: 24px; animation: fadeIn 0.3s ease-out;">
+      <div
+        style="background: var(--bg-panel); border: 1px solid var(--border); border-radius: 20px; padding: 32px; width: 100%; max-width: 550px; text-align: left; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); display: flex; flex-direction: column; gap: 20px; max-height: 80vh;">
+        <div
+          style="display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); padding-bottom: 16px;">
+          <span style="font-size: 24px;">📊</span>
+          <h2 style="color: var(--text-main); font-size: 18px; font-weight: 600; margin: 0;">Bulk Upload Summary</h2>
+          <button onclick="hideBulkModal()"
+            style="margin-left: auto; background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px; line-height: 1;">✕</button>
+        </div>
+        <div id="bulkSummaryList"
+          style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding-right: 4px;">
+          <!-- Filled dynamically -->
+        </div>
+        <div style="border-top: 1px solid var(--border); padding-top: 16px; display: flex; justify-content: flex-end;">
+          <button class="filter-btn btn-std" onclick="hideBulkModal()"
+            style="padding: 10px 24px; font-size: 13px; font-weight: 600; border-radius: 8px;">Got it</button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <script>
-    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    let currentUser = null;
-    let files = [], logs = [];
-    let currentView = 'files';
-    let analyticsData = {};    // full ledger from /api/analytics
-    let perfChart = null;   // Chart.js instance
-    let cachedPerformanceRecords = null;
+    <script>
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      let currentUser = null;
+      let files = [], logs = [];
+      let currentView = 'files';
+      let analyticsData = {};    // full ledger from /api/analytics
+      let perfChart = null;   // Chart.js instance
+      let cachedPerformanceRecords = null;
 
-    let socket = null;
-    let currentAssignedShow = null;
-    let workTimerInterval = null;
-    let workStartTime = 0;
+      let socket = null;
+      let currentAssignedShow = null;
+      let workTimerInterval = null;
+      let workStartTime = 0;
 
-    // ─────────────────────────────────────────────
-    //  TABLE COLUMN RESIZING
-    // ─────────────────────────────────────────────
-    function initTableResizers() {
-      document.querySelectorAll('.file-table').forEach(table => {
-        table.querySelectorAll('th').forEach(col => {
-          const resizer = document.createElement('div');
-          resizer.classList.add('resizer');
-          col.appendChild(resizer);
-          createResizableColumn(col, resizer);
+      // ─────────────────────────────────────────────
+      //  TABLE COLUMN RESIZING
+      // ─────────────────────────────────────────────
+      function initTableResizers() {
+        document.querySelectorAll('.file-table').forEach(table => {
+          table.querySelectorAll('th').forEach(col => {
+            const resizer = document.createElement('div');
+            resizer.classList.add('resizer');
+            col.appendChild(resizer);
+            createResizableColumn(col, resizer);
+          });
         });
-      });
-    }
+      }
 
-    function createResizableColumn(col, resizer) {
-      let x = 0, w = 0;
-      const mouseDownHandler = e => {
-        x = e.clientX;
-        w = parseInt(window.getComputedStyle(col).width, 10);
-        document.addEventListener('mousemove', mouseMoveHandler);
-        document.addEventListener('mouseup', mouseUpHandler);
-        resizer.classList.add('resizing');
-      };
-      const mouseMoveHandler = e => { col.style.width = `${w + (e.clientX - x)}px`; };
-      const mouseUpHandler = () => {
-        resizer.classList.remove('resizing');
-        document.removeEventListener('mousemove', mouseMoveHandler);
-        document.removeEventListener('mouseup', mouseUpHandler);
-      };
-      resizer.addEventListener('mousedown', mouseDownHandler);
-    }
+      function createResizableColumn(col, resizer) {
+        let x = 0, w = 0;
+        const mouseDownHandler = e => {
+          x = e.clientX;
+          w = parseInt(window.getComputedStyle(col).width, 10);
+          document.addEventListener('mousemove', mouseMoveHandler);
+          document.addEventListener('mouseup', mouseUpHandler);
+          resizer.classList.add('resizing');
+        };
+        const mouseMoveHandler = e => { col.style.width = `${w + (e.clientX - x)}px`; };
+        const mouseUpHandler = () => {
+          resizer.classList.remove('resizing');
+          document.removeEventListener('mousemove', mouseMoveHandler);
+          document.removeEventListener('mouseup', mouseUpHandler);
+        };
+        resizer.addEventListener('mousedown', mouseDownHandler);
+      }
 
-    // ─────────────────────────────────────────────
-    //  UI TOGGLES
-    // ─────────────────────────────────────────────
-    function toggleLogs() {
-      document.getElementById('logFooter').classList.toggle('expanded');
-    }
+      // ─────────────────────────────────────────────
+      //  UI TOGGLES
+      // ─────────────────────────────────────────────
+      function toggleLogs() {
+        document.getElementById('logFooter').classList.toggle('expanded');
+      }
 
-    // ─────────────────────────────────────────────
-    //  AUTH
-    // ─────────────────────────────────────────────
-    function checkAuth() {
-      currentUser = localStorage.getItem('zorg_nexus_user');
-      const currentRole = localStorage.getItem('zorg_nexus_role');
-      if (currentUser) {
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('displayUser').innerText = currentUser;
+      // ─────────────────────────────────────────────
+      //  AUTH
+      // ─────────────────────────────────────────────
+      function checkAuth() {
+        currentUser = localStorage.getItem('zorg_nexus_user');
+        const currentRole = localStorage.getItem('zorg_nexus_role');
+        if (currentUser) {
+          document.getElementById('loginScreen').style.display = 'none';
+          document.getElementById('displayUser').innerText = currentUser;
 
-        if (currentRole === 'Admin' || currentRole === 'Viewer') {
-          document.getElementById('adminLink').style.display = 'inline-block';
-        } else {
-          document.getElementById('adminLink').style.display = 'none';
-        }
+          if (currentRole === 'Admin' || currentRole === 'Viewer') {
+            document.getElementById('adminLink').style.display = 'inline-block';
+          } else {
+            document.getElementById('adminLink').style.display = 'none';
+          }
 
-        const dateInput = document.getElementById('uploadDate');
-        if (dateInput && !dateInput.value) {
+          const dateInput = document.getElementById('uploadDate');
+          if (dateInput && !dateInput.value) {
             const today = new Date();
             const y = today.getFullYear();
             const m = String(today.getMonth() + 1).padStart(2, '0');
             const d = String(today.getDate()).padStart(2, '0');
             dateInput.value = `${y}-${m}-${d}`;
-        }
+          }
 
-        // Fetch user files on load
-        fetchUserData();
-        // Populate the top widget strip immediately
-        loadPerformanceDashboard();
-        // Initial leaderboard fetch
-        fetchLeaderboard();
-      }
-    }
-
-    async function attemptLogin() {
-      const u = document.getElementById('usernameInput').value;
-      const p = document.getElementById('passwordInput').value;
-      const res = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: u, password: p }) });
-      const data = await res.json();
-      if (data.success) {
-        localStorage.setItem('zorg_nexus_user', data.username);
-        if (data.role) localStorage.setItem('zorg_nexus_role', data.role);
-        checkAuth();
-        if (!socket) initSocket();
-      } else {
-        document.getElementById('loginError').style.display = 'block';
-      }
-    }
-
-    function logout() { localStorage.removeItem('zorg_nexus_user'); window.location.reload(); }
-
-    // ─────────────────────────────────────────────
-    //  DATA FETCHING
-    // ─────────────────────────────────────────────
-    async function fetchUserData() {
-      try {
-        const res = await fetch(`/api/user/data?username=${currentUser}`);
-        const data = await res.json();
-        files = data.files.map(f => ({ ...f, mtime: new Date(f.mtime) }));
-        if (currentView === 'files') renderTable();
-        // Fetch and render the monthly history for the terminal area
-        fetchMonthlyHistory();
-        updateStats();
-      } catch (e) { console.error('Data fetch failed', e); }
-    }
-
-    // fetchAnalytics removed, API split implemented
-
-    // ─────────────────────────────────────────────
-    //  UPLOAD LOGIC
-    // ─────────────────────────────────────────────
-    async function uploadFiles(files, mode) {
-      if (!files || files.length === 0) return;
-
-      const formData = new FormData();
-      for (let i = 0; i < files.length; i++) {
-        formData.append('files', files[i]);
-      }
-      formData.append('username', currentUser);
-      formData.append('mode', mode);
-
-      const uploadDateInput = document.getElementById('uploadDate');
-      if (uploadDateInput && uploadDateInput.value) {
-        formData.append('uploadDate', uploadDateInput.value);
-      }
-
-      showBulkOverlay(files.length);
-
-      try {
-        const res = await fetch('/api/upload-bulk', { method: 'POST', body: formData });
-        const data = await res.json();
-        
-        hideBulkOverlay();
-
-        if (data.success) {
-          showBulkSummaryModal(data.results);
+          // Fetch user files on load
           fetchUserData();
+          // Populate the top widget strip immediately
           loadPerformanceDashboard();
-          data.results.forEach(result => {
-            if (result.success) {
-              const stats = result.stats;
-              showToast(`✅ <b>Upload Successful</b><br>${result.filename}<br>Shown: ${stats.shown} | Hidden: ${stats.hidden}`, 'success');
-            }
-          });
-        } else {
-          showErrorOverlay('Upload Failed', 'The server could not process the upload request.', data.error || 'Please try again.');
+          // Initial leaderboard fetch
+          fetchLeaderboard();
         }
-      } catch (err) {
-        hideBulkOverlay();
-        showErrorOverlay('Server Error', 'A critical error occurred while communicating with the server.', err.message || 'The server might be down or your connection was interrupted.');
       }
-    }
 
-    function showBulkOverlay(totalCount) {
-      document.getElementById('bulkOverlayTitle').textContent = `Uploading ${totalCount} File${totalCount > 1 ? 's' : ''}...`;
-      document.getElementById('bulkOverlay').style.display = 'flex';
-    }
+      async function attemptLogin() {
+        const u = document.getElementById('usernameInput').value;
+        const p = document.getElementById('passwordInput').value;
+        const res = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: u, password: p }) });
+        const data = await res.json();
+        if (data.success) {
+          localStorage.setItem('zorg_nexus_user', data.username);
+          if (data.role) localStorage.setItem('zorg_nexus_role', data.role);
+          checkAuth();
+          if (!socket) initSocket();
+        } else {
+          document.getElementById('loginError').style.display = 'block';
+        }
+      }
 
-    function hideBulkOverlay() {
-      document.getElementById('bulkOverlay').style.display = 'none';
-    }
+      function logout() { localStorage.removeItem('zorg_nexus_user'); window.location.reload(); }
 
-    function showBulkSummaryModal(results) {
-      const listEl = document.getElementById('bulkSummaryList');
-      listEl.innerHTML = results.map(result => {
-        if (result.success) {
-          const stats = result.stats;
-          return `
+      function escHtml(str) {
+        if (!str) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      async function editNote(date, transactionId) {
+        let currentNote = '';
+        if (window.cachedPerformanceRecords) {
+          const rec = window.cachedPerformanceRecords.find(r => r.transactionId === transactionId);
+          if (rec) currentNote = rec.note || '';
+        } else {
+          const f = files.find(item => item.transactionId === transactionId);
+          if (f) currentNote = f.note || '';
+        }
+
+        const newNote = prompt("Enter note for this show:", currentNote);
+        if (newNote === null) return;
+
+        try {
+          const res = await fetch('/api/record/note', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              date,
+              transactionId,
+              note: newNote,
+              username: currentUser
+            })
+          });
+          const json = await res.json();
+          if (json.success) {
+            showToast('Note updated successfully!', 'success');
+          } else {
+            showToast(json.error || 'Failed to update note', 'error');
+          }
+        } catch (e) {
+          console.error('Note update error:', e);
+          showToast('Error updating note', 'error');
+        }
+      }
+
+      // ─────────────────────────────────────────────
+      //  DATA FETCHING
+      // ─────────────────────────────────────────────
+      async function fetchUserData() {
+        try {
+          const res = await fetch(`/api/user/data?username=${currentUser}`);
+          const data = await res.json();
+          files = data.files.map(f => ({ ...f, mtime: new Date(f.mtime) }));
+          if (currentView === 'files') renderTable();
+          // Fetch and render the monthly history for the terminal area
+          fetchMonthlyHistory();
+          updateStats();
+        } catch (e) { console.error('Data fetch failed', e); }
+      }
+
+      // fetchAnalytics removed, API split implemented
+
+      // ─────────────────────────────────────────────
+      //  UPLOAD LOGIC
+      // ─────────────────────────────────────────────
+      async function uploadFiles(files, mode) {
+        if (!files || files.length === 0) return;
+
+        const formData = new FormData();
+        for (let i = 0; i < files.length; i++) {
+          formData.append('files', files[i]);
+        }
+        formData.append('username', currentUser);
+        formData.append('mode', 'standard');
+
+        const uploadDateInput = document.getElementById('uploadDate');
+        if (uploadDateInput && uploadDateInput.value) {
+          formData.append('uploadDate', uploadDateInput.value);
+        }
+
+        showBulkOverlay(files.length);
+
+        try {
+          const res = await fetch('/api/upload-bulk', { method: 'POST', body: formData });
+          const data = await res.json();
+
+          hideBulkOverlay();
+
+          if (data.success) {
+            showBulkSummaryModal(data.results);
+            fetchUserData();
+            loadPerformanceDashboard();
+            data.results.forEach(result => {
+              if (result.success) {
+                const stats = result.stats;
+                showToast(`✅ <b>Upload Successful</b><br>${result.filename}<br>Shown: ${stats.shown} | Hidden: ${stats.hidden}`, 'success');
+              }
+            });
+          } else {
+            showErrorOverlay('Upload Failed', 'The server could not process the upload request.', data.error || 'Please try again.');
+          }
+        } catch (err) {
+          hideBulkOverlay();
+          showErrorOverlay('Server Error', 'A critical error occurred while communicating with the server.', err.message || 'The server might be down or your connection was interrupted.');
+        }
+      }
+
+      function showBulkOverlay(totalCount) {
+        document.getElementById('bulkOverlayTitle').textContent = `Uploading ${totalCount} File${totalCount > 1 ? 's' : ''}...`;
+        document.getElementById('bulkOverlay').style.display = 'flex';
+      }
+
+      function hideBulkOverlay() {
+        document.getElementById('bulkOverlay').style.display = 'none';
+      }
+
+      function showBulkSummaryModal(results) {
+        const listEl = document.getElementById('bulkSummaryList');
+        listEl.innerHTML = results.map(result => {
+          if (result.success) {
+            const stats = result.stats;
+            return `
             <div style="background: rgba(16, 185, 129, 0.06); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 10px; padding: 12px 16px; display: flex; flex-direction: column; gap: 4px;">
               <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
                 <span style="color: var(--success); font-weight: 600; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 340px;" title="${result.filename}">✅ ${result.filename}</span>
@@ -2466,8 +2616,8 @@
               </div>
             </div>
           `;
-        } else {
-          return `
+          } else {
+            return `
             <div style="background: rgba(239, 68, 68, 0.06); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 10px; padding: 12px 16px; display: flex; flex-direction: column; gap: 4px;">
               <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
                 <span style="color: var(--danger); font-weight: 600; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 340px;" title="${result.filename}">❌ ${result.filename}</span>
@@ -2478,276 +2628,286 @@
               </div>
             </div>
           `;
+          }
+        }).join('');
+        document.getElementById('bulkModal').style.display = 'flex';
+      }
+
+      function hideBulkModal() {
+        document.getElementById('bulkModal').style.display = 'none';
+      }
+
+      // ─────────────────────────────────────────────
+      //  UNDO
+      // ─────────────────────────────────────────────
+      async function undoUpload(transactionId) {
+        try {
+          const res = await fetch('/api/undo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ transactionId, username: currentUser })
+          });
+          const data = await res.json();
+          if (data.success) {
+            showToast('⏪ Action reversed. File deleted and records scrubbed.', 'info');
+            fetchUserData();
+            loadPerformanceDashboard(); // Refresh widget strip after undo
+          } else {
+            showToast(`❌ ${data.error || 'Undo time expired.'}`, 'error');
+            fetchUserData();
+          }
+        } catch (e) {
+          showToast('❌ Server error during undo.', 'error');
         }
-      }).join('');
-      document.getElementById('bulkModal').style.display = 'flex';
-    }
+      }
 
-    function hideBulkModal() {
-      document.getElementById('bulkModal').style.display = 'none';
-    }
+      function manualUpload(inputEl) {
+        if (inputEl.files.length > 0) { uploadFiles(inputEl.files, 'standard'); inputEl.value = ''; }
+      }
 
-    // ─────────────────────────────────────────────
-    //  UNDO
-    // ─────────────────────────────────────────────
-    async function undoUpload(transactionId) {
-      try {
-        const res = await fetch('/api/undo', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ transactionId, username: currentUser })
+      // ─────────────────────────────────────────────
+      //  DRAG & DROP
+      // ─────────────────────────────────────────────
+      let dragTimer;
+      window.addEventListener('dragover', e => { e.preventDefault(); document.getElementById('dragOverlay').style.display = 'flex'; clearTimeout(dragTimer); });
+      window.addEventListener('dragleave', e => { e.preventDefault(); dragTimer = setTimeout(() => { document.getElementById('dragOverlay').style.display = 'none'; }, 100); });
+      window.addEventListener('drop', e => { e.preventDefault(); document.getElementById('dragOverlay').style.display = 'none'; });
+
+      function setupZone(id) {
+        const zone = document.getElementById(id);
+        if (!zone) return;
+        zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+        zone.addEventListener('dragleave', e => { e.preventDefault(); zone.classList.remove('dragover'); });
+        zone.addEventListener('drop', e => {
+          e.preventDefault(); zone.classList.remove('dragover');
+          if (e.dataTransfer.files && e.dataTransfer.files.length > 0) uploadFiles(e.dataTransfer.files, 'standard');
         });
-        const data = await res.json();
-        if (data.success) {
-          showToast('⏪ Action reversed. File deleted and records scrubbed.', 'info');
-          fetchUserData();
-          loadPerformanceDashboard(); // Refresh widget strip after undo
+      }
+      setupZone('dropStd');
+
+      // ─────────────────────────────────────────────
+      //  NAVIGATION
+      // ─────────────────────────────────────────────
+      function setView(view) {
+        currentView = view;
+
+        // Update sidebar active states
+        document.querySelectorAll('.sidebar .nav-item[data-view]').forEach(n => n.classList.remove('active'));
+        const navEl = document.getElementById(
+          view === 'files' ? 'navFiles' : 'navBriefing'
+        );
+        if (navEl) navEl.classList.add('active');
+
+        document.getElementById('filesView').style.display = 'none';
+        document.getElementById('briefingView').style.display = 'none';
+
+        if (view === 'briefing') {
+          document.getElementById('briefingView').style.display = 'flex';
+          if (!currentAssignedShow) fetchNextShow();
         } else {
-          showToast(`❌ ${data.error || 'Undo time expired.'}`, 'error');
-          fetchUserData();
+          document.getElementById('filesView').style.display = 'flex';
+          renderTable();
         }
-      } catch (e) {
-        showToast('❌ Server error during undo.', 'error');
-      }
-    }
-
-    function manualUpload(inputEl, mode) {
-      if (inputEl.files.length > 0) { uploadFiles(inputEl.files, mode); inputEl.value = ''; }
-    }
-
-    // ─────────────────────────────────────────────
-    //  DRAG & DROP
-    // ─────────────────────────────────────────────
-    let dragTimer;
-    window.addEventListener('dragover', e => { e.preventDefault(); document.getElementById('dragOverlay').style.display = 'flex'; clearTimeout(dragTimer); });
-    window.addEventListener('dragleave', e => { e.preventDefault(); dragTimer = setTimeout(() => { document.getElementById('dragOverlay').style.display = 'none'; }, 100); });
-    window.addEventListener('drop', e => { e.preventDefault(); document.getElementById('dragOverlay').style.display = 'none'; });
-
-    function setupZone(id, mode) {
-      const zone = document.getElementById(id);
-      if (!zone) return;
-      zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
-      zone.addEventListener('dragleave', e => { e.preventDefault(); zone.classList.remove('dragover'); });
-      zone.addEventListener('drop', e => {
-        e.preventDefault(); zone.classList.remove('dragover');
-        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) uploadFiles(e.dataTransfer.files, mode);
-      });
-    }
-    setupZone('dropStd', 'standard');
-
-    // ─────────────────────────────────────────────
-    //  NAVIGATION
-    // ─────────────────────────────────────────────
-    function setView(view) {
-      currentView = view;
-
-      // Update sidebar active states
-      document.querySelectorAll('.sidebar .nav-item[data-view]').forEach(n => n.classList.remove('active'));
-      const navEl = document.getElementById(
-        view === 'files' ? 'navFiles' : 'navBriefing'
-      );
-      if (navEl) navEl.classList.add('active');
-
-      document.getElementById('filesView').style.display = 'none';
-      document.getElementById('briefingView').style.display = 'none';
-
-      if (view === 'briefing') {
-        document.getElementById('briefingView').style.display = 'flex';
-        if (!currentAssignedShow) fetchNextShow();
-      } else {
-        document.getElementById('filesView').style.display = 'flex';
-        renderTable();
-      }
-    }
-
-    // ─────────────────────────────────────────────
-    //  TABLE RENDER (Today's Files)
-    // ─────────────────────────────────────────────
-    function fmtSize(b) { return b > 1048576 ? (b / 1048576).toFixed(1) + 'MB' : (b / 1024).toFixed(0) + 'KB'; }
-    function fmtDate(d) { return `${d.getDate()}-${monthNames[d.getMonth()]}-${d.getFullYear()}`; }
-
-    function renderTable() {
-      const q = document.getElementById('searchInput').value.toLowerCase();
-      const dateVal = document.getElementById('uploadDate') ? document.getElementById('uploadDate').value : '';
-      let targetDate = new Date();
-      if (dateVal) {
-        const [y, m, d] = dateVal.split('-');
-        targetDate = new Date(y, m - 1, d);
       }
 
-      const list = files.filter(f => {
-        const matchQ = !q || f.name.toLowerCase().includes(q);
-        const matchD = f.mtime.getFullYear() === targetDate.getFullYear() &&
-                       f.mtime.getMonth() === targetDate.getMonth() &&
-                       f.mtime.getDate() === targetDate.getDate();
-        return matchQ && matchD;
-      });
+      // ─────────────────────────────────────────────
+      //  TABLE RENDER (Today's Files)
+      // ─────────────────────────────────────────────
+      function fmtSize(b) { return b > 1048576 ? (b / 1048576).toFixed(1) + 'MB' : (b / 1024).toFixed(0) + 'KB'; }
+      function fmtDate(d) { return `${d.getDate()}-${monthNames[d.getMonth()]}-${d.getFullYear()}`; }
 
-      const tbody = document.getElementById('tableBody');
-      const statusHtml = { sorted: '<span class="status-icon ok">✓ Sorted</span>', error: '<span class="status-icon err">✕ Error</span>' };
-      const nowMs = Date.now();
-
-      tbody.innerHTML = list.map(f => {
-        let ext = f.name.lastIndexOf('.') > -1 ? f.name.slice(f.name.lastIndexOf('.')) : '';
-        let base = f.name.slice(0, f.name.length - ext.length);
-        let uploadTime = f.uploadTime ? new Date(f.uploadTime).getTime() : 0;
-        if (!uploadTime && f.transactionId) {
-          try {
-            const base36Timestamp = f.transactionId.substring(0, 8);
-            const decodedTime = parseInt(base36Timestamp, 36);
-            if (decodedTime > 1735689600000 && decodedTime < 2524608000000) {
-              uploadTime = decodedTime;
-            }
-          } catch (e) {}
+      function renderTable() {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        const dateVal = document.getElementById('uploadDate') ? document.getElementById('uploadDate').value : '';
+        let targetDate = new Date();
+        if (dateVal) {
+          const [y, m, d] = dateVal.split('-');
+          targetDate = new Date(y, m - 1, d);
         }
-        let canUndo = uploadTime && (nowMs - uploadTime) < 300000 && f.transactionId;
-        let undoBtnHtml = canUndo
-          ? `<span title="Revert upload (within 5 min)" onclick="undoUpload('${f.transactionId}')" style="cursor:pointer; margin-left:12px; display:inline-flex; align-items:center; justify-content:center; background:rgba(239,68,68,0.1); color:var(--danger); border-radius:4px; padding:2px 6px; font-size:10px; font-weight:700; letter-spacing:0.5px; transition:all 0.2s;" onmouseover="this.style.background='var(--danger)'; this.style.color='#fff';" onmouseout="this.style.background='rgba(239,68,68,0.1)'; this.style.color='var(--danger)';">↩ UNDO</span>`
-          : '';
-        return `<tr>
+
+        const list = files.filter(f => {
+          const matchQ = !q || f.name.toLowerCase().includes(q);
+          const matchD = f.mtime.getFullYear() === targetDate.getFullYear() &&
+            f.mtime.getMonth() === targetDate.getMonth() &&
+            f.mtime.getDate() === targetDate.getDate();
+          return matchQ && matchD;
+        });
+
+        const tbody = document.getElementById('tableBody');
+        const statusHtml = { sorted: '<span class="status-icon ok">✓ Sorted</span>', error: '<span class="status-icon err">✕ Error</span>' };
+        const nowMs = Date.now();
+
+        tbody.innerHTML = list.map(f => {
+          let ext = f.name.lastIndexOf('.') > -1 ? f.name.slice(f.name.lastIndexOf('.')) : '';
+          let base = f.name.slice(0, f.name.length - ext.length);
+          let uploadTime = f.uploadTime ? new Date(f.uploadTime).getTime() : 0;
+          if (!uploadTime && f.transactionId) {
+            try {
+              const base36Timestamp = f.transactionId.substring(0, 8);
+              const decodedTime = parseInt(base36Timestamp, 36);
+              if (decodedTime > 1735689600000 && decodedTime < 2524608000000) {
+                uploadTime = decodedTime;
+              }
+            } catch (e) { }
+          }
+          let canUndo = uploadTime && (nowMs - uploadTime) < 300000 && f.transactionId;
+          let undoBtnHtml = canUndo
+            ? `<span title="Revert upload (within 5 min)" onclick="undoUpload('${f.transactionId}')" style="cursor:pointer; margin-left:12px; display:inline-flex; align-items:center; justify-content:center; background:rgba(239,68,68,0.1); color:var(--danger); border-radius:4px; padding:2px 6px; font-size:10px; font-weight:700; letter-spacing:0.5px; transition:all 0.2s;" onmouseover="this.style.background='var(--danger)'; this.style.color='#fff';" onmouseout="this.style.background='rgba(239,68,68,0.1)'; this.style.color='var(--danger)';">↩ UNDO</span>`
+            : '';
+          const dateString = dateVal || new Date(f.mtime).toISOString().split('T')[0];
+          const editBtn = f.agent === currentUser
+            ? `<button class="btn btn-sm" onclick="editNote('${dateString}','${escHtml(f.transactionId)}')" style="background:transparent; border:none; color:var(--accent-blue); padding:0 4px; cursor:pointer;" title="Edit Note">✏️</button>`
+            : '';
+          return `<tr>
           <td title="${f.name}"><span class="file-name">${base}</span><span class="file-ext">${ext}</span></td>
           <td class="date-cell">${fmtDate(f.mtime)}</td>
           <td class="size-cell mono">${fmtSize(f.size)}</td>
           <td><span class="region-tag ${f.region.toLowerCase()}">${f.region}</span></td>
           <td class="dest-cell mono" title="${f.destPath}">${f.destPath}</td>
           <td class="status-cell">${statusHtml[f.status] || f.status}${undoBtnHtml}</td>
+          <td class="note-cell" style="max-width:150px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${escHtml(f.note || '')}">${escHtml(f.note || '—')} ${editBtn}</td>
         </tr>`;
-      }).join('');
+        }).join('');
 
-      if (typeof renderPerformanceDashboard === 'function') {
-        renderPerformanceDashboard();
-      }
-    }
-
-    // ─────────────────────────────────────────────
-    //  MONTHLY HISTORY RENDER
-    // ─────────────────────────────────────────────
-    async function fetchMonthlyHistory() {
-      try {
-        const res = await fetch(`/api/user/report?username=${encodeURIComponent(currentUser)}`);
-        const json = await res.json();
-        if (json.success) renderHistoryTable(json.data);
-      } catch (e) { console.error('History fetch failed', e); }
-    }
-
-    function renderHistoryTable(allData) {
-      if (allData) window.lastHistoryData = allData;
-      else allData = window.lastHistoryData || [];
-
-      const historyBody = document.getElementById('historyBody');
-      const historyCount = document.getElementById('historyCount');
-      if (!historyBody || !historyCount) return;
-
-      const now = new Date();
-      const currentMonth = now.getMonth();
-      const currentYear = now.getFullYear();
-
-      const searchQ = document.getElementById('historySearch') ? document.getElementById('historySearch').value.toLowerCase() : '';
-
-      // Filter for current month only and search
-      const monthData = allData.filter(item => {
-        const d = new Date(item.date);
-        const inMonth = d.getMonth() === currentMonth && d.getFullYear() === currentYear;
-        const matchesSearch = !searchQ || item.filename.toLowerCase().includes(searchQ);
-        return inMonth && matchesSearch;
-      });
-
-      historyCount.textContent = `${monthData.length} shows`;
-
-      if (monthData.length === 0) {
-        historyBody.innerHTML = `<div style="padding:40px; text-align:center; color:var(--text-muted); font-size:12px;">No shows found.</div>`;
-        return;
+        if (typeof renderPerformanceDashboard === 'function') {
+          renderPerformanceDashboard();
+        }
       }
 
-      let html = `<table class="history-table">
+      // ─────────────────────────────────────────────
+      //  MONTHLY HISTORY RENDER
+      // ─────────────────────────────────────────────
+      async function fetchMonthlyHistory() {
+        try {
+          const res = await fetch(`/api/user/report?username=${encodeURIComponent(currentUser)}`);
+          const json = await res.json();
+          if (json.success) renderHistoryTable(json.data);
+        } catch (e) { console.error('History fetch failed', e); }
+      }
+
+      function renderHistoryTable(allData) {
+        if (allData) window.lastHistoryData = allData;
+        else allData = window.lastHistoryData || [];
+
+        const historyBody = document.getElementById('historyBody');
+        const historyCount = document.getElementById('historyCount');
+        if (!historyBody || !historyCount) return;
+
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+
+        const searchQ = document.getElementById('historySearch') ? document.getElementById('historySearch').value.toLowerCase() : '';
+
+        // Filter for current month only and search
+        const monthData = allData.filter(item => {
+          const d = new Date(item.date);
+          const inMonth = d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+          const matchesSearch = !searchQ || item.filename.toLowerCase().includes(searchQ);
+          return inMonth && matchesSearch;
+        });
+
+        historyCount.textContent = `${monthData.length} shows`;
+
+        if (monthData.length === 0) {
+          historyBody.innerHTML = `<div style="padding:40px; text-align:center; color:var(--text-muted); font-size:12px;">No shows found.</div>`;
+          return;
+        }
+
+        let html = `<table class="history-table">
         <thead>
           <tr>
-            <th>Date</th>
-            <th>Show Name</th>
-            <th>Gross Leads</th>
-            <th>Net Leads</th>
+            <th style="width: 15%;">Date</th>
+            <th style="width: 45%;">Show Name</th>
+            <th style="width: 12%;">Gross Leads</th>
+            <th style="width: 12%;">Net Leads</th>
+            <th style="width: 16%;">Notes</th>
           </tr>
         </thead>
         <tbody>`;
 
-      html += monthData.map(item => {
-        return `<tr>
+        html += monthData.map(item => {
+          return `<tr>
           <td class="history-date">${item.date}</td>
-          <td title="${item.filename}" style="max-width:300px; overflow:hidden; text-overflow:ellipsis;">${item.filename}</td>
+          <td title="${item.filename}" style="max-width:250px; overflow:hidden; text-overflow:ellipsis;">${item.filename}</td>
           <td class="history-val">${item.total}</td>
           <td class="history-val">${item.shown}</td>
+          <td class="note-cell" style="max-width:150px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${escHtml(item.note || '')}">
+            ${escHtml(item.note || '—')}
+            <button class="btn btn-sm" onclick="editNote('${item.date}','${escHtml(item.transactionId)}')" style="background:transparent; border:none; color:var(--accent-blue); padding:0 4px; cursor:pointer;" title="Edit Note">✏️</button>
+          </td>
         </tr>`;
-      }).join('');
+        }).join('');
 
-      html += `</tbody></table>`;
-      historyBody.innerHTML = html;
-    }
+        html += `</tbody></table>`;
+        historyBody.innerHTML = html;
+      }
 
-    function updateStats() {
-      document.getElementById('statTotal').textContent = files.length;
-      document.getElementById('nbAll').textContent = files.length;
-      document.getElementById('statSorted').textContent = files.filter(f => f.status === 'sorted').length;
-      document.getElementById('statErrors').textContent = files.filter(f => f.status === 'error').length;
-    }
+      function updateStats() {
+        document.getElementById('statTotal').textContent = files.length;
+        document.getElementById('nbAll').textContent = files.length;
+        document.getElementById('statSorted').textContent = files.filter(f => f.status === 'sorted').length;
+        document.getElementById('statErrors').textContent = files.filter(f => f.status === 'error').length;
+      }
 
-    // ─────────────────────────────────────────────
-    //  PERFORMANCE DASHBOARD  (personal, filtered)
-    // ─────────────────────────────────────────────
+      // ─────────────────────────────────────────────
+      //  PERFORMANCE DASHBOARD  (personal, filtered)
+      // ─────────────────────────────────────────────
 
-    async function loadPerformanceDashboard() {
-      try {
-        const res = await fetch(`/api/user/report?username=${encodeURIComponent(currentUser)}`);
-        const json = await res.json();
-        if (json.success) {
-          cachedPerformanceRecords = json.data;
-          renderPerformanceDashboard();
-        }
-      } catch (e) { console.error('Performance fetch failed', e); }
-    }
+      async function loadPerformanceDashboard() {
+        try {
+          const res = await fetch(`/api/user/report?username=${encodeURIComponent(currentUser)}`);
+          const json = await res.json();
+          if (json.success) {
+            cachedPerformanceRecords = json.data;
+            renderPerformanceDashboard();
+          }
+        } catch (e) { console.error('Performance fetch failed', e); }
+      }
 
-    // ─────────────────────────────────────────────
-    //  LEADERBOARD LOGIC
-    // ─────────────────────────────────────────────
-    async function fetchLeaderboard() {
-      try {
-        const res = await fetch('/api/leaderboard');
-        const data = await res.json();
-        if (data.success) renderLeaderboard(data.leaderboard);
-      } catch (e) { console.error('Leaderboard fetch failed', e); }
-    }
+      // ─────────────────────────────────────────────
+      //  LEADERBOARD LOGIC
+      // ─────────────────────────────────────────────
+      async function fetchLeaderboard() {
+        try {
+          const res = await fetch('/api/leaderboard');
+          const data = await res.json();
+          if (data.success) renderLeaderboard(data.leaderboard);
+        } catch (e) { console.error('Leaderboard fetch failed', e); }
+      }
 
-    function toggleLeaderboard() {
-      const el = document.getElementById('miniLeaderboard');
-      if (!el) return;
-      const isCollapsed = el.classList.toggle('collapsed');
-      localStorage.setItem('zorg_leaderboard_collapsed', isCollapsed);
-    }
+      function toggleLeaderboard() {
+        const el = document.getElementById('miniLeaderboard');
+        if (!el) return;
+        const isCollapsed = el.classList.toggle('collapsed');
+        localStorage.setItem('zorg_leaderboard_collapsed', isCollapsed);
+      }
 
-    function initLeaderboardToggle() {
-      const el = document.getElementById('miniLeaderboard');
-      if (!el) return;
-      const isCollapsed = localStorage.getItem('zorg_leaderboard_collapsed') === 'true';
-      if (isCollapsed) el.classList.add('collapsed');
-    }
+      function initLeaderboardToggle() {
+        const el = document.getElementById('miniLeaderboard');
+        if (!el) return;
+        const isCollapsed = localStorage.getItem('zorg_leaderboard_collapsed') === 'true';
+        if (isCollapsed) el.classList.add('collapsed');
+      }
 
-    function renderLeaderboard(list) {
-      const container = document.getElementById('sidebarLeaderboard');
-      if (!container) return;
+      function renderLeaderboard(list) {
+        const container = document.getElementById('sidebarLeaderboard');
+        if (!container) return;
 
-      if (!list || list.length === 0) {
-        container.innerHTML = `
+        if (!list || list.length === 0) {
+          container.innerHTML = `
           <div style="text-align:center; padding:8px 12px; color:var(--text-sidebar); font-size:10px; opacity:0.5;">
             Awaiting activity...
           </div>`;
-        return;
-      }
+          return;
+        }
 
-      // Show top 5 for sidebar
-      container.innerHTML = list.slice(0, 5).map((agent, index) => {
-        const rank = index + 1;
-        const isMe = agent.name === currentUser;
-        
-        return `
+        // Show top 5 for sidebar
+        container.innerHTML = list.slice(0, 5).map((agent, index) => {
+          const rank = index + 1;
+          const isMe = agent.name === currentUser;
+
+          return `
           <div class="ml-item ${isMe ? 'is-me' : ''}" title="${agent.name}: ${agent.shown} shown / ${agent.leads} gross">
             <div class="ml-rank">${rank}</div>
             <div class="ml-info">
@@ -2757,678 +2917,699 @@
             <div class="ml-val">${agent.shown}</div>
           </div>
         `;
-      }).join('');
-      
-      const updateEl = document.getElementById('lbLastUpdate');
-      if (updateEl) {
-        const now = new Date();
-        updateEl.textContent = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
-      }
-    }
+        }).join('');
 
-    function renderPerformanceDashboard() {
-      if (!currentUser || !cachedPerformanceRecords) return;
-
-      const today = new Date();
-      const todayStr = today.toISOString().split('T')[0];
-      const nowMonthStr = todayStr.slice(0, 7);
-
-      const dateInput = document.getElementById('uploadDate');
-      const selectedDateStr = dateInput && dateInput.value ? dateInput.value : todayStr;
-
-      let filesToday = 0, shownToday = 0, grossToday = 0;
-      let shownMonth = 0, grossMonth = 0;
-      const dailyShownMap = {};
-
-      cachedPerformanceRecords.forEach(rec => {
-        const isSelectedDate = rec.date === selectedDateStr;
-        const isThisMonth = rec.date.startsWith(nowMonthStr);
-
-        if (isSelectedDate) { 
-          filesToday++; 
-          shownToday += rec.shown; 
-          grossToday += rec.total; 
+        const updateEl = document.getElementById('lbLastUpdate');
+        if (updateEl) {
+          const now = new Date();
+          updateEl.textContent = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
         }
-        if (isThisMonth) { 
-          shownMonth += rec.shown; 
-          grossMonth += rec.total; 
-        }
-        
-        if (!dailyShownMap[rec.date]) dailyShownMap[rec.date] = 0;
-        dailyShownMap[rec.date] += rec.shown;
-      });
-
-      // Update top-of-page widget strip (always visible across all views)
-      document.getElementById('pcFilesToday').textContent = filesToday;
-      document.getElementById('pcShownToday').textContent = shownToday;
-      document.getElementById('pcGrossToday').textContent = grossToday;
-      document.getElementById('pcShownMonth').textContent = shownMonth;
-      document.getElementById('pcGrossMonth').textContent = grossMonth;
-
-      // Pacing Ghost (dynamic average)
-      const dailyTotals = Object.values(dailyShownMap);
-      const totalDays = dailyTotals.length;
-      const averageNet = totalDays > 0 ? Math.round(dailyTotals.reduce((sum, val) => sum + val, 0) / totalDays) : 12;
-
-      updatePacingGhost(shownToday, averageNet);
-    }
-
-    function updatePacingGhost(currentNet, averageNet) {
-      const el = document.getElementById('pacingGhostNet');
-      if (!el) return;
-
-      const diff = currentNet - averageNet;
-      el.classList.remove('ahead', 'behind');
-
-      if (diff >= 0) {
-        el.classList.add('ahead');
-        el.innerHTML = `↑ +${diff} vs usual pace (${averageNet} avg)`;
-      } else {
-        el.classList.add('behind');
-        el.innerHTML = `↓ ${Math.abs(diff)} behind pace (${averageNet} avg)`;
       }
-    }
 
-    function renderChart(labels, values) {
-      const ctx = document.getElementById('performanceChart').getContext('2d');
+      function renderPerformanceDashboard() {
+        if (!currentUser || !cachedPerformanceRecords) return;
 
-      const gradient = ctx.createLinearGradient(0, 0, 0, 240);
-      gradient.addColorStop(0, 'rgba(139, 92, 246, 0.35)');
-      gradient.addColorStop(1, 'rgba(139, 92, 246, 0.00)');
+        const today = new Date();
+        const todayStr = today.toISOString().split('T')[0];
+        const nowMonthStr = todayStr.slice(0, 7);
 
-      const chartConfig = {
-        type: 'line',
-        data: {
-          labels,
-          datasets: [{
-            label: 'Shown Leads',
-            data: values,
-            borderColor: '#8B5CF6',
-            backgroundColor: gradient,
-            borderWidth: 2.5,
-            pointBackgroundColor: '#8B5CF6',
-            pointBorderColor: '#0B0F19',
-            pointBorderWidth: 2,
-            pointRadius: 5,
-            pointHoverRadius: 8,
-            tension: 0.35,
-            fill: true,
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              backgroundColor: '#1F2937',
-              borderColor: '#374151',
-              borderWidth: 1,
-              titleColor: '#F9FAFB',
-              bodyColor: '#9CA3AF',
-              padding: 12,
-              callbacks: {
-                label: ctx => ` ${ctx.parsed.y} shown leads`
-              }
-            }
+        const dateInput = document.getElementById('uploadDate');
+        const selectedDateStr = dateInput && dateInput.value ? dateInput.value : todayStr;
+
+        let filesToday = 0, shownToday = 0, grossToday = 0;
+        let shownMonth = 0, grossMonth = 0;
+        const dailyShownMap = {};
+
+        cachedPerformanceRecords.forEach(rec => {
+          const isSelectedDate = rec.date === selectedDateStr;
+          const isThisMonth = rec.date.startsWith(nowMonthStr);
+
+          if (isSelectedDate) {
+            filesToday++;
+            shownToday += rec.shown;
+            grossToday += rec.total;
+          }
+          if (isThisMonth) {
+            shownMonth += rec.shown;
+            grossMonth += rec.total;
+          }
+
+          if (!dailyShownMap[rec.date]) dailyShownMap[rec.date] = 0;
+          dailyShownMap[rec.date] += rec.shown;
+        });
+
+        // Update top-of-page widget strip (always visible across all views)
+        document.getElementById('pcFilesToday').textContent = filesToday;
+        document.getElementById('pcShownToday').textContent = shownToday;
+        document.getElementById('pcGrossToday').textContent = grossToday;
+        document.getElementById('pcShownMonth').textContent = shownMonth;
+        document.getElementById('pcGrossMonth').textContent = grossMonth;
+
+        // Pacing Ghost (dynamic average)
+        const dailyTotals = Object.values(dailyShownMap);
+        const totalDays = dailyTotals.length;
+        const averageNet = totalDays > 0 ? Math.round(dailyTotals.reduce((sum, val) => sum + val, 0) / totalDays) : 12;
+
+        updatePacingGhost(shownToday, averageNet);
+      }
+
+      function updatePacingGhost(currentNet, averageNet) {
+        const el = document.getElementById('pacingGhostNet');
+        if (!el) return;
+
+        const diff = currentNet - averageNet;
+        el.classList.remove('ahead', 'behind');
+
+        if (diff >= 0) {
+          el.classList.add('ahead');
+          el.innerHTML = `↑ +${diff} vs usual pace (${averageNet} avg)`;
+        } else {
+          el.classList.add('behind');
+          el.innerHTML = `↓ ${Math.abs(diff)} behind pace (${averageNet} avg)`;
+        }
+      }
+
+      function renderChart(labels, values) {
+        const ctx = document.getElementById('performanceChart').getContext('2d');
+
+        const gradient = ctx.createLinearGradient(0, 0, 0, 240);
+        gradient.addColorStop(0, 'rgba(139, 92, 246, 0.35)');
+        gradient.addColorStop(1, 'rgba(139, 92, 246, 0.00)');
+
+        const chartConfig = {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [{
+              label: 'Shown Leads',
+              data: values,
+              borderColor: '#8B5CF6',
+              backgroundColor: gradient,
+              borderWidth: 2.5,
+              pointBackgroundColor: '#8B5CF6',
+              pointBorderColor: '#0B0F19',
+              pointBorderWidth: 2,
+              pointRadius: 5,
+              pointHoverRadius: 8,
+              tension: 0.35,
+              fill: true,
+            }]
           },
-          scales: {
-            x: {
-              grid: { color: 'rgba(55, 65, 81, 0.5)', drawBorder: false },
-              ticks: { color: '#9CA3AF', font: { size: 11, family: 'Inter' } }
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: '#1F2937',
+                borderColor: '#374151',
+                borderWidth: 1,
+                titleColor: '#F9FAFB',
+                bodyColor: '#9CA3AF',
+                padding: 12,
+                callbacks: {
+                  label: ctx => ` ${ctx.parsed.y} shown leads`
+                }
+              }
             },
-            y: {
-              beginAtZero: true,
-              grid: { color: 'rgba(55, 65, 81, 0.5)', drawBorder: false },
-              ticks: {
-                color: '#9CA3AF', font: { size: 11, family: 'Inter' },
-                stepSize: 1,
-                callback: v => Number.isInteger(v) ? v : ''
+            scales: {
+              x: {
+                grid: { color: 'rgba(55, 65, 81, 0.5)', drawBorder: false },
+                ticks: { color: '#9CA3AF', font: { size: 11, family: 'Inter' } }
+              },
+              y: {
+                beginAtZero: true,
+                grid: { color: 'rgba(55, 65, 81, 0.5)', drawBorder: false },
+                ticks: {
+                  color: '#9CA3AF', font: { size: 11, family: 'Inter' },
+                  stepSize: 1,
+                  callback: v => Number.isInteger(v) ? v : ''
+                }
               }
             }
           }
+        };
+
+        if (perfChart) {
+          // Update existing chart in-place (smooth transition)
+          perfChart.data.labels = labels;
+          perfChart.data.datasets[0].data = values;
+          perfChart.update();
+        } else {
+          perfChart = new Chart(ctx, chartConfig);
         }
-      };
-
-      if (perfChart) {
-        // Update existing chart in-place (smooth transition)
-        perfChart.data.labels = labels;
-        perfChart.data.datasets[0].data = values;
-        perfChart.update();
-      } else {
-        perfChart = new Chart(ctx, chartConfig);
       }
-    }
 
-    // ─────────────────────────────────────────────
-    //  TOAST
-    // ─────────────────────────────────────────────
-    function dismissToast(toast) {
-      if (!toast || !toast.parentNode) return;
-      toast.style.animation = 'none';
-      toast.style.transition = 'transform 0.15s ease, opacity 0.15s ease';
-      requestAnimationFrame(() => { toast.style.transform = 'translateX(120%)'; toast.style.opacity = '0'; });
-      setTimeout(() => toast.remove(), 160);
-    }
-
-    function showToast(htmlMsg, type) {
-      const container = document.getElementById('toastContainer');
-      const toast = document.createElement('div');
-      toast.className = `toast ${type || ''}`;
-      toast.innerHTML = htmlMsg;
-      toast.addEventListener('click', () => dismissToast(toast));
-      container.appendChild(toast);
-      setTimeout(() => dismissToast(toast), 5000);
-    }
-
-    // ─────────────────────────────────────────────
-    //  PROMINENT ERROR OVERLAY
-    // ─────────────────────────────────────────────
-    function showErrorOverlay(title, msg, reason) {
-      document.getElementById('errorTitle').textContent = title || 'Upload Failed';
-      document.getElementById('errorMsg').textContent = msg || 'Something went wrong. Please try again.';
-      
-      const reasonEl = document.getElementById('errorReason');
-      if (reason) {
-        reasonEl.textContent = reason;
-        reasonEl.style.display = 'block';
-      } else {
-        reasonEl.style.display = 'none';
+      // ─────────────────────────────────────────────
+      //  TOAST
+      // ─────────────────────────────────────────────
+      function dismissToast(toast) {
+        if (!toast || !toast.parentNode) return;
+        toast.style.animation = 'none';
+        toast.style.transition = 'transform 0.15s ease, opacity 0.15s ease';
+        requestAnimationFrame(() => { toast.style.transform = 'translateX(120%)'; toast.style.opacity = '0'; });
+        setTimeout(() => toast.remove(), 160);
       }
-      
-      document.getElementById('errorOverlay').style.display = 'flex';
-      
-      // Optionally play a subtle error sound if you have one, or just rely on the visual pop
-      if (window.navigator && window.navigator.vibrate) {
-        window.navigator.vibrate(200); // Haptic feedback on mobile if supported
+
+      function showToast(htmlMsg, type) {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type || ''}`;
+        toast.innerHTML = htmlMsg;
+        toast.addEventListener('click', () => dismissToast(toast));
+        container.appendChild(toast);
+        setTimeout(() => dismissToast(toast), 5000);
       }
-    }
 
-    function hideErrorOverlay() {
-      document.getElementById('errorOverlay').style.display = 'none';
-    }
+      // ─────────────────────────────────────────────
+      //  PROMINENT ERROR OVERLAY
+      // ─────────────────────────────────────────────
+      function showErrorOverlay(title, msg, reason) {
+        document.getElementById('errorTitle').textContent = title || 'Upload Failed';
+        document.getElementById('errorMsg').textContent = msg || 'Something went wrong. Please try again.';
 
-    // ─────────────────────────────────────────────
-    //  KEYBOARD SHORTCUTS
-    // ─────────────────────────────────────────────
-    document.addEventListener('keydown', e => {
-      const loginScreen = document.getElementById('loginScreen');
-      const loginShowing = loginScreen && loginScreen.style.display !== 'none' && getComputedStyle(loginScreen).display !== 'none';
-      if (loginShowing) {
-        if (e.key === 'Enter') { e.preventDefault(); attemptLogin(); }
-        if (e.key === 'Escape') {
-          e.preventDefault();
-          document.getElementById('loginError').style.display = 'none';
-          document.getElementById('usernameInput').value = '';
-          document.getElementById('passwordInput').value = '';
+        const reasonEl = document.getElementById('errorReason');
+        if (reason) {
+          reasonEl.textContent = reason;
+          reasonEl.style.display = 'block';
+        } else {
+          reasonEl.style.display = 'none';
         }
-        return;
-      }
-      if (e.key === 'Escape') document.querySelectorAll('.toast').forEach(t => dismissToast(t));
-    });
 
+        document.getElementById('errorOverlay').style.display = 'flex';
 
-    // Lightweight heartbeat: refresh file list & widget strip every 30s
-    setInterval(() => {
-      if (currentUser) {
-        // Always re-fetch fresh performance data so widgets stay live
-        loadPerformanceDashboard();
-        // Re-render table only when the files view is active (to expire undo buttons)
-        if (currentView === 'files') fetchUserData();
-      }
-    }, 30000);
-
-    // ─────────────────────────────────────────────
-    //  BRIEFING ROOM & SOCKET
-    // ─────────────────────────────────────────────
-    function initSocket() {
-      if (!socket && typeof io !== 'undefined') {
-        socket = io();
-        socket.on('new_upload', (data) => {
-          // Refresh widget strip instantly whenever ANY agent submits a show
-          loadPerformanceDashboard();
-          // Also refresh leaderboard if another agent uploads
-          fetchLeaderboard();
-          // If a new show arrives in the hopper and we are in briefing with no current show
-          if (currentView === 'briefing' && !currentAssignedShow) {
-            fetchNextShow();
-          }
-        });
-        socket.on('record_deleted', (data) => {
-          if (data.agent === currentUser) {
-            fetchUserData();
-          }
-          loadPerformanceDashboard();
-          fetchLeaderboard();
-        });
-        socket.on('daily_reset', () => {
-          logout();
-        });
-
-        socket.on('dispatchModeChanged', (status) => {
-          isAutoDispatch = status;
-          updateBriefingModeDisplay();
-        });
-
-        socket.on('showsAssigned', async () => {
-          console.log('> [DISPATCH] New shows assigned by admin.');
-          
-          // 1. Notify the agent
-          if ("Notification" in window && Notification.permission === "granted") {
-            new Notification("📥 Shows Assigned", {
-              body: "Admin has assigned new shows to your hopper.",
-              icon: "/favicon.ico"
-            });
-          }
-          showToast('📥 Admin has assigned new shows to you!', 'success');
-
-          // 2. Refresh the briefing room to pull the new show
-          if (currentView === 'briefing') {
-            await startNextShow();
-          }
-        });
-      }
-      socket.on('show_cancelled', (data) => {
-        // Only react if THIS agent is currently working on THIS specific show
-        if (currentAssignedShow && currentAssignedShow.id === data.id) {
-
-          // Fire Desktop Notification
-          if ("Notification" in window && Notification.permission === "granted") {
-            new Notification("🚨 Show Cancelled", {
-              body: `Admin cancelled "${data.showName}". Reason: ${data.reason}. Please request a new show.`,
-              requireInteraction: true
-            });
-          }
-
-          // Rip the show out of the UI
-          currentAssignedShow = null;
-          showToast(`🚨 Your active show was cancelled: ${data.reason}`, 'error');
-          renderBriefingCard();
-          if (socket) socket.emit('agent_status', { agent: currentUser, status: 'CXL Alerted', show: null });
+        // Optionally play a subtle error sound if you have one, or just rely on the visual pop
+        if (window.navigator && window.navigator.vibrate) {
+          window.navigator.vibrate(200); // Haptic feedback on mobile if supported
         }
+      }
+
+      function hideErrorOverlay() {
+        document.getElementById('errorOverlay').style.display = 'none';
+      }
+
+      // ─────────────────────────────────────────────
+      //  KEYBOARD SHORTCUTS
+      // ─────────────────────────────────────────────
+      document.addEventListener('keydown', e => {
+        const loginScreen = document.getElementById('loginScreen');
+        const loginShowing = loginScreen && loginScreen.style.display !== 'none' && getComputedStyle(loginScreen).display !== 'none';
+        if (loginShowing) {
+          if (e.key === 'Enter') { e.preventDefault(); attemptLogin(); }
+          if (e.key === 'Escape') {
+            e.preventDefault();
+            document.getElementById('loginError').style.display = 'none';
+            document.getElementById('usernameInput').value = '';
+            document.getElementById('passwordInput').value = '';
+          }
+          return;
+        }
+        if (e.key === 'Escape') document.querySelectorAll('.toast').forEach(t => dismissToast(t));
       });
-    }
 
-    async function startNextShow() {
-      if (!currentUser) return;
-      try {
-        const res = await fetch('/api/shows/next?username=' + encodeURIComponent(currentUser));
-        const data = await res.json();
-        
-        if (data.message === 'MANUAL_MODE') {
+
+      // Lightweight heartbeat: refresh file list & widget strip every 30s
+      setInterval(() => {
+        if (currentUser) {
+          // Always re-fetch fresh performance data so widgets stay live
+          loadPerformanceDashboard();
+          // Re-render table only when the files view is active (to expire undo buttons)
+          if (currentView === 'files') fetchUserData();
+        }
+      }, 30000);
+
+      // ─────────────────────────────────────────────
+      //  BRIEFING ROOM & SOCKET
+      // ─────────────────────────────────────────────
+      function initSocket() {
+        if (!socket && typeof io !== 'undefined') {
+          socket = io();
+          socket.on('new_upload', (data) => {
+            // Refresh widget strip instantly whenever ANY agent submits a show
+            loadPerformanceDashboard();
+            // Also refresh leaderboard if another agent uploads
+            fetchLeaderboard();
+            // If a new show arrives in the hopper and we are in briefing with no current show
+            if (currentView === 'briefing' && !currentAssignedShow) {
+              fetchNextShow();
+            }
+          });
+          socket.on('record_deleted', (data) => {
+            if (data.agent === currentUser) {
+              fetchUserData();
+            }
+            loadPerformanceDashboard();
+            fetchLeaderboard();
+          });
+          socket.on('record_updated', (data) => {
+            if (data.record.agent === currentUser || data.oldAgent === currentUser) {
+              fetchUserData();
+            }
+            loadPerformanceDashboard();
+            fetchLeaderboard();
+          });
+          socket.on('record_note_updated', (data) => {
+            if (cachedPerformanceRecords) {
+              const rec = cachedPerformanceRecords.find(r => r.transactionId === data.transactionId);
+              if (rec) rec.note = data.note;
+            }
+            const f = files.find(item => item.transactionId === data.transactionId);
+            if (f) f.note = data.note;
+            if (window.lastHistoryData) {
+              const histItem = window.lastHistoryData.find(item => item.transactionId === data.transactionId);
+              if (histItem) histItem.note = data.note;
+            }
+            if (currentView === 'files') renderTable();
+            renderHistoryTable();
+          });
+          socket.on('daily_reset', () => {
+            logout();
+          });
+
+          socket.on('dispatchModeChanged', (status) => {
+            isAutoDispatch = status;
+            updateBriefingModeDisplay();
+          });
+
+          socket.on('showsAssigned', async () => {
+            console.log('> [DISPATCH] New shows assigned by admin.');
+
+            // 1. Notify the agent
+            if ("Notification" in window && Notification.permission === "granted") {
+              new Notification("📥 Shows Assigned", {
+                body: "Admin has assigned new shows to your hopper.",
+                icon: "/favicon.ico"
+              });
+            }
+            showToast('📥 Admin has assigned new shows to you!', 'success');
+
+            // 2. Refresh the briefing room to pull the new show
+            if (currentView === 'briefing') {
+              await startNextShow();
+            }
+          });
+        }
+        socket.on('show_cancelled', (data) => {
+          // Only react if THIS agent is currently working on THIS specific show
+          if (currentAssignedShow && currentAssignedShow.id === data.id) {
+
+            // Fire Desktop Notification
+            if ("Notification" in window && Notification.permission === "granted") {
+              new Notification("🚨 Show Cancelled", {
+                body: `Admin cancelled "${data.showName}". Reason: ${data.reason}. Please request a new show.`,
+                requireInteraction: true
+              });
+            }
+
+            // Rip the show out of the UI
+            currentAssignedShow = null;
+            showToast(`🚨 Your active show was cancelled: ${data.reason}`, 'error');
+            renderBriefingCard();
+            if (socket) socket.emit('agent_status', { agent: currentUser, status: 'CXL Alerted', show: null });
+          }
+        });
+      }
+
+      async function startNextShow() {
+        if (!currentUser) return;
+        try {
+          const res = await fetch('/api/shows/next?username=' + encodeURIComponent(currentUser));
+          const data = await res.json();
+
+          if (data.message === 'MANUAL_MODE') {
             showToast('⚠️ System is in Manual Dispatch mode. Please request a show.', 'warning');
             updateBriefingModeDisplay();
             return;
-        }
+          }
 
-        if (data.success && data.show) {
-          currentAssignedShow = data.show;
-          renderBriefingCard();
-        } else {
-          currentAssignedShow = null;
-          showToast('❌ No shows available in the hopper.', 'error');
-          renderBriefingCard();
+          if (data.success && data.show) {
+            currentAssignedShow = data.show;
+            renderBriefingCard();
+          } else {
+            currentAssignedShow = null;
+            showToast('❌ No shows available in the hopper.', 'error');
+            renderBriefingCard();
+          }
+        } catch (err) {
+          console.error('Failed to fetch next show', err);
         }
-      } catch (err) {
-        console.error('Failed to fetch next show', err);
       }
-    }
 
-    function updateBriefingModeDisplay() {
-      const reqBtn = document.getElementById('btn-request-show');
-      const startBtn = document.querySelector('#briefingEmpty .filter-btn.btn-std');
-      const statusDesc = document.querySelector('#briefingEmpty p');
-      const briefingStatus = document.getElementById('briefingStatus');
-      
-      if (!isAutoDispatch) {
-        // Manual mode
-        if (!currentAssignedShow) {
-          if (reqBtn) reqBtn.classList.remove('hidden');
-          if (startBtn) startBtn.classList.add('hidden');
-          if (statusDesc) statusDesc.textContent = 'System is in Manual Dispatch mode. Please request a show and wait for assignment.';
-          if (briefingStatus) briefingStatus.textContent = 'Awaiting Dispatch';
-        }
-      } else {
-        // Auto mode
-        if (reqBtn) {
+      function updateBriefingModeDisplay() {
+        const reqBtn = document.getElementById('btn-request-show');
+        const startBtn = document.querySelector('#briefingEmpty .filter-btn.btn-std');
+        const statusDesc = document.querySelector('#briefingEmpty p');
+        const briefingStatus = document.getElementById('briefingStatus');
+
+        if (!isAutoDispatch) {
+          // Manual mode
+          if (!currentAssignedShow) {
+            if (reqBtn) reqBtn.classList.remove('hidden');
+            if (startBtn) startBtn.classList.add('hidden');
+            if (statusDesc) statusDesc.textContent = 'System is in Manual Dispatch mode. Please request a show and wait for assignment.';
+            if (briefingStatus) briefingStatus.textContent = 'Awaiting Dispatch';
+          }
+        } else {
+          // Auto mode
+          if (reqBtn) {
             reqBtn.classList.add('hidden');
             reqBtn.disabled = false;
             reqBtn.textContent = '🖐️ Request Show';
-        }
-        if (startBtn) startBtn.classList.remove('hidden');
-        if (statusDesc) statusDesc.textContent = 'Press the button below to assign and start your next show.';
-        if (!currentAssignedShow && briefingStatus) {
-           briefingStatus.textContent = 'Waiting for Show...';
-        }
-      }
-    }
-
-    function requestManualShow() {
-      if (!currentUser) return;
-      const btn = document.getElementById('btn-request-show');
-      if (btn) {
-        btn.disabled = true;
-        btn.textContent = 'Request Sent...';
-      }
-      
-      socket.emit('requestManualShow', {
-        id: socket.id,
-        name: currentUser
-      });
-      
-      showToast('🖐️ Show request sent to administrators.', 'info');
-    }
-
-    function renderBriefingCard() {
-      const emptyDiv = document.getElementById('briefingEmpty');
-      const contentDiv = document.getElementById('briefingContent');
-      const statusEl = document.getElementById('briefingStatus');
-
-      if (!currentAssignedShow) {
-        emptyDiv.style.display = 'block';
-        contentDiv.style.display = 'none';
-        statusEl.textContent = 'Waiting for Show...';
-        stopTimer();
-      } else {
-        emptyDiv.style.display = 'none';
-        contentDiv.style.display = 'block';
-        statusEl.textContent = 'Working on Show...';
-
-        document.getElementById('briefingShowName').textContent = currentAssignedShow.showName || 'Unnamed Show';
-
-        const linksHtml = (currentAssignedShow.link || []).map(url => {
-          return `<a href="${url}" target="_blank" style="color:var(--accent-blue); text-decoration:none; word-break:break-all; font-size:12px;">${url}</a>`;
-        }).join('');
-        document.getElementById('briefingLinks').innerHTML = linksHtml || '<span style="color:var(--text-muted);font-style:italic;">No links provided</span>';
-
-        let detailsText = '';
-        if (currentAssignedShow.ld) detailsText += `Data: ${currentAssignedShow.ld}\n\n`;
-        if (currentAssignedShow.lists) detailsText += `Lists: ${currentAssignedShow.lists}\n\n`;
-        if (currentAssignedShow.comment) detailsText += `Comments:\n${currentAssignedShow.comment}\n`;
-        document.getElementById('briefingDetails').textContent = detailsText.trim() || 'No additional details.';
-
-        // Notify the server they are actively working on it and start the clock
-        if (socket) socket.emit('agent_status', { agent: currentUser, status: 'Working', show: currentAssignedShow.showName });
-        startTimer();
-      }
-      updateBriefingModeDisplay();
-    }
-
-    async function finishWorking() {
-      if (!currentAssignedShow) return;
-
-      try {
-        await fetch('/api/shows/complete', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: currentAssignedShow.id })
-        });
-      } catch (e) {
-        console.error('Failed to complete show');
-      }
-
-      stopTimer();
-      if (socket) socket.emit('agent_status', { agent: currentUser, status: 'Idle', show: null });
-      currentAssignedShow = null;
-      renderBriefingCard();
-
-      // Automatically pull the next show if one was assigned by the admin
-      await startNextShow();
-    }
-
-    function startTimer() {
-      workStartTime = Date.now();
-      const timerEl = document.getElementById('briefingTimer');
-      timerEl.style.display = 'block';
-
-      workTimerInterval = setInterval(() => {
-        const diff = Math.floor((Date.now() - workStartTime) / 1000);
-        const h = Math.floor(diff / 3600);
-        const m = Math.floor((diff % 3600) / 60);
-        const s = diff % 60;
-        timerEl.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-      }, 1000);
-    }
-
-    function stopTimer() {
-      if (workTimerInterval) clearInterval(workTimerInterval);
-      document.getElementById('briefingTimer').style.display = 'none';
-      document.getElementById('briefingTimer').textContent = '00:00:00';
-    }
-
-    function copySmartName() {
-      if (!currentAssignedShow) return;
-      let name = currentAssignedShow.showName || '';
-
-      // Exclude list ranges: e.g. "(1-500)", "List: 85-90", etc.
-      // Usually ranges are like (xxx-yyy)
-      name = name.replace(/\([\w\s-]+(?:-|to)[\w\s-]+\)/gi, '');
-
-      // Exclude "Do Both" and its variations
-      name = name.replace(/do\s+both/gi, '');
-
-      // Often asterisk comments are at the end, like "** Not Yet Available"
-      name = name.replace(/\*\*.*$/g, '');
-
-      // Collapse multiple hyphens or spaces left over
-      name = name.replace(/\s+-\s+-\s+/g, ' - ').replace(/\s{2,}/g, ' ');
-      // Remove trailing hyphens
-      name = name.replace(/\s*-\s*$/, '').trim();
-
-      navigator.clipboard.writeText(name).then(() => {
-        showToast('📋 Show name copied to clipboard', 'info');
-      }).catch(err => {
-        console.error('Failed to copy', err);
-      });
-    }
-
-    async function checkActiveShow() {
-      if (!currentUser) return;
-      try {
-        const res = await fetch('/api/shows/active?username=' + encodeURIComponent(currentUser));
-        const data = await res.json();
-        if (data.success && data.show) {
-          currentAssignedShow = data.show;
-          renderBriefingCard();
-
-          // Optional: If you want it to immediately jump back to the working state
-          // instead of making them click "Start Show" again, uncomment the line below:
-          // revealShow(); 
-        }
-      } catch (err) {
-        console.error('Failed to check active show', err);
-      }
-    }
-
-    function requestDesktopNotifications() {
-      if (!("Notification" in window)) {
-        showToast("Your browser does not support desktop notifications.", "error");
-      } else if (Notification.permission === "granted") {
-        showToast("Alerts are already enabled!", "info");
-      } else if (Notification.permission !== "denied") {
-        Notification.requestPermission().then(permission => {
-          if (permission === "granted") showToast("✅ Desktop alerts enabled.", "success");
-        });
-      }
-    }
-
-    // ─────────────────────────────────────────────
-    //  ZORG SCRAPER PORTAL — Toggle, Drag & Resize
-    // ─────────────────────────────────────────────
-    (function () {
-      const portal      = document.getElementById('zorgPortal');
-      const header      = document.getElementById('portalHeader');
-      const btnOpen     = document.getElementById('btn-open-zorg');
-      const btnClose    = document.getElementById('btn-close-zorg');
-      const resizeGrip  = document.getElementById('portalResizeHandle');
-
-      const MIN_W = 320, MIN_H = 300;
-
-      // ── Toggle open / close ──
-      btnOpen.addEventListener('click', () => {
-        portal.classList.remove('hidden');
-      });
-      btnClose.addEventListener('click', () => {
-        portal.classList.add('hidden');
-      });
-
-      // ── Dragging logic ──
-      let isDragging = false;
-      let dragOffsetX = 0, dragOffsetY = 0;
-
-      header.addEventListener('mousedown', (e) => {
-        if (e.target.closest('#btn-close-zorg')) return;
-        isDragging = true;
-        const rect = portal.getBoundingClientRect();
-        dragOffsetX = e.clientX - rect.left;
-        dragOffsetY = e.clientY - rect.top;
-        portal.classList.add('dragging');
-        document.body.style.userSelect = 'none';
-      });
-
-      // ── Resize logic ──
-      let isResizing   = false;
-      let resizeStartX = 0, resizeStartY = 0;
-      let resizeStartW = 0, resizeStartH = 0;
-
-      resizeGrip.addEventListener('mousedown', (e) => {
-        e.preventDefault();
-        e.stopPropagation(); // don't accidentally trigger drag
-        isResizing   = true;
-        resizeStartX = e.clientX;
-        resizeStartY = e.clientY;
-        resizeStartW = portal.offsetWidth;
-        resizeStartH = portal.offsetHeight;
-        document.body.style.userSelect = 'none';
-        document.body.style.cursor = 'nwse-resize';
-      });
-
-      // ── Shared mousemove ──
-      document.addEventListener('mousemove', (e) => {
-        if (isDragging) {
-          const vw = window.innerWidth;
-          const vh = window.innerHeight;
-          let newLeft = e.clientX - dragOffsetX;
-          let newTop  = e.clientY - dragOffsetY;
-          newLeft = Math.max(0, Math.min(newLeft, vw - portal.offsetWidth));
-          newTop  = Math.max(0, Math.min(newTop,  vh - portal.offsetHeight));
-          portal.style.left   = newLeft + 'px';
-          portal.style.top    = newTop  + 'px';
-          portal.style.right  = 'unset';
-          portal.style.bottom = 'unset';
-        }
-
-        if (isResizing) {
-          const dx = e.clientX - resizeStartX;
-          const dy = e.clientY - resizeStartY;
-          const newW = Math.max(MIN_W, Math.min(resizeStartW + dx, window.innerWidth  * 0.98));
-          const newH = Math.max(MIN_H, Math.min(resizeStartH + dy, window.innerHeight * 0.96));
-          portal.style.width  = newW + 'px';
-          portal.style.height = newH + 'px';
-        }
-      });
-
-      // ── Shared mouseup ──
-      document.addEventListener('mouseup', () => {
-        if (isDragging) {
-          isDragging = false;
-          portal.classList.remove('dragging');
-        }
-        if (isResizing) {
-          isResizing = false;
-          document.body.style.cursor = '';
-        }
-        document.body.style.userSelect = '';
-      });
-    })();
-
-    // ─────────────────────────────────────────────
-    //  BOOT
-    // ─────────────────────────────────────────────
-    initTableResizers();
-    checkAuth();
-
-    // Set default uploadDate to local today's date YYYY-MM-DD
-    const uploadDateInput = document.getElementById('uploadDate');
-    if (uploadDateInput) {
-      const today = new Date();
-      const yyyy = today.getFullYear();
-      const mm = String(today.getMonth() + 1).padStart(2, '0');
-      const dd = String(today.getDate()).padStart(2, '0');
-      uploadDateInput.value = `${yyyy}-${mm}-${dd}`;
-    }
-
-    initLeaderboardToggle();
-    if (currentUser) {
-      initSocket();
-      // Announce presence immediately
-      if (socket) socket.emit('agent_status', { agent: currentUser, status: 'Idle', show: null });
-    }
-    checkActiveShow();
-
-    // ─────────────────────────────────────────────
-    //  GLOBAL KEYBOARD SHORTCUTS
-    // ─────────────────────────────────────────────
-    document.addEventListener('keydown', (e) => {
-      const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
-
-      // ESC: Universal Blur & Dismiss
-      if (e.key === 'Escape') {
-        document.activeElement.blur();
-        document.querySelectorAll('.toast').forEach(t => t.remove());
-        document.querySelector('.upload-dd')?.classList.remove('open');
-        if (typeof toggleLogs === 'function') {
-          const footer = document.getElementById('logFooter');
-          if (footer && footer.classList.contains('expanded')) toggleLogs();
-        }
-        return;
-      }
-
-      // Ctrl + F: Focus Search
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') {
-        e.preventDefault();
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-          if (currentView !== 'files') setView('files');
-          setTimeout(() => searchInput.focus(), 50);
-        }
-        return;
-      }
-
-      // Alt + 1-2: View Switching
-      if (e.altKey && (e.key === '1' || e.key === '2')) {
-        e.preventDefault();
-        if (e.key === '1') setView('files');
-        if (e.key === '2') setView('briefing');
-        return;
-      }
-
-      // Ctrl + C: Smart Copy Show Name
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c') {
-        if (window.getSelection().toString() === '' && currentAssignedShow) {
-          e.preventDefault();
-          if (typeof copySmartName === 'function') copySmartName();
-        }
-        return;
-      }
-
-      // Enter: Contextual Actions (Only if not typing)
-      if (e.key === 'Enter' && !isTyping) {
-        if (currentView === 'briefing') {
-          const empty = document.getElementById('briefingEmpty');
-          const content = document.getElementById('briefingContent');
-          if (empty && empty.style.display !== 'none') {
-            e.preventDefault();
-            if (typeof startNextShow === 'function') startNextShow();
-          } else if (content && content.style.display !== 'none') {
-            e.preventDefault();
-            if (typeof finishWorking === 'function') finishWorking();
+          }
+          if (startBtn) startBtn.classList.remove('hidden');
+          if (statusDesc) statusDesc.textContent = 'Press the button below to assign and start your next show.';
+          if (!currentAssignedShow && briefingStatus) {
+            briefingStatus.textContent = 'Waiting for Show...';
           }
         }
       }
-    });
-  </script>
-  </main>
+
+      function requestManualShow() {
+        if (!currentUser) return;
+        const btn = document.getElementById('btn-request-show');
+        if (btn) {
+          btn.disabled = true;
+          btn.textContent = 'Request Sent...';
+        }
+
+        socket.emit('requestManualShow', {
+          id: socket.id,
+          name: currentUser
+        });
+
+        showToast('🖐️ Show request sent to administrators.', 'info');
+      }
+
+      function renderBriefingCard() {
+        const emptyDiv = document.getElementById('briefingEmpty');
+        const contentDiv = document.getElementById('briefingContent');
+        const statusEl = document.getElementById('briefingStatus');
+
+        if (!currentAssignedShow) {
+          emptyDiv.style.display = 'block';
+          contentDiv.style.display = 'none';
+          statusEl.textContent = 'Waiting for Show...';
+          stopTimer();
+        } else {
+          emptyDiv.style.display = 'none';
+          contentDiv.style.display = 'block';
+          statusEl.textContent = 'Working on Show...';
+
+          document.getElementById('briefingShowName').textContent = currentAssignedShow.showName || 'Unnamed Show';
+
+          const linksHtml = (currentAssignedShow.link || []).map(url => {
+            return `<a href="${url}" target="_blank" style="color:var(--accent-blue); text-decoration:none; word-break:break-all; font-size:12px;">${url}</a>`;
+          }).join('');
+          document.getElementById('briefingLinks').innerHTML = linksHtml || '<span style="color:var(--text-muted);font-style:italic;">No links provided</span>';
+
+          let detailsText = '';
+          if (currentAssignedShow.ld) detailsText += `Data: ${currentAssignedShow.ld}\n\n`;
+          if (currentAssignedShow.lists) detailsText += `Lists: ${currentAssignedShow.lists}\n\n`;
+          if (currentAssignedShow.comment) detailsText += `Comments:\n${currentAssignedShow.comment}\n`;
+          document.getElementById('briefingDetails').textContent = detailsText.trim() || 'No additional details.';
+
+          // Notify the server they are actively working on it and start the clock
+          if (socket) socket.emit('agent_status', { agent: currentUser, status: 'Working', show: currentAssignedShow.showName });
+          startTimer();
+        }
+        updateBriefingModeDisplay();
+      }
+
+      async function finishWorking() {
+        if (!currentAssignedShow) return;
+
+        try {
+          await fetch('/api/shows/complete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: currentAssignedShow.id })
+          });
+        } catch (e) {
+          console.error('Failed to complete show');
+        }
+
+        stopTimer();
+        if (socket) socket.emit('agent_status', { agent: currentUser, status: 'Idle', show: null });
+        currentAssignedShow = null;
+        renderBriefingCard();
+
+        // Automatically pull the next show if one was assigned by the admin
+        await startNextShow();
+      }
+
+      function startTimer() {
+        workStartTime = Date.now();
+        const timerEl = document.getElementById('briefingTimer');
+        timerEl.style.display = 'block';
+
+        workTimerInterval = setInterval(() => {
+          const diff = Math.floor((Date.now() - workStartTime) / 1000);
+          const h = Math.floor(diff / 3600);
+          const m = Math.floor((diff % 3600) / 60);
+          const s = diff % 60;
+          timerEl.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }, 1000);
+      }
+
+      function stopTimer() {
+        if (workTimerInterval) clearInterval(workTimerInterval);
+        document.getElementById('briefingTimer').style.display = 'none';
+        document.getElementById('briefingTimer').textContent = '00:00:00';
+      }
+
+      function copySmartName() {
+        if (!currentAssignedShow) return;
+        let name = currentAssignedShow.showName || '';
+
+        // Exclude list ranges: e.g. "(1-500)", "List: 85-90", etc.
+        // Usually ranges are like (xxx-yyy)
+        name = name.replace(/\([\w\s-]+(?:-|to)[\w\s-]+\)/gi, '');
+
+        // Exclude "Do Both" and its variations
+        name = name.replace(/do\s+both/gi, '');
+
+        // Often asterisk comments are at the end, like "** Not Yet Available"
+        name = name.replace(/\*\*.*$/g, '');
+
+        // Collapse multiple hyphens or spaces left over
+        name = name.replace(/\s+-\s+-\s+/g, ' - ').replace(/\s{2,}/g, ' ');
+        // Remove trailing hyphens
+        name = name.replace(/\s*-\s*$/, '').trim();
+
+        navigator.clipboard.writeText(name).then(() => {
+          showToast('📋 Show name copied to clipboard', 'info');
+        }).catch(err => {
+          console.error('Failed to copy', err);
+        });
+      }
+
+      async function checkActiveShow() {
+        if (!currentUser) return;
+        try {
+          const res = await fetch('/api/shows/active?username=' + encodeURIComponent(currentUser));
+          const data = await res.json();
+          if (data.success && data.show) {
+            currentAssignedShow = data.show;
+            renderBriefingCard();
+
+            // Optional: If you want it to immediately jump back to the working state
+            // instead of making them click "Start Show" again, uncomment the line below:
+            // revealShow(); 
+          }
+        } catch (err) {
+          console.error('Failed to check active show', err);
+        }
+      }
+
+      function requestDesktopNotifications() {
+        if (!("Notification" in window)) {
+          showToast("Your browser does not support desktop notifications.", "error");
+        } else if (Notification.permission === "granted") {
+          showToast("Alerts are already enabled!", "info");
+        } else if (Notification.permission !== "denied") {
+          Notification.requestPermission().then(permission => {
+            if (permission === "granted") showToast("✅ Desktop alerts enabled.", "success");
+          });
+        }
+      }
+
+      // ─────────────────────────────────────────────
+      //  ZORG SCRAPER PORTAL — Toggle, Drag & Resize
+      // ─────────────────────────────────────────────
+      (function () {
+        const portal = document.getElementById('zorgPortal');
+        const header = document.getElementById('portalHeader');
+        const btnOpen = document.getElementById('btn-open-zorg');
+        const btnClose = document.getElementById('btn-close-zorg');
+        const resizeGrip = document.getElementById('portalResizeHandle');
+
+        const MIN_W = 320, MIN_H = 300;
+
+        // ── Toggle open / close ──
+        btnOpen.addEventListener('click', () => {
+          portal.classList.remove('hidden');
+        });
+        btnClose.addEventListener('click', () => {
+          portal.classList.add('hidden');
+        });
+
+        // ── Dragging logic ──
+        let isDragging = false;
+        let dragOffsetX = 0, dragOffsetY = 0;
+
+        header.addEventListener('mousedown', (e) => {
+          if (e.target.closest('#btn-close-zorg')) return;
+          isDragging = true;
+          const rect = portal.getBoundingClientRect();
+          dragOffsetX = e.clientX - rect.left;
+          dragOffsetY = e.clientY - rect.top;
+          portal.classList.add('dragging');
+          document.body.style.userSelect = 'none';
+        });
+
+        // ── Resize logic ──
+        let isResizing = false;
+        let resizeStartX = 0, resizeStartY = 0;
+        let resizeStartW = 0, resizeStartH = 0;
+
+        resizeGrip.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          e.stopPropagation(); // don't accidentally trigger drag
+          isResizing = true;
+          resizeStartX = e.clientX;
+          resizeStartY = e.clientY;
+          resizeStartW = portal.offsetWidth;
+          resizeStartH = portal.offsetHeight;
+          document.body.style.userSelect = 'none';
+          document.body.style.cursor = 'nwse-resize';
+        });
+
+        // ── Shared mousemove ──
+        document.addEventListener('mousemove', (e) => {
+          if (isDragging) {
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            let newLeft = e.clientX - dragOffsetX;
+            let newTop = e.clientY - dragOffsetY;
+            newLeft = Math.max(0, Math.min(newLeft, vw - portal.offsetWidth));
+            newTop = Math.max(0, Math.min(newTop, vh - portal.offsetHeight));
+            portal.style.left = newLeft + 'px';
+            portal.style.top = newTop + 'px';
+            portal.style.right = 'unset';
+            portal.style.bottom = 'unset';
+          }
+
+          if (isResizing) {
+            const dx = e.clientX - resizeStartX;
+            const dy = e.clientY - resizeStartY;
+            const newW = Math.max(MIN_W, Math.min(resizeStartW + dx, window.innerWidth * 0.98));
+            const newH = Math.max(MIN_H, Math.min(resizeStartH + dy, window.innerHeight * 0.96));
+            portal.style.width = newW + 'px';
+            portal.style.height = newH + 'px';
+          }
+        });
+
+        // ── Shared mouseup ──
+        document.addEventListener('mouseup', () => {
+          if (isDragging) {
+            isDragging = false;
+            portal.classList.remove('dragging');
+          }
+          if (isResizing) {
+            isResizing = false;
+            document.body.style.cursor = '';
+          }
+          document.body.style.userSelect = '';
+        });
+      })();
+
+      // ─────────────────────────────────────────────
+      //  BOOT
+      // ─────────────────────────────────────────────
+      initTableResizers();
+      checkAuth();
+
+      // Set default uploadDate to local today's date YYYY-MM-DD
+      const uploadDateInput = document.getElementById('uploadDate');
+      if (uploadDateInput) {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        uploadDateInput.value = `${yyyy}-${mm}-${dd}`;
+      }
+
+      initLeaderboardToggle();
+      if (currentUser) {
+        initSocket();
+        // Announce presence immediately
+        if (socket) socket.emit('agent_status', { agent: currentUser, status: 'Idle', show: null });
+      }
+      checkActiveShow();
+
+      // ─────────────────────────────────────────────
+      //  GLOBAL KEYBOARD SHORTCUTS
+      // ─────────────────────────────────────────────
+      document.addEventListener('keydown', (e) => {
+        const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
+
+        // ESC: Universal Blur & Dismiss
+        if (e.key === 'Escape') {
+          document.activeElement.blur();
+          document.querySelectorAll('.toast').forEach(t => t.remove());
+          document.querySelector('.upload-dd')?.classList.remove('open');
+          if (typeof toggleLogs === 'function') {
+            const footer = document.getElementById('logFooter');
+            if (footer && footer.classList.contains('expanded')) toggleLogs();
+          }
+          return;
+        }
+
+        // Ctrl + F: Focus Search
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') {
+          e.preventDefault();
+          const searchInput = document.getElementById('searchInput');
+          if (searchInput) {
+            if (currentView !== 'files') setView('files');
+            setTimeout(() => searchInput.focus(), 50);
+          }
+          return;
+        }
+
+        // Alt + 1-2: View Switching
+        if (e.altKey && (e.key === '1' || e.key === '2')) {
+          e.preventDefault();
+          if (e.key === '1') setView('files');
+          if (e.key === '2') setView('briefing');
+          return;
+        }
+
+        // Ctrl + C: Smart Copy Show Name
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c') {
+          if (window.getSelection().toString() === '' && currentAssignedShow) {
+            e.preventDefault();
+            if (typeof copySmartName === 'function') copySmartName();
+          }
+          return;
+        }
+
+        // Enter: Contextual Actions (Only if not typing)
+        if (e.key === 'Enter' && !isTyping) {
+          if (currentView === 'briefing') {
+            const empty = document.getElementById('briefingEmpty');
+            const content = document.getElementById('briefingContent');
+            if (empty && empty.style.display !== 'none') {
+              e.preventDefault();
+              if (typeof startNextShow === 'function') startNextShow();
+            } else if (content && content.style.display !== 'none') {
+              e.preventDefault();
+              if (typeof finishWorking === 'function') finishWorking();
+            }
+          }
+        }
+      });
+    </script>
+    </main>
   </div>
   <!-- ── THEME INIT & TOGGLE ── -->
   <script>

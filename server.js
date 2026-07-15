@@ -25,7 +25,9 @@ const DEFAULT_CONFIG = {
     tempZone: path.join(__dirname, 'temp'),
     usBase: path.join(__dirname, 'output', 'US'),
     ukBase: path.join(__dirname, 'output', 'UK'),
-    cxlTags: ['Pricing', 'Duplicates', 'SameList']
+    cxlTags: ['Pricing', 'Duplicates', 'SameList'],
+    useManualDestFolder: false,
+    manualDestFolder: ""
 };
 
 const DEFAULT_USERS = [
@@ -62,7 +64,7 @@ let config = JSON.parse(fs.readFileSync(configPath));
     if (dir && !fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
 
-const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const monthNames = ["Jan", "Feb", "March", "April", "May", "June", "July", "August", "Sep", "Oct", "Nov", "Dec"];
 const upload = multer({ dest: config.tempZone });
 
 // ─────────────────────────────────────────────
@@ -277,14 +279,14 @@ async function processExcelFile(filePath, originalName) {
     const sheet = workbook.getWorksheet('Sheet1') || workbook.worksheets[0];
     if (sheet) {
         let stats = {};
-        
+
         let highestNewNum = -1;
-        let latestNewKey  = "New";
-        let foundAnyNew   = false;
-        
+        let latestNewKey = "New";
+        let foundAnyNew = false;
+
         let highestSomeNum = -1;
-        let latestSomeKey  = "Some";
-        let foundAnySome   = false;
+        let latestSomeKey = "Some";
+        let foundAnySome = false;
 
         let globalHidden = 0;
         let globalVisible = 0;
@@ -292,16 +294,16 @@ async function processExcelFile(filePath, originalName) {
         let globalVisibleLocal = 0;
 
         sheet.eachRow((row) => {
-            const isHidden  = row.hidden;
-            let hasRedFont  = false;
-            
+            const isHidden = row.hidden;
+            let hasRedFont = false;
+
             let hasNewInRow = false;
-            let rowNewKey   = null;
-            let rowNewNum   = -1;
-            
+            let rowNewKey = null;
+            let rowNewNum = -1;
+
             let hasSomeInRow = false;
-            let rowSomeKey   = null;
-            let rowSomeNum   = -1;
+            let rowSomeKey = null;
+            let rowSomeNum = -1;
 
             const col1 = row.getCell(1).value;
             const hasData = col1 !== null && col1 !== undefined && col1.toString().trim() !== '';
@@ -314,14 +316,14 @@ async function processExcelFile(filePath, originalName) {
 
             row.eachCell((cell) => {
                 let cellText = '';
-                let isRed    = false;
+                let isRed = false;
                 if (cell.value && cell.value.richText) {
                     cell.value.richText.forEach(rt => { cellText += rt.text; if (checkIsRed(rt.font)) isRed = true; });
                 } else {
                     cellText = cell.value ? cell.value.toString() : '';
                     if (checkIsRed(cell.font)) isRed = true;
                 }
-                
+
                 const matchNew = cellText.trim().match(/^new(\d*)$/i);
                 if (matchNew) {
                     hasNewInRow = true; foundAnyNew = true;
@@ -389,7 +391,7 @@ async function processExcelFile(filePath, originalName) {
                 someHidden = stats[latestSomeKey].hidden;
                 someShownLocal = stats[latestSomeKey].visibleRedLocal;
                 someHiddenLocal = stats[latestSomeKey].hiddenLocal;
-                
+
                 if (someShown === 0) {
                     someHidden = 0;
                     someHiddenLocal = 0;
@@ -455,9 +457,31 @@ app.post('/api/login', (req, res) => {
 app.get('/api/user/data', (req, res) => {
     const username = req.query.username;
     const history = JSON.parse(fs.readFileSync(historyPath));
+
+    let analytics = {};
+    try {
+        analytics = JSON.parse(fs.readFileSync(analyticsPath));
+    } catch (e) {
+        console.error('Failed to read analytics inside user data:', e);
+    }
+
+    const enrichedFiles = history.files.filter(f => f.agent === username).map(f => {
+        let note = '';
+        if (f.transactionId) {
+            for (const dateKey of Object.keys(analytics)) {
+                const rec = analytics[dateKey].records && analytics[dateKey].records.find(r => r.transactionId === f.transactionId);
+                if (rec) {
+                    note = rec.note || '';
+                    break;
+                }
+            }
+        }
+        return { ...f, note };
+    });
+
     res.json({
         success: true,
-        files: history.files.filter(f => f.agent === username),
+        files: enrichedFiles,
         logs: history.logs.filter(l => l.agent === username)
     });
 });
@@ -482,13 +506,58 @@ app.get('/api/user/report', (req, res) => {
                         mode: rec.mode,
                         filename: rec.filename,
                         shown: rec.shown,
-                        total: rec.total
+                        total: rec.total,
+                        transactionId: rec.transactionId,
+                        note: rec.note || ''
                     });
                 }
             }
         }
 
         res.json({ success: true, data: result });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
+// ─────────────────────────────────────────────
+//  RECORD NOTE EDITOR
+// ─────────────────────────────────────────────
+app.post('/api/record/note', (req, res) => {
+    try {
+        const { date, transactionId, note, username } = req.body;
+        if (!date || !transactionId) {
+            return res.status(400).json({ success: false, error: 'Missing date or transactionId' });
+        }
+
+        const data = loadAnalytics();
+        const day = data[date];
+        if (!day || !day.records) {
+            return res.status(404).json({ success: false, error: 'Day records not found' });
+        }
+
+        const rec = day.records.find(r => r.transactionId === transactionId);
+        if (!rec) {
+            return res.status(404).json({ success: false, error: 'Record not found' });
+        }
+
+        // Authorization check: only Admin, or the agent who processed this show, can edit the note
+        if (rec.agent !== username) {
+            // Check if user is Admin in users.json to bypass
+            const users = JSON.parse(fs.readFileSync(usersPath));
+            const user = users.find(u => u.username === username);
+            if (!user || user.role !== 'Admin') {
+                return res.status(403).json({ success: false, error: 'Unauthorized to edit this show note' });
+            }
+        }
+
+        rec.note = note || '';
+        saveAnalytics(data);
+
+        // Broadcast to clients in real-time
+        io.emit('record_note_updated', { date, transactionId, note: rec.note });
+
+        res.json({ success: true, note: rec.note });
     } catch (e) {
         res.status(500).json({ success: false, error: e.message });
     }
@@ -797,7 +866,7 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'No file uploaded.' });
 
     const username = req.body.username;
-    const mode = req.body.mode || 'standard';
+    const mode = 'standard';
     const originalName = Buffer.from(req.file.originalname, 'latin1').toString('utf8');
     const tempPath = req.file.path;
 
@@ -826,18 +895,29 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
         const totalCount = stats.shown + stats.hidden;
 
         // ── Copy files ──
-        const personalDir = path.join(activeUser.archivePath, year, month, folderName, region);
-        if (!fs.existsSync(personalDir)) fs.mkdirSync(personalDir, { recursive: true });
-        const finalPersonalPath = path.join(personalDir, stats.finalFileName);
-        const savedPaths = [finalPersonalPath];
+        let savedPaths = [];
+        if (config.useManualDestFolder === true || config.useManualDestFolder === 'true') {
+            const baseDestDir = config.manualDestFolder;
+            if (!baseDestDir) throw new Error("Manual destination folder path is not configured.");
+            const destDir = path.join(baseDestDir, month, folderName);
+            if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
+            const destPath = path.join(destDir, stats.finalFileName);
+            fs.copyFileSync(tempPath, destPath);
+            savedPaths.push(destPath);
+        } else {
+            const personalDir = path.join(activeUser.archivePath, year, month, folderName, region);
+            if (!fs.existsSync(personalDir)) fs.mkdirSync(personalDir, { recursive: true });
+            const finalPersonalPath = path.join(personalDir, stats.finalFileName);
+            savedPaths.push(finalPersonalPath);
 
-        const regionBase = isNA ? config.usBase : config.ukBase;
-        const regionDir = path.join(regionBase, year, month, folderName);
-        if (!fs.existsSync(regionDir)) fs.mkdirSync(regionDir, { recursive: true });
-        const regionDest = path.join(regionDir, stats.finalFileName);
-        fs.copyFileSync(tempPath, finalPersonalPath);
-        fs.copyFileSync(tempPath, regionDest);
-        savedPaths.push(regionDest);
+            const regionBase = isNA ? config.usBase : config.ukBase;
+            const regionDir = path.join(regionBase, year, month, folderName);
+            if (!fs.existsSync(regionDir)) fs.mkdirSync(regionDir, { recursive: true });
+            const regionDest = path.join(regionDir, stats.finalFileName);
+            fs.copyFileSync(tempPath, finalPersonalPath);
+            fs.copyFileSync(tempPath, regionDest);
+            savedPaths.push(regionDest);
+        }
 
         fs.unlinkSync(tempPath);
 
@@ -913,7 +993,7 @@ app.post('/api/upload-bulk', upload.array('files', 20), async (req, res) => {
     if (!req.files || req.files.length === 0) return res.status(400).json({ error: 'No files uploaded.' });
 
     const username = req.body.username;
-    const mode = req.body.mode || 'standard';
+    const mode = 'standard';
 
     try {
         reloadConfig();
@@ -948,19 +1028,29 @@ app.post('/api/upload-bulk', upload.array('files', 20), async (req, res) => {
                 const totalCount = stats.shown + stats.hidden;
 
                 // ── Copy files ──
-                const personalDir = path.join(activeUser.archivePath, year, month, folderName, region);
-                if (!fs.existsSync(personalDir)) fs.mkdirSync(personalDir, { recursive: true });
-                const finalPersonalPath = path.join(personalDir, stats.finalFileName);
-                const savedPaths = [finalPersonalPath];
+                let savedPaths = [];
+                if (config.useManualDestFolder === true || config.useManualDestFolder === 'true') {
+                    const baseDestDir = config.manualDestFolder;
+                    if (!baseDestDir) throw new Error("Manual destination folder path is not configured.");
+                    const destDir = path.join(baseDestDir, month, folderName);
+                    if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
+                    const destPath = path.join(destDir, stats.finalFileName);
+                    fs.copyFileSync(tempPath, destPath);
+                    savedPaths.push(destPath);
+                } else {
+                    const personalDir = path.join(activeUser.archivePath, year, month, folderName, region);
+                    if (!fs.existsSync(personalDir)) fs.mkdirSync(personalDir, { recursive: true });
+                    const finalPersonalPath = path.join(personalDir, stats.finalFileName);
+                    savedPaths.push(finalPersonalPath);
 
-                const regionBase = isNA ? config.usBase : config.ukBase;
-                const regionDir = path.join(regionBase, year, month, folderName);
-                if (!fs.existsSync(regionDir)) fs.mkdirSync(regionDir, { recursive: true });
-                const regionDest = path.join(regionDir, stats.finalFileName);
-                
-                fs.copyFileSync(tempPath, finalPersonalPath);
-                fs.copyFileSync(tempPath, regionDest);
-                savedPaths.push(regionDest);
+                    const regionBase = isNA ? config.usBase : config.ukBase;
+                    const regionDir = path.join(regionBase, year, month, folderName);
+                    if (!fs.existsSync(regionDir)) fs.mkdirSync(regionDir, { recursive: true });
+                    const regionDest = path.join(regionDir, stats.finalFileName);
+                    fs.copyFileSync(tempPath, finalPersonalPath);
+                    fs.copyFileSync(tempPath, regionDest);
+                    savedPaths.push(regionDest);
+                }
 
                 fs.unlinkSync(tempPath);
 
@@ -1020,12 +1110,12 @@ app.post('/api/upload-bulk', upload.array('files', 20), async (req, res) => {
                 const h12err = errDate.getHours() % 12 || 12;
                 const amPmErr = errDate.getHours() < 12 ? 'AM' : 'PM';
                 const timeStr = `${String(h12err).padStart(2, '0')}:${String(errDate.getMinutes()).padStart(2, '0')}:${String(errDate.getSeconds()).padStart(2, '0')} ${amPmErr}`;
-                
+
                 saveHistory(
                     { agent: username, name: originalName, size: file.size, mtime: new Date().toISOString(), region: 'UNK', destPath: 'ERROR', status: 'error' },
                     { agent: username, ts: timeStr, msg: `Error in bulk upload for ${originalName}: ${fileError.message}`, type: 'error' }
                 );
-                
+
                 results.push({ success: false, filename: originalName, error: fileError.message });
             }
         }
@@ -1160,6 +1250,101 @@ app.delete('/api/admin/record', (req, res) => {
     }
 });
 
+// Helper to rebuild daily metrics from scratch based on current records
+function rebuildDaySummary(day) {
+    day.summary = { totalFiles: 0, totalLeads: 0, totalShown: 0, byAgent: {} };
+    for (const rec of day.records) {
+        if (rec.mode === 'CXL') continue; // Skip cancelled records in daily statistics
+
+        day.summary.totalFiles++;
+        day.summary.totalLeads += (Number(rec.total) || 0);
+        day.summary.totalShown += (Number(rec.shown) || 0);
+
+        const agent = rec.agent || 'Unassigned';
+        if (!day.summary.byAgent[agent]) {
+            day.summary.byAgent[agent] = { files: 0, leads: 0, shown: 0 };
+        }
+        day.summary.byAgent[agent].files++;
+        day.summary.byAgent[agent].leads += (Number(rec.total) || 0);
+        day.summary.byAgent[agent].shown += (Number(rec.shown) || 0);
+    }
+}
+
+// ─────────────────────────────────────────────
+//  ADMIN — UPDATE SINGLE RECORD
+//  Body: { dateKey, transactionId, agent, filename, mode, newShown, newHidden, someShown, someHidden, note }
+// ─────────────────────────────────────────────
+app.put('/api/admin/record', (req, res) => {
+    try {
+        const { dateKey, transactionId, agent, filename, mode, newShown, newHidden, someShown, someHidden, note } = req.body;
+        if (!dateKey || !transactionId) {
+            return res.status(400).json({ success: false, error: 'dateKey and transactionId are required.' });
+        }
+
+        const data = loadAnalytics();
+        if (!data[dateKey]) {
+            return res.status(404).json({ success: false, error: `No data for date ${dateKey}.` });
+        }
+
+        const rec = data[dateKey].records.find(r => r.transactionId === transactionId);
+        if (!rec) {
+            return res.status(404).json({ success: false, error: 'Record not found.' });
+        }
+
+        const oldAgent = rec.agent;
+
+        if (agent !== undefined) rec.agent = agent;
+        if (filename !== undefined) rec.filename = filename;
+        if (mode !== undefined) rec.mode = mode.toUpperCase();
+        if (note !== undefined) rec.note = note;
+
+        if (rec.mode === 'CXL') {
+            rec.newShown = 0;
+            rec.newHidden = 0;
+            rec.someShown = 0;
+            rec.someHidden = 0;
+            rec.shown = 0;
+            rec.hidden = 0;
+            rec.total = 0;
+        } else {
+            if (newShown !== undefined) rec.newShown = Number(newShown) || 0;
+            if (newHidden !== undefined) rec.newHidden = Number(newHidden) || 0;
+            if (someShown !== undefined) rec.someShown = Number(someShown) || 0;
+            if (someHidden !== undefined) rec.someHidden = Number(someHidden) || 0;
+
+            rec.shown = (rec.newShown || 0) + (rec.someShown || 0);
+            rec.hidden = (rec.newHidden || 0) + (rec.someHidden || 0);
+            rec.total = rec.shown + rec.hidden;
+        }
+
+        rebuildDaySummary(data[dateKey]);
+        saveAnalytics(data);
+
+        // Sync with history.json files list
+        const history = JSON.parse(fs.readFileSync(historyPath));
+        const fileIdx = history.files.findIndex(f => f.transactionId === transactionId);
+        if (fileIdx > -1) {
+            if (agent !== undefined) history.files[fileIdx].agent = agent;
+            if (filename !== undefined) history.files[fileIdx].name = filename;
+            fs.writeFileSync(historyPath, JSON.stringify(history, null, 2));
+        }
+
+        // Broadcast updated event
+        io.emit('record_updated', {
+            transactionId,
+            dateKey,
+            record: rec,
+            oldAgent
+        });
+
+        console.log(`> [ADMIN] Updated record ${transactionId} for date ${dateKey}`);
+        res.json({ success: true, record: rec });
+    } catch (e) {
+        console.error('Admin update record error:', e);
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
 // ─────────────────────────────────────────────
 //  EXPORT — on-demand Excel download for a date
 //  GET /api/export/:date   e.g. /api/export/2026-03-30
@@ -1190,6 +1375,7 @@ app.get('/api/export/:date', async (req, res) => {
             { header: 'Date', key: 'date', width: 15 },
             { header: 'Mode', key: 'mode', width: 15 },
             { header: 'Time', key: 'time', width: 12 },
+            { header: 'Notes', key: 'note', width: 30 }
         ];
 
         // Style header row
@@ -1215,6 +1401,7 @@ app.get('/api/export/:date', async (req, res) => {
                 date: dateKey,
                 mode: rec.mode,
                 time: rec.time || '',
+                note: rec.note || '',
             });
             row.eachCell((cell, colNumber) => {
                 cell.font = { name: 'Arial', size: 11 };
@@ -1236,6 +1423,7 @@ app.get('/api/export/:date', async (req, res) => {
             date: dateKey,
             mode: '—',
             time: '—',
+            note: '—',
         });
         summaryRow.eachCell((cell) => {
             cell.font = { name: 'Arial', size: 11, bold: true };

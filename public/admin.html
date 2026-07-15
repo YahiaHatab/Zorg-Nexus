@@ -327,11 +327,6 @@
       display: inline-block;
     }
 
-    .mode-some {
-      background: rgba(6, 182, 212, 0.1);
-      color: var(--accent-cyan);
-    }
-
     .mode-standard {
       background: rgba(59, 130, 246, 0.1);
       color: var(--accent-blue);
@@ -799,9 +794,9 @@
     }
 
     /* ── CHART GRID ── */
-    .chart-grid-3 {
+    .chart-grid-2 {
       display: grid;
-      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-columns: 2fr 1fr;
       gap: 16px;
     }
 
@@ -1586,6 +1581,70 @@
     </div>
   </div>
 
+  <!-- EDIT RECORD MODAL -->
+  <div id="editRecordModal"
+    style="display:none; position:fixed; inset:0; background:rgba(11,15,25,0.85); backdrop-filter:blur(4px); z-index:9998; align-items:center; justify-content:center;">
+    <div class="confirm-box" style="max-width:550px; width:90%;">
+      <h3 style="color:var(--accent-blue);">✏️ Edit Show Record</h3>
+      <div style="display:flex; flex-direction:column; gap:12px; margin-top:16px; text-align:left;">
+        
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div>
+            <label style="font-size:11px; text-transform:uppercase; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Agent</label>
+            <select id="editRecAgent" class="field-input" style="font-size:14px; padding:10px;"></select>
+          </div>
+          <div>
+            <label style="font-size:11px; text-transform:uppercase; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Mode</label>
+            <select id="editRecMode" class="field-input" style="font-size:14px; padding:10px;" onchange="onEditModeChange()">
+              <option value="STANDARD">STANDARD</option>
+              <option value="CXL">CXL</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label style="font-size:11px; text-transform:uppercase; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Show Name (Filename)</label>
+          <input type="text" id="editRecFilename" class="field-input" style="font-size:14px; padding:10px;">
+        </div>
+
+        <div id="editRecCountsContainer" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div>
+            <label style="font-size:11px; text-transform:uppercase; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">New Shown (Net)</label>
+            <input type="number" id="editRecNewShown" class="field-input" style="font-size:14px; padding:10px;" min="0" oninput="calculateEditPreview()">
+          </div>
+          <div>
+            <label style="font-size:11px; text-transform:uppercase; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">New Hidden</label>
+            <input type="number" id="editRecNewHidden" class="field-input" style="font-size:14px; padding:10px;" min="0" oninput="calculateEditPreview()">
+          </div>
+          <div>
+            <label style="font-size:11px; text-transform:uppercase; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Some Shown</label>
+            <input type="number" id="editRecSomeShown" class="field-input" style="font-size:14px; padding:10px;" min="0" oninput="calculateEditPreview()">
+          </div>
+          <div>
+            <label style="font-size:11px; text-transform:uppercase; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Some Hidden</label>
+            <input type="number" id="editRecSomeHidden" class="field-input" style="font-size:14px; padding:10px;" min="0" oninput="calculateEditPreview()">
+          </div>
+        </div>
+
+        <div id="editRecPreview" style="background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:6px; padding:10px 14px; font-size:12px; color:var(--text-muted); display:flex; justify-content:space-between;">
+          <span>Net: <b id="editPrevNet" style="color:var(--success);">0</b></span>
+          <span>Hidden: <b id="editPrevHidden" style="color:var(--danger);">0</b></span>
+          <span>Gross: <b id="editPrevGross" style="color:var(--text-main);">0</b></span>
+        </div>
+
+        <div>
+          <label style="font-size:11px; text-transform:uppercase; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Notes</label>
+          <textarea id="editRecNote" class="field-input" style="font-size:14px; padding:10px; height:60px; resize:none; font-family:inherit;"></textarea>
+        </div>
+
+      </div>
+      <div class="confirm-actions" style="margin-top:20px;">
+        <button class="btn" onclick="closeEditModal()">Cancel</button>
+        <button class="btn btn-blue" id="confirmEditBtn" onclick="confirmEditRecord()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
   <div id="cancelModal"
     style="display:none; position:fixed; inset:0; background:rgba(11,15,25,0.85); backdrop-filter:blur(4px); z-index:9999; align-items:center; justify-content:center;">
     <div class="confirm-box">
@@ -1776,6 +1835,7 @@
                   <th>Gross</th>
                   <th>Net</th>
                   <th>Hidden</th>
+                  <th>Notes</th>
                   <th style="width:80px;text-align:center;">Action</th>
                 </tr>
               </thead>
@@ -1822,7 +1882,7 @@
         </div>
 
         <!-- Charts -->
-        <div class="chart-grid-3">
+        <div class="chart-grid-2">
           <div class="panel glass-panel">
             <div class="panel-header">Net Leads — Last 14 Days</div>
             <div class="panel-body">
@@ -1833,12 +1893,6 @@
             <div class="panel-header">Agent Totals (All-Time)</div>
             <div class="panel-body">
               <div class="chart-wrap" style="height:220px;"><canvas id="chartBar"></canvas></div>
-            </div>
-          </div>
-          <div class="panel glass-panel">
-            <div class="panel-header">Mode Distribution</div>
-            <div class="panel-body">
-              <div class="chart-wrap" style="height:220px;"><canvas id="chartDonut"></canvas></div>
             </div>
           </div>
         </div>
@@ -2003,7 +2057,7 @@
     let usersData = [];
     let showsData = [];
     let selectedLeaderIdx = -1;
-    let chartLine = null, chartBar = null, chartDonut = null;
+    let chartLine = null, chartBar = null;
 
     const TODAY = new Date().toISOString().split('T')[0]; // "2026-03-30"
 
@@ -2167,7 +2221,7 @@
       const suffix = q && count !== total ? ` (${count}/${total})` : '';
 
       document.getElementById('logBody').innerHTML = sorted.map(row => {
-        const cls = row.mode === 'SOME' ? 'mode-some' : 'mode-standard';
+        const cls = row.mode === 'CXL' ? 'mode-danger' : 'mode-standard';
         return `<tr>
             <td style="color:var(--text-muted)">${row.time || row.date || '—'}</td>
             <td><span class="mode-tag ${cls}">${row.mode}</span></td>
@@ -2254,21 +2308,24 @@
       tbody.innerHTML = filtered.map(rec => {
         const isCxl = rec.mode === 'CXL' || String(rec.status || '').startsWith('CXL');
         const bgStyle = isCxl ? 'background: rgba(239, 68, 68, 0.08);' : '';
-        const cls = isCxl ? 'mode-danger' : (rec.mode === 'SOME' ? 'mode-some' : 'mode-standard');
+        const cls = isCxl ? 'mode-danger' : 'mode-standard';
 
         // Add reason tracking for UI display
         const reasonText = rec.reason ? `<br><span style="color:var(--danger); font-size:10px;">Reason: ${escHtml(rec.reason)}</span>` : '';
 
         // Separate sums fallback
-        const newShown = rec.newShown !== undefined ? rec.newShown : (rec.mode === 'SOME' ? 0 : rec.shown);
-        const newHidden = rec.newHidden !== undefined ? rec.newHidden : (rec.mode === 'SOME' ? 0 : rec.hidden);
-        const someShown = rec.someShown !== undefined ? rec.someShown : (rec.mode === 'SOME' ? rec.shown : 0);
-        const someHidden = rec.someHidden !== undefined ? rec.someHidden : (rec.mode === 'SOME' ? rec.hidden : 0);
+        const newShown = rec.newShown !== undefined ? rec.newShown : rec.shown;
+        const newHidden = rec.newHidden !== undefined ? rec.newHidden : rec.hidden;
+        const someShown = rec.someShown !== undefined ? rec.someShown : 0;
+        const someHidden = rec.someHidden !== undefined ? rec.someHidden : 0;
 
         const grossBreakdown = `<div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">N: ${newShown + newHidden} | S: ${someShown + someHidden}</div>`;
         const netBreakdown = `<div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">N: ${newShown} | S: ${someShown}</div>`;
         const hiddenBreakdown = `<div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">N: ${newHidden} | S: ${someHidden}</div>`;
 
+        const editBtn = isAdminRole || rec.agent === currentUser
+          ? `<button class="btn btn-sm" onclick="editNote('${date}','${escHtml(rec.transactionId)}')" style="background:transparent; border:none; color:var(--accent-blue); padding:0 4px; cursor:pointer;" title="Edit Note">✏️</button>`
+          : '';
         return `<tr style="${bgStyle}">
             <td style="color:var(--text-muted);font-family:'JetBrains Mono',monospace;font-size:12px;">${rec.time || '—'}</td>
             <td class="agent-name">${escHtml(rec.agent)}</td>
@@ -2277,11 +2334,18 @@
             <td style="color:var(--text-muted);">${rec.total}${grossBreakdown}</td>
             <td class="stat-highlight">${rec.shown}${netBreakdown}</td>
             <td style="color:var(--danger);">${rec.hidden}${hiddenBreakdown}</td>
+            <td class="note-cell" style="max-width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${escHtml(rec.note || '')}">
+              ${escHtml(rec.note || '—')} ${editBtn}
+            </td>
             <td style="text-align:center;">
-              ${isAdminRole ? `<button class="btn btn-red btn-sm" onclick="deleteRecord('${date}','${escHtml(rec.transactionId)}')" title="Delete this record permanently">🗑</button>` : `<span style="color:var(--text-muted);font-size:10px;font-weight:600;">VIEW ONLY</span>`}
+              ${isAdminRole ? `<button class="btn btn-sm btn-blue" onclick="openEditRecord('${date}','${escHtml(rec.transactionId)}')" title="Edit this record" style="margin-right:6px;">✏️</button><button class="btn btn-red btn-sm" onclick="deleteRecord('${date}','${escHtml(rec.transactionId)}')" title="Delete this record permanently">🗑</button>` : `<span style="color:var(--text-muted);font-size:10px;font-weight:600;">VIEW ONLY</span>`}
             </td>
         </tr>`;
       }).join('');
+
+      if (typeof initColumnResizers === 'function') {
+        initColumnResizers();
+      }
     }
 
     function onLedgerSearch(input) {
@@ -2301,6 +2365,39 @@
       const date = document.getElementById('ledgerDatePicker').value;
       if (!date) { showToast('Please select a date first.', 'error'); return; }
       window.location.href = `/api/export/${date}`;
+    }
+
+    async function editNote(date, transactionId) {
+      let currentNote = '';
+      if (window.fullAnalytics && window.fullAnalytics[date]) {
+        const rec = window.fullAnalytics[date].records.find(r => r.transactionId === transactionId);
+        if (rec) currentNote = rec.note || '';
+      }
+
+      const newNote = prompt("Enter note for this show:", currentNote);
+      if (newNote === null) return;
+
+      try {
+        const res = await fetch('/api/record/note', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            date,
+            transactionId,
+            note: newNote,
+            username: currentUser
+          })
+        });
+        const json = await res.json();
+        if (json.success) {
+          showToast('Note updated successfully!', 'success');
+        } else {
+          showToast(json.error || 'Failed to update note', 'error');
+        }
+      } catch (e) {
+        console.error('Note update error:', e);
+        showToast('Error updating note', 'error');
+      }
     }
 
     // ── RECORD DELETION ──────────────────────────
@@ -2356,6 +2453,157 @@
       }
     }
 
+    // ── RECORD EDITING ───────────────────────────
+    let pendingEdit = null; // { dateKey, transactionId }
+
+    async function openEditRecord(dateKey, transactionId) {
+      const day = fullAnalytics[dateKey];
+      const rec = day && day.records.find(r => r.transactionId === transactionId);
+      if (!rec) { showToast('❌ Record not found in local data. Try refreshing.', 'error'); return; }
+
+      pendingEdit = { dateKey, transactionId };
+
+      // Dynamically fetch and populate the Agent dropdown
+      const agentSel = document.getElementById('editRecAgent');
+      agentSel.innerHTML = '<option value="">Loading agents...</option>';
+      try {
+        const res = await fetch('/api/admin/users');
+        const json = await res.json();
+        if (json.success && json.users) {
+          agentSel.innerHTML = json.users.map(u => 
+            `<option value="${escHtml(u.username)}">${escHtml(u.username)} (${escHtml(u.role)})</option>`
+          ).join('');
+        } else {
+          agentSel.innerHTML = `<option value="${escHtml(rec.agent)}">${escHtml(rec.agent)}</option>`;
+        }
+      } catch (e) {
+        console.error('Error fetching users for edit dropdown:', e);
+        agentSel.innerHTML = `<option value="${escHtml(rec.agent)}">${escHtml(rec.agent)}</option>`;
+      }
+      agentSel.value = rec.agent;
+
+      // Populate other fields
+      document.getElementById('editRecMode').value = rec.mode || 'STANDARD';
+      document.getElementById('editRecFilename').value = rec.filename || '';
+      document.getElementById('editRecNote').value = rec.note || '';
+
+      const newShown = rec.newShown !== undefined ? rec.newShown : rec.shown;
+      const newHidden = rec.newHidden !== undefined ? rec.newHidden : rec.hidden;
+      const someShown = rec.someShown !== undefined ? rec.someShown : 0;
+      const someHidden = rec.someHidden !== undefined ? rec.someHidden : 0;
+
+      document.getElementById('editRecNewShown').value = newShown;
+      document.getElementById('editRecNewHidden').value = newHidden;
+      document.getElementById('editRecSomeShown').value = someShown;
+      document.getElementById('editRecSomeHidden').value = someHidden;
+
+      // Update layout and numbers preview
+      onEditModeChange();
+
+      document.getElementById('editRecordModal').style.display = 'flex';
+    }
+
+    function onEditModeChange() {
+      const mode = document.getElementById('editRecMode').value;
+      const container = document.getElementById('editRecCountsContainer');
+      const preview = document.getElementById('editRecPreview');
+
+      if (mode === 'CXL') {
+        container.style.opacity = '0.3';
+        container.style.pointerEvents = 'none';
+        preview.style.display = 'none';
+      } else {
+        container.style.opacity = '1';
+        container.style.pointerEvents = 'auto';
+        preview.style.display = 'flex';
+      }
+      calculateEditPreview();
+    }
+
+    function calculateEditPreview() {
+      const mode = document.getElementById('editRecMode').value;
+      if (mode === 'CXL') {
+        document.getElementById('editPrevNet').textContent = '0';
+        document.getElementById('editPrevHidden').textContent = '0';
+        document.getElementById('editPrevGross').textContent = '0';
+        return;
+      }
+
+      const newShown = Number(document.getElementById('editRecNewShown').value) || 0;
+      const newHidden = Number(document.getElementById('editRecNewHidden').value) || 0;
+      const someShown = Number(document.getElementById('editRecSomeShown').value) || 0;
+      const someHidden = Number(document.getElementById('editRecSomeHidden').value) || 0;
+
+      const net = newShown + someShown;
+      const hidden = newHidden + someHidden;
+      const gross = net + hidden;
+
+      document.getElementById('editPrevNet').textContent = net;
+      document.getElementById('editPrevHidden').textContent = hidden;
+      document.getElementById('editPrevGross').textContent = gross;
+    }
+
+    function closeEditModal() {
+      document.getElementById('editRecordModal').style.display = 'none';
+      pendingEdit = null;
+    }
+
+    async function confirmEditRecord() {
+      if (!pendingEdit) return;
+      const { dateKey, transactionId } = pendingEdit;
+
+      const agent = document.getElementById('editRecAgent').value;
+      const mode = document.getElementById('editRecMode').value;
+      const filename = document.getElementById('editRecFilename').value.trim();
+      const note = document.getElementById('editRecNote').value.trim();
+
+      if (!agent) { showToast('⚠️ Please select an agent.', 'warning'); return; }
+      if (!filename) { showToast('⚠️ Please enter a show name/filename.', 'warning'); return; }
+
+      const newShown = Number(document.getElementById('editRecNewShown').value) || 0;
+      const newHidden = Number(document.getElementById('editRecNewHidden').value) || 0;
+      const someShown = Number(document.getElementById('editRecSomeShown').value) || 0;
+      const someHidden = Number(document.getElementById('editRecSomeHidden').value) || 0;
+
+      const saveBtn = document.getElementById('confirmEditBtn');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving...';
+
+      try {
+        const res = await fetch('/api/admin/record', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            dateKey,
+            transactionId,
+            agent,
+            mode,
+            filename,
+            newShown,
+            newHidden,
+            someShown,
+            someHidden,
+            note
+          })
+        });
+        const json = await res.json();
+        if (json.success) {
+          closeEditModal();
+          showToast('✅ Record updated successfully!', 'success');
+          fetchLedgerDay(); // Reload Report Sheet table & summaries
+          if (currentTab === 'leaderboard') fetchTodayData();
+        } else {
+          showToast(`❌ Update failed: ${json.error}`, 'error');
+        }
+      } catch (e) {
+        console.error('Record update error:', e);
+        showToast('❌ Server error during update.', 'error');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Changes';
+      }
+    }
+
     // ══════════════════════════════════════════════
     //  TAB 3: ANALYTICS
     // ══════════════════════════════════════════════
@@ -2378,7 +2626,7 @@
       let totalSomeShown = 0, totalSomeHidden = 0, totalSomeLeads = 0;
 
       const agentMap = {}; // agent → { files, leads, shown, newLeads, newShown, newHidden, someLeads, someShown, someHidden }
-      const modeMap = { STANDARD: 0, SOME: 0 };
+      const modeMap = { STANDARD: 0 };
       const dateKeys = Object.keys(data).sort();
 
       for (const [dateKey, day] of Object.entries(data)) {
@@ -2400,13 +2648,12 @@
         }
 
         for (const rec of (day.records || [])) {
-          if (rec.mode === 'SOME') modeMap.SOME++;
-          else modeMap.STANDARD++;
+          modeMap.STANDARD++;
 
-          const recNewShown = rec.newShown !== undefined ? rec.newShown : (rec.mode === 'SOME' ? 0 : rec.shown);
-          const recNewHidden = rec.newHidden !== undefined ? rec.newHidden : (rec.mode === 'SOME' ? 0 : rec.hidden);
-          const recSomeShown = rec.someShown !== undefined ? rec.someShown : (rec.mode === 'SOME' ? rec.shown : 0);
-          const recSomeHidden = rec.someHidden !== undefined ? rec.someHidden : (rec.mode === 'SOME' ? rec.hidden : 0);
+          const recNewShown = rec.newShown !== undefined ? rec.newShown : rec.shown;
+          const recNewHidden = rec.newHidden !== undefined ? rec.newHidden : rec.hidden;
+          const recSomeShown = rec.someShown !== undefined ? rec.someShown : 0;
+          const recSomeHidden = rec.someHidden !== undefined ? rec.someHidden : 0;
 
           totalNewShown += recNewShown;
           totalNewHidden += recNewHidden;
@@ -2515,29 +2762,7 @@
         }
       });
 
-      // ── Donut chart — mode distribution ──
-      if (chartDonut) chartDonut.destroy();
-      chartDonut = new Chart(document.getElementById('chartDonut'), {
-        type: 'doughnut',
-        data: {
-          labels: ['Standard', 'Some'],
-          data: [modeMap.STANDARD, modeMap.SOME],
-          datasets: [{
-            data: [modeMap.STANDARD, modeMap.SOME],
-            backgroundColor: ['#3B82F6', '#06B6D4'],
-            borderColor: '#111827',
-            borderWidth: 3,
-            hoverOffset: 8
-          }]
-        },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          cutout: '65%',
-          plugins: {
-            legend: { position: 'bottom', labels: { color: '#9CA3AF', font: { size: 11 }, padding: 14 } }
-          }
-        }
-      });
+
 
       // ── Agent breakdown table ──
       document.getElementById('analyticsAgentTable').innerHTML = agentEntries.map(([name, s]) => {
@@ -2562,7 +2787,14 @@
     // ══════════════════════════════════════════════
     //  TAB 4: CONFIG
     // ══════════════════════════════════════════════
-    const CONFIG_LABELS = { tempZone: 'Temp Zone', usBase: 'US Base Path', ukBase: 'UK Base Path', cxlTags: 'CXL Tags (Comma Separated)' };
+    const CONFIG_LABELS = {
+      tempZone: 'Temp Zone',
+      usBase: 'US Base Path',
+      ukBase: 'UK Base Path',
+      cxlTags: 'CXL Tags (Comma Separated)',
+      useManualDestFolder: 'Use Manual Destination Folder (true/false)',
+      manualDestFolder: 'Manual Destination Folder Path'
+    };
 
     async function fetchConfig() {
       try {
@@ -2577,13 +2809,29 @@
     function renderConfigFields() {
       const allKeys = new Set([...Object.keys(CONFIG_LABELS), ...Object.keys(configData)]);
       document.getElementById('configFields').innerHTML = [...allKeys].map(key => {
-        let val = configData[key] || '';
+        let val = configData[key] !== undefined ? configData[key] : '';
         if (Array.isArray(val)) val = val.join(', '); // Convert array to comma string
+
+        let inputHtml = '';
+        if (key === 'useManualDestFolder') {
+          const isTrue = val === true || val === 'true';
+          inputHtml = `
+            <select class="field-input" id="cfg_${key}" ${!isAdminRole ? 'disabled style="opacity:0.7; pointer-events:none;"' : ''}>
+              <option value="true" ${isTrue ? 'selected' : ''}>true</option>
+              <option value="false" ${!isTrue ? 'selected' : ''}>false</option>
+            </select>
+          `;
+        } else {
+          inputHtml = `
+            <input class="field-input" type="text" id="cfg_${key}" value="${escHtml(val)}" 
+                   placeholder="Enter path or tags..." ${!isAdminRole ? 'readonly style="opacity:0.7; pointer-events:none;"' : ''}>
+          `;
+        }
+
         return `
         <div class="field-row">
             <div class="field-label">${CONFIG_LABELS[key] || key}</div>
-            <input class="field-input" type="text" id="cfg_${key}" value="${escHtml(val)}" 
-                   placeholder="Enter path or tags..." ${!isAdminRole ? 'readonly style="opacity:0.7; pointer-events:none;"' : ''}>
+            ${inputHtml}
             <span style="font-size:11px;color:var(--text-muted);white-space:nowrap;font-family:'JetBrains Mono';">${key}</span>
         </div>`;
       }).join('');
@@ -2596,8 +2844,13 @@
       allKeys.forEach(key => {
         const el = document.getElementById(`cfg_${key}`);
         if (el) {
-          if (key === 'cxlTags') newConfig[key] = el.value.split(',').map(s => s.trim()).filter(Boolean);
-          else newConfig[key] = el.value.trim();
+          if (key === 'cxlTags') {
+            newConfig[key] = el.value.split(',').map(s => s.trim()).filter(Boolean);
+          } else if (key === 'useManualDestFolder') {
+            newConfig[key] = el.value === 'true';
+          } else {
+            newConfig[key] = el.value.trim();
+          }
         }
       });
       try {
@@ -3126,6 +3379,59 @@
       if (currentTab === 'leaderboard') renderDashboard();
       // Refresh ledger tab table if we are viewing the ledger
       if (currentTab === 'ledger') fetchLedgerDay();
+    });
+
+    socket.on('record_updated', (data) => {
+      // 1. Update masterData if it belongs to today
+      if (data.dateKey === TODAY) {
+        const idx = masterData.findIndex(r => r.transactionId === data.transactionId);
+        if (idx > -1) {
+          masterData[idx] = { ...masterData[idx], ...data.record, date: TODAY };
+        } else {
+          masterData.push({ ...data.record, date: TODAY });
+        }
+        if (currentTab === 'leaderboard') renderDashboard();
+      } else {
+        masterData = masterData.filter(r => r.transactionId !== data.transactionId);
+        if (currentTab === 'leaderboard') renderDashboard();
+      }
+
+      // 2. Update fullAnalytics cache if it matches the date
+      if (fullAnalytics && fullAnalytics[data.dateKey]) {
+        const idx = fullAnalytics[data.dateKey].records.findIndex(r => r.transactionId === data.transactionId);
+        if (idx > -1) {
+          fullAnalytics[data.dateKey].records[idx] = data.record;
+        }
+      }
+
+      // 3. Update _ledgerSource cache and refresh view if viewing that day
+      if (_ledgerDate === data.dateKey) {
+        const idx = _ledgerSource.findIndex(r => r.transactionId === data.transactionId);
+        if (idx > -1) {
+          _ledgerSource[idx] = data.record;
+        }
+        applyLedgerFilter();
+        // Also refresh summary totals on Report Sheet tab
+        const day = fullAnalytics[data.dateKey];
+        if (day) {
+          document.getElementById('ls-files').textContent = day.summary.totalFiles;
+          document.getElementById('ls-leads').textContent = day.summary.totalLeads;
+          document.getElementById('ls-shown').textContent = day.summary.totalShown;
+        }
+      }
+
+      showToast(`✏️ Show record updated.`, 'info');
+    });
+
+    socket.on('record_note_updated', (data) => {
+      if (fullAnalytics && fullAnalytics[data.date]) {
+        const rec = fullAnalytics[data.date].records.find(r => r.transactionId === data.transactionId);
+        if (rec) rec.note = data.note;
+      }
+      const srcRec = _ledgerSource.find(r => r.transactionId === data.transactionId);
+      if (srcRec) srcRec.note = data.note;
+      
+      applyLedgerFilter();
     });
 
     socket.on('daily_reset', () => {
