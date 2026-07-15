@@ -455,6 +455,11 @@
       background: rgba(239, 68, 68, 0.1);
     }
 
+    .user-menu-item.close-server:hover {
+      color: var(--danger);
+      background: rgba(239, 68, 68, 0.1);
+    }
+
     .user-menu-divider {
       height: 1px;
       background: var(--border);
@@ -2168,6 +2173,9 @@
               <a id="adminLink" href="/admin.html" class="user-menu-item" style="display:none;">
                 <span>⚙️</span> Admin Dashboard
               </a>
+              <button id="closeServerBtn" class="user-menu-item close-server" style="display:none;" onclick="closeServer()">
+                <span>🛑</span> Close Server
+              </button>
               <div class="user-menu-divider"></div>
               <button class="user-menu-item logout" onclick="logout()">
                 <span>🚪</span> Logout
@@ -2446,6 +2454,12 @@
             document.getElementById('adminLink').style.display = 'none';
           }
 
+          if (currentRole === 'Admin') {
+            document.getElementById('closeServerBtn').style.display = 'flex';
+          } else {
+            document.getElementById('closeServerBtn').style.display = 'none';
+          }
+
           const dateInput = document.getElementById('uploadDate');
           if (dateInput && !dateInput.value) {
             const today = new Date();
@@ -2479,7 +2493,39 @@
         }
       }
 
-      function logout() { localStorage.removeItem('zorg_nexus_user'); window.location.reload(); }
+      function logout() {
+        localStorage.removeItem('zorg_nexus_user');
+        localStorage.removeItem('zorg_nexus_role');
+        window.location.reload();
+      }
+
+      async function closeServer() {
+        if (!confirm("Are you sure you want to close the server? This will terminate the application process.")) {
+          return;
+        }
+        try {
+          const username = localStorage.getItem('zorg_nexus_user');
+          const res = await fetch('/api/admin/close-server', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username })
+          });
+          const data = await res.json();
+          if (data.success) {
+            alert("Server is shutting down. You will be disconnected.");
+            document.body.innerHTML = `
+              <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; font-family:'Inter', sans-serif; color:var(--text-main); background:var(--bg-main);">
+                <h1 style="font-size:32px; margin-bottom:16px;">🛑 Server Closed</h1>
+                <p style="color:var(--text-muted);">The server process has been terminated. You can now close this tab.</p>
+              </div>
+            `;
+          } else {
+            alert("Failed to close server: " + data.error);
+          }
+        } catch (e) {
+          alert("Error closing server: " + e.message);
+        }
+      }
 
       function escHtml(str) {
         if (!str) return '';

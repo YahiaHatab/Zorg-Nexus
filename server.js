@@ -1538,6 +1538,27 @@ app.post('/api/admin/reset', async (req, res) => {
 });
 
 // ─────────────────────────────────────────────
+//  ADMIN — CLOSE SERVER
+// ─────────────────────────────────────────────
+app.post('/api/admin/close-server', (req, res) => {
+    try {
+        const { username } = req.body;
+        const users = JSON.parse(fs.readFileSync(usersPath));
+        const user = users.find(u => u.username === username);
+        if (!user || user.role !== 'Admin') {
+            return res.status(403).json({ success: false, error: 'Unauthorized. Only admins can close the server.' });
+        }
+        res.json({ success: true, message: 'Server is closing down...' });
+        console.log(`> Server shutdown initiated by admin: ${username}`);
+        setTimeout(() => {
+            process.exit(0);
+        }, 1000);
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
+// ─────────────────────────────────────────────
 //  LIVE FLOOR TRACKING (SOCKET.IO)
 // ─────────────────────────────────────────────
 io.on('connection', (socket) => {
