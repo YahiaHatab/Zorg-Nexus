@@ -1924,7 +1924,24 @@
           <div class="panel-header">Directory Routes</div>
           <div class="panel-body">
             <div id="configFields"></div>
-            <div class="save-bar admin-only">
+            
+            <div class="dest-info-section" style="margin-top: 24px; padding: 18px; border-radius: 8px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border);">
+              <h4 style="margin: 0 0 14px 0; font-size: 14px; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+                <span>📂</span> Output Destination Paths
+              </h4>
+              <div style="display: flex; flex-direction: column; gap: 14px;">
+                <div>
+                  <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Output Directory (Shared)</div>
+                  <div id="displayOutputDir" style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--accent-blue); word-break: break-all; margin-top: 6px; padding: 8px 12px; background: rgba(0, 0, 0, 0.2); border-radius: 6px; border: 1px solid rgba(255,255,255,0.03);">Loading...</div>
+                </div>
+                <div>
+                  <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Your Archive Directory (Personal)</div>
+                  <div id="displayPersonalArchiveDir" style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--accent-purple); word-break: break-all; margin-top: 6px; padding: 8px 12px; background: rgba(0, 0, 0, 0.2); border-radius: 6px; border: 1px solid rgba(255,255,255,0.03);">Loading...</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="save-bar admin-only" style="margin-top: 20px;">
               <button class="btn btn-blue" onclick="saveConfig()">Save Configuration</button>
             </div>
           </div>
@@ -1946,6 +1963,7 @@
                   <th>Password</th>
                   <th>Role</th>
                   <th>Archive Path</th>
+                  <th style="text-align:center;">Upload to Shared</th>
                   <th style="width:100px;text-align:center;">Action</th>
                 </tr>
               </thead>
@@ -2788,13 +2806,18 @@
     //  TAB 4: CONFIG
     // ══════════════════════════════════════════════
     const CONFIG_LABELS = {
-      tempZone: 'Temp Zone',
-      usBase: 'US Base Path',
-      ukBase: 'UK Base Path',
       cxlTags: 'CXL Tags (Comma Separated)',
-      useManualDestFolder: 'Use Manual Destination Folder (true/false)',
-      manualDestFolder: 'Manual Destination Folder Path'
+      sharedBasePath: 'Shared Output Path'
     };
+
+    function getParentDir(filePath) {
+      if (!filePath) return '';
+      const normalized = filePath.replace(/\\/g, '/');
+      const parts = normalized.split('/');
+      if (parts.length <= 1) return filePath;
+      parts.pop();
+      return parts.join('/');
+    }
 
     async function fetchConfig() {
       try {
@@ -2807,26 +2830,20 @@
     }
 
     function renderConfigFields() {
-      const allKeys = new Set([...Object.keys(CONFIG_LABELS), ...Object.keys(configData)]);
+      // If sharedBasePath is missing/empty, default to parent of usBase
+      if (!configData.sharedBasePath && configData.usBase) {
+        configData.sharedBasePath = getParentDir(configData.usBase);
+      }
+
+      const allKeys = new Set(Object.keys(CONFIG_LABELS));
       document.getElementById('configFields').innerHTML = [...allKeys].map(key => {
         let val = configData[key] !== undefined ? configData[key] : '';
         if (Array.isArray(val)) val = val.join(', '); // Convert array to comma string
 
-        let inputHtml = '';
-        if (key === 'useManualDestFolder') {
-          const isTrue = val === true || val === 'true';
-          inputHtml = `
-            <select class="field-input" id="cfg_${key}" ${!isAdminRole ? 'disabled style="opacity:0.7; pointer-events:none;"' : ''}>
-              <option value="true" ${isTrue ? 'selected' : ''}>true</option>
-              <option value="false" ${!isTrue ? 'selected' : ''}>false</option>
-            </select>
-          `;
-        } else {
-          inputHtml = `
-            <input class="field-input" type="text" id="cfg_${key}" value="${escHtml(val)}" 
-                   placeholder="Enter path or tags..." ${!isAdminRole ? 'readonly style="opacity:0.7; pointer-events:none;"' : ''}>
-          `;
-        }
+        const inputHtml = `
+          <input class="field-input" type="text" id="cfg_${key}" value="${escHtml(val)}" 
+                 placeholder="Enter path or tags..." ${!isAdminRole ? 'readonly style="opacity:0.7; pointer-events:none;"' : ''}>
+        `;
 
         return `
         <div class="field-row">
@@ -2835,19 +2852,31 @@
             <span style="font-size:11px;color:var(--text-muted);white-space:nowrap;font-family:'JetBrains Mono';">${key}</span>
         </div>`;
       }).join('');
+
+      // Populate display destinations
+      if (configData.sharedBasePath) {
+        document.getElementById('displayOutputDir').innerText = configData.sharedBasePath;
+      } else {
+        document.getElementById('displayOutputDir').innerText = 'Not configured';
+      }
+
+      const me = (typeof usersData !== 'undefined' && usersData) ? usersData.find(u => u.username === currentUser) : null;
+      if (me && me.archivePath) {
+        document.getElementById('displayPersonalArchiveDir').innerText = me.archivePath;
+      } else {
+        document.getElementById('displayPersonalArchiveDir').innerText = 'Not configured';
+      }
     }
 
     async function saveConfig() {
       if (!isAdminRole) return;
-      const allKeys = new Set([...Object.keys(CONFIG_LABELS), ...Object.keys(configData)]);
+      const allKeys = new Set(Object.keys(CONFIG_LABELS));
       const newConfig = {};
       allKeys.forEach(key => {
         const el = document.getElementById(`cfg_${key}`);
         if (el) {
           if (key === 'cxlTags') {
             newConfig[key] = el.value.split(',').map(s => s.trim()).filter(Boolean);
-          } else if (key === 'useManualDestFolder') {
-            newConfig[key] = el.value === 'true';
           } else {
             newConfig[key] = el.value.trim();
           }
@@ -2856,7 +2885,11 @@
       try {
         const res = await fetch('/api/admin/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newConfig) });
         const json = await res.json();
-        if (json.success) { configData = newConfig; showToast('✅ Config saved.', 'success'); }
+        if (json.success) { 
+          configData = { ...configData, ...newConfig }; 
+          showToast('✅ Config saved.', 'success'); 
+          renderConfigFields();
+        }
         else showToast('❌ Save failed: ' + json.error, 'error');
       } catch { showToast('❌ Server error.', 'error'); }
     }
@@ -2940,6 +2973,10 @@
              </div>`
           : `<input class="user-input" type="password" value="********" readonly style="opacity:0.5;">`;
 
+        const sharedCheckbox = isAdminRole
+          ? `<input type="checkbox" ${u.enableSharedOutput ? 'checked' : ''} onchange="updateUserField(${i}, 'enableSharedOutput', this.checked)">`
+          : `<input type="checkbox" ${u.enableSharedOutput ? 'checked' : ''} disabled style="opacity:0.7;">`;
+
         return `<tr data-index="${i}">
             <td><input class="user-input" type="text" value="${escHtml(u.username)}" ${!isAdminRole ? 'readonly style="opacity:0.5;"' : ''} oninput="updateUserField(${i}, 'username', this.value)"></td>
             <td>${passwordInput}</td>
@@ -2947,14 +2984,15 @@
                ${isAdminRole ? `<select class="user-input" onchange="updateUserField(${i}, 'role', this.value)">${roleOpts}</select>` : `<input class="user-input" type="text" value="${escHtml(u.role || 'Agent')}" readonly style="opacity:0.5;">`}
             </td>
             <td><input class="user-input" type="text" value="${escHtml(u.archivePath || '')}" ${!isAdminRole ? 'readonly style="opacity:0.5;"' : ''} oninput="updateUserField(${i}, 'archivePath', this.value)"></td>
+            <td style="text-align:center;">${sharedCheckbox}</td>
             <td style="text-align:center;">${deleteBtn}</td>
         </tr>`;
-      }).join('') || `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:24px;">No users.</td></tr>`;
+      }).join('') || `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:24px;">No users.</td></tr>`;
     }
 
     function addUserRow() {
       if (!isAdminRole) return;
-      usersData.push({ username: '', password: '', role: 'Agent', archivePath: '' });
+      usersData.push({ username: '', password: '', role: 'Agent', archivePath: '', enableSharedOutput: false });
       renderUsersTable();
       const rows = document.getElementById('usersBody').querySelectorAll('tr');
       if (rows.length) {
@@ -2984,34 +3022,6 @@
       usersData.splice(idx, 1);
       renderUsersTable();
       showToast('User removed. Click Commit Changes to apply.', 'info');
-    }
-
-    function addUserRow() {
-      if (!isAdminRole) return;
-      usersData.push({ username: '', password: '', role: 'Agent', archivePath: '' });
-      renderUsersTable();
-      const rows = document.getElementById('usersBody').querySelectorAll('tr');
-      if (rows.length) {
-        rows[rows.length - 1].scrollIntoView({ behavior: 'smooth' });
-        rows[rows.length - 1].querySelector('input')?.focus();
-      }
-    }
-
-    function addUserRow() {
-      usersData.push({ username: '', password: '', archivePath: '' });
-      renderUsersTable();
-      const rows = document.getElementById('usersBody').querySelectorAll('tr');
-      if (rows.length) {
-        rows[rows.length - 1].scrollIntoView({ behavior: 'smooth' });
-        rows[rows.length - 1].querySelector('input')?.focus();
-      }
-    }
-
-    function deleteUser(idx) {
-      if (usersData[idx].username === 'Admin') { showToast('Cannot delete Admin.', 'error'); return; }
-      usersData.splice(idx, 1);
-      renderUsersTable();
-      showToast('User removed. Click Save to apply.', 'info');
     }
 
     async function saveUsers() {

@@ -57,7 +57,7 @@ if (!fs.existsSync(showsPath)) {
 }
 
 // Load config AFTER ensuring it exists
-let config = JSON.parse(fs.readFileSync(configPath));
+let config = { ...DEFAULT_CONFIG, ...JSON.parse(fs.readFileSync(configPath)) };
 
 // Ensure all critical directories exist
 [config.tempZone, config.usBase, config.ukBase].forEach(dir => {
@@ -83,7 +83,7 @@ setInterval(() => {
 //  HELPERS
 // ─────────────────────────────────────────────
 function reloadConfig() {
-    config = JSON.parse(fs.readFileSync(configPath));
+    config = { ...DEFAULT_CONFIG, ...JSON.parse(fs.readFileSync(configPath)) };
 }
 
 function saveHistory(newFile, newLog) {
@@ -884,7 +884,9 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
             date = new Date(y, m - 1, d, 12, 0, 0);
         }
         const dateKey = date.toISOString().split('T')[0];
-        const folderName = `${date.getDate()}-${date.getMonth() + 1}`;
+        const dayPadded = String(date.getDate()).padStart(2, '0');
+        const monthNum = String(date.getMonth() + 1);
+        const folderName = `${dayPadded}-${monthNum}`;
         const month = monthNames[date.getMonth()];
         const year = date.getFullYear().toString();
         const isNA = /\bUSA\b|\bCANADA\b/i.test(originalName);
@@ -905,18 +907,20 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
             fs.copyFileSync(tempPath, destPath);
             savedPaths.push(destPath);
         } else {
-            const personalDir = path.join(activeUser.archivePath, year, month, folderName, region);
+            const personalDir = path.join(activeUser.archivePath, year, month, folderName);
             if (!fs.existsSync(personalDir)) fs.mkdirSync(personalDir, { recursive: true });
             const finalPersonalPath = path.join(personalDir, stats.finalFileName);
+            fs.copyFileSync(tempPath, finalPersonalPath);
             savedPaths.push(finalPersonalPath);
 
-            const regionBase = isNA ? config.usBase : config.ukBase;
-            const regionDir = path.join(regionBase, year, month, folderName);
-            if (!fs.existsSync(regionDir)) fs.mkdirSync(regionDir, { recursive: true });
-            const regionDest = path.join(regionDir, stats.finalFileName);
-            fs.copyFileSync(tempPath, finalPersonalPath);
-            fs.copyFileSync(tempPath, regionDest);
-            savedPaths.push(regionDest);
+            if (activeUser.enableSharedOutput === true || activeUser.enableSharedOutput === 'true') {
+                const outputBase = config.sharedBasePath || path.dirname(config.usBase);
+                const regionDir = path.join(outputBase, year, month, folderName);
+                if (!fs.existsSync(regionDir)) fs.mkdirSync(regionDir, { recursive: true });
+                const regionDest = path.join(regionDir, stats.finalFileName);
+                fs.copyFileSync(tempPath, regionDest);
+                savedPaths.push(regionDest);
+            }
         }
 
         fs.unlinkSync(tempPath);
@@ -942,7 +946,7 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
 
         // ── Write to history.json ──
         saveHistory(
-            { agent: username, name: stats.finalFileName, size: req.file.size, mtime: date.toISOString(), uploadTime: Date.now(), region, destPath: `${year}/${month}/${folderName}/${region}`, status: 'sorted', transactionId },
+            { agent: username, name: stats.finalFileName, size: req.file.size, mtime: date.toISOString(), uploadTime: Date.now(), region, destPath: `${year}/${month}/${folderName}`, status: 'sorted', transactionId },
             { agent: username, ts: timeStr, msg: `Sorted [${mode.toUpperCase()}]: ${stats.finalFileName} (Shown: ${stats.shown}, Hidden: ${stats.hidden})`, type: 'success' }
         );
 
@@ -1017,7 +1021,9 @@ app.post('/api/upload-bulk', upload.array('files', 20), async (req, res) => {
                 // Pure extraction — no report file written
                 const stats = await processExcelFile(tempPath, originalName);
                 const dateKey = date.toISOString().split('T')[0];
-                const folderName = `${date.getDate()}-${date.getMonth() + 1}`;
+                const dayPadded = String(date.getDate()).padStart(2, '0');
+                const monthNum = String(date.getMonth() + 1);
+                const folderName = `${dayPadded}-${monthNum}`;
                 const month = monthNames[date.getMonth()];
                 const year = date.getFullYear().toString();
                 const isNA = /\bUSA\b|\bCANADA\b/i.test(originalName);
@@ -1038,18 +1044,20 @@ app.post('/api/upload-bulk', upload.array('files', 20), async (req, res) => {
                     fs.copyFileSync(tempPath, destPath);
                     savedPaths.push(destPath);
                 } else {
-                    const personalDir = path.join(activeUser.archivePath, year, month, folderName, region);
+                    const personalDir = path.join(activeUser.archivePath, year, month, folderName);
                     if (!fs.existsSync(personalDir)) fs.mkdirSync(personalDir, { recursive: true });
                     const finalPersonalPath = path.join(personalDir, stats.finalFileName);
+                    fs.copyFileSync(tempPath, finalPersonalPath);
                     savedPaths.push(finalPersonalPath);
 
-                    const regionBase = isNA ? config.usBase : config.ukBase;
-                    const regionDir = path.join(regionBase, year, month, folderName);
-                    if (!fs.existsSync(regionDir)) fs.mkdirSync(regionDir, { recursive: true });
-                    const regionDest = path.join(regionDir, stats.finalFileName);
-                    fs.copyFileSync(tempPath, finalPersonalPath);
-                    fs.copyFileSync(tempPath, regionDest);
-                    savedPaths.push(regionDest);
+                    if (activeUser.enableSharedOutput === true || activeUser.enableSharedOutput === 'true') {
+                        const outputBase = config.sharedBasePath || path.dirname(config.usBase);
+                        const regionDir = path.join(outputBase, year, month, folderName);
+                        if (!fs.existsSync(regionDir)) fs.mkdirSync(regionDir, { recursive: true });
+                        const regionDest = path.join(regionDir, stats.finalFileName);
+                        fs.copyFileSync(tempPath, regionDest);
+                        savedPaths.push(regionDest);
+                    }
                 }
 
                 fs.unlinkSync(tempPath);
@@ -1075,7 +1083,7 @@ app.post('/api/upload-bulk', upload.array('files', 20), async (req, res) => {
 
                 // ── Write to history.json ──
                 saveHistory(
-                    { agent: username, name: stats.finalFileName, size: file.size, mtime: date.toISOString(), uploadTime: Date.now(), region, destPath: `${year}/${month}/${folderName}/${region}`, status: 'sorted', transactionId },
+                    { agent: username, name: stats.finalFileName, size: file.size, mtime: date.toISOString(), uploadTime: Date.now(), region, destPath: `${year}/${month}/${folderName}`, status: 'sorted', transactionId },
                     { agent: username, ts: timeStr, msg: `Sorted [${mode.toUpperCase()}]: ${stats.finalFileName} (Shown: ${stats.shown}, Hidden: ${stats.hidden})`, type: 'success' }
                 );
 
@@ -1485,9 +1493,11 @@ app.get('/api/admin/config', (req, res) => {
 
 app.post('/api/admin/config', (req, res) => {
     try {
-        const newConfig = req.body;
-        if (!newConfig || typeof newConfig !== 'object') throw new Error('Invalid config payload');
-        ['usBase', 'ukBase', 'tempZone'].forEach(key => {
+        const incomingConfig = req.body;
+        if (!incomingConfig || typeof incomingConfig !== 'object') throw new Error('Invalid config payload');
+        const existingConfig = JSON.parse(fs.readFileSync(configPath));
+        const newConfig = { ...existingConfig, ...incomingConfig };
+        ['sharedBasePath', 'usBase', 'ukBase', 'tempZone'].forEach(key => {
             if (newConfig[key]) fs.mkdirSync(newConfig[key], { recursive: true });
         });
         fs.writeFileSync(configPath, JSON.stringify(newConfig, null, 2));
