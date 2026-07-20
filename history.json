@@ -2,6 +2,17 @@
   "files": [
     {
       "agent": "Admin",
+      "name": "XZShow - Coffee Fest Los Angeles 2026 - August 21-22, 2026 - Los Angeles Convention Center - Los Angeles, CA, USA. Yahia.xlsx",
+      "size": 25658,
+      "mtime": "2026-07-20T09:00:00.000Z",
+      "uploadTime": 1784569654530,
+      "region": "USA",
+      "destPath": "2026/July/20-7",
+      "status": "sorted",
+      "transactionId": "mrtip24d18wihw009"
+    },
+    {
+      "agent": "Admin",
       "name": "XZShow - ROCKY MOUNTAIN APPAREL GIFT & RESORT SHOW 2026 - August 25 - 27, 2026 - National Western Livestock Center - Denver, CO, USA Yahia.xlsx",
       "size": 22447,
       "mtime": "2026-07-20T09:00:00.000Z",
@@ -871,6 +882,12 @@
     }
   ],
   "logs": [
+    {
+      "agent": "Admin",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XZShow - Coffee Fest Los Angeles 2026 - August 21-22, 2026 - Los Angeles Convention Center - Los Angeles, CA, USA. Yahia.xlsx (Shown: 1, Hidden: 5)",
+      "type": "success"
+    },
     {
       "agent": "Admin",
       "ts": "12:00:00 PM",

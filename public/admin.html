@@ -790,15 +790,15 @@
     .stat-card {
       background: var(--bg-panel);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px 14px;
+      border-radius: 8px;
+      padding: 10px 14px;
     }
 
     .stat-card .sc-val {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 700;
       line-height: 1;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
 
     .stat-card .sc-lbl {
@@ -820,34 +820,35 @@
       .chart-grid-2 { grid-template-columns: 1fr; }
     }
 
-    /* Reason breakdown number cards */
+    /* Reason breakdown horizontal chips */
     .reason-cards-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 12px;
-      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
     }
     .reason-card {
       background: var(--bg-panel);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 12px;
+      border-radius: 6px;
+      padding: 6px 10px;
       display: flex;
-      flex-direction: column;
-      gap: 4px;
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
       transition: border-color 0.2s;
     }
     .reason-card:hover { border-color: var(--accent-blue); }
     .reason-card .rc-dot {
-      width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+      width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
     }
     .reason-card .rc-label {
       font-size: 10px; font-weight: 600; color: var(--text-muted);
       text-transform: uppercase; letter-spacing: 0.05em;
-      display: flex; align-items: center; gap: 5px;
+      display: flex; align-items: center; gap: 4px;
     }
     .reason-card .rc-value {
-      font-size: 22px; font-weight: 700; line-height: 1;
+      font-size: 14px; font-weight: 700; line-height: 1;
       font-family: 'JetBrains Mono', monospace;
     }
     .reason-card .rc-pct {
@@ -2883,18 +2884,17 @@
       // last14 and lineLabels already declared above (line chart section) — reuse them
       const reasonLabels = lineLabels; // same "MM-DD" labels
 
-      // Collect all unique reasons seen across all time (for consistent colouring)
+      // Sort by highest count first
       const allReasonKeys = Object.keys(allTimeReasons).sort((a, b) => {
-        const order = ['Local', 'NF', 'Removed', 'Repeated', 'No Num', 'Other'];
-        const ia = order.indexOf(a), ib = order.indexOf(b);
-        if (ia === -1 && ib === -1) return a.localeCompare(b);
-        if (ia === -1) return 1;
-        if (ib === -1) return -1;
-        return ia - ib;
+        return (allTimeReasons[b] || 0) - (allTimeReasons[a] || 0);
       });
 
-      const reasonDatasets = allReasonKeys.map((reason, idx) => {
-        const color = REASON_COLORS[reason] || CHART_COLORS[idx % CHART_COLORS.length];
+      // Simple hash function for consistent dynamic colours
+      const hashStr = str => Array.from(str).reduce((h, c) => Math.imul(31, h) + c.charCodeAt(0) | 0, 0);
+
+      const reasonDatasets = allReasonKeys.map((reason) => {
+        // Use a preset colour if available, else pick consistently from CHART_COLORS
+        const color = REASON_COLORS[reason] || CHART_COLORS[Math.abs(hashStr(reason)) % CHART_COLORS.length];
         return {
           label: reason,
           data: last14.map(d => (dailyReasonMap[d] && dailyReasonMap[d][reason]) || 0),
@@ -2920,7 +2920,7 @@
         document.getElementById('reasonCardsGrid').innerHTML = allReasonKeys.map(reason => {
           const count = allTimeReasons[reason] || 0;
           const pct = totalAllReasons > 0 ? ((count / totalAllReasons) * 100).toFixed(1) : '0.0';
-          const color = REASON_COLORS[reason] || '#6B7280';
+          const color = REASON_COLORS[reason] || CHART_COLORS[Math.abs(hashStr(reason)) % CHART_COLORS.length];
           return `
             <div class="reason-card" style="border-left: 3px solid ${color};">
               <div class="rc-label">

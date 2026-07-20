@@ -295,12 +295,7 @@ async function processExcelFile(filePath, originalName) {
     const isNA = /\bUSA\b|\bCANADA\b/i.test(originalName);
 
     // ── Hidden-row reason breakdown ──────────────
-    // For each hidden row: read Col B for the reason keyword.
-    // Exception: if Col B is not a known reason keyword AND Col C contains "Local", label it "Local".
-    // Known keywords are matched case-insensitively as exact strings.
     const reasonBreakdown = {};
-    const KNOWN_REASONS = ['Local', 'NF', 'Removed', 'Repeated', 'No Num'];
-
     function getCellStr(row, colIndex) {
         let val = row.getCell(colIndex).value;
         if (val && typeof val === 'object' && val.result !== undefined) val = val.result;
@@ -382,20 +377,19 @@ async function processExcelFile(filePath, originalName) {
                 if (isLocal) globalHiddenLocal++;
 
                 // ── Classify hidden row reason ──
-                const colBStr = getCellStr(row, 2);
-                const colCStr = getCellStr(row, 3);
+                let colBStr = getCellStr(row, 2).trim();
+                const colCStr = getCellStr(row, 3).trim();
 
-                // Check Col B for a known reason (case-insensitive exact match)
-                const colBReason = KNOWN_REASONS.find(r => r.toLowerCase() === colBStr.toLowerCase());
-
-                if (colBReason) {
-                    bumpReason(colBReason);
-                } else if (colCStr.toLowerCase() === 'local') {
-                    // Col B has a number/ID, Col C says "Local"
+                if (colCStr.toLowerCase() === 'local') {
                     bumpReason('Local');
+                } else if (!colBStr) {
+                    bumpReason('Blank');
+                } else if (/^-?\d+(\.\d+)?$/.test(colBStr)) {
+                    bumpReason('Invalid Reason');
                 } else {
-                    // No recognisable reason
-                    bumpReason('Other');
+                    // Convert to Proper Case
+                    const properCase = colBStr.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+                    bumpReason(properCase);
                 }
             } else if (hasData) {
                 globalVisible++;
