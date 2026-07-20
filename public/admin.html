@@ -188,16 +188,32 @@
     /* ── TAB CONTENT ── */
     .tab-content {
       display: none;
-      flex: 1;
+      position: absolute;
+      inset: 0;
       overflow-y: auto;
-      padding: 20px 24px;
-      min-height: 0;
+      overflow-x: hidden;
+      padding: 16px 20px;
+      box-sizing: border-box;
     }
 
     .tab-content.active {
+      display: block;
+    }
+
+    /* Tabs that need to fill height with flex (leaderboard, hopper) */
+    .tab-content.tab-fill.active {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      overflow: hidden;
+      padding: 0;
+    }
+
+    /* Spacing between sibling panels in scrollable tabs */
+    .tab-content > * + * {
+      margin-top: 16px;
+    }
+    .tab-fill > * + * {
+      margin-top: 0;
     }
 
     /* ── PANELS & GLASS ── */
@@ -775,18 +791,18 @@
       background: var(--bg-panel);
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 16px 20px;
+      padding: 12px 14px;
     }
 
     .stat-card .sc-val {
-      font-size: 26px;
+      font-size: 20px;
       font-weight: 700;
       line-height: 1;
       margin-bottom: 4px;
     }
 
     .stat-card .sc-lbl {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 500;
       color: var(--text-muted);
       text-transform: uppercase;
@@ -798,6 +814,44 @@
       display: grid;
       grid-template-columns: 2fr 1fr;
       gap: 16px;
+    }
+
+    @media (max-width: 1100px) {
+      .chart-grid-2 { grid-template-columns: 1fr; }
+    }
+
+    /* Reason breakdown number cards */
+    .reason-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .reason-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: border-color 0.2s;
+    }
+    .reason-card:hover { border-color: var(--accent-blue); }
+    .reason-card .rc-dot {
+      width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+    }
+    .reason-card .rc-label {
+      font-size: 10px; font-weight: 600; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.05em;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .reason-card .rc-value {
+      font-size: 22px; font-weight: 700; line-height: 1;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .reason-card .rc-pct {
+      font-size: 10px; color: var(--text-muted);
     }
 
     .chart-wrap {
@@ -1700,7 +1754,7 @@
 
     <!-- MAIN CONTENT -->
     <main class="main-content"
-      style="flex: 1; overflow: hidden; display: flex; flex-direction: column;">
+      style="flex: 1; overflow: hidden; display: flex; flex-direction: column; min-height: 0;">
 
       <!-- ── TOPBAR ── -->
       <div class="topbar">
@@ -1723,9 +1777,12 @@
         </div>
       </div>
 
+      <!-- TABS BODY WRAPPER: position:relative so tabs use absolute positioning inside -->
+      <div style="flex:1; min-height:0; position:relative;">
+
       <!-- ══════════ TAB: LIVE LEADERBOARD (today only) ══════════ -->
-      <div id="tab-leaderboard" class="tab-content active">
-        <div class="panel glass-panel" style="flex:1; display:flex; flex-direction:column; min-height:0;">
+      <div id="tab-leaderboard" class="tab-content tab-fill active">
+        <div class="panel glass-panel" style="flex:1; display:flex; flex-direction:column; min-height:0; border-radius:0; border-left:none; border-right:none; border-bottom:none;">
           <div class="panel-header">
             <span>Today's Performance <span id="todayLabel"
                 style="color:var(--text-muted); font-weight:400; font-size:12px;"></span></span>
@@ -1897,6 +1954,24 @@
           </div>
         </div>
 
+        <!-- Hidden Rows Reason Breakdown panel -->
+        <div class="panel glass-panel">
+          <div class="panel-header">
+            Hidden Rows — Reason Breakdown
+            <span style="font-size:11px;color:var(--text-muted);font-weight:400;margin-left:8px;">All-Time Totals + Last 14 Days Chart</span>
+          </div>
+          <div class="panel-body">
+            <!-- Number cards: one per reason -->
+            <div class="reason-cards-grid" id="reasonCardsGrid">
+              <div style="color:var(--text-muted);font-size:13px;grid-column:1/-1;">No hidden-row data yet. Upload files with hidden rows to populate this panel.</div>
+            </div>
+            <!-- Stacked bar chart -->
+            <div class="chart-wrap" style="height:220px;">
+              <canvas id="chartReasons"></canvas>
+            </div>
+          </div>
+        </div>
+
         <!-- Per-agent breakdown table -->
         <div class="panel glass-panel">
           <div class="panel-header">All-Time Agent Breakdown</div>
@@ -1977,7 +2052,7 @@
         </div>
       </div>
       <!-- ══════════ TAB: HOPPER ══════════ -->
-      <div id="tab-hopper" class="tab-content">
+      <div id="tab-hopper" class="tab-content tab-fill">
         <!-- The Sheet Panel -->
         <div class="panel glass-panel" style="flex:1; display:flex; flex-direction:column; min-width:0; min-height:0;">
           <div class="panel-header hopper-header">
@@ -2052,6 +2127,8 @@
           </div>
         </div>
 
+      </div><!-- /TABS BODY WRAPPER -->
+
       <div id="dispatch-action-bar" class="hidden">
     <span id="dispatch-target-text">Target: <b>None</b> | 0 Selected</span>
     <div style="display:flex; gap:12px;">
@@ -2075,7 +2152,7 @@
     let usersData = [];
     let showsData = [];
     let selectedLeaderIdx = -1;
-    let chartLine = null, chartBar = null;
+    let chartLine = null, chartBar = null, chartReasons = null;
 
     const TODAY = new Date().toISOString().split('T')[0]; // "2026-03-30"
 
@@ -2643,6 +2720,10 @@
       let totalNewShown = 0, totalNewHidden = 0, totalNewLeads = 0;
       let totalSomeShown = 0, totalSomeHidden = 0, totalSomeLeads = 0;
 
+      // Reason breakdown aggregation
+      const allTimeReasons = {};   // reason → all-time total
+      const dailyReasonMap = {};   // dateKey → { reason → count }
+
       const agentMap = {}; // agent → { files, leads, shown, newLeads, newShown, newHidden, someLeads, someShown, someHidden }
       const modeMap = { STANDARD: 0 };
       const dateKeys = Object.keys(data).sort();
@@ -2697,6 +2778,15 @@
             agentMap[agent].someShown += recSomeShown;
             agentMap[agent].someHidden += recSomeHidden;
             agentMap[agent].someLeads += (recSomeShown + recSomeHidden);
+          }
+
+          // Accumulate per-record reason breakdown
+          if (rec.reasonBreakdown) {
+            for (const [reason, count] of Object.entries(rec.reasonBreakdown)) {
+              allTimeReasons[reason] = (allTimeReasons[reason] || 0) + count;
+              if (!dailyReasonMap[dateKey]) dailyReasonMap[dateKey] = {};
+              dailyReasonMap[dateKey][reason] = (dailyReasonMap[dateKey][reason] || 0) + count;
+            }
           }
         }
       }
@@ -2780,7 +2870,96 @@
         }
       });
 
+      // ── Reason Breakdown Chart (last 14 days) ──
+      const REASON_COLORS = {
+        'Local':    '#8B5CF6',
+        'NF':       '#EF4444',
+        'Removed':  '#F59E0B',
+        'Repeated': '#06B6D4',
+        'No Num':   '#EC4899',
+        'Other':    '#6B7280'
+      };
 
+      // last14 and lineLabels already declared above (line chart section) — reuse them
+      const reasonLabels = lineLabels; // same "MM-DD" labels
+
+      // Collect all unique reasons seen across all time (for consistent colouring)
+      const allReasonKeys = Object.keys(allTimeReasons).sort((a, b) => {
+        const order = ['Local', 'NF', 'Removed', 'Repeated', 'No Num', 'Other'];
+        const ia = order.indexOf(a), ib = order.indexOf(b);
+        if (ia === -1 && ib === -1) return a.localeCompare(b);
+        if (ia === -1) return 1;
+        if (ib === -1) return -1;
+        return ia - ib;
+      });
+
+      const reasonDatasets = allReasonKeys.map((reason, idx) => {
+        const color = REASON_COLORS[reason] || CHART_COLORS[idx % CHART_COLORS.length];
+        return {
+          label: reason,
+          data: last14.map(d => (dailyReasonMap[d] && dailyReasonMap[d][reason]) || 0),
+          backgroundColor: color,
+          borderRadius: 3,
+          stack: 'reasons'
+        };
+      });
+
+      if (chartReasons) chartReasons.destroy();
+
+      const totalAllReasons = Object.values(allTimeReasons).reduce((s, v) => s + v, 0);
+
+      if (allReasonKeys.length === 0) {
+        // No data: hide chart, show placeholder in card grid
+        document.getElementById('chartReasons').style.display = 'none';
+        document.getElementById('reasonCardsGrid').innerHTML =
+          '<div style="color:var(--text-muted);font-size:13px;grid-column:1/-1;">No hidden-row data yet. Upload files with hidden rows to populate this panel.</div>';
+      } else {
+        document.getElementById('chartReasons').style.display = '';
+
+        // ── Reason number cards ──
+        document.getElementById('reasonCardsGrid').innerHTML = allReasonKeys.map(reason => {
+          const count = allTimeReasons[reason] || 0;
+          const pct = totalAllReasons > 0 ? ((count / totalAllReasons) * 100).toFixed(1) : '0.0';
+          const color = REASON_COLORS[reason] || '#6B7280';
+          return `
+            <div class="reason-card" style="border-left: 3px solid ${color};">
+              <div class="rc-label">
+                <span class="rc-dot" style="background:${color};"></span>
+                ${escHtml(reason)}
+              </div>
+              <div class="rc-value" style="color:${color};">${count.toLocaleString()}</div>
+              <div class="rc-pct">${pct}% of hidden</div>
+            </div>`;
+        }).join('');
+
+        // ── Stacked bar chart (last 14 days) ──
+        chartReasons = new Chart(document.getElementById('chartReasons'), {
+          type: 'bar',
+          data: { labels: reasonLabels, datasets: reasonDatasets },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'top',
+                labels: { color: '#9CA3AF', font: { size: 11 }, boxWidth: 12, padding: 14 }
+              },
+              tooltip: {
+                callbacks: {
+                  footer: (items) => {
+                    const total = items.reduce((s, i) => s + i.raw, 0);
+                    return `Total hidden this day: ${total}`;
+                  }
+                }
+              }
+            },
+            scales: {
+              x: { stacked: true, grid: { display: false }, ticks: { color: '#9CA3AF', font: { size: 11 } } },
+              y: { stacked: true, grid: { color: 'rgba(55,65,81,0.5)' }, ticks: { color: '#9CA3AF', font: { size: 11 } }, beginAtZero: true }
+            }
+          }
+        });
+      }
 
       // ── Agent breakdown table ──
       document.getElementById('analyticsAgentTable').innerHTML = agentEntries.map(([name, s]) => {

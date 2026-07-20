@@ -127,7 +127,7 @@ function analyticsAddRecord(dateKey, username, record) {
 
     if (!data[dateKey]) {
         data[dateKey] = {
-            summary: { totalFiles: 0, totalLeads: 0, totalShown: 0, byAgent: {} },
+            summary: { totalFiles: 0, totalLeads: 0, totalShown: 0, reasonBreakdown: {}, byAgent: {} },
             records: []
         };
     }
@@ -138,6 +138,14 @@ function analyticsAddRecord(dateKey, username, record) {
     day.summary.totalFiles++;
     day.summary.totalLeads += record.total;
     day.summary.totalShown += record.shown;
+
+    // Accumulate reason breakdown into day summary
+    if (!day.summary.reasonBreakdown) day.summary.reasonBreakdown = {};
+    if (record.reasonBreakdown) {
+        for (const [reason, count] of Object.entries(record.reasonBreakdown)) {
+            day.summary.reasonBreakdown[reason] = (day.summary.reasonBreakdown[reason] || 0) + count;
+        }
+    }
 
     // Per-agent summary
     if (!day.summary.byAgent[username]) {
@@ -170,6 +178,16 @@ function analyticsRemoveRecord(dateKey, transactionId) {
     day.summary.totalFiles = Math.max(0, day.summary.totalFiles - 1);
     day.summary.totalLeads = Math.max(0, day.summary.totalLeads - rec.total);
     day.summary.totalShown = Math.max(0, day.summary.totalShown - rec.shown);
+
+    // Deduct reason breakdown from day summary
+    if (rec.reasonBreakdown && day.summary.reasonBreakdown) {
+        for (const [reason, count] of Object.entries(rec.reasonBreakdown)) {
+            if (day.summary.reasonBreakdown[reason] !== undefined) {
+                day.summary.reasonBreakdown[reason] = Math.max(0, day.summary.reasonBreakdown[reason] - count);
+                if (day.summary.reasonBreakdown[reason] === 0) delete day.summary.reasonBreakdown[reason];
+            }
+        }
+    }
 
     // Deduct per-agent summary
     const agentSummary = day.summary.byAgent[rec.agent];
@@ -276,6 +294,24 @@ async function processExcelFile(filePath, originalName) {
     let someHidden = 0;
     const isNA = /\bUSA\b|\bCANADA\b/i.test(originalName);
 
+    // ── Hidden-row reason breakdown ──────────────
+    // For each hidden row: read Col B for the reason keyword.
+    // Exception: if Col B is not a known reason keyword AND Col C contains "Local", label it "Local".
+    // Known keywords are matched case-insensitively as exact strings.
+    const reasonBreakdown = {};
+    const KNOWN_REASONS = ['Local', 'NF', 'Removed', 'Repeated', 'No Num'];
+
+    function getCellStr(row, colIndex) {
+        let val = row.getCell(colIndex).value;
+        if (val && typeof val === 'object' && val.result !== undefined) val = val.result;
+        if (val && val.richText) val = val.richText.map(r => r.text).join('');
+        return val !== null && val !== undefined ? val.toString().trim() : '';
+    }
+
+    function bumpReason(reason) {
+        reasonBreakdown[reason] = (reasonBreakdown[reason] || 0) + 1;
+    }
+
     const sheet = workbook.getWorksheet('Sheet1') || workbook.worksheets[0];
     if (sheet) {
         let stats = {};
@@ -344,6 +380,23 @@ async function processExcelFile(filePath, originalName) {
             if (isHidden) {
                 globalHidden++;
                 if (isLocal) globalHiddenLocal++;
+
+                // ── Classify hidden row reason ──
+                const colBStr = getCellStr(row, 2);
+                const colCStr = getCellStr(row, 3);
+
+                // Check Col B for a known reason (case-insensitive exact match)
+                const colBReason = KNOWN_REASONS.find(r => r.toLowerCase() === colBStr.toLowerCase());
+
+                if (colBReason) {
+                    bumpReason(colBReason);
+                } else if (colCStr.toLowerCase() === 'local') {
+                    // Col B has a number/ID, Col C says "Local"
+                    bumpReason('Local');
+                } else {
+                    // No recognisable reason
+                    bumpReason('Other');
+                }
             } else if (hasData) {
                 globalVisible++;
                 if (isLocal) globalVisibleLocal++;
@@ -429,7 +482,8 @@ async function processExcelFile(filePath, originalName) {
         newShown,
         newHidden,
         someShown,
-        someHidden
+        someHidden,
+        reasonBreakdown
     };
 }
 
@@ -941,7 +995,8 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
             newShown: stats.newShown || 0,
             newHidden: stats.newHidden || 0,
             someShown: stats.someShown || 0,
-            someHidden: stats.someHidden || 0
+            someHidden: stats.someHidden || 0,
+            reasonBreakdown: stats.reasonBreakdown || {}
         });
 
         // ── Write to history.json ──
@@ -971,7 +1026,8 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
             newShown: stats.newShown || 0,
             newHidden: stats.newHidden || 0,
             someShown: stats.someShown || 0,
-            someHidden: stats.someHidden || 0
+            someHidden: stats.someHidden || 0,
+            reasonBreakdown: stats.reasonBreakdown || {}
         });
 
         res.json({ success: true, stats, transactionId });
@@ -1078,7 +1134,8 @@ app.post('/api/upload-bulk', upload.array('files', 20), async (req, res) => {
                     newShown: stats.newShown || 0,
                     newHidden: stats.newHidden || 0,
                     someShown: stats.someShown || 0,
-                    someHidden: stats.someHidden || 0
+                    someHidden: stats.someHidden || 0,
+                    reasonBreakdown: stats.reasonBreakdown || {}
                 });
 
                 // ── Write to history.json ──
@@ -1108,7 +1165,8 @@ app.post('/api/upload-bulk', upload.array('files', 20), async (req, res) => {
                     newShown: stats.newShown || 0,
                     newHidden: stats.newHidden || 0,
                     someShown: stats.someShown || 0,
-                    someHidden: stats.someHidden || 0
+                    someHidden: stats.someHidden || 0,
+                    reasonBreakdown: stats.reasonBreakdown || {}
                 });
 
                 results.push({ success: true, filename: stats.finalFileName, stats, transactionId });
