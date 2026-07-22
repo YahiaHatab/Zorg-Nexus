@@ -2367,7 +2367,7 @@
               <table class="data-table" style="table-layout: auto;">
                 <thead>
                   <tr>
-                    <th class="dispatch-checkbox-head hidden" style="width:40px;">Sel</th>
+                    <th style="width:40px; text-align:center;"><input type="checkbox" id="selectAllHopper" onchange="toggleSelectAllHopper(this.checked)" title="Select / Deselect All"></th>
                     <th style="min-width: 220px;">Show Name</th>
                     <th style="min-width: 140px;">Exhibitor list</th>
                     <th style="min-width: 120px;">
@@ -2400,6 +2400,29 @@
                   </tr>
                 </tbody>
               </table>
+
+              <!-- ── BULK SELECTION ACTION BAR ── -->
+              <div id="hopperBulkBar" style="display:none; position:sticky; bottom:16px; left:50%; transform:translateX(-50%); width:fit-content; background:var(--bg-panel); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid var(--border); border-radius:12px; padding:10px 20px; box-shadow:0 12px 36px rgba(0,0,0,0.4); z-index:9999; align-items:center; gap:16px; margin:0 auto 12px;">
+                <div style="font-size:12.5px; font-weight:700; color:var(--text-main); display:flex; align-items:center; gap:8px;">
+                  <span id="bulkSelectedCount" style="background:var(--accent-blue); color:#fff; padding:2px 8px; border-radius:10px; font-size:11px;">0</span>
+                  <span>Shows Selected</span>
+                </div>
+
+                <div style="height:20px; width:1px; background:var(--border);"></div>
+
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:11px; font-weight:700; text-transform:uppercase; color:var(--text-muted);">Set Status:</span>
+                  <button class="btn btn-sm" onclick="bulkSetStatus('Pending')" style="background:rgba(59,130,246,0.15); color:#60a5fa; border:1px solid rgba(59,130,246,0.3); font-weight:700;">Pending</button>
+                  <button class="btn btn-sm" onclick="bulkSetStatus('In Progress')" style="background:rgba(139,92,246,0.18); color:#c084fc; border:1px solid rgba(139,92,246,0.35); font-weight:700;">In Progress</button>
+                  <button class="btn btn-sm" onclick="bulkSetStatus('HOLD')" style="background:rgba(245,158,11,0.18); color:#fbbf24; border:1px solid rgba(245,158,11,0.35); font-weight:700;">HOLD</button>
+                  <button class="btn btn-sm" onclick="bulkSetStatus('Done')" style="background:rgba(16,185,129,0.18); color:#34d399; border:1px solid rgba(16,185,129,0.35); font-weight:700;">Done</button>
+                  <button class="btn btn-sm" onclick="bulkSetStatus('CXL')" style="background:rgba(239,68,68,0.18); color:#f87171; border:1px solid rgba(239,68,68,0.35); font-weight:700;">CXL</button>
+                </div>
+
+                <div style="height:20px; width:1px; background:var(--border);"></div>
+
+                <button class="btn btn-sm" onclick="clearHopperSelection()" style="background:transparent; border:1px solid var(--border); color:var(--text-muted); font-weight:600;">Cancel</button>
+              </div>
             </div>
           </div>
         </div>
@@ -3792,10 +3815,9 @@
           trStyle = 'opacity:0.65;';
         }
 
-        const checkboxHtml = isTerminal ? '<div></div>' : `
-          <input type="checkbox" class="dispatch-checkbox hidden" 
-            ${selectedShowsForDispatch.includes(s.id) ? 'checked' : ''} 
-            onchange="onShowCheck('${s.id}', this.checked)">`;
+        const checkboxHtml = `<input type="checkbox" class="hopper-select-check" 
+          ${selectedHopperIds.has(s.id) ? 'checked' : ''} 
+          onchange="onHopperCheck('${s.id}', this.checked)">`;
 
         // Determine Show Type (XZ-Show, X-Show, or New/Standard Show)
         const isXZShow = s.showName.includes('XZShow') || s.showName.includes('XZ Show');
@@ -4538,6 +4560,75 @@
 
   <script>
     let currentEditingShowId = null;
+    const selectedHopperIds = new Set();
+
+    function onHopperCheck(id, checked) {
+      if (checked) selectedHopperIds.add(id);
+      else selectedHopperIds.delete(id);
+      updateHopperBulkBar();
+    }
+
+    function toggleSelectAllHopper(checked) {
+      const activeArray = isHopperFiltered ? filteredShows : showsData;
+      if (checked) {
+        activeArray.forEach(s => selectedHopperIds.add(s.id));
+      } else {
+        selectedHopperIds.clear();
+      }
+      document.querySelectorAll('.hopper-select-check').forEach(chk => chk.checked = checked);
+      updateHopperBulkBar();
+    }
+
+    function updateHopperBulkBar() {
+      const bar = document.getElementById('hopperBulkBar');
+      const countEl = document.getElementById('bulkSelectedCount');
+      const selectAll = document.getElementById('selectAllHopper');
+
+      if (countEl) countEl.textContent = selectedHopperIds.size;
+
+      if (bar) {
+        if (selectedHopperIds.size > 0) {
+          bar.style.display = 'flex';
+        } else {
+          bar.style.display = 'none';
+        }
+      }
+
+      const activeArray = isHopperFiltered ? filteredShows : showsData;
+      if (selectAll) {
+        selectAll.checked = activeArray.length > 0 && selectedHopperIds.size >= activeArray.length;
+      }
+    }
+
+    function clearHopperSelection() {
+      selectedHopperIds.clear();
+      document.querySelectorAll('.hopper-select-check').forEach(chk => chk.checked = false);
+      updateHopperBulkBar();
+    }
+
+    async function bulkSetStatus(newStatus) {
+      if (selectedHopperIds.size === 0) return;
+      const ids = Array.from(selectedHopperIds);
+
+      try {
+        const res = await fetch('/api/shows/bulk-update', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ showIds: ids, status: newStatus })
+        });
+        const json = await res.json();
+        if (json.success) {
+          showToast(`Updated ${json.count} show${json.count === 1 ? '' : 's'} to ${newStatus}`, 'success');
+          clearHopperSelection();
+          fetchShows();
+        } else {
+          showToast('Failed bulk update: ' + (json.error || 'Unknown error'), 'error');
+        }
+      } catch (err) {
+        console.error('Bulk update error:', err);
+        showToast('Error during bulk status update', 'error');
+      }
+    }
 
     function openAddShowModal() {
       const modal = document.getElementById('addShowModal');

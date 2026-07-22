@@ -1028,6 +1028,51 @@ app.post('/api/shows/update-show', (req, res) => {
     }
 });
 
+app.post('/api/shows/bulk-update', (req, res) => {
+    try {
+        const { showIds, status, agentName } = req.body;
+        if (!Array.isArray(showIds) || showIds.length === 0) {
+            return res.status(400).json({ success: false, error: 'No shows selected.' });
+        }
+
+        const currentShows = JSON.parse(fs.readFileSync(showsPath));
+        let updatedCount = 0;
+
+        currentShows.forEach(s => {
+            if (showIds.includes(s.id)) {
+                if (status) {
+                    s.status = status;
+                    if (status === 'Done' || status === 'CXL') {
+                        s.completedAt = new Date().toISOString();
+                        saveAgentShowHistory({
+                            id: s.id,
+                            showName: s.showName,
+                            agentName: s.agentName || 'Unassigned',
+                            status: status,
+                            link: s.link,
+                            ld: s.ld,
+                            lists: s.lists,
+                            comment: s.comment,
+                            date: new Date().toISOString().split('T')[0],
+                            time: new Date().toLocaleTimeString('en-US')
+                        });
+                    }
+                }
+                if (agentName !== undefined) {
+                    s.agentName = agentName;
+                }
+                updatedCount++;
+            }
+        });
+
+        fs.writeFileSync(showsPath, JSON.stringify(currentShows, null, 2));
+        io.emit('hopper_updated');
+        res.json({ success: true, count: updatedCount });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
 app.get('/api/shows/active', (req, res) => {
     const { username } = req.query;
     const currentShows = JSON.parse(fs.readFileSync(showsPath));
