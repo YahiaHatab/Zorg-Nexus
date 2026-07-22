@@ -237,18 +237,26 @@
 
     .sidebar-signature {
       text-align: center;
-      padding: 10px 20px;
-      font-size: 0.75rem;
-      color: rgba(255, 255, 255, 0.4);
-      letter-spacing: 1px;
+      padding: 10px 16px;
+      font-size: 10px;
+      color: #64748b;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
       flex-shrink: 0;
       margin-top: auto;
+      font-weight: 600;
+      opacity: 0.75;
+      transition: opacity 0.2s ease;
+    }
+
+    .sidebar-signature:hover {
+      opacity: 1;
     }
 
     .sidebar-signature span {
-      color: #8b5cf6;
+      color: var(--text-muted);
       font-weight: 700;
+      letter-spacing: 0.05em;
     }
 
     /* TOPBAR */
@@ -392,10 +400,30 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
+    .user-trigger {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      background: var(--bg-base);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .user-trigger:hover {
+      background: var(--bg-hover);
+      border-color: var(--accent-blue);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    }
+
     .user-name-label {
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 600;
       color: var(--text-main);
+      letter-spacing: 0.01em;
     }
 
     .user-menu {
@@ -404,19 +432,21 @@
       position: absolute;
       top: calc(100% + 8px);
       right: 0;
-      min-width: 200px;
+      min-width: 190px;
       background: var(--bg-panel);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-      z-index: 1000;
-      padding: 8px;
-      transform: translateY(-10px);
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      backdrop-filter: blur(12px);
+      border-radius: 10px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
+      z-index: 9999;
+      padding: 6px;
+      transform: translateY(-8px);
+      transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
     }
 
-    .user-dropdown:hover .user-menu {
+    .user-dropdown:hover .user-menu,
+    .user-dropdown:focus-within .user-menu {
       opacity: 1;
       visibility: visible;
       transform: translateY(0);
@@ -425,20 +455,21 @@
     .user-menu-item {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 10px 14px;
-      border-radius: 8px;
+      justify-content: space-between;
+      padding: 9px 12px;
+      border-radius: 6px;
       color: var(--text-main);
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 500;
       cursor: pointer;
-      transition: all 0.15s;
+      transition: all 0.15s ease;
       text-decoration: none;
       width: 100%;
       border: none;
       background: transparent;
       text-align: left;
       font-family: 'Inter', sans-serif;
+      line-height: 1.2;
     }
 
     .user-menu-item:hover {
@@ -446,24 +477,28 @@
       color: var(--accent-blue);
     }
 
-    .user-menu-item span {
-      font-size: 16px;
+    .user-menu-item.logout {
+      color: #f87171;
     }
 
     .user-menu-item.logout:hover {
+      color: #ffffff;
+      background: rgba(239, 68, 68, 0.85);
+    }
+
+    .user-menu-item.close-server {
       color: var(--danger);
-      background: rgba(239, 68, 68, 0.1);
     }
 
     .user-menu-item.close-server:hover {
-      color: var(--danger);
-      background: rgba(239, 68, 68, 0.1);
+      color: #ffffff;
+      background: rgba(239, 68, 68, 0.85);
     }
 
     .user-menu-divider {
       height: 1px;
       background: var(--border);
-      margin: 6px 8px;
+      margin: 4px 0;
     }
 
     .admin-btn {
@@ -2168,13 +2203,13 @@
             </div>
             <div class="user-menu">
               <button id="themeToggle" class="user-menu-item">
-                <span>🌓</span> Toggle Theme
+                Toggle Theme
               </button>
               <a id="adminLink" href="/admin.html" class="user-menu-item" style="display:none;">
-                <span>⚙️</span> Admin Dashboard
+                Admin Dashboard
               </a>
               <button id="closeServerBtn" class="user-menu-item close-server" style="display:none;" onclick="closeServer()">
-                <span>🛑</span> Close Server
+                Close Server
               </button>
               <div class="user-menu-divider"></div>
               <button class="user-menu-item logout" onclick="logout()">

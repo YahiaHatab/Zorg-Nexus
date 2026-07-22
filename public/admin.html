@@ -1689,17 +1689,25 @@
 
     .sidebar-signature {
       text-align: center;
-      padding: 10px 20px;
-      font-size: 0.75rem;
-      color: rgba(255, 255, 255, 0.4);
-      letter-spacing: 1px;
+      padding: 10px 16px;
+      font-size: 10px;
+      color: #64748b;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
       flex-shrink: 0;
+      font-weight: 600;
+      opacity: 0.75;
+      transition: opacity 0.2s ease;
+    }
+
+    .sidebar-signature:hover {
+      opacity: 1;
     }
 
     .sidebar-signature span {
-      color: #8b5cf6;
+      color: var(--text-muted);
       font-weight: 700;
+      letter-spacing: 0.05em;
     }
 
     /* ── FLOATING ACTION BAR ── */
@@ -1976,7 +1984,7 @@
             Portal</button></a>
         </button>
       </div>
-      <div class="sidebar-signature">Powered By <span>YahiaH</span></div>
+      <div class="sidebar-signature">POWERED BY <span>YAHIA</span></div>
     </aside>
 
     <!-- MAIN CONTENT -->
