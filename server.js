@@ -62,6 +62,91 @@ if (!fs.existsSync(agentShowsHistoryPath)) {
     console.log('> Created default agent_shows_history.json');
 }
 
+// ─────────────────────────────────────────────
+//  DATABASE USERNAME MIGRATION & PROPAGATION
+// ─────────────────────────────────────────────
+function propagateUsernameChange(oldName, newName) {
+    if (!oldName || !newName || oldName === newName) return;
+    console.log(`> Propagating username change across database: "${oldName}" -> "${newName}"`);
+
+    const lowerOld = oldName.toLowerCase();
+
+    // 1. Update shows.json
+    try {
+        if (fs.existsSync(showsPath)) {
+            const shows = JSON.parse(fs.readFileSync(showsPath));
+            let updated = false;
+            shows.forEach(s => {
+                if (s.agentName && (s.agentName.toLowerCase() === lowerOld || s.agentName === oldName)) { s.agentName = newName; updated = true; }
+                if (s.pinnedTo && (s.pinnedTo.toLowerCase() === lowerOld || s.pinnedTo === oldName)) { s.pinnedTo = newName; updated = true; }
+            });
+            if (updated) fs.writeFileSync(showsPath, JSON.stringify(shows, null, 2));
+        }
+    } catch (e) { console.error('Error updating username in shows.json:', e); }
+
+    // 2. Update agent_shows_history.json
+    try {
+        if (fs.existsSync(agentShowsHistoryPath)) {
+            const agentHistory = JSON.parse(fs.readFileSync(agentShowsHistoryPath));
+            let updated = false;
+            agentHistory.forEach(h => {
+                if (h.agentName && (h.agentName.toLowerCase() === lowerOld || h.agentName === oldName)) { h.agentName = newName; updated = true; }
+                if (h.agent && (h.agent.toLowerCase() === lowerOld || h.agent === oldName)) { h.agent = newName; updated = true; }
+            });
+            if (updated) fs.writeFileSync(agentShowsHistoryPath, JSON.stringify(agentHistory, null, 2));
+        }
+    } catch (e) { console.error('Error updating username in agent_shows_history.json:', e); }
+
+    // 3. Update history.json
+    try {
+        if (fs.existsSync(historyPath)) {
+            const history = JSON.parse(fs.readFileSync(historyPath));
+            let updated = false;
+            if (history.files) {
+                history.files.forEach(f => {
+                    if (f.agent && (f.agent.toLowerCase() === lowerOld || f.agent === oldName)) { f.agent = newName; updated = true; }
+                });
+            }
+            if (history.logs) {
+                history.logs.forEach(l => {
+                    if (l.agent && (l.agent.toLowerCase() === lowerOld || l.agent === oldName)) { l.agent = newName; updated = true; }
+                });
+            }
+            if (updated) fs.writeFileSync(historyPath, JSON.stringify(history, null, 2));
+        }
+    } catch (e) { console.error('Error updating username in history.json:', e); }
+
+    // 4. Update analytics.json
+    try {
+        if (fs.existsSync(analyticsPath)) {
+            const analytics = JSON.parse(fs.readFileSync(analyticsPath));
+            let updated = false;
+            Object.keys(analytics).forEach(dateKey => {
+                const day = analytics[dateKey];
+                if (day && day.records) {
+                    day.records.forEach(rec => {
+                        if (rec.agent && (rec.agent.toLowerCase() === lowerOld || rec.agent === oldName)) { rec.agent = newName; updated = true; }
+                    });
+                }
+                if (day && day.summary && day.summary.byAgent) {
+                    Object.keys(day.summary.byAgent).forEach(k => {
+                        if (k.toLowerCase() === lowerOld || k === oldName) {
+                            day.summary.byAgent[newName] = day.summary.byAgent[k];
+                            if (k !== newName) delete day.summary.byAgent[k];
+                            updated = true;
+                        }
+                    });
+                }
+            });
+            if (updated) fs.writeFileSync(analyticsPath, JSON.stringify(analytics, null, 2));
+        }
+    } catch (e) { console.error('Error updating username in analytics.json:', e); }
+}
+
+// Perform initial migration for renamed Admin -> Yahia
+propagateUsernameChange('Admin', 'Yahia');
+propagateUsernameChange('admin', 'Yahia');
+
 // Load config AFTER ensuring it exists
 let config = { ...DEFAULT_CONFIG, ...JSON.parse(fs.readFileSync(configPath)) };
 
@@ -841,6 +926,106 @@ app.get('/api/shows/next', (req, res) => {
 
     // 5. If nothing was found, let the agent know the queue is empty
     return res.json({ success: false, message: 'No shows available' });
+});
+
+app.post('/api/shows/add', (req, res) => {
+    try {
+        const { showName, link, status, ld, comment, agentName } = req.body;
+        if (!showName || !showName.trim()) {
+            return res.status(400).json({ success: false, error: 'Show Name is required.' });
+        }
+
+        const currentShows = JSON.parse(fs.readFileSync(showsPath));
+        let linksArray = [];
+        if (Array.isArray(link)) {
+            linksArray = link.map(l => l.trim()).filter(Boolean);
+        } else if (typeof link === 'string') {
+            linksArray = link.split('\n').map(l => l.trim()).filter(Boolean);
+        }
+
+        const newShow = {
+            id: Date.now().toString(36) + Math.random().toString(36).substr(2, 9),
+            showName: showName.trim(),
+            link: linksArray,
+            agentName: agentName || '',
+            ld: ld || '',
+            lists: '',
+            comment: comment || '',
+            date: new Date().toISOString().split('T')[0],
+            status: status || 'Pending',
+            pinnedTo: null
+        };
+
+        currentShows.unshift(newShow);
+        fs.writeFileSync(showsPath, JSON.stringify(currentShows, null, 2));
+
+        io.emit('hopper_updated');
+        res.json({ success: true, show: newShow });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
+app.post('/api/shows/update-field', (req, res) => {
+    try {
+        const { id, field, value } = req.body;
+        if (!id || !field) {
+            return res.status(400).json({ success: false, error: 'id and field are required.' });
+        }
+
+        const currentShows = JSON.parse(fs.readFileSync(showsPath));
+        const show = currentShows.find(s => s.id === id);
+        if (!show) {
+            return res.status(404).json({ success: false, error: 'Show not found.' });
+        }
+
+        if (field === 'link') {
+            show.link = Array.isArray(value) ? value : (value ? value.split('\n').map(l => l.trim()).filter(Boolean) : []);
+        } else {
+            show[field] = value;
+        }
+
+        fs.writeFileSync(showsPath, JSON.stringify(currentShows, null, 2));
+        io.emit('hopper_updated');
+        res.json({ success: true, show });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
+app.post('/api/shows/update-show', (req, res) => {
+    try {
+        const { id, showName, link, status, ld, comment, agentName } = req.body;
+        if (!id || !showName || !showName.trim()) {
+            return res.status(400).json({ success: false, error: 'Show ID and Show Name are required.' });
+        }
+
+        const currentShows = JSON.parse(fs.readFileSync(showsPath));
+        const show = currentShows.find(s => s.id === id);
+        if (!show) {
+            return res.status(404).json({ success: false, error: 'Show not found.' });
+        }
+
+        let linksArray = [];
+        if (Array.isArray(link)) {
+            linksArray = link.map(l => l.trim()).filter(Boolean);
+        } else if (typeof link === 'string') {
+            linksArray = link.split('\n').map(l => l.trim()).filter(Boolean);
+        }
+
+        show.showName = showName.trim();
+        show.link = linksArray;
+        if (status) show.status = status;
+        if (agentName !== undefined) show.agentName = agentName;
+        if (ld !== undefined) show.ld = ld;
+        if (comment !== undefined) show.comment = comment;
+
+        fs.writeFileSync(showsPath, JSON.stringify(currentShows, null, 2));
+        io.emit('hopper_updated');
+        res.json({ success: true, show });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
 });
 
 app.get('/api/shows/active', (req, res) => {
@@ -1688,14 +1873,26 @@ app.get('/api/admin/users', (req, res) => {
 
 app.post('/api/admin/users', (req, res) => {
     try {
-        const users = req.body;
-        if (!Array.isArray(users)) throw new Error('Payload must be an array of users');
+        const newUsers = req.body;
+        if (!Array.isArray(newUsers)) throw new Error('Payload must be an array of users');
 
         // Enforce that at least ONE user has the Admin role
-        const adminCount = users.filter(u => u.role === 'Admin').length;
+        const adminCount = newUsers.filter(u => u.role === 'Admin').length;
         if (adminCount === 0) throw new Error('System must have at least one Admin account.');
 
-        fs.writeFileSync(usersPath, JSON.stringify(users, null, 2));
+        const oldUsers = JSON.parse(fs.readFileSync(usersPath));
+
+        // Propagate any username changes across the database files
+        newUsers.forEach((nu, idx) => {
+            const ou = oldUsers[idx] || oldUsers.find(u => u.role === nu.role || (u.archivePath && u.archivePath === nu.archivePath));
+            if (ou && ou.username && nu.username && ou.username !== nu.username) {
+                propagateUsernameChange(ou.username, nu.username);
+            }
+        });
+
+        fs.writeFileSync(usersPath, JSON.stringify(newUsers, null, 2));
+        io.emit('users_updated');
+        io.emit('hopper_updated');
         res.json({ success: true });
     } catch (e) {
         res.status(500).json({ success: false, error: e.message });
