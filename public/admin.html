@@ -702,11 +702,22 @@
       box-shadow: 0 2px 14px rgba(0, 0, 0, 0.3);
     }
 
-    /* ── 5. SAAS "ACCENT EDGE" STATUSES (The Sheet) ── */
+    /* ── 5. SAAS "ACCENT EDGE" STATUSES & SUBTLE ROW TINTS (The Sheet) ── */
+    tr.new-show-row {
+      border-left: 7px solid #8b5cf6 !important; /* Thick Purple for New Shows */
+      background: linear-gradient(90deg, rgba(139, 92, 246, 0.08) 0%, transparent 100%);
+    }
+
+    tr.x-show-row {
+      border-left: 7px solid #06b6d4 !important; /* Thick Cyan for X-Shows */
+      background: linear-gradient(90deg, rgba(6, 182, 212, 0.08) 0%, transparent 100%);
+    }
+
     /* Emerald: Done */
-    tr[data-status="Done"] {
-      box-shadow: inset 4px 0 0 0 #10b981;
-      background-color: rgba(16, 185, 129, 0.08);
+    tr[data-status="Done"],
+    tr.status-done {
+      border-left: 7px solid #10b981 !important;
+      background: rgba(16, 185, 129, 0.04) !important;
     }
 
     tr[data-status="Done"] select.user-input {
@@ -715,9 +726,10 @@
     }
 
     /* Rose: CXL */
-    tr[data-status="CXL"] {
-      box-shadow: inset 4px 0 0 0 #ef4444;
-      background-color: rgba(239, 68, 68, 0.08);
+    tr[data-status="CXL"],
+    tr.status-cxl {
+      border-left: 7px solid #ef4444 !important;
+      background: rgba(239, 68, 68, 0.12) !important;
     }
 
     tr[data-status="CXL"] select.user-input {
@@ -726,9 +738,10 @@
     }
 
     /* Amber: HOLD */
-    tr[data-status="HOLD"] {
-      box-shadow: inset 4px 0 0 0 #f59e0b;
-      background-color: rgba(245, 158, 11, 0.08);
+    tr[data-status="HOLD"],
+    tr.status-hold {
+      border-left: 7px solid #f59e0b !important;
+      background: rgba(245, 158, 11, 0.14) !important;
     }
 
     tr[data-status="HOLD"] select.user-input {
@@ -737,25 +750,15 @@
     }
 
     /* Blue: In Progress */
-    tr[data-status="In Progress"] {
-      box-shadow: inset 4px 0 0 0 #3b82f6;
-      background-color: rgba(59, 130, 246, 0.08);
+    tr[data-status="In Progress"],
+    tr.status-in-progress {
+      border-left: 7px solid #3b82f6 !important;
+      background: rgba(59, 130, 246, 0.10) !important;
     }
 
     tr[data-status="In Progress"] select.user-input {
       color: #3b82f6;
       font-weight: 600;
-    }
-
-    /* ── 5b. SHOW TYPE HIGHLIGHTS & ACCENTS ── */
-    tr.new-show-row {
-      border-left: 4px solid #8b5cf6; /* Purple for New Shows */
-      background: linear-gradient(90deg, rgba(139, 92, 246, 0.08) 0%, transparent 100%);
-    }
-
-    tr.x-show-row {
-      border-left: 4px solid #06b6d4; /* Cyan for X-Shows */
-      background: linear-gradient(90deg, rgba(6, 182, 212, 0.08) 0%, transparent 100%);
     }
 
     /* ── SHOW TYPE BADGES ── */
@@ -769,7 +772,7 @@
       font-weight: 700;
       letter-spacing: 0.04em;
       text-transform: uppercase;
-      margin-right: 6px;
+      margin-right: 8px;
       flex-shrink: 0;
       line-height: 1.2;
     }
@@ -931,15 +934,6 @@
       background: rgba(59, 130, 246, 0.18);
       border-color: var(--accent-blue);
       color: #60a5fa;
-    }
-
-    /* ── 5c. TERMINAL OVERRIDES (High Priority) ── */
-    /* Terminal statuses clear initial border highlight */
-    tr.status-done,
-    tr.status-cxl,
-    tr.status-hold {
-      border-left: 4px solid transparent !important;
-      background-image: none !important;
     }
 
     /* ── 6. ICON-ONLY ACTION BUTTONS (Hover Reveal) ── */
@@ -3815,7 +3809,7 @@
         return `<tr ${dragAttrs} class="${initialClass} ${trStatusClass}" data-status="${statusStr}" style="${trStyle}">
               <td style="text-align:center; vertical-align:middle;">${checkboxHtml}</td>
               <td style="max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escHtml(s.showName)}">
-                  <div style="display:flex; align-items:center;">
+                  <div style="display:flex; align-items:center; gap:8px;">
                     ${(isPending && isAdminRole) ? '<span class="drag-handle">↕</span>' : ''}
                     ${typeBadgeHtml}
                     <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; outline:none;" contenteditable="${isAdminRole}" onblur="updateShowField('${s.id}', 'showName', this.innerText.trim())" title="${isAdminRole ? 'Click to edit Show Name' : escHtml(s.showName)}">${escHtml(s.showName)}</span>
