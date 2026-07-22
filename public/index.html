@@ -2301,10 +2301,18 @@
                 </div>
               </div>
 
+              <!-- Upload & Auto-Complete File Input -->
+              <input type="file" id="briefingUploadInput" style="display:none;" accept=".xlsx, .xls" multiple onchange="uploadAndCompleteShow(this)">
+
               <div style="display:flex; gap:16px;">
+                <button onclick="document.getElementById('briefingUploadInput').click()" class="filter-btn btn-std"
+                  style="flex:1.2; padding:14px; font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px;">
+                  ⬆ Upload Excel & Complete Show
+                </button>
                 <button id="doneWorkingBtn" onclick="finishWorking()"
-                  style="flex:1; background:var(--success); border:none; color:#fff; font-weight:600; font-size:15px; padding:14px; border-radius:8px; cursor:pointer; transition:background 0.2s;">✓
-                  Complete</button>
+                  style="flex:1; background:var(--success); border:none; color:#fff; font-weight:600; font-size:14px; padding:14px; border-radius:8px; cursor:pointer; transition:background 0.2s;">
+                  ✓ Complete Without File
+                </button>
               </div>
             </div>
 
@@ -2319,6 +2327,19 @@
               <button id="btn-request-show" class="filter-btn btn-some hidden" onclick="requestManualShow()"
                 style="margin-top:24px; display:inline-flex; align-items:center; justify-content:center; margin-left:auto; margin-right:auto; font-size:16px; padding:12px 24px; background:var(--accent-purple-glow); border-color:var(--accent-purple);">🖐️
                 Request Show</button>
+            </div>
+          </div>
+
+          <!-- ── SHOWS YOU WORKED ON HISTORY PANEL ── -->
+          <div class="panel glass-panel" style="max-width:800px; margin:24px auto 0; padding:24px; width:100%;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:12px;">
+              <h3 style="font-size:15px; font-weight:700; color:var(--text-main); display:flex; align-items:center; gap:8px; margin:0;">
+                <span>📜</span> Shows You Worked On
+              </h3>
+              <span id="briefingHistoryCount" style="font-size:11px; color:var(--accent-blue); font-weight:700; background:var(--accent-blue-glow); padding:3px 10px; border-radius:12px;">0 Shows</span>
+            </div>
+            <div id="briefingHistoryList" style="max-height:280px; overflow-y:auto; padding-right:4px;">
+              <div style="color:var(--text-muted); font-size:12px; text-align:center; padding:20px;">Loading history...</div>
             </div>
           </div>
         </div>
@@ -2750,6 +2771,7 @@
         if (view === 'briefing') {
           document.getElementById('briefingView').style.display = 'flex';
           if (!currentAssignedShow) fetchNextShow();
+          renderBriefingHistory();
         } else {
           document.getElementById('filesView').style.display = 'flex';
           renderTable();
@@ -3381,14 +3403,29 @@
         updateBriefingModeDisplay();
       }
 
+      async function uploadAndCompleteShow(inputEl) {
+        if (!inputEl.files || inputEl.files.length === 0) return;
+        const uploadedFiles = Array.from(inputEl.files);
+        inputEl.value = '';
+
+        showToast('⬆ Uploading Excel file...', 'info');
+        await uploadFiles(uploadedFiles, 'standard');
+
+        if (currentAssignedShow) {
+          showToast(`✅ Auto-completing show: ${currentAssignedShow.showName}`, 'success');
+          await finishWorking();
+        }
+      }
+
       async function finishWorking() {
         if (!currentAssignedShow) return;
 
+        const showToComplete = currentAssignedShow;
         try {
           await fetch('/api/shows/complete', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: currentAssignedShow.id })
+            body: JSON.stringify({ id: showToComplete.id })
           });
         } catch (e) {
           console.error('Failed to complete show');
@@ -3398,29 +3435,107 @@
         if (socket) socket.emit('agent_status', { agent: currentUser, status: 'Idle', show: null });
         currentAssignedShow = null;
         renderBriefingCard();
+        renderBriefingHistory();
 
         // Automatically pull the next show if one was assigned by the admin
         await startNextShow();
       }
 
-      function startTimer() {
-        workStartTime = Date.now();
-        const timerEl = document.getElementById('briefingTimer');
-        timerEl.style.display = 'block';
+      function startTimer(overrideStartTime) {
+        if (workTimerInterval) clearInterval(workTimerInterval);
 
-        workTimerInterval = setInterval(() => {
-          const diff = Math.floor((Date.now() - workStartTime) / 1000);
+        let startTime = overrideStartTime;
+        if (!startTime && currentAssignedShow) {
+          startTime = currentAssignedShow.startTime;
+          if (!startTime) {
+            const saved = localStorage.getItem('show_timer_' + currentAssignedShow.id);
+            if (saved) startTime = parseInt(saved, 10);
+          }
+        }
+
+        if (!startTime) startTime = Date.now();
+        workStartTime = startTime;
+
+        if (currentAssignedShow) {
+          localStorage.setItem('show_timer_' + currentAssignedShow.id, startTime);
+        }
+
+        const timerEl = document.getElementById('briefingTimer');
+        if (timerEl) timerEl.style.display = 'block';
+
+        function updateDisplay() {
+          const diff = Math.max(0, Math.floor((Date.now() - workStartTime) / 1000));
           const h = Math.floor(diff / 3600);
           const m = Math.floor((diff % 3600) / 60);
           const s = diff % 60;
-          timerEl.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-        }, 1000);
+          if (timerEl) {
+            timerEl.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+          }
+        }
+
+        updateDisplay();
+        workTimerInterval = setInterval(updateDisplay, 1000);
       }
 
       function stopTimer() {
         if (workTimerInterval) clearInterval(workTimerInterval);
-        document.getElementById('briefingTimer').style.display = 'none';
-        document.getElementById('briefingTimer').textContent = '00:00:00';
+        if (currentAssignedShow) {
+          localStorage.removeItem('show_timer_' + currentAssignedShow.id);
+        }
+        const timerEl = document.getElementById('briefingTimer');
+        if (timerEl) {
+          timerEl.style.display = 'none';
+          timerEl.textContent = '00:00:00';
+        }
+      }
+
+      async function renderBriefingHistory() {
+        const container = document.getElementById('briefingHistoryList');
+        const countBadge = document.getElementById('briefingHistoryCount');
+        if (!container || !currentUser) return;
+
+        try {
+          const res = await fetch(`/api/user/report?username=${encodeURIComponent(currentUser)}`);
+          const json = await res.json();
+          if (!json.success || !json.data) {
+            container.innerHTML = '<div style="color:var(--text-muted); font-size:12px; padding:12px 0;">No completed shows recorded.</div>';
+            return;
+          }
+
+          const records = json.data;
+          if (countBadge) countBadge.textContent = `${records.length} Show${records.length === 1 ? '' : 's'}`;
+
+          if (records.length === 0) {
+            container.innerHTML = '<div style="color:var(--text-muted); font-size:12px; text-align:center; padding:20px;">No shows worked on yet.</div>';
+            return;
+          }
+
+          container.innerHTML = records.map(r => {
+            const isCxl = (r.mode || '').toUpperCase().startsWith('CXL');
+            const modeClass = isCxl ? 'history-mode cxl' : 'history-mode std';
+            return `
+              <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-bottom:1px solid var(--border); background:var(--bg-panel); border-radius:8px; margin-bottom:6px; transition:background 0.15s;">
+                <div style="display:flex; flex-direction:column; gap:3px; max-width:65%;">
+                  <div style="font-weight:600; font-size:13px; color:var(--text-main); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escHtml(r.filename)}">
+                    ${escHtml(r.filename)}
+                  </div>
+                  <div style="font-size:11px; color:var(--text-muted); display:flex; align-items:center; gap:10px;">
+                    <span style="font-family:'JetBrains Mono';">📅 ${r.date} ${r.time ? '(' + r.time + ')' : ''}</span>
+                    ${r.note ? `<span style="color:var(--warning);">📝 ${escHtml(r.note)}</span>` : ''}
+                  </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:14px;">
+                  <div style="text-align:right; font-family:'JetBrains Mono'; font-size:12px;">
+                    <span style="color:var(--success); font-weight:700;" title="Net Shown">${r.shown}</span> / <span style="color:var(--text-muted);" title="Total Gross">${r.total}</span>
+                  </div>
+                  <span class="${modeClass}">${escHtml(r.mode || 'DONE')}</span>
+                </div>
+              </div>
+            `;
+          }).join('');
+        } catch (e) {
+          console.error('Failed to render briefing history:', e);
+        }
       }
 
       function copySmartName() {

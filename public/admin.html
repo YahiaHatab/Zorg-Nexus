@@ -694,15 +694,194 @@
       font-weight: 600;
     }
 
-    /* ── 5b. INITIAL HIGHLIGHT (New Shows Only) ── */
-    /* Only standard shows use this highlight (X Shows remain default) */
+    /* ── 5b. SHOW TYPE HIGHLIGHTS & ACCENTS ── */
     tr.new-show-row {
-      border-left: 4px solid #8b5cf6; /* Purple */
+      border-left: 4px solid #8b5cf6; /* Purple for New Shows */
       background: linear-gradient(90deg, rgba(139, 92, 246, 0.08) 0%, transparent 100%);
     }
 
+    tr.x-show-row {
+      border-left: 4px solid #06b6d4; /* Cyan for X-Shows */
+      background: linear-gradient(90deg, rgba(6, 182, 212, 0.08) 0%, transparent 100%);
+    }
+
+    /* ── SHOW TYPE BADGES ── */
+    .show-type-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-right: 6px;
+      flex-shrink: 0;
+      line-height: 1.2;
+    }
+
+    .badge-new-show {
+      background: rgba(139, 92, 246, 0.15);
+      color: #a78bfa;
+      border: 1px solid rgba(139, 92, 246, 0.35);
+    }
+
+    .badge-x-show,
+    .badge-xz-show {
+      background: rgba(6, 182, 212, 0.15);
+      color: #22d3ee;
+      border: 1px solid rgba(6, 182, 212, 0.35);
+    }
+
+    /* ── HOPPER VIBRANT STATUS BADGES ── */
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      transition: all 0.2s ease;
+      line-height: 1.2;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .status-pill-pending {
+      background: rgba(59, 130, 246, 0.15) !important;
+      color: #60a5fa !important;
+      border: 1px solid rgba(59, 130, 246, 0.4) !important;
+    }
+
+    .status-pill-in-progress {
+      background: rgba(139, 92, 246, 0.18) !important;
+      color: #c084fc !important;
+      border: 1px solid rgba(139, 92, 246, 0.45) !important;
+      box-shadow: 0 0 10px rgba(139, 92, 246, 0.2) !important;
+    }
+
+    .status-pill-hold {
+      background: rgba(245, 158, 11, 0.18) !important;
+      color: #fbbf24 !important;
+      border: 1px solid rgba(245, 158, 11, 0.45) !important;
+    }
+
+    .status-pill-done {
+      background: rgba(16, 185, 129, 0.18) !important;
+      color: #34d399 !important;
+      border: 1px solid rgba(16, 185, 129, 0.45) !important;
+    }
+
+    .status-pill-cxl {
+      background: rgba(239, 68, 68, 0.18) !important;
+      color: #f87171 !important;
+      border: 1px solid rgba(239, 68, 68, 0.45) !important;
+    }
+
+    select.status-pill option {
+      background-color: var(--bg-panel);
+      color: var(--text-main);
+      font-weight: 500;
+    }
+
+    /* ── HOPPER STAT BAR ── */
+    .hopper-stat-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+      scrollbar-width: none;
+      flex-shrink: 0;
+    }
+    .hopper-stat-bar::-webkit-scrollbar { display: none; }
+
+    .hopper-stat-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: var(--bg-base);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .hopper-stat-chip span.label {
+      color: var(--text-muted);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .hopper-stat-chip span.val {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+    }
+
+    /* ── TYPE FILTER PILLS ── */
+    .type-filter-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--bg-base);
+      padding: 3px;
+      border-radius: 7px;
+      border: 1px solid var(--border);
+    }
+    .type-filter-btn {
+      background: transparent;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: 'Inter', sans-serif;
+    }
+    .type-filter-btn:hover {
+      color: var(--text-main);
+    }
+    .type-filter-btn.active {
+      background: var(--accent-blue);
+      color: #ffffff;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    }
+
+    /* ── LINK BUTTON PILLS ── */
+    .hopper-link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px;
+      background: rgba(59, 130, 246, 0.08);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 5px;
+      color: var(--accent-blue);
+      font-size: 11px;
+      font-weight: 500;
+      text-decoration: none;
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: all 0.15s ease;
+    }
+    .hopper-link-btn:hover {
+      background: rgba(59, 130, 246, 0.18);
+      border-color: var(--accent-blue);
+      color: #60a5fa;
+    }
+
     /* ── 5c. TERMINAL OVERRIDES (High Priority) ── */
-    /* Terminal statuses always clear the initial highlight */
+    /* Terminal statuses clear initial border highlight */
     tr.status-done,
     tr.status-cxl,
     tr.status-hold {
@@ -2056,10 +2235,52 @@
       <div id="tab-hopper" class="tab-content tab-fill">
         <!-- The Sheet Panel -->
         <div class="panel glass-panel" style="flex:1; display:flex; flex-direction:column; min-width:0; min-height:0;">
+          
+          <!-- Queue Metrics Summary Header Bar -->
+          <div class="hopper-stat-bar" id="hopperStatBar">
+            <div class="hopper-stat-chip">
+              <span class="label">Total Queue:</span>
+              <span class="val" id="hstat-total" style="color:var(--text-main)">0</span>
+            </div>
+            <div class="hopper-stat-chip">
+              <span class="label">New Shows:</span>
+              <span class="val" id="hstat-new" style="color:#a78bfa">0</span>
+            </div>
+            <div class="hopper-stat-chip">
+              <span class="label">X-Shows:</span>
+              <span class="val" id="hstat-x" style="color:#22d3ee">0</span>
+            </div>
+            <div class="hopper-stat-chip" style="margin-left: auto;">
+              <span class="label">Pending:</span>
+              <span class="val" id="hstat-pending" style="color:var(--accent-blue)">0</span>
+            </div>
+            <div class="hopper-stat-chip">
+              <span class="label">In Progress:</span>
+              <span class="val" id="hstat-progress" style="color:var(--warning)">0</span>
+            </div>
+            <div class="hopper-stat-chip">
+              <span class="label">HOLD:</span>
+              <span class="val" id="hstat-hold" style="color:#f59e0b">0</span>
+            </div>
+            <div class="hopper-stat-chip">
+              <span class="label">Done:</span>
+              <span class="val" id="hstat-done" style="color:var(--success)">0</span>
+            </div>
+            <div class="hopper-stat-chip">
+              <span class="label">CXL:</span>
+              <span class="val" id="hstat-cxl" style="color:var(--danger)">0</span>
+            </div>
+          </div>
+
           <div class="panel-header hopper-header">
               <!-- Left: Title & Status -->
               <div style="display:flex; align-items:center; gap:12px;">
                 <span>The Sheet</span>
+                <div class="type-filter-group" id="hopperTypeFilterGroup">
+                  <button class="type-filter-btn active" onclick="setTypeFilter('All', this)">All</button>
+                  <button class="type-filter-btn" onclick="setTypeFilter('New', this)">New</button>
+                  <button class="type-filter-btn" onclick="setTypeFilter('X', this)">X-Shows</button>
+                </div>
                 <span id="disabledDragWarning" style="color:var(--warning); font-size:11px; display:none;">⚠️
                   Drag-and-Drop disabled while filtered</span>
               </div>
@@ -2091,8 +2312,8 @@
                 <thead>
                   <tr>
                     <th class="dispatch-checkbox-head hidden" style="width:40px;">Sel</th>
-                    <th style="min-width: 180px;">Show Name</th>
-                    <th style="min-width: 120px;">Link</th>
+                    <th style="min-width: 220px;">Show Name</th>
+                    <th style="min-width: 140px;">Exhibitor list</th>
                     <th style="min-width: 120px;">
                       Status
                       <select id="hopperStatusFilter" class="hopper-filter" onchange="applyHopperFilters()">
@@ -2104,6 +2325,8 @@
                         <option value="CXL">CXL</option>
                       </select>
                     </th>
+                    <th style="min-width: 120px;">Num of Exhibitor</th>
+                    <th style="min-width: 140px;">Comment</th>
                     <th style="min-width: 160px;">
                       Agent Name
                       <select id="hopperAgentFilter" class="hopper-filter" onchange="applyHopperFilters()">
@@ -2111,15 +2334,11 @@
                         <option value="Unassigned">Unassigned</option>
                       </select>
                     </th>
-                    <th style="min-width: 60px;">L/D</th>
-                    <th style="min-width: 120px;">Name of Lists</th>
-                    <th style="min-width: 140px;">Comment</th>
-                    <th style="min-width: 80px;">Date</th>
                   </tr>
                 </thead>
                 <tbody id="hopperBody">
                   <tr>
-                    <td colspan="9" style="text-align:center;color:var(--text-muted);padding:30px;">Queue is empty. Drop
+                    <td colspan="7" style="text-align:center;color:var(--text-muted);padding:30px;">Queue is empty. Drop
                       an Excel file here or click Upload.</td>
                   </tr>
                 </tbody>
@@ -3320,13 +3539,21 @@
 
     let isHopperFiltered = false;
     let filteredShows = [];
+    let currentTypeFilter = 'All';
+
+    function setTypeFilter(type, btnEl) {
+      currentTypeFilter = type;
+      document.querySelectorAll('#hopperTypeFilterGroup .type-filter-btn').forEach(b => b.classList.remove('active'));
+      if (btnEl) btnEl.classList.add('active');
+      applyHopperFilters();
+    }
 
     function applyHopperFilters() {
       const q = document.getElementById('hopperSearch')?.value.toLowerCase() || '';
       const st = document.getElementById('hopperStatusFilter')?.value || 'All';
       const ag = document.getElementById('hopperAgentFilter')?.value || 'All';
 
-      isHopperFiltered = (q !== '' || st !== 'All' || ag !== 'All');
+      isHopperFiltered = (q !== '' || st !== 'All' || ag !== 'All' || currentTypeFilter !== 'All');
       const warningEl = document.getElementById('disabledDragWarning');
       if (warningEl) warningEl.style.display = isHopperFiltered ? 'inline-block' : 'none';
 
@@ -3334,6 +3561,11 @@
         const name = (s.showName || '').toLowerCase();
         const statusStr = s.status || 'Pending';
         const agent = s.agentName || 'Unassigned';
+
+        // Check Type Filter ('New' vs 'X')
+        const isX = s.showName.includes('XShow') || s.showName.includes('XZShow') || s.showName.includes('X Show') || s.showName.includes('XZ Show');
+        if (currentTypeFilter === 'New' && isX) return false;
+        if (currentTypeFilter === 'X' && !isX) return false;
 
         if (q && !name.includes(q)) return false;
         if (st !== 'All') {
@@ -3347,12 +3579,55 @@
       renderShowsTable();
     }
 
+    function updateHopperMetrics() {
+      let total = showsData.length;
+      let newCount = 0;
+      let xCount = 0;
+      let pendingCount = 0;
+      let progressCount = 0;
+      let holdCount = 0;
+      let doneCount = 0;
+      let cxlCount = 0;
+
+      showsData.forEach(s => {
+        const name = s.showName || '';
+        const st = (s.status || 'Pending').startsWith('CXL') ? 'CXL' : (s.status || 'Pending');
+
+        const isX = name.includes('XShow') || name.includes('XZShow') || name.includes('X Show') || name.includes('XZ Show');
+        if (isX) xCount++;
+        else newCount++;
+
+        if (st === 'Pending') pendingCount++;
+        else if (st === 'In Progress') progressCount++;
+        else if (st === 'HOLD') holdCount++;
+        else if (st === 'Done') doneCount++;
+        else if (st === 'CXL') cxlCount++;
+      });
+
+      const setElText = (id, txt) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = txt;
+      };
+
+      setElText('hstat-total', total);
+      setElText('hstat-new', newCount);
+      setElText('hstat-x', xCount);
+      setElText('hstat-pending', pendingCount);
+      setElText('hstat-progress', progressCount);
+      setElText('hstat-hold', holdCount);
+      setElText('hstat-done', doneCount);
+      setElText('hstat-cxl', cxlCount);
+    }
+
     function renderShowsTable() {
       const tbody = document.getElementById('hopperBody');
       if (!tbody) {
         console.error("Missing hopperBody element!");
         return;
       }
+
+      // Update Top Queue Stat Bar
+      updateHopperMetrics();
 
       // Populate agent filter options dynamically safely
       const agentFilter = document.getElementById('hopperAgentFilter');
@@ -3368,20 +3643,81 @@
       const activeArray = isHopperFiltered ? filteredShows : showsData;
 
       if (!activeArray || !activeArray.length) {
-        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:var(--text-muted);padding:40px;">${isHopperFiltered ? 'No shows match the filters.' : 'Queue is empty. Drop an Excel file here or click Upload.'}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:40px;">${isHopperFiltered ? 'No shows match the filters.' : 'Queue is empty. Drop an Excel file here or click Upload.'}</td></tr>`;
         return;
       }
 
       tbody.innerHTML = activeArray.map(s => {
         const linksArray = Array.isArray(s.link) ? s.link : [s.link].filter(Boolean);
-        const linksHtml = linksArray.map(l => `<a href="${escHtml(l)}" target="_blank" class="hopper-link" title="${escHtml(l)}">${escHtml(l)}</a>`).join('');
+        const linksHtml = linksArray.map((l, idx) => {
+          let label = `Link ${idx + 1}`;
+          try {
+            const urlObj = new URL(l);
+            label = `${urlObj.hostname.replace('www.', '')}`;
+          } catch (e) {}
+          return `<a href="${escHtml(l)}" target="_blank" class="hopper-link-btn" title="${escHtml(l)}">${escHtml(label)}</a>`;
+        }).join('');
 
+        // Dynamic distinct color palette per agent
+        const AGENT_STYLE_MAP = {
+          'Admin': { bg: 'rgba(59, 130, 246, 0.15)', border: 'rgba(59, 130, 246, 0.35)', color: '#60a5fa', avatarBg: '#3b82f6' },
+          'Yahia': { bg: 'rgba(16, 185, 129, 0.15)', border: 'rgba(16, 185, 129, 0.35)', color: '#34d399', avatarBg: '#10b981' },
+          'Ammar': { bg: 'rgba(245, 158, 11, 0.15)', border: 'rgba(245, 158, 11, 0.35)', color: '#fbbf24', avatarBg: '#f59e0b' },
+          'Sarah': { bg: 'rgba(236, 72, 153, 0.15)', border: 'rgba(236, 72, 153, 0.35)', color: '#f472b6', avatarBg: '#ec4899' },
+          'Omar':  { bg: 'rgba(139, 92, 246, 0.15)', border: 'rgba(139, 92, 246, 0.35)', color: '#c084fc', avatarBg: '#8b5cf6' },
+          'Kareem':{ bg: 'rgba(6, 182, 212, 0.15)',  border: 'rgba(6, 182, 212, 0.35)', color: '#22d3ee', avatarBg: '#06b6d4' }
+        };
+
+        function getAgentColorStyle(name) {
+          if (!name || name === 'Unassigned' || name === 'All') {
+            return { bg: 'rgba(255, 255, 255, 0.03)', border: 'var(--border)', color: 'var(--text-muted)', avatarBg: 'transparent' };
+          }
+          if (AGENT_STYLE_MAP[name]) return AGENT_STYLE_MAP[name];
+          let hash = 0;
+          for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+          const hue = Math.abs(hash) % 360;
+          return {
+            bg: `hsla(${hue}, 70%, 55%, 0.15)`,
+            border: `hsla(${hue}, 70%, 55%, 0.35)`,
+            color: `hsl(${hue}, 85%, 72%)`,
+            avatarBg: `hsl(${hue}, 70%, 50%)`
+          };
+        }
+
+        const agentName = s.agentName || '';
         const agentOptions = `<option value="">Unassigned</option>` +
-          usersData.map(u => `<option value="${escHtml(u.username)}" ${s.agentName === u.username ? 'selected' : ''}>${escHtml(u.username)}</option>`).join('');
+          usersData.map(u => `<option value="${escHtml(u.username)}" ${agentName === u.username ? 'selected' : ''}>${escHtml(u.username)}</option>`).join('');
+        const isAssigned = agentName !== '' && agentName !== 'Unassigned' && agentName !== 'All';
+        const agentWrapperClass = isAssigned ? 'assigned' : 'unassigned';
+        const agStyle = getAgentColorStyle(agentName);
+        const avatarStyle = isAssigned ? `background-color: ${agStyle.avatarBg}; opacity: 0.9;` : `border: 1.5px dashed rgba(255, 255, 255, 0.2); background: transparent;`;
 
-        // Safely check for CXL status
+        // Lock the agent dropdown if Viewer
+        const agentDisplay = isAdminRole
+          ? `<div class="agent-wrapper ${agentWrapperClass}" style="background:${agStyle.bg}; border:1px solid ${agStyle.border}; padding:3px 8px; border-radius:6px; width:fit-content;">
+              <div class="agent-avatar" style="${avatarStyle}"></div>
+              <select class="user-input" style="font-size:12px; font-weight:700; color:${agStyle.color} !important; width:110px;" onchange="updateShowAgent('${s.id}', this.value)">${agentOptions}</select>
+             </div>`
+          : `<div class="agent-wrapper ${agentWrapperClass}" style="background:${agStyle.bg}; border:1px solid ${agStyle.border}; padding:3px 8px; border-radius:6px; width:fit-content;">
+              <div class="agent-avatar" style="${avatarStyle}"></div>
+              <div style="padding:2px 4px; font-size:12px; font-weight:700; color:${agStyle.color};">${escHtml(s.agentName || 'Unassigned')}</div>
+             </div>`;
+
+        // Vibrant status display
         const statusStr = (s.status || 'Pending').startsWith('CXL') ? 'CXL' : (s.status || 'Pending');
-        const statusClass = statusStr === 'CXL' ? 'mode-danger' : (statusStr === 'HOLD' ? 'mode-warning' : (statusStr === 'Done' ? 'mode-some' : (statusStr === 'In Progress' ? 'mode-warning' : 'mode-standard')));
+        const statusPillClass = 'status-pill-' + statusStr.toLowerCase().replace(/\s+/g, '-');
+        const extraOptions = (statusStr === 'CXL' || statusStr === 'HOLD')
+          ? `<option value="${statusStr}" selected disabled>${statusStr}</option>`
+          : '';
+
+        const statusDisplay = isAdminRole
+          ? `<select class="user-input status-pill ${statusPillClass}" style="font-size:11px; font-weight:700; width:115px; cursor:pointer;" onchange="updateShowStatus('${s.id}', this.value)">
+              ${extraOptions}
+              <option value="Pending" ${statusStr === 'Pending' ? 'selected' : ''}>Pending</option>
+              <option value="In Progress" ${statusStr === 'In Progress' ? 'selected' : ''}>In Progress</option>
+              <option value="Done" ${statusStr === 'Done' ? 'selected' : ''}>Done</option>
+             </select>`
+          : `<span class="status-pill ${statusPillClass}">${escHtml(statusStr)}</span>`;
 
         const isPending = statusStr === 'Pending';
         const isTerminal = statusStr === 'Done' || statusStr === 'CXL';
@@ -3394,9 +3730,9 @@
           dragAttrs = `draggable="true" ondragstart="hopperDragStart(event)" data-id="${s.id}" data-status="Pending"`;
           trStyle = 'cursor:grab;';
         } else if (!isPending && !isTerminal) {
-          trStyle = 'opacity:0.8;';
+          trStyle = 'opacity:0.85;';
         } else if (isTerminal) {
-          trStyle = 'opacity:0.6;';
+          trStyle = 'opacity:0.65;';
         }
 
         const checkboxHtml = isTerminal ? '<div></div>' : `
@@ -3404,46 +3740,34 @@
             ${selectedShowsForDispatch.includes(s.id) ? 'checked' : ''} 
             onchange="onShowCheck('${s.id}', this.checked)">`;
 
-        // Add CXL/HOLD options dynamically if they are the current status
-        const extraOptions = (statusStr === 'CXL' || statusStr === 'HOLD')
-          ? `<option value="${statusStr}" selected disabled>${statusStr}</option>`
-          : '';
+        // Determine Show Type (XZ-Show, X-Show, or New/Standard Show)
+        const isXZShow = s.showName.includes('XZShow') || s.showName.includes('XZ Show');
+        const isXShow = !isXZShow && (s.showName.includes('XShow') || s.showName.includes('X Show'));
+        const isNewShow = !isXZShow && !isXShow;
 
-        const statusDisplay = isAdminRole
-          ? `<select class="user-input" style="font-size:11px;width:100px;" onchange="updateShowStatus('${s.id}', this.value)">
-              ${extraOptions}
-              <option value="Pending" ${statusStr === 'Pending' ? 'selected' : ''}>Pending</option>
-              <option value="In Progress" ${statusStr === 'In Progress' ? 'selected' : ''}>In Progress</option>
-              <option value="Done" ${statusStr === 'Done' ? 'selected' : ''}>Done</option>
-             </select>`
-          : `<span class="mode-tag ${statusClass}">${escHtml(statusStr)}</span>`;
+        let typeBadgeHtml = '';
+        if (isXZShow) {
+          typeBadgeHtml = `<span class="show-type-badge badge-xz-show">XZ SHOW</span>`;
+        } else if (isXShow) {
+          typeBadgeHtml = `<span class="show-type-badge badge-x-show">X SHOW</span>`;
+        } else {
+          typeBadgeHtml = `<span class="show-type-badge badge-new-show">NEW</span>`;
+        }
 
-        const agentName = s.agentName || '';
-        const isAssigned = agentName !== '' && agentName !== 'Unassigned' && agentName !== 'All';
-        const agentWrapperClass = isAssigned ? 'assigned' : 'unassigned';
-
-        // Lock the agent dropdown if Viewer
-        const agentDisplay = isAdminRole
-          ? `<div class="agent-wrapper ${agentWrapperClass}">
-              <div class="agent-avatar"></div>
-              <select class="user-input" style="font-size:12px;width:140px;" onchange="updateShowAgent('${s.id}', this.value)">${agentOptions}</select>
-             </div>`
-          : `<div class="agent-wrapper ${agentWrapperClass}">
-              <div class="agent-avatar"></div>
-              <div style="padding:5px;font-size:12px;font-weight:600;color:var(--text-main);">${escHtml(s.agentName || 'Unassigned')}</div>
-             </div>`;
-
-        const isXShow = s.showName.includes('X Show') || s.showName.includes('XZ Show');
-        const initialClass = isXShow ? '' : 'new-show-row';
-        const trStatusClass = 'status-' + statusStr.toLowerCase().replace(' ', '-');
+        const initialClass = isNewShow ? 'new-show-row' : 'x-show-row';
+        const trStatusClass = 'status-' + statusStr.toLowerCase().replace(/\s+/g, '-');
 
         return `<tr ${dragAttrs} class="${initialClass} ${trStatusClass}" data-status="${statusStr}" style="${trStyle}">
               <td style="text-align:center; vertical-align:middle;">${checkboxHtml}</td>
-              <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escHtml(s.showName)}">
-                  ${(isPending && isAdminRole) ? '<span class="drag-handle">↕️</span>' : ''}${escHtml(s.showName)}
+              <td style="max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escHtml(s.showName)}">
+                  <div style="display:flex; align-items:center;">
+                    ${(isPending && isAdminRole) ? '<span class="drag-handle">↕</span>' : ''}
+                    ${typeBadgeHtml}
+                    <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escHtml(s.showName)}</span>
+                  </div>
               </td>
               <td class="hopper-link-cell">
-                <div>${linksHtml || '—'}</div>
+                <div style="display:flex; flex-wrap:wrap; gap:4px;">${linksHtml || '—'}</div>
               </td>
               <td style="vertical-align:middle;">
                 <div style="display:flex; align-items:center;">
@@ -3455,11 +3779,9 @@
                   </div>
                 </div>
               </td>
-              <td style="min-width:140px; vertical-align:middle;">${agentDisplay}</td>
               <td style="white-space:pre-wrap; vertical-align:middle;">${escHtml(s.ld || '—')}</td>
-              <td style="white-space:pre-wrap; vertical-align:middle;">${escHtml(s.lists || '—')}</td>
               <td style="color:var(--warning);white-space:pre-wrap; vertical-align:middle;">${escHtml(s.comment || '—')}</td>
-              <td style="color:var(--text-muted); vertical-align:middle;">${escHtml(s.date || '—')}</td>
+              <td style="min-width:140px; vertical-align:middle;">${agentDisplay}</td>
           </tr>`;
       }).join('');
       initColumnResizers();
@@ -3954,19 +4276,29 @@
 
     // ── POWER-USER ERGONOMICS (GLOBAL SHORTCUTS) ──
     document.addEventListener('keydown', (e) => {
-      // 1. Ctrl + F (Search Focus - Auto-switches to The Sheet)
-      if (e.ctrlKey && (e.key === 'f' || e.key === 'F')) {
-        const searchInput = document.getElementById('hopperSearch');
-        if (searchInput) {
-          e.preventDefault();
-          const hopperTab = document.querySelector('.tab[onclick*="hopper"]');
-          if (hopperTab && !hopperTab.classList.contains('active')) {
-            switchTab('hopper', hopperTab);
+      // 1. Ctrl + F (Search Focus inside CURRENT active tab)
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'f' || e.key === 'F')) {
+        e.preventDefault();
+
+        const tabSearchMap = {
+          'hopper': 'hopperSearch',
+          'leaderboard': 'logSearch',
+          'ledger': 'ledgerSearch'
+        };
+
+        const targetInputId = tabSearchMap[currentTab];
+        let searchInput = targetInputId ? document.getElementById(targetInputId) : null;
+
+        if (!searchInput) {
+          const activeTabContent = document.getElementById(`tab-${currentTab}`) || document.querySelector('.tab-content.active');
+          if (activeTabContent) {
+            searchInput = activeTabContent.querySelector('input[type="text"], input[type="search"], input:not([type="hidden"]):not([type="checkbox"]):not([type="date"])');
           }
-          setTimeout(() => {
-            searchInput.focus();
-            searchInput.select();
-          }, 50);
+        }
+
+        if (searchInput) {
+          searchInput.focus();
+          if (typeof searchInput.select === 'function') searchInput.select();
         }
       }
 

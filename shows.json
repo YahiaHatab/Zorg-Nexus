@@ -1,1 +1,408 @@
-[]
+[
+  {
+    "id": "mrw99esbkc7wyceul",
+    "showName": "ZShow - Infosec World Conference & Expo 2026 - October 12-14, 2026 - Gaylord Palms Resort & Convention Center - Orlando, Fl, USA",
+    "link": [
+      "https://www.infosecworldusa.com/isw26/attending-companies/"
+    ],
+    "agentName": "Admin",
+    "ld": "",
+    "lists": "",
+    "comment": "",
+    "date": "",
+    "status": "Done",
+    "pinnedTo": null
+  },
+  {
+    "id": "mrw99esb4ly04jffi",
+    "showName": "ZShow - ASHT 2026 - American Society of Hand Therapists - OCTOBER 8-10, 2026 - Baird Center - Milwaukee, WI, USA",
+    "link": [
+      "https://meetings.asht.org/2026-exhibitors-sponsors"
+    ],
+    "agentName": "Admin",
+    "ld": "",
+    "lists": "",
+    "comment": "",
+    "date": "",
+    "status": "Done",
+    "pinnedTo": null
+  },
+  {
+    "id": "mrw99esbilig33pxi",
+    "showName": "ZShow - AUSA 2026 - Association of the US Army Annual Meeting - October 12 - 14, 2026 - Walter E. Washington Convention Center - Washington, DC, USA",
+    "link": [
+      "https://meetings.ausa.org/annual/2026/exhibitor_exhibitor_list.cfm"
+    ],
+    "agentName": "Ammar",
+    "ld": "List : 706",
+    "lists": "",
+    "comment": "",
+    "date": "",
+    "status": "Done",
+    "pinnedTo": null
+  },
+  {
+    "id": "mrw99esb4lop3abn2",
+    "showName": "IMEX America 2026 - October 13-15, 2026 - Mandalay Bay - Las Vegas, Nv, USA",
+    "link": [
+      "https://america.imexevents.com/marketplace/exhibitors?pageNumber=1&limit=60"
+    ],
+    "agentName": "Ammar",
+    "ld": "List : 540",
+    "lists": "",
+    "comment": "",
+    "date": "",
+    "status": "Done",
+    "pinnedTo": null
+  },
+  {
+    "id": "mrw99esbptxh4benh",
+    "showName": "XShow - Las Vegas Souvenir & Resort Gift Show 2026 -  October 6-9, 2026 - Las Vegas Convention Center, South Hall - Las Vegas, NV, USA",
+    "link": [
+      "https://lv1026.mapyourshow.com/8_0/explore/exhibitor-gallery.cfm?featured=false"
+    ],
+    "agentName": "Admin",
+    "ld": "List : 483 - 490 ",
+    "lists": "",
+    "comment": "",
+    "date": "",
+    "status": "Done",
+    "pinnedTo": null
+  },
+  {
+    "id": "mrw99esbep80dnfru",
+    "showName": "XShow - NBAA 2026 - Business Aviation Convention & Exhibition - October 20 - 22, 2026 - Las Vegas Convention Center - Las Vegas, NV, USA",
+    "link": [
+      "https://nbaa26.mapyourshow.com/8_0/explore/exhibitor-gallery.cfm?featured=false"
+    ],
+    "agentName": "Admin",
+    "ld": "List :  488 - 502",
+    "lists": "",
+    "comment": "",
+    "date": "",
+    "status": "Done",
+    "pinnedTo": null
+  },
+  {
+    "id": "mrw99esbje3iwb191",
+    "showName": "XZShow - SAWC Fall 2026 - Symposium on Advanced Wound Care - October 15–18, 2026 - Caesars Palace - Las Vegas, NV,  USA",
+    "link": [
+      "https://sawcfall2026.mapyourshow.com/8_0/exhview/index.cfm"
+    ],
+    "agentName": "Admin",
+    "ld": "List : 120 - 126",
+    "lists": "",
+    "comment": "",
+    "date": "",
+    "status": "Done",
+    "pinnedTo": null
+  },
+  {
+    "id": "mrw99esbm64hxtgps",
+    "showName": "XShow - HR Tech 2026 - October 20-22, 2026 - Mandalay Bay - Las Vegas, Nv,  USA",
+    "link": [
+      "https://events.hrtechnologyconference.com/hrtech2026/Public/eventmap.aspx"
+    ],
+    "agentName": "Admin",
+    "ld": "List : 284 - 295",
+    "lists": "",
+    "comment": "",
+    "date": "",
+    "status": "Done",
+    "pinnedTo": null
+  },
+  {
+    "id": "mrw99esbkhjosq3cp",
+    "showName": "XShow - SupplySide Global 2026 - October 28- 30, 2026 - Mandalay Bay - Las Vegas, Nv, USA",
+    "link": [
+      "https://exhibitor.supplysideglobal.com/supplysideglobal26/Public/eventmap.aspx?shMode=E"
+    ],
+    "agentName": "Admin",
+    "ld": "List : 1373  - 1381 ",
+    "lists": "",
+    "comment": "",
+    "date": "",
+    "status": "Done",
+    "pinnedTo": null
+  },
+  {
+    "id": "mrw99esbcl531b05o",
+    "showName": "XShow - FABTECH 2026 - October 21 - 23, 2026 - Las Vegas Convention Center - Las Vegas, NV, USA",
+    "link": [
+      "https://s36.a2zinc.net/clients/SME/FABTECH2026/Public/Eventmap.aspx?shmode=E&ID=7063&thumbnail=1"
+    ],
+    "agentName": "Admin",
+    "ld": "List : 1332 - 1349 ",
+    "lists": "",
+    "comment": "",
+    "date": "",
+    "status": "Done",
+    "pinnedTo": null
+  },
+  {
+    "id": "mrw99esbkthn814af",
+    "showName": "XShow - NACAC 2026  - National Association for College Admission Counseling - OCTOBER 8-10, 2026 - MINNEAPOLIS CONVENTION CENTER - MINNEAPOLIS, MN, USA",
+    "link": [
+      "https://fp37.a2zinc.net/clients/NACAC/nc26/Public/EventMap.aspx?ID=492&sortMenu=104000"
+    ],
+    "agentName": "Admin",
+    "ld": "List : 172 - 179",
+    "lists": "",
+    "comment": "",
+    "date": "",
+    "status": "Done",
+    "pinnedTo": null
+  },
+  {
+    "id": "mrw99esbwgy7bkm1i",
+    "showName": "XShow - MD&M Midwest 2026 - OCTOBER 28-29, 2026 - Minneapolis Convention Center - Minneapolis, MN, USA",
+    "link": [
+      "https://admmn26.mapyourshow.com/8_0/explore/exhibitor-gallery.cfm?featured=false"
+    ],
+    "agentName": "Admin",
+    "ld": "List :  517 - 525",
+    "lists": "",
+    "comment": "",
+    "date": "",
+    "status": "Done",
+    "pinnedTo": null
+  },
+  {
+    "id": "mrw99esbj6kvu3tka",
+    "showName": "XShow - Periop Leader Week 2026 - October 4-7, 2026 - Savannah Convention Center - Savannah, GA, USA",
+    "link": [
+      "https://ormc26.mapyourshow.com/8_0/explore/exhibitor-gallery.cfm?featured=false"
+    ],
+    "agentName": "Admin",
+    "ld": "List : 80 - 87",
+    "lists": "",
+    "comment": "",
+    "date": "",
+    "status": "Done",
+    "pinnedTo": null
+  },
+  {
+    "id": "mrw99esbc8y9e9zmn",
+    "showName": "XShow - International Fastener Expo 2026 - October 8-9, 2026 - Phoenix Convention Center - Phoenix, AZ, USA",
+    "link": [
+      "https://fastener.a2zinc.net/IFE2026/Public/eventmap.aspx?&shavailable=1"
+    ],
+    "agentName": "Admin",
+    "ld": "List :   394 - 399",
+    "lists": "",
+    "comment": "",
+    "date": "",
+    "status": "Done",
+    "pinnedTo": null
+  },
+  {
+    "id": "mrw99esbygfsf1261",
+    "showName": "XZShow - SEMICON West 2026 - October 13–15, 2026 - Moscone Center - San Francisco, CA, USA",
+    "link": [
+      "https://expo.semi.org/west2026//Public/EventMap.aspx?shMode=E&ID=32435&thumbnail=1"
+    ],
+    "agentName": "Ammar",
+    "ld": "List : 695 - 701",
+    "lists": "Do Some",
+    "comment": "",
+    "date": "",
+    "status": "Done",
+    "pinnedTo": null
+  },
+  {
+    "id": "mrw99esbuwxvwvapo",
+    "showName": "XZShow - ASBO 2026 - Association of School Business Officials International -  October 14–16, 2026 - David L. Lawrence Convention Center - Pittsburgh, PA, USA",
+    "link": [
+      "https://s6.goeshow.com/asbo/annual/2026/exhibitor_hall_map.cfm"
+    ],
+    "agentName": "Admin",
+    "ld": "List : 108 - 114",
+    "lists": "",
+    "comment": "",
+    "date": "",
+    "status": "Done",
+    "pinnedTo": null
+  },
+  {
+    "id": "mrw99esbl4qfj467k",
+    "showName": "XZShow - APTA 2026 - American Public Transportation Association - October 5- 7, 2026 - McCormick Place Convention Center - Chicago, IL, USA",
+    "link": [
+      "https://www.aptaexpo.com//exhibitor_exhibitor_list.cfm"
+    ],
+    "agentName": "Admin",
+    "ld": "List : 651 - 663",
+    "lists": "",
+    "comment": "",
+    "date": "",
+    "status": "Done",
+    "pinnedTo": null
+  },
+  {
+    "id": "mrw99esb5kev8cwup",
+    "showName": "XZShow - NASS 2026 - North American Spine Society - October 14-17, 2026 - Henry B. Gonzalez Convention Center - San Antonio, TX, USA",
+    "link": [
+      "https://nass2026.smallworldlabs.com/exhibitors"
+    ],
+    "agentName": "Admin",
+    "ld": "List : 198 - 209",
+    "lists": "",
+    "comment": "",
+    "date": "",
+    "status": "Done",
+    "pinnedTo": null
+  },
+  {
+    "id": "mrw99esbc78t1brzi",
+    "showName": "XZShow - ASPS Plastic Surgery 2026 - American Society of Plastic Surgeons -  October 16- 18, 2026 - George R. Brown Convention Center - HOUSTON-TX, USA",
+    "link": [
+      "https://exhibits.plasticsurgerythemeeting.com/pstm26/public/EventMap.aspx?ID=2869&shMode=E&sortMenu=103003"
+    ],
+    "agentName": "Admin",
+    "ld": "List : 135 - 142",
+    "lists": "",
+    "comment": "",
+    "date": "",
+    "status": "Done",
+    "pinnedTo": null
+  },
+  {
+    "id": "mrw99esbai5dec5el",
+    "showName": "XZShow - ASA 2026  - American Society of Anesthesiologists - October 17 - 19, 2026 - San Diego Convention Center - San Diego, CA, USA",
+    "link": [
+      "https://asaanes2026.mapyourshow.com/8_0/explore/exhibitor-gallery.cfm?featured=false"
+    ],
+    "agentName": "Admin",
+    "ld": "List :  249 - 253",
+    "lists": "",
+    "comment": "",
+    "date": "",
+    "status": "Done",
+    "pinnedTo": null
+  },
+  {
+    "id": "mrw99esbfn653bxhs",
+    "showName": "XShow - IACP 2026 - International Association of Chiefs of Police - October 24 - 27, 2026 - Orange County Convention Center - Orlando, FL, USA",
+    "link": [
+      "https://iacp2026.mapyourshow.com/8_0/explore/exhibitor-gallery.cfm?featured=false"
+    ],
+    "agentName": "Admin",
+    "ld": "List : 632 - 639",
+    "lists": "",
+    "comment": "",
+    "date": "",
+    "status": "Done",
+    "pinnedTo": null
+  },
+  {
+    "id": "mrw99esbez3h9wuv1",
+    "showName": "XZShow - Greenbuild International Conference and Expo 2026 - October 20 - 23, 2026 - Javits Center - New York, NY, USA",
+    "link": [
+      "https://s23.a2zinc.net/clients/informaconnect/gice2026/Public/EventMap.aspx?shMode=E&ID=3956"
+    ],
+    "agentName": "Admin",
+    "ld": "List : 162 - 166",
+    "lists": "",
+    "comment": "",
+    "date": "",
+    "status": "Done",
+    "pinnedTo": null
+  },
+  {
+    "id": "mrw99esb5q4aq5i2o",
+    "showName": "XShow - FNCE 2026 - Food & Nutrition Conference & Expo - October 24-27, 2026 - Henry B. González Convention Center - San Antonio, Tx, USA",
+    "link": [
+      "https://s23.a2zinc.net/clients/CorcExpo/fnce2026/Public/EventMap.aspx?shMode=E&ID=15823"
+    ],
+    "agentName": "Admin",
+    "ld": "List : 242 - 250",
+    "lists": "",
+    "comment": "",
+    "date": "",
+    "status": "Done",
+    "pinnedTo": null
+  },
+  {
+    "id": "mrw99esbol45zeavj",
+    "showName": "XShow - HCD 2026 - Healthcare Design Industry Show - October 17-20, 2026 - Ernest N. Morial Convention Center - New Orleans LA, USA",
+    "link": [
+      "https://health.a2zinc.net/HCD2026/Public/eventmap.aspx?&shavailable=1"
+    ],
+    "agentName": "Admin",
+    "ld": "List : 255 - 262 ",
+    "lists": "",
+    "comment": "",
+    "date": "",
+    "status": "Done",
+    "pinnedTo": null
+  },
+  {
+    "id": "mrw99esbqlsjogn7j",
+    "showName": "XShow - IFPA 2026 - The Global Produce & Floral Show - OCTOBER 14 - 16, 2026 - Orange County Convention Center - Orlando-Fl, USA",
+    "link": [
+      "https://26conv.mapyourshow.com/8_0/explore/exhibitor-gallery.cfm?featured=false"
+    ],
+    "agentName": "Admin",
+    "ld": "List : 775 - 790",
+    "lists": "",
+    "comment": "",
+    "date": "",
+    "status": "Done",
+    "pinnedTo": null
+  },
+  {
+    "id": "mrw99esbeirh11e69",
+    "showName": "XZShow - Ncchc 2026 - NATIONAL CONFERENCE ON CORRECTIONAL HEALTH CARE - October 24-28, 2026 - Paris Las Vegas - Las Vegas, NV, USA",
+    "link": [
+      "https://ncchc.expo-genie.com/ncchc26/floor-plan-viewer/"
+    ],
+    "agentName": "Admin",
+    "ld": "List : 71 - 74",
+    "lists": "",
+    "comment": "",
+    "date": "",
+    "status": "Done",
+    "pinnedTo": null
+  },
+  {
+    "id": "mrw99esbcmns3crhy",
+    "showName": "XZShow - ASPE 2026 - American Society of Plumbing Engineers Convention and Exposition - October 12- 13, 2026 - Oklahoma City Convention Center - Oklahoma City, OK, USA",
+    "link": [
+      "https://aspe2026.smallworldlabs.com/exhibitors"
+    ],
+    "agentName": "Admin",
+    "ld": "List : 260 - 264",
+    "lists": "",
+    "comment": "",
+    "date": "",
+    "status": "Done",
+    "pinnedTo": null
+  },
+  {
+    "id": "mrw99esb1h60ctr5e",
+    "showName": "XZShow - The Battery Show North America 2026 - Co Located With - Electric & Hybrid Vehicle - October 13-15 - Huntington Place - Detroit, MI, USA",
+    "link": [
+      "https://tbsm26.mapyourshow.com/8_0/explore/exhibitor-gallery.cfm?featured=false"
+    ],
+    "agentName": "Ammar",
+    "ld": "List : 892 - 935",
+    "lists": "Do Some",
+    "comment": "",
+    "date": "",
+    "status": "Done",
+    "pinnedTo": null
+  },
+  {
+    "id": "mrw99esbwd0ivk3hz",
+    "showName": "XShow - ASRM 2026 - American Society for Reproductive Medicine - October 24-28, 2026 - Baltimore Convention Center - Baltimore-Md, USA",
+    "link": [
+      "https://www.expocad.com/host/fx/eventpower/26asrm/exfx.html"
+    ],
+    "agentName": "Admin",
+    "ld": "List : 223 - 231",
+    "lists": "",
+    "comment": "",
+    "date": "",
+    "status": "Done",
+    "pinnedTo": null
+  }
+]

@@ -56,6 +56,12 @@ if (!fs.existsSync(showsPath)) {
     console.log('> Created default shows.json');
 }
 
+const agentShowsHistoryPath = path.join(__dirname, 'agent_shows_history.json');
+if (!fs.existsSync(agentShowsHistoryPath)) {
+    fs.writeFileSync(agentShowsHistoryPath, JSON.stringify([], null, 2));
+    console.log('> Created default agent_shows_history.json');
+}
+
 // Load config AFTER ensuring it exists
 let config = { ...DEFAULT_CONFIG, ...JSON.parse(fs.readFileSync(configPath)) };
 
@@ -159,6 +165,55 @@ function analyticsAddRecord(dateKey, username, record) {
     day.records.push(record);
 
     saveAnalytics(data);
+
+    // Save to permanent agent_shows_history.json
+    saveAgentShowHistory(record);
+}
+
+function loadAgentShowHistory() {
+    try {
+        if (!fs.existsSync(agentShowsHistoryPath)) return [];
+        return JSON.parse(fs.readFileSync(agentShowsHistoryPath));
+    } catch (e) {
+        console.error('Error loading agent_shows_history.json:', e);
+        return [];
+    }
+}
+
+function saveAgentShowHistory(record) {
+    try {
+        const history = loadAgentShowHistory();
+        const entry = {
+            id: record.id || record.transactionId || Date.now().toString(36),
+            transactionId: record.transactionId || record.id || '',
+            showName: record.showName || record.filename || 'Unnamed Show',
+            agentName: record.agentName || record.agent || 'Unassigned',
+            completedAt: record.completedAt || new Date().toISOString(),
+            date: record.date || new Date().toISOString().split('T')[0],
+            time: record.time || new Date().toLocaleTimeString('en-US'),
+            status: record.status || record.mode || 'Done',
+            link: record.link || [],
+            ld: record.ld || '',
+            lists: record.lists || '',
+            comment: record.comment || '',
+            shown: record.shown || 0,
+            hidden: record.hidden || 0,
+            total: record.total || ((record.shown || 0) + (record.hidden || 0)),
+            filename: record.filename || record.showName || '',
+            note: record.note || ''
+        };
+
+        const existingIdx = history.findIndex(h => (h.id && h.id === entry.id) || (h.transactionId && entry.transactionId && h.transactionId === entry.transactionId));
+        if (existingIdx > -1) {
+            history[existingIdx] = { ...history[existingIdx], ...entry };
+        } else {
+            history.unshift(entry);
+        }
+
+        fs.writeFileSync(agentShowsHistoryPath, JSON.stringify(history, null, 2));
+    } catch (err) {
+        console.error('Error saving agent_shows_history:', err);
+    }
 }
 
 /**
@@ -535,32 +590,59 @@ app.get('/api/user/data', (req, res) => {
 });
 
 // ─────────────────────────────────────────────
-//  USER REPORT  (all-time from analytics.json)
+//  USER REPORT  (all-time from agent_shows_history.json & analytics.json)
 // ─────────────────────────────────────────────
 app.get('/api/user/report', (req, res) => {
     try {
         const username = req.query.username;
+        const permanentHistory = loadAgentShowHistory();
         const data = loadAnalytics();
-        const result = [];
+        const resultMap = new Map();
 
-        // Newest date first
+        // 1. Load permanent history records first
+        permanentHistory.forEach(rec => {
+            if (rec.agentName === username || rec.agent === username) {
+                const key = rec.transactionId || rec.id || (rec.showName + '_' + rec.date);
+                resultMap.set(key, {
+                    id: rec.id || rec.transactionId,
+                    date: rec.date || (rec.completedAt ? rec.completedAt.split('T')[0] : ''),
+                    time: rec.time || '',
+                    mode: rec.status || rec.mode || 'DONE',
+                    filename: rec.filename || rec.showName || 'Unnamed Show',
+                    shown: rec.shown || 0,
+                    total: rec.total || 0,
+                    transactionId: rec.transactionId || rec.id || '',
+                    note: rec.note || ''
+                });
+            }
+        });
+
+        // 2. Merge analytics records
         for (const dateKey of Object.keys(data).sort((a, b) => b.localeCompare(a))) {
             const day = data[dateKey];
-            // Newest record within the day first
             for (const rec of [...day.records].reverse()) {
                 if (rec.agent === username) {
-                    result.push({
-                        date: dateKey,
-                        mode: rec.mode,
-                        filename: rec.filename,
-                        shown: rec.shown,
-                        total: rec.total,
-                        transactionId: rec.transactionId,
-                        note: rec.note || ''
-                    });
+                    const key = rec.transactionId || (rec.filename + '_' + dateKey);
+                    if (!resultMap.has(key)) {
+                        resultMap.set(key, {
+                            id: rec.transactionId,
+                            date: dateKey,
+                            time: rec.time || '',
+                            mode: rec.mode || 'DONE',
+                            filename: rec.filename,
+                            shown: rec.shown || 0,
+                            total: rec.total || 0,
+                            transactionId: rec.transactionId,
+                            note: rec.note || ''
+                        });
+                    }
                 }
             }
         }
+
+        const result = Array.from(resultMap.values()).sort((a, b) => {
+            return (b.date + ' ' + b.time).localeCompare(a.date + ' ' + a.time);
+        });
 
         res.json({ success: true, data: result });
     } catch (e) {
@@ -721,6 +803,10 @@ app.get('/api/shows/next', (req, res) => {
     // 1. Check if the agent ALREADY has an "In Progress" show
     const existingInProgressShow = currentShows.find(s => s.agentName === username && s.status === 'In Progress');
     if (existingInProgressShow) {
+        if (!existingInProgressShow.startTime) {
+            existingInProgressShow.startTime = Date.now();
+            fs.writeFileSync(showsPath, JSON.stringify(currentShows, null, 2));
+        }
         return res.json({ success: true, show: existingInProgressShow });
     }
 
@@ -730,6 +816,7 @@ app.get('/api/shows/next', (req, res) => {
 
     if (pinnedShow) {
         pinnedShow.status = 'In Progress';
+        pinnedShow.startTime = Date.now();
         fs.writeFileSync(showsPath, JSON.stringify(currentShows, null, 2));
         io.emit('hopper_updated');
         return res.json({ success: true, show: pinnedShow });
@@ -746,6 +833,7 @@ app.get('/api/shows/next', (req, res) => {
     if (unassignedShow) {
         unassignedShow.status = 'In Progress';
         unassignedShow.agentName = username;
+        unassignedShow.startTime = Date.now();
         fs.writeFileSync(showsPath, JSON.stringify(currentShows, null, 2));
         io.emit('hopper_updated');
         return res.json({ success: true, show: unassignedShow });
@@ -761,6 +849,10 @@ app.get('/api/shows/active', (req, res) => {
     const activeShow = currentShows.find(s => s.agentName === username && s.status === 'In Progress');
 
     if (activeShow) {
+        if (!activeShow.startTime) {
+            activeShow.startTime = Date.now();
+            fs.writeFileSync(showsPath, JSON.stringify(currentShows, null, 2));
+        }
         res.json({ success: true, show: activeShow });
     } else {
         res.json({ success: false });
@@ -773,6 +865,19 @@ app.post('/api/shows/complete', (req, res) => {
     const show = currentShows.find(s => s.id === id);
     if (show) {
         show.status = 'Done';
+        show.completedAt = new Date().toISOString();
+        saveAgentShowHistory({
+            id: show.id,
+            showName: show.showName,
+            agentName: show.agentName,
+            status: 'Done',
+            link: show.link,
+            ld: show.ld,
+            lists: show.lists,
+            comment: show.comment,
+            date: new Date().toISOString().split('T')[0],
+            time: new Date().toLocaleTimeString('en-US')
+        });
         fs.writeFileSync(showsPath, JSON.stringify(currentShows, null, 2));
         io.emit('hopper_updated');
         res.json({ success: true });
@@ -877,6 +982,16 @@ app.post('/api/shows/cancel', (req, res) => {
             if (!analytics[dateKey]) {
                 analytics[dateKey] = { summary: { totalFiles: 0, totalLeads: 0, totalShown: 0, byAgent: {} }, records: [] };
             }
+
+            saveAgentShowHistory({
+                id: show.id,
+                showName: show.showName,
+                agentName: show.agentName || 'Unassigned',
+                status: `CXL`,
+                reason: reason,
+                date: dateKey,
+                time: timeStr
+            });
 
             analytics[dateKey].records.push({
                 transactionId: Date.now().toString(36),
