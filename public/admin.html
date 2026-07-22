@@ -1840,7 +1840,7 @@
   <!-- CONFIRM RESET MODAL -->
   <div id="confirmModal">
     <div class="confirm-box">
-      <h3>⚠ Confirm System Reset</h3>
+      <h3 style="font-size:16px; font-weight:700; color:var(--text-main); margin-bottom:10px;">Confirm System Reset</h3>
       <p>This will wipe <b>history.json</b> and broadcast a reset event to all connected sessions.<br><br>The
         <b>analytics.json</b> ledger is permanent and will <b>not</b> be affected. This clears today's live activity
         only.
@@ -1856,7 +1856,7 @@
   <div id="deleteRecordModal"
     style="display:none; position:fixed; inset:0; background:rgba(11,15,25,0.85); backdrop-filter:blur(4px); z-index:9998; align-items:center; justify-content:center;">
     <div class="confirm-box" style="max-width:480px;">
-      <h3 style="color:var(--danger);">🗑 Delete Show Record</h3>
+      <h3 style="color:var(--danger); font-size:16px; font-weight:700;">Delete Show Record</h3>
       <p id="deleteRecordDetails" style="margin-bottom:20px;">Loading...</p>
       <div
         style="background:rgba(239,68,68,0.06); border:1px solid rgba(239,68,68,0.2); border-radius:8px; padding:12px 16px; margin-bottom:20px; font-size:12px; color:var(--text-muted);">
@@ -1874,7 +1874,7 @@
   <div id="editRecordModal"
     style="display:none; position:fixed; inset:0; background:rgba(11,15,25,0.85); backdrop-filter:blur(4px); z-index:9998; align-items:center; justify-content:center;">
     <div class="confirm-box" style="max-width:550px; width:90%;">
-      <h3 style="color:var(--accent-blue);">✏️ Edit Show Record</h3>
+      <h3 style="color:var(--accent-blue); font-size:16px; font-weight:700;">Edit Show Record</h3>
       <div style="display:flex; flex-direction:column; gap:12px; margin-top:16px; text-align:left;">
         
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
@@ -1937,7 +1937,7 @@
   <div id="cancelModal"
     style="display:none; position:fixed; inset:0; background:rgba(11,15,25,0.85); backdrop-filter:blur(4px); z-index:9999; align-items:center; justify-content:center;">
     <div class="confirm-box">
-      <h3 style="color:var(--danger);">🚫 Cancel Show</h3>
+      <h3 style="color:var(--danger); font-size:16px; font-weight:700;">Cancel Show</h3>
       <p style="margin-bottom:16px;">Select a reason or type an odd case. This will instantly scrub the file from all
         system directories.</p>
 
@@ -2402,26 +2402,39 @@
               </table>
 
               <!-- ── BULK SELECTION ACTION BAR ── -->
-              <div id="hopperBulkBar" style="display:none; position:sticky; bottom:16px; left:50%; transform:translateX(-50%); width:fit-content; background:var(--bg-panel); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid var(--border); border-radius:12px; padding:10px 20px; box-shadow:0 12px 36px rgba(0,0,0,0.4); z-index:9999; align-items:center; gap:16px; margin:0 auto 12px;">
+              <div id="hopperBulkBar" style="display:none; position:sticky; bottom:16px; left:50%; transform:translateX(-50%); width:fit-content; background:var(--bg-panel); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid var(--border); border-radius:12px; padding:10px 20px; box-shadow:0 12px 36px rgba(0,0,0,0.4); z-index:9999; align-items:center; gap:14px; margin:0 auto 12px;">
                 <div style="font-size:12.5px; font-weight:700; color:var(--text-main); display:flex; align-items:center; gap:8px;">
                   <span id="bulkSelectedCount" style="background:var(--accent-blue); color:#fff; padding:2px 8px; border-radius:10px; font-size:11px;">0</span>
-                  <span>Shows Selected</span>
+                  <span>Selected</span>
+                </div>
+
+                <div style="height:20px; width:1px; background:var(--border);"></div>
+
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <span style="font-size:11px; font-weight:700; text-transform:uppercase; color:var(--text-muted);">Status:</span>
+                  <button type="button" class="btn btn-sm bulk-status-pill" data-status="Pending" onclick="selectBulkStatus('Pending', this)" style="background:rgba(59,130,246,0.14); color:#60a5fa; border:1px solid rgba(59,130,246,0.3); font-weight:700; transition:all 0.15s ease;">Pending</button>
+                  <button type="button" class="btn btn-sm bulk-status-pill" data-status="In Progress" onclick="selectBulkStatus('In Progress', this)" style="background:rgba(139,92,246,0.16); color:#c084fc; border:1px solid rgba(139,92,246,0.35); font-weight:700; transition:all 0.15s ease;">In Progress</button>
+                  <button type="button" class="btn btn-sm bulk-status-pill" data-status="HOLD" onclick="selectBulkStatus('HOLD', this)" style="background:rgba(245,158,11,0.16); color:#fbbf24; border:1px solid rgba(245,158,11,0.35); font-weight:700; transition:all 0.15s ease;">HOLD</button>
+                  <button type="button" class="btn btn-sm bulk-status-pill" data-status="Done" onclick="selectBulkStatus('Done', this)" style="background:rgba(16,185,129,0.16); color:#34d399; border:1px solid rgba(16,185,129,0.35); font-weight:700; transition:all 0.15s ease;">Done</button>
+                  <button type="button" class="btn btn-sm bulk-status-pill" data-status="CXL" onclick="selectBulkStatus('CXL', this)" style="background:rgba(239,68,68,0.16); color:#f87171; border:1px solid rgba(239,68,68,0.35); font-weight:700; transition:all 0.15s ease;">CXL</button>
+                </div>
+
+                <div style="height:20px; width:1px; background:var(--border);"></div>
+
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <span style="font-size:11px; font-weight:700; text-transform:uppercase; color:var(--text-muted);">Agent:</span>
+                  <select id="hopperBulkAgentSelect" class="user-input" style="font-size:11.5px; font-weight:700; padding:5px 10px; border-radius:6px; background:var(--bg-base); border:1px solid var(--border); color:var(--text-main); cursor:pointer;">
+                    <option value="">No Change</option>
+                    <option value="Unassigned">Unassigned (Clear)</option>
+                  </select>
                 </div>
 
                 <div style="height:20px; width:1px; background:var(--border);"></div>
 
                 <div style="display:flex; align-items:center; gap:8px;">
-                  <span style="font-size:11px; font-weight:700; text-transform:uppercase; color:var(--text-muted);">Set Status:</span>
-                  <button class="btn btn-sm" onclick="bulkSetStatus('Pending')" style="background:rgba(59,130,246,0.15); color:#60a5fa; border:1px solid rgba(59,130,246,0.3); font-weight:700;">Pending</button>
-                  <button class="btn btn-sm" onclick="bulkSetStatus('In Progress')" style="background:rgba(139,92,246,0.18); color:#c084fc; border:1px solid rgba(139,92,246,0.35); font-weight:700;">In Progress</button>
-                  <button class="btn btn-sm" onclick="bulkSetStatus('HOLD')" style="background:rgba(245,158,11,0.18); color:#fbbf24; border:1px solid rgba(245,158,11,0.35); font-weight:700;">HOLD</button>
-                  <button class="btn btn-sm" onclick="bulkSetStatus('Done')" style="background:rgba(16,185,129,0.18); color:#34d399; border:1px solid rgba(16,185,129,0.35); font-weight:700;">Done</button>
-                  <button class="btn btn-sm" onclick="bulkSetStatus('CXL')" style="background:rgba(239,68,68,0.18); color:#f87171; border:1px solid rgba(239,68,68,0.35); font-weight:700;">CXL</button>
+                  <button type="button" class="btn btn-sm btn-blue" onclick="applyBulkChanges()" style="padding:6px 16px; font-weight:700; border-radius:6px;">Apply Changes</button>
+                  <button type="button" class="btn btn-sm" onclick="clearHopperSelection()" style="background:transparent; border:1px solid var(--border); color:var(--text-muted); font-weight:600;">Cancel</button>
                 </div>
-
-                <div style="height:20px; width:1px; background:var(--border);"></div>
-
-                <button class="btn btn-sm" onclick="clearHopperSelection()" style="background:transparent; border:1px solid var(--border); color:var(--text-muted); font-weight:600;">Cancel</button>
               </div>
             </div>
           </div>
@@ -2497,6 +2510,7 @@
         }
 
         renderUsersTable();
+        populateBulkAgentDropdown();
       } catch (e) { showToast('Failed to load users.', 'error'); }
     }
 
@@ -3494,7 +3508,18 @@
       }
 
       if (userToDelete.username === currentUser) {
-        if (!confirm("You are about to delete your OWN account. Continue?")) return;
+        showCustomConfirm({
+          title: 'Delete Own Account',
+          message: 'You are about to delete your OWN account. Are you sure you want to continue?',
+          confirmText: 'Delete Account',
+          isDanger: true,
+          onConfirm: () => {
+            usersData.splice(idx, 1);
+            renderUsersTable();
+            showToast('User removed. Click Commit Changes to apply.', 'info');
+          }
+        });
+        return;
       }
 
       usersData.splice(idx, 1);
@@ -3719,6 +3744,7 @@
           agentFilter.appendChild(opt);
         });
       }
+      populateBulkAgentDropdown();
 
       const activeArray = isHopperFiltered ? filteredShows : showsData;
 
@@ -4060,25 +4086,33 @@
       showToast(`🖐️ <b>${escHtml(agent.name)}</b> requested a show!`, 'warning');
     });
 
-    async function clearHopper() {
-      if (!confirm('Are you sure you want to clear the Hopper? ALL shows except those on HOLD will be removed.')) return;
+    function clearHopper() {
+      showCustomConfirm({
+        title: 'Clear Log',
+        message: 'Are you sure you want to clear the Hopper? ALL shows except those on HOLD will be removed.',
+        confirmText: 'Clear Log',
+        isDanger: true,
+        onConfirm: async () => {
+          const updatedShows = showsData.filter(s => {
+            const st = s.status || 'Pending';
+            return st === 'HOLD';
+          });
 
-      const updatedShows = showsData.filter(s => {
-        const st = s.status || 'Pending';
-        return st === 'HOLD';
-      });
-
-      try {
-        const res = await fetch('/api/shows/update', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ shows: updatedShows })
-        });
-        if ((await res.json()).success) {
-          showToast('✅ Non-HOLD shows cleared.', 'success');
-          fetchShows();
+          try {
+            const res = await fetch('/api/shows/update', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ shows: updatedShows })
+            });
+            if ((await res.json()).success) {
+              showToast('Non-HOLD shows cleared.', 'success');
+              fetchShows();
+            }
+          } catch (e) {
+            showToast('Failed to clear log.', 'error');
+          }
         }
-      } catch (e) { showToast('❌ Error clearing shows.', 'error'); }
+      });
     }
 
     function exportHopper() {
@@ -4218,22 +4252,26 @@
       }
     }
 
-    async function deployBulkShows() {
+    function deployBulkShows() {
       if (!activeDispatchAgent || selectedShowsForDispatch.length === 0) return;
       
       const count = selectedShowsForDispatch.length;
-      if (!confirm(`Are you sure you want to deploy ${count} shows to ${activeDispatchAgent}?`)) return;
+      showCustomConfirm({
+        title: 'Deploy Shows',
+        message: `Are you sure you want to deploy ${count} shows to ${activeDispatchAgent}?`,
+        confirmText: 'Deploy Shows',
+        isDanger: false,
+        onConfirm: () => {
+          socket.emit('bulkAssignShows', { 
+            agentId: activeDispatchAgent, 
+            showIds: selectedShowsForDispatch 
+          });
 
-      socket.emit('bulkAssignShows', { 
-        agentId: activeDispatchAgent, 
-        showIds: selectedShowsForDispatch 
+          requestingAgents.delete(activeDispatchAgent);
+          showToast(`Successfully deployed ${count} shows to ${activeDispatchAgent}.`, 'success');
+          cancelBulkDispatch();
+        }
       });
-
-      // Clear requesting state for this agent
-      requestingAgents.delete(activeDispatchAgent);
-
-      showToast(`🚀 Successfully deployed ${count} shows to ${activeDispatchAgent}.`, 'success');
-      cancelBulkDispatch();
     }
 
     function renderFloorMap() {
@@ -4600,34 +4638,111 @@
       }
     }
 
+    let selectedBulkStatus = null;
+
+    function selectBulkStatus(status, btn) {
+      if (selectedBulkStatus === status) {
+        selectedBulkStatus = null;
+        document.querySelectorAll('.bulk-status-pill').forEach(b => {
+          b.style.outline = 'none';
+          b.style.boxShadow = 'none';
+          b.style.opacity = '1';
+        });
+      } else {
+        selectedBulkStatus = status;
+        document.querySelectorAll('.bulk-status-pill').forEach(b => {
+          if (b.dataset.status === status) {
+            b.style.boxShadow = '0 0 0 2px var(--accent-blue)';
+            b.style.opacity = '1';
+          } else {
+            b.style.boxShadow = 'none';
+            b.style.opacity = '0.5';
+          }
+        });
+      }
+    }
+
     function clearHopperSelection() {
       selectedHopperIds.clear();
+      selectedBulkStatus = null;
+      document.querySelectorAll('.bulk-status-pill').forEach(b => {
+        b.style.boxShadow = 'none';
+        b.style.opacity = '1';
+      });
       document.querySelectorAll('.hopper-select-check').forEach(chk => chk.checked = false);
+      const agentSel = document.getElementById('hopperBulkAgentSelect');
+      if (agentSel) agentSel.value = '';
       updateHopperBulkBar();
     }
 
-    async function bulkSetStatus(newStatus) {
-      if (selectedHopperIds.size === 0) return;
+    async function applyBulkChanges() {
+      if (selectedHopperIds.size === 0) {
+        showToast('No shows selected.', 'warning');
+        return;
+      }
+
+      const agentSelect = document.getElementById('hopperBulkAgentSelect');
+      const chosenAgentRaw = agentSelect ? agentSelect.value : '';
+      let chosenAgent = undefined;
+      if (chosenAgentRaw === 'Unassigned') {
+        chosenAgent = '';
+      } else if (chosenAgentRaw) {
+        chosenAgent = chosenAgentRaw;
+      }
+
+      if (!selectedBulkStatus && chosenAgent === undefined) {
+        showToast('Please select a Status or an Agent to apply.', 'warning');
+        return;
+      }
+
       const ids = Array.from(selectedHopperIds);
+      const payload = { showIds: ids };
+      if (selectedBulkStatus) payload.status = selectedBulkStatus;
+      if (chosenAgent !== undefined) payload.agentName = chosenAgent;
 
       try {
         const res = await fetch('/api/shows/bulk-update', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ showIds: ids, status: newStatus })
+          body: JSON.stringify(payload)
         });
         const json = await res.json();
         if (json.success) {
-          showToast(`Updated ${json.count} show${json.count === 1 ? '' : 's'} to ${newStatus}`, 'success');
+          let msg = `Updated ${json.count} show${json.count === 1 ? '' : 's'}`;
+          if (selectedBulkStatus && chosenAgent !== undefined) {
+            msg += ` (Status: ${selectedBulkStatus}, Agent: ${chosenAgent || 'Unassigned'})`;
+          } else if (selectedBulkStatus) {
+            msg += ` (Status: ${selectedBulkStatus})`;
+          } else if (chosenAgent !== undefined) {
+            msg += ` (Agent: ${chosenAgent || 'Unassigned'})`;
+          }
+          showToast(msg, 'success');
           clearHopperSelection();
           fetchShows();
         } else {
-          showToast('Failed bulk update: ' + (json.error || 'Unknown error'), 'error');
+          showToast('Bulk update failed: ' + (json.error || 'Unknown error'), 'error');
         }
       } catch (err) {
-        console.error('Bulk update error:', err);
-        showToast('Error during bulk status update', 'error');
+        console.error('Apply bulk error:', err);
+        showToast('Error executing bulk update', 'error');
       }
+    }
+
+    function populateBulkAgentDropdown() {
+      const select = document.getElementById('hopperBulkAgentSelect');
+      if (!select) return;
+
+      const currentVal = select.value;
+      select.innerHTML = `<option value="">No Change</option>
+        <option value="Unassigned">Unassigned (Clear)</option>`;
+
+      usersData.forEach(u => {
+        const opt = document.createElement('option');
+        opt.value = u.username;
+        opt.textContent = u.username;
+        select.appendChild(opt);
+      });
+      if (currentVal) select.value = currentVal;
     }
 
     function openAddShowModal() {
@@ -4790,6 +4905,59 @@
         }
       } catch (err) {
         console.error(`Error updating ${field}:`, err);
+      }
+    }
+  </script>
+  <!-- ── REUSABLE PROFESSIONAL CONFIRM MODAL ── -->
+  <div id="customConfirmModal" class="modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(11,15,25,0.85); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); z-index:99999; align-items:center; justify-content:center;">
+    <div class="modal-content glass-panel" style="width:100%; max-width:440px; padding:28px; border-radius:16px; border:1px solid var(--border); box-shadow:0 20px 50px rgba(0,0,0,0.5); text-align:center;">
+      <h3 id="customConfirmTitle" style="font-size:17px; font-weight:700; color:var(--text-main); margin:0 0 10px 0;">Confirmation</h3>
+      <p id="customConfirmMessage" style="font-size:13px; color:var(--text-muted); line-height:1.5; margin:0 0 24px 0;"></p>
+      
+      <div style="display:flex; justify-content:center; gap:12px;">
+        <button id="customConfirmCancelBtn" class="btn" style="padding:10px 20px; font-weight:600; min-width:100px;">Cancel</button>
+        <button id="customConfirmActionBtn" class="btn btn-red" style="padding:10px 22px; font-weight:700; min-width:110px;">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showCustomConfirm({ title, message, confirmText = 'Confirm', cancelText = 'Cancel', isDanger = true, onConfirm }) {
+      const modal = document.getElementById('customConfirmModal');
+      const titleEl = document.getElementById('customConfirmTitle');
+      const msgEl = document.getElementById('customConfirmMessage');
+      const actionBtn = document.getElementById('customConfirmActionBtn');
+      const cancelBtn = document.getElementById('customConfirmCancelBtn');
+
+      if (!modal) return;
+
+      if (titleEl) titleEl.textContent = title;
+      if (msgEl) msgEl.textContent = message;
+
+      if (actionBtn) {
+        actionBtn.textContent = confirmText;
+        actionBtn.className = isDanger ? 'btn btn-red' : 'btn btn-blue';
+        actionBtn.style.padding = '10px 22px';
+        actionBtn.onclick = () => {
+          closeCustomConfirm();
+          if (typeof onConfirm === 'function') onConfirm();
+        };
+      }
+
+      if (cancelBtn) {
+        cancelBtn.textContent = cancelText;
+        cancelBtn.onclick = closeCustomConfirm;
+      }
+
+      modal.style.display = 'flex';
+      modal.classList.add('open');
+    }
+
+    function closeCustomConfirm() {
+      const modal = document.getElementById('customConfirmModal');
+      if (modal) {
+        modal.style.display = 'none';
+        modal.classList.remove('open');
       }
     }
   </script>

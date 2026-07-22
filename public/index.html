@@ -2556,31 +2556,36 @@
       }
 
       async function closeServer() {
-        if (!confirm("Are you sure you want to close the server? This will terminate the application process.")) {
-          return;
-        }
-        try {
-          const username = localStorage.getItem('zorg_nexus_user');
-          const res = await fetch('/api/admin/close-server', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username })
-          });
-          const data = await res.json();
-          if (data.success) {
-            alert("Server is shutting down. You will be disconnected.");
-            document.body.innerHTML = `
-              <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; font-family:'Inter', sans-serif; color:var(--text-main); background:var(--bg-main);">
-                <h1 style="font-size:32px; margin-bottom:16px;">🛑 Server Closed</h1>
-                <p style="color:var(--text-muted);">The server process has been terminated. You can now close this tab.</p>
-              </div>
-            `;
-          } else {
-            alert("Failed to close server: " + data.error);
+        showCustomConfirm({
+          title: 'Close Server',
+          message: 'Are you sure you want to close the server? This will terminate the application process for all active users.',
+          confirmText: 'Close Server',
+          isDanger: true,
+          onConfirm: async () => {
+            try {
+              const username = localStorage.getItem('zorg_nexus_user');
+              const res = await fetch('/api/admin/close-server', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username })
+              });
+              const data = await res.json();
+              if (data.success) {
+                showToast('Server is shutting down...', 'warning');
+                document.body.innerHTML = `
+                  <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; font-family:'Inter', sans-serif; color:var(--text-main); background:var(--bg-main);">
+                    <h1 style="font-size:32px; margin-bottom:16px; font-weight:700;">Server Closed</h1>
+                    <p style="color:var(--text-muted);">The server process has been terminated. You may close this tab.</p>
+                  </div>
+                `;
+              } else {
+                showToast('Failed to close server: ' + (data.error || 'Unknown error'), 'error');
+              }
+            } catch (e) {
+              showToast('Error closing server: ' + e.message, 'error');
+            }
           }
-        } catch (e) {
-          alert("Error closing server: " + e.message);
-        }
+        });
       }
 
       function escHtml(str) {
@@ -3823,6 +3828,59 @@
         btn.innerHTML = '<span>☀️</span> Light Mode';
       }
     });
+  </script>
+  <!-- ── REUSABLE PROFESSIONAL CONFIRM MODAL ── -->
+  <div id="customConfirmModal" class="modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(11,15,25,0.85); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); z-index:99999; align-items:center; justify-content:center;">
+    <div class="modal-content glass-panel" style="width:100%; max-width:440px; padding:28px; border-radius:16px; border:1px solid var(--border); box-shadow:0 20px 50px rgba(0,0,0,0.5); text-align:center;">
+      <h3 id="customConfirmTitle" style="font-size:17px; font-weight:700; color:var(--text-main); margin:0 0 10px 0;">Confirmation</h3>
+      <p id="customConfirmMessage" style="font-size:13px; color:var(--text-muted); line-height:1.5; margin:0 0 24px 0;"></p>
+      
+      <div style="display:flex; justify-content:center; gap:12px;">
+        <button id="customConfirmCancelBtn" class="btn" style="padding:10px 20px; font-weight:600; min-width:100px;">Cancel</button>
+        <button id="customConfirmActionBtn" class="btn btn-red" style="padding:10px 22px; font-weight:700; min-width:110px;">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showCustomConfirm({ title, message, confirmText = 'Confirm', cancelText = 'Cancel', isDanger = true, onConfirm }) {
+      const modal = document.getElementById('customConfirmModal');
+      const titleEl = document.getElementById('customConfirmTitle');
+      const msgEl = document.getElementById('customConfirmMessage');
+      const actionBtn = document.getElementById('customConfirmActionBtn');
+      const cancelBtn = document.getElementById('customConfirmCancelBtn');
+
+      if (!modal) return;
+
+      if (titleEl) titleEl.textContent = title;
+      if (msgEl) msgEl.textContent = message;
+
+      if (actionBtn) {
+        actionBtn.textContent = confirmText;
+        actionBtn.className = isDanger ? 'btn btn-red' : 'btn btn-blue';
+        actionBtn.style.padding = '10px 22px';
+        actionBtn.onclick = () => {
+          closeCustomConfirm();
+          if (typeof onConfirm === 'function') onConfirm();
+        };
+      }
+
+      if (cancelBtn) {
+        cancelBtn.textContent = cancelText;
+        cancelBtn.onclick = closeCustomConfirm;
+      }
+
+      modal.style.display = 'flex';
+      modal.classList.add('open');
+    }
+
+    function closeCustomConfirm() {
+      const modal = document.getElementById('customConfirmModal');
+      if (modal) {
+        modal.style.display = 'none';
+        modal.classList.remove('open');
+      }
+    }
   </script>
 </body>
 
