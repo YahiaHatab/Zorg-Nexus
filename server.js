@@ -56,11 +56,7 @@ if (!fs.existsSync(showsPath)) {
     console.log('> Created default shows.json');
 }
 
-const agentShowsHistoryPath = path.join(__dirname, 'agent_shows_history.json');
-if (!fs.existsSync(agentShowsHistoryPath)) {
-    fs.writeFileSync(agentShowsHistoryPath, JSON.stringify([], null, 2));
-    console.log('> Created default agent_shows_history.json');
-}
+
 
 // ─────────────────────────────────────────────
 //  DATABASE USERNAME MIGRATION & PROPAGATION
@@ -84,18 +80,7 @@ function propagateUsernameChange(oldName, newName) {
         }
     } catch (e) { console.error('Error updating username in shows.json:', e); }
 
-    // 2. Update agent_shows_history.json
-    try {
-        if (fs.existsSync(agentShowsHistoryPath)) {
-            const agentHistory = JSON.parse(fs.readFileSync(agentShowsHistoryPath));
-            let updated = false;
-            agentHistory.forEach(h => {
-                if (h.agentName && (h.agentName.toLowerCase() === lowerOld || h.agentName === oldName)) { h.agentName = newName; updated = true; }
-                if (h.agent && (h.agent.toLowerCase() === lowerOld || h.agent === oldName)) { h.agent = newName; updated = true; }
-            });
-            if (updated) fs.writeFileSync(agentShowsHistoryPath, JSON.stringify(agentHistory, null, 2));
-        }
-    } catch (e) { console.error('Error updating username in agent_shows_history.json:', e); }
+
 
     // 3. Update history.json
     try {
@@ -251,54 +236,6 @@ function analyticsAddRecord(dateKey, username, record) {
 
     saveAnalytics(data);
 
-    // Save to permanent agent_shows_history.json
-    saveAgentShowHistory(record);
-}
-
-function loadAgentShowHistory() {
-    try {
-        if (!fs.existsSync(agentShowsHistoryPath)) return [];
-        return JSON.parse(fs.readFileSync(agentShowsHistoryPath));
-    } catch (e) {
-        console.error('Error loading agent_shows_history.json:', e);
-        return [];
-    }
-}
-
-function saveAgentShowHistory(record) {
-    try {
-        const history = loadAgentShowHistory();
-        const entry = {
-            id: record.id || record.transactionId || Date.now().toString(36),
-            transactionId: record.transactionId || record.id || '',
-            showName: record.showName || record.filename || 'Unnamed Show',
-            agentName: record.agentName || record.agent || 'Unassigned',
-            completedAt: record.completedAt || new Date().toISOString(),
-            date: record.date || new Date().toISOString().split('T')[0],
-            time: record.time || new Date().toLocaleTimeString('en-US'),
-            status: record.status || record.mode || 'Done',
-            link: record.link || [],
-            ld: record.ld || '',
-            lists: record.lists || '',
-            comment: record.comment || '',
-            shown: record.shown || 0,
-            hidden: record.hidden || 0,
-            total: record.total || ((record.shown || 0) + (record.hidden || 0)),
-            filename: record.filename || record.showName || '',
-            note: record.note || ''
-        };
-
-        const existingIdx = history.findIndex(h => (h.id && h.id === entry.id) || (h.transactionId && entry.transactionId && h.transactionId === entry.transactionId));
-        if (existingIdx > -1) {
-            history[existingIdx] = { ...history[existingIdx], ...entry };
-        } else {
-            history.unshift(entry);
-        }
-
-        fs.writeFileSync(agentShowsHistoryPath, JSON.stringify(history, null, 2));
-    } catch (err) {
-        console.error('Error saving agent_shows_history:', err);
-    }
 }
 
 /**
@@ -697,61 +634,36 @@ app.get('/api/user/data', (req, res) => {
 });
 
 // ─────────────────────────────────────────────
-//  USER REPORT  (all-time from agent_shows_history.json & analytics.json)
+//  USER REPORT  (all-time from analytics.json)
 // ─────────────────────────────────────────────
 app.get('/api/user/report', (req, res) => {
     try {
         const username = req.query.username;
-        const permanentHistory = loadAgentShowHistory();
         const data = loadAnalytics();
-        const resultMap = new Map();
+        const result = [];
 
-        // 1. Load analytics records first (actual lead file uploads)
         for (const dateKey of Object.keys(data).sort((a, b) => b.localeCompare(a))) {
             const day = data[dateKey];
-            for (const rec of [...day.records].reverse()) {
-                if (rec.agent === username) {
-                    const key = rec.transactionId || (rec.filename + '_' + dateKey);
-                    resultMap.set(key, {
-                        id: rec.transactionId,
-                        date: dateKey,
-                        time: rec.time || '',
-                        mode: rec.mode || 'DONE',
-                        filename: rec.filename,
-                        shown: rec.shown || 0,
-                        total: rec.total || 0,
-                        transactionId: rec.transactionId,
-                        note: rec.note || ''
-                    });
-                }
-            }
-        }
-
-        // 2. Merge permanent history records (only add if not already present and has non-zero leads)
-        permanentHistory.forEach(rec => {
-            if (rec.agentName === username || rec.agent === username) {
-                const key = rec.transactionId || rec.id || (rec.showName + '_' + (rec.date || ''));
-                if (!resultMap.has(key)) {
-                    if ((rec.total || 0) > 0 || (rec.shown || 0) > 0) {
-                        resultMap.set(key, {
-                            id: rec.id || rec.transactionId,
-                            date: rec.date || (rec.completedAt ? rec.completedAt.split('T')[0] : ''),
+            if (day && day.records) {
+                for (const rec of [...day.records].reverse()) {
+                    if (rec.agent === username) {
+                        result.push({
+                            id: rec.transactionId,
+                            date: dateKey,
                             time: rec.time || '',
-                            mode: rec.status || rec.mode || 'DONE',
-                            filename: rec.filename || rec.showName || 'Unnamed Show',
+                            mode: rec.mode || 'DONE',
+                            filename: rec.filename,
                             shown: rec.shown || 0,
                             total: rec.total || 0,
-                            transactionId: rec.transactionId || rec.id || '',
+                            transactionId: rec.transactionId,
                             note: rec.note || ''
                         });
                     }
                 }
             }
-        });
+        }
 
-        const result = Array.from(resultMap.values()).sort((a, b) => {
-            return (b.date + ' ' + b.time).localeCompare(a.date + ' ' + a.time);
-        });
+        result.sort((a, b) => (b.date + ' ' + b.time).localeCompare(a.date + ' ' + a.time));
 
         res.json({ success: true, data: result });
     } catch (e) {
@@ -1085,18 +997,6 @@ app.post('/api/shows/bulk-update', (req, res) => {
                     s.status = status;
                     if (status === 'Done' || status === 'CXL') {
                         s.completedAt = new Date().toISOString();
-                        saveAgentShowHistory({
-                            id: s.id,
-                            showName: s.showName,
-                            agentName: s.agentName || 'Unassigned',
-                            status: status,
-                            link: s.link,
-                            ld: s.ld,
-                            lists: s.lists,
-                            comment: s.comment,
-                            date: new Date().toISOString().split('T')[0],
-                            time: new Date().toLocaleTimeString('en-US')
-                        });
                     }
                 }
                 if (agentName !== undefined) {
@@ -1137,18 +1037,6 @@ app.post('/api/shows/complete', (req, res) => {
     if (show) {
         show.status = 'Done';
         show.completedAt = new Date().toISOString();
-        saveAgentShowHistory({
-            id: show.id,
-            showName: show.showName,
-            agentName: show.agentName,
-            status: 'Done',
-            link: show.link,
-            ld: show.ld,
-            lists: show.lists,
-            comment: show.comment,
-            date: new Date().toISOString().split('T')[0],
-            time: new Date().toLocaleTimeString('en-US')
-        });
         fs.writeFileSync(showsPath, JSON.stringify(currentShows, null, 2));
         io.emit('hopper_updated');
         res.json({ success: true });
@@ -1254,15 +1142,7 @@ app.post('/api/shows/cancel', (req, res) => {
                 analytics[dateKey] = { summary: { totalFiles: 0, totalLeads: 0, totalShown: 0, byAgent: {} }, records: [] };
             }
 
-            saveAgentShowHistory({
-                id: show.id,
-                showName: show.showName,
-                agentName: show.agentName || 'Unassigned',
-                status: `CXL`,
-                reason: reason,
-                date: dateKey,
-                time: timeStr
-            });
+
 
             analytics[dateKey].records.push({
                 transactionId: Date.now().toString(36),
