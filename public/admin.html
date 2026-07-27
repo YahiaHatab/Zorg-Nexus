@@ -5,6 +5,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ZORG NEXUS | Admin Dashboard</title>
+  <script>
+    (function () {
+      function getCookie(name) {
+        return document.cookie.split('; ').reduce((r, v) => {
+          const parts = v.split('=');
+          return parts[0] === name ? decodeURIComponent(parts[1]) : r;
+        }, '');
+      }
+      const savedTheme = localStorage.getItem('zorg_theme') || getCookie('zorg_theme');
+      if (savedTheme === 'dark') document.body.classList.add('dark-mode');
+    })();
+  </script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
 
@@ -2469,8 +2481,30 @@
 
     const TODAY = new Date().toISOString().split('T')[0]; // "2026-03-30"
 
+    // ── COOKIE HELPERS ───────────────────────────
+    function getCookie(name) {
+      return document.cookie.split('; ').reduce((r, v) => {
+        const parts = v.split('=');
+        return parts[0] === name ? decodeURIComponent(parts[1]) : r;
+      }, '');
+    }
+
+    function setCookie(name, value, days = 365) {
+      const expires = new Date(Date.now() + days * 864e5).toUTCString();
+      document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax`;
+    }
+
     // ── GUARD & ROLE STATE ───────────────────────
-    const currentUser = localStorage.getItem('zorg_nexus_user');
+    let currentUser = localStorage.getItem('zorg_nexus_user') || getCookie('zorg_nexus_user');
+    if (currentUser) {
+      localStorage.setItem('zorg_nexus_user', currentUser);
+      setCookie('zorg_nexus_user', currentUser);
+      const cRole = localStorage.getItem('zorg_nexus_role') || getCookie('zorg_nexus_role');
+      if (cRole) {
+        localStorage.setItem('zorg_nexus_role', cRole);
+        setCookie('zorg_nexus_role', cRole);
+      }
+    }
     if (!currentUser) window.location.href = '/';
     let isAdminRole = false;
     let isViewerRole = false;

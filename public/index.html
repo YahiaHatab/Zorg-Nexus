@@ -783,6 +783,28 @@
       border-radius: 999px;
     }
 
+    .show-type-tag {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .show-type-tag.new-show {
+      background: var(--accent-purple-glow);
+      color: var(--accent-purple);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+    }
+
+    .show-type-tag.x-show {
+      background: var(--accent-cyan-glow);
+      color: var(--accent-cyan);
+      border: 1px solid rgba(6, 182, 212, 0.2);
+    }
+
     .region-tag.usa {
       background: rgba(59, 130, 246, 0.1);
       color: #60A5FA;
@@ -2255,12 +2277,12 @@
               <thead>
                 <tr>
                   <th style="width: 25%;">Filename</th>
-                  <th style="width: 15%;">Modified</th>
-                  <th style="width: 8%;">Size</th>
-                  <th style="width: 8%;">Region</th>
-                  <th style="width: 17%;">Destination</th>
-                  <th style="width: 12%;">Status</th>
-                  <th style="width: 15%;">Notes</th>
+                  <th style="width: 11%;">Show Type</th>
+                  <th style="width: 15%;">Lead Yield</th>
+                  <th style="width: 13%;">Modified</th>
+                  <th style="width: 16%;">Destination</th>
+                  <th style="width: 10%;">Status</th>
+                  <th style="width: 10%;">Notes</th>
                 </tr>
               </thead>
               <tbody id="tableBody"></tbody>
@@ -2488,6 +2510,35 @@
       }
 
       // ─────────────────────────────────────────────
+      //  COOKIE & THEME HELPERS
+      // ─────────────────────────────────────────────
+      function setCookie(name, value, days = 365) {
+        const expires = new Date(Date.now() + days * 864e5).toUTCString();
+        document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax`;
+      }
+
+      function getCookie(name) {
+        return document.cookie.split('; ').reduce((r, v) => {
+          const parts = v.split('=');
+          return parts[0] === name ? decodeURIComponent(parts[1]) : r;
+        }, '');
+      }
+
+      function deleteCookie(name) {
+        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+      }
+
+      function applyTheme(theme) {
+        const isDark = (theme === 'dark');
+        if (isDark) document.body.classList.add('dark-mode');
+        else document.body.classList.remove('dark-mode');
+        localStorage.setItem('zorg_theme', theme);
+        setCookie('zorg_theme', theme);
+        const btn = document.getElementById('themeToggle');
+        if (btn) btn.innerHTML = isDark ? '<span>☀️</span> Light Mode' : '<span>🌓</span> Toggle Theme';
+      }
+
+      // ─────────────────────────────────────────────
       //  UI TOGGLES
       // ─────────────────────────────────────────────
       function toggleLogs() {
@@ -2498,9 +2549,17 @@
       //  AUTH
       // ─────────────────────────────────────────────
       function checkAuth() {
-        currentUser = localStorage.getItem('zorg_nexus_user');
-        const currentRole = localStorage.getItem('zorg_nexus_role');
+        currentUser = localStorage.getItem('zorg_nexus_user') || getCookie('zorg_nexus_user');
+        let currentRole = localStorage.getItem('zorg_nexus_role') || getCookie('zorg_nexus_role');
+
         if (currentUser) {
+          localStorage.setItem('zorg_nexus_user', currentUser);
+          setCookie('zorg_nexus_user', currentUser);
+          if (currentRole) {
+            localStorage.setItem('zorg_nexus_role', currentRole);
+            setCookie('zorg_nexus_role', currentRole);
+          }
+
           document.getElementById('loginScreen').style.display = 'none';
           document.getElementById('displayUser').innerText = currentUser;
 
@@ -2541,7 +2600,14 @@
         const data = await res.json();
         if (data.success) {
           localStorage.setItem('zorg_nexus_user', data.username);
-          if (data.role) localStorage.setItem('zorg_nexus_role', data.role);
+          setCookie('zorg_nexus_user', data.username);
+          if (data.role) {
+            localStorage.setItem('zorg_nexus_role', data.role);
+            setCookie('zorg_nexus_role', data.role);
+          }
+          if (data.theme) {
+            applyTheme(data.theme);
+          }
           checkAuth();
           if (!socket) initSocket();
         } else {
@@ -2552,6 +2618,8 @@
       function logout() {
         localStorage.removeItem('zorg_nexus_user');
         localStorage.removeItem('zorg_nexus_role');
+        deleteCookie('zorg_nexus_user');
+        deleteCookie('zorg_nexus_role');
         window.location.reload();
       }
 
@@ -2866,11 +2934,30 @@
           const editBtn = f.agent === currentUser
             ? `<button class="btn btn-sm" onclick="editNote('${dateString}','${escHtml(f.transactionId)}')" style="background:transparent; border:none; color:var(--accent-blue); padding:0 4px; cursor:pointer;" title="Edit Note">✏️</button>`
             : '';
+
+          // Match admin.html X-Show vs New Show detection logic
+          const fullNameStr = (f.name || f.filename || f.showName || f.destPath || '').toString();
+          const isXShow = fullNameStr.includes('XShow') || fullNameStr.includes('XZShow') || fullNameStr.includes('X Show') || fullNameStr.includes('XZ Show') || fullNameStr.toLowerCase().includes('x-show') || fullNameStr.toLowerCase().includes('xshow');
+          const showTypeTag = isXShow
+            ? `<span class="show-type-tag x-show">X</span>`
+            : `<span class="show-type-tag new-show">New</span>`;
+
+          let netLeads = f.shown !== undefined && f.shown !== null ? f.shown : (f.net !== undefined ? f.net : null);
+          let totalLeads = f.total !== undefined && f.total !== null ? f.total : (f.gross !== undefined ? f.gross : (netLeads !== null && f.hidden !== undefined ? netLeads + f.hidden : null));
+
+          let yieldHtml = '—';
+          if (netLeads !== null && netLeads !== undefined) {
+            yieldHtml = `<span class="mono" style="font-weight:700; color:var(--success);">${netLeads} Net</span>`;
+            if (totalLeads !== null && totalLeads !== undefined) {
+              yieldHtml += ` <span class="mono" style="font-size:11px; color:var(--text-muted);">(${totalLeads} Gross)</span>`;
+            }
+          }
+
           return `<tr>
           <td title="${f.name}"><span class="file-name">${base}</span><span class="file-ext">${ext}</span></td>
+          <td>${showTypeTag}</td>
+          <td>${yieldHtml}</td>
           <td class="date-cell">${fmtDate(f.mtime)}</td>
-          <td class="size-cell mono">${fmtSize(f.size)}</td>
-          <td><span class="region-tag ${f.region.toLowerCase()}">${f.region}</span></td>
           <td class="dest-cell mono" title="${f.destPath}">${f.destPath}</td>
           <td class="status-cell">${statusHtml[f.status] || f.status}${undoBtnHtml}</td>
           <td class="note-cell" style="max-width:150px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${escHtml(f.note || '')}">${escHtml(f.note || '—')} ${editBtn}</td>
@@ -3815,14 +3902,25 @@
   <!-- ── THEME INIT & TOGGLE ── -->
   <script>
     (function () {
-      if (localStorage.getItem('zorg_theme') === 'dark') document.body.classList.add('dark-mode');
+      const savedTheme = localStorage.getItem('zorg_theme') || (typeof getCookie === 'function' ? getCookie('zorg_theme') : '');
+      if (savedTheme === 'dark') document.body.classList.add('dark-mode');
     })();
     document.addEventListener('DOMContentLoaded', function () {
       const btn = document.getElementById('themeToggle');
       if (btn) btn.addEventListener('click', function () {
         const isDark = document.body.classList.toggle('dark-mode');
-        localStorage.setItem('zorg_theme', isDark ? 'dark' : 'light');
+        const themeStr = isDark ? 'dark' : 'light';
+        localStorage.setItem('zorg_theme', themeStr);
+        if (typeof setCookie === 'function') setCookie('zorg_theme', themeStr);
         btn.innerHTML = isDark ? '<span>☀️</span> Light Mode' : '<span>🌓</span> Toggle Theme';
+        const u = currentUser || localStorage.getItem('zorg_nexus_user') || (typeof getCookie === 'function' ? getCookie('zorg_nexus_user') : '');
+        if (u) {
+          fetch('/api/user/theme', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: u, theme: themeStr })
+          }).catch(e => console.error('Failed to sync theme with server:', e));
+        }
       });
       if (btn && document.body.classList.contains('dark-mode')) {
         btn.innerHTML = '<span>☀️</span> Light Mode';

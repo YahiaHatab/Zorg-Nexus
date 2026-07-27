@@ -634,9 +634,25 @@ app.post('/api/login', (req, res) => {
     const { username, password } = req.body;
     const users = JSON.parse(fs.readFileSync(usersPath));
     const user = users.find(u => u.username === username && u.password === password);
-    // Return the role, fallback to Agent if they don't have one yet
-    if (user) res.json({ success: true, username: user.username, role: user.role || 'Agent' });
+    // Return the role and saved theme preference
+    if (user) res.json({ success: true, username: user.username, role: user.role || 'Agent', theme: user.theme || 'light' });
     else res.json({ success: false, message: 'Invalid credentials' });
+});
+
+app.post('/api/user/theme', (req, res) => {
+    try {
+        const { username, theme } = req.body;
+        if (!username || !theme) return res.status(400).json({ success: false, error: 'Missing username or theme' });
+        const users = JSON.parse(fs.readFileSync(usersPath));
+        const user = users.find(u => u.username === username);
+        if (user) {
+            user.theme = theme;
+            fs.writeFileSync(usersPath, JSON.stringify(users, null, 2));
+        }
+        res.json({ success: true });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
 });
 
 // ─────────────────────────────────────────────
@@ -655,16 +671,22 @@ app.get('/api/user/data', (req, res) => {
 
     const enrichedFiles = history.files.filter(f => f.agent === username).map(f => {
         let note = '';
+        let shown = f.shown;
+        let hidden = f.hidden;
+        let total = f.total;
         if (f.transactionId) {
             for (const dateKey of Object.keys(analytics)) {
                 const rec = analytics[dateKey].records && analytics[dateKey].records.find(r => r.transactionId === f.transactionId);
                 if (rec) {
                     note = rec.note || '';
+                    if (shown === undefined) shown = rec.shown;
+                    if (hidden === undefined) hidden = rec.hidden;
+                    if (total === undefined) total = rec.total;
                     break;
                 }
             }
         }
-        return { ...f, note };
+        return { ...f, note, shown, hidden, total };
     });
 
     res.json({
@@ -684,46 +706,48 @@ app.get('/api/user/report', (req, res) => {
         const data = loadAnalytics();
         const resultMap = new Map();
 
-        // 1. Load permanent history records first
-        permanentHistory.forEach(rec => {
-            if (rec.agentName === username || rec.agent === username) {
-                const key = rec.transactionId || rec.id || (rec.showName + '_' + rec.date);
-                resultMap.set(key, {
-                    id: rec.id || rec.transactionId,
-                    date: rec.date || (rec.completedAt ? rec.completedAt.split('T')[0] : ''),
-                    time: rec.time || '',
-                    mode: rec.status || rec.mode || 'DONE',
-                    filename: rec.filename || rec.showName || 'Unnamed Show',
-                    shown: rec.shown || 0,
-                    total: rec.total || 0,
-                    transactionId: rec.transactionId || rec.id || '',
-                    note: rec.note || ''
-                });
-            }
-        });
-
-        // 2. Merge analytics records
+        // 1. Load analytics records first (actual lead file uploads)
         for (const dateKey of Object.keys(data).sort((a, b) => b.localeCompare(a))) {
             const day = data[dateKey];
             for (const rec of [...day.records].reverse()) {
                 if (rec.agent === username) {
                     const key = rec.transactionId || (rec.filename + '_' + dateKey);
-                    if (!resultMap.has(key)) {
+                    resultMap.set(key, {
+                        id: rec.transactionId,
+                        date: dateKey,
+                        time: rec.time || '',
+                        mode: rec.mode || 'DONE',
+                        filename: rec.filename,
+                        shown: rec.shown || 0,
+                        total: rec.total || 0,
+                        transactionId: rec.transactionId,
+                        note: rec.note || ''
+                    });
+                }
+            }
+        }
+
+        // 2. Merge permanent history records (only add if not already present and has non-zero leads)
+        permanentHistory.forEach(rec => {
+            if (rec.agentName === username || rec.agent === username) {
+                const key = rec.transactionId || rec.id || (rec.showName + '_' + (rec.date || ''));
+                if (!resultMap.has(key)) {
+                    if ((rec.total || 0) > 0 || (rec.shown || 0) > 0) {
                         resultMap.set(key, {
-                            id: rec.transactionId,
-                            date: dateKey,
+                            id: rec.id || rec.transactionId,
+                            date: rec.date || (rec.completedAt ? rec.completedAt.split('T')[0] : ''),
                             time: rec.time || '',
-                            mode: rec.mode || 'DONE',
-                            filename: rec.filename,
+                            mode: rec.status || rec.mode || 'DONE',
+                            filename: rec.filename || rec.showName || 'Unnamed Show',
                             shown: rec.shown || 0,
                             total: rec.total || 0,
-                            transactionId: rec.transactionId,
+                            transactionId: rec.transactionId || rec.id || '',
                             note: rec.note || ''
                         });
                     }
                 }
             }
-        }
+        });
 
         const result = Array.from(resultMap.values()).sort((a, b) => {
             return (b.date + ' ' + b.time).localeCompare(a.date + ' ' + a.time);
@@ -816,29 +840,44 @@ app.post('/api/shows/upload', upload.single('file'), async (req, res) => {
 
             if (showName) {
                 if (!status) {
-                    lastShow = {
-                        id: Date.now().toString(36) + Math.random().toString(36).substr(2, 9),
-                        showName: showName,
-                        link: link ? [link] : [],
-                        agentName: getVal(4),
-                        ld: getVal(5),
-                        lists: getVal(6),
-                        comment: getVal(7),
-                        date: getVal(8),
-                        status: 'Pending',
-                        pinnedTo: null // for assignment logic
-                    };
-                    newShows.push(lastShow);
+                    let existingShow = newShows.find(s => s.showName.toLowerCase() === showName.toLowerCase());
+                    if (existingShow) {
+                        lastShow = existingShow;
+                        if (link && !lastShow.link.includes(link)) {
+                            lastShow.link.push(link);
+                        }
+                        const agent = getVal(4), ld = getVal(5), lists = getVal(6), comment = getVal(7);
+                        if (agent && !lastShow.agentName) lastShow.agentName = agent;
+                        if (ld && !lastShow.ld.split('\n').includes(ld)) lastShow.ld += (lastShow.ld ? '\n' : '') + ld;
+                        if (lists && !lastShow.lists.split('\n').includes(lists)) lastShow.lists += (lastShow.lists ? '\n' : '') + lists;
+                        if (comment && !lastShow.comment.split('\n').includes(comment)) lastShow.comment += (lastShow.comment ? '\n' : '') + comment;
+                    } else {
+                        lastShow = {
+                            id: Date.now().toString(36) + Math.random().toString(36).substr(2, 9),
+                            showName: showName,
+                            link: link ? [link] : [],
+                            agentName: getVal(4),
+                            ld: getVal(5),
+                            lists: getVal(6),
+                            comment: getVal(7),
+                            date: getVal(8) || new Date().toISOString().split('T')[0],
+                            status: 'Pending',
+                            pinnedTo: null // for assignment logic
+                        };
+                        newShows.push(lastShow);
+                    }
                 } else {
                     lastShow = null;
                 }
             } else if (!showName && link && lastShow) {
                 // Continuation row for the last show
-                lastShow.link.push(link);
+                if (!lastShow.link.includes(link)) {
+                    lastShow.link.push(link);
+                }
                 const ld = getVal(5), lists = getVal(6), comment = getVal(7);
-                if (ld) lastShow.ld += (lastShow.ld ? '\n' : '') + ld;
-                if (lists) lastShow.lists += (lastShow.lists ? '\n' : '') + lists;
-                if (comment) lastShow.comment += (lastShow.comment ? '\n' : '') + comment;
+                if (ld && !lastShow.ld.split('\n').includes(ld)) lastShow.ld += (lastShow.ld ? '\n' : '') + ld;
+                if (lists && !lastShow.lists.split('\n').includes(lists)) lastShow.lists += (lastShow.lists ? '\n' : '') + lists;
+                if (comment && !lastShow.comment.split('\n').includes(comment)) lastShow.comment += (lastShow.comment ? '\n' : '') + comment;
             }
         });
 
@@ -846,6 +885,8 @@ app.post('/api/shows/upload', upload.single('file'), async (req, res) => {
         const currentShows = JSON.parse(fs.readFileSync(showsPath));
         const updatedShows = [...currentShows, ...newShows];
         fs.writeFileSync(showsPath, JSON.stringify(updatedShows, null, 2));
+
+        io.emit('hopper_updated');
 
         res.json({ success: true, added: newShows.length, shows: updatedShows });
     } catch (error) {

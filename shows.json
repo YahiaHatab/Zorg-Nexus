@@ -1,452 +1,509 @@
 [
   {
-    "id": "mrwj99t3eaa5e7kp7",
-    "showName": "txEDCON 2026 - Texas Association of School Boards - October 8-11, 2026 - George R. Brown Convention Center - Houston, TX, USA",
+    "id": "ms36pkz2ymz3udt3n",
+    "showName": "AARC 2026 - American Association for Respiratory Care - November 14- 17, 2026 - New Orleans Ernest N. Morial Convention Center - New Orleans, LA, USA",
     "link": [
-      "https://tasb.ungerboeck.com/prod/app85.cshtml?aat=71714974763754497531624450754b6e5568664a646261644977746564754d4144674639734857614668383d"
+      "https://s15.a2zinc.net/clients/aarc/congress2026//Public/EventMap.aspx?shMode=E&ID=1354",
+      "https://congress2026.smallworldlabs.com/exhibitors"
     ],
     "agentName": "Yahia",
     "ld": "",
     "lists": "",
     "comment": "",
-    "date": "2026-07-22",
-    "status": "Done",
+    "date": "2026-07-27",
+    "status": "In Progress",
     "pinnedTo": null,
-    "completedAt": "2026-07-22T20:26:55.055Z"
+    "startTime": 1785154219586
   },
   {
-    "id": "mrwj53pggak0d1l6x",
-    "showName": "ZShow - Infosec World Conference & Expo 2026 - October 12-14, 2026 - Gaylord Palms Resort & Convention Center - Orlando, Fl, USA",
+    "id": "ms36pkz2sxs3qyb7x",
+    "showName": "Super Pet Expo 2027 - January 8-10, 2027 - New Jersey Convention & Exposition Center - Edison, NJ, USA",
     "link": [
-      "https://www.infosecworldusa.com/isw26/attending-companies/"
+      "https://superpetexpo.com/edison-exhibitors/"
     ],
-    "agentName": "Yahia",
+    "agentName": "",
     "ld": "",
     "lists": "",
     "comment": "",
-    "date": "",
-    "status": "Done",
-    "pinnedTo": null,
-    "completedAt": "2026-07-22T20:26:55.067Z"
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
   },
   {
-    "id": "mrwj53pgtdqs47yz9",
-    "showName": "ZShow - ASHT 2026 - American Society of Hand Therapists - OCTOBER 8-10, 2026 - Baird Center - Milwaukee, WI, USA",
+    "id": "ms36pkz23xarrl9a1",
+    "showName": "ZShow - SpaceCom 2027 - January 12- 14, 2027 - Orange County Convention Center - Orlando, FL, USA",
     "link": [
-      "https://meetings.asht.org/2026-exhibitors-sponsors"
+      "https://spc27.mapyourshow.com/8_0/explore/exhibitor-gallery.cfm?featured=false"
     ],
-    "agentName": "Yahia",
+    "agentName": "",
     "ld": "",
     "lists": "",
     "comment": "",
-    "date": "",
-    "status": "Done",
-    "pinnedTo": null,
-    "completedAt": "2026-07-22T20:26:55.068Z"
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
   },
   {
-    "id": "mrwj53pgi6ed6i1qv",
-    "showName": "ZShow - AUSA 2026 - Association of the US Army Annual Meeting - October 12 - 14, 2026 - Walter E. Washington Convention Center - Washington, DC, USA",
+    "id": "ms36pkz2hb6y2o4js",
+    "showName": "ZShow - Southwest Pool & Spa Show 2027 - January 14-16, 2027 - Henry B. Gonzalez Convention Center - San Antonio, TX, USA",
     "link": [
-      "https://meetings.ausa.org/annual/2026/exhibitor_exhibitor_list.cfm"
+      "https://www.swpsshow.com/wp-content/uploads/2026/07/2027-Southwest-Pool-Spa-Show_Floorplan-as-of_7172026.pdf"
     ],
-    "agentName": "Ammar",
-    "ld": "List : 706",
+    "agentName": "",
+    "ld": "",
     "lists": "",
     "comment": "",
-    "date": "",
-    "status": "Done",
-    "pinnedTo": null,
-    "completedAt": "2026-07-22T20:27:18.174Z"
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
   },
   {
-    "id": "mrwj53pgmttiv9g8b",
-    "showName": "IMEX America 2026 - October 13-15, 2026 - Mandalay Bay - Las Vegas, Nv, USA",
+    "id": "ms36pkz2yolvfxmu6",
+    "showName": "ZShow - UMA 2027 - Motorcoach Expo  - January 17 – 20, 2027 - Henry B. González Convention Center - San Antonio, TX, USA",
     "link": [
-      "https://america.imexevents.com/marketplace/exhibitors?pageNumber=1&limit=60"
+      "https://s36.a2zinc.net/clients/uma/umame2027/Public/EventMap.aspx?shMode=E"
     ],
-    "agentName": "Ammar",
-    "ld": "List : 540",
-    "lists": "list not open",
-    "comment": "",
-    "date": "",
-    "status": "Done",
-    "pinnedTo": null,
-    "completedAt": "2026-07-22T20:27:18.175Z"
-  },
-  {
-    "id": "mrwj53pgy2wp64m78",
-    "showName": "XShow - Las Vegas Souvenir & Resort Gift Show 2026 -  October 6-9, 2026 - Las Vegas Convention Center, South Hall - Las Vegas, NV, USA",
-    "link": [
-      "https://lv1026.mapyourshow.com/8_0/explore/exhibitor-gallery.cfm?featured=false"
-    ],
-    "agentName": "Yahia",
-    "ld": "List : 483 - 490 ",
+    "agentName": "",
+    "ld": "",
     "lists": "",
     "comment": "",
-    "date": "",
-    "status": "Done",
-    "pinnedTo": null,
-    "completedAt": "2026-07-22T20:31:15.765Z"
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
   },
   {
-    "id": "mrwj53pgvimv9kza8",
-    "showName": "XShow - NBAA 2026 - Business Aviation Convention & Exhibition - October 20 - 22, 2026 - Las Vegas Convention Center - Las Vegas, NV, USA",
+    "id": "ms36pkz2w0tisncfo",
+    "showName": "TPIE 2027 - Tropical Plant Industry Exhibition - January 20- 22, 2027 - Broward County Convention Center - Fort Lauderdale-Fl, USA",
     "link": [
-      "https://nbaa26.mapyourshow.com/8_0/explore/exhibitor-gallery.cfm?featured=false"
+      "https://s15.a2zinc.net/clients/FNGLA/tpie2027//Public/EventMap.aspx?ID=2498&shMode=E"
     ],
-    "agentName": "Yahia",
-    "ld": "List :  488 - 502",
+    "agentName": "",
+    "ld": "",
     "lists": "",
     "comment": "",
-    "date": "",
-    "status": "Done",
-    "pinnedTo": null,
-    "completedAt": "2026-07-22T20:31:15.766Z"
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
   },
   {
-    "id": "mrwj53pgn23gpp831",
-    "showName": "XZShow - SAWC Fall 2026 - Symposium on Advanced Wound Care - October 15–18, 2026 - Caesars Palace - Las Vegas, NV,  USA",
+    "id": "ms36pkz2y2yyh8xle",
+    "showName": "ZShow - New York National Boat Show 2027 - January 20-24, 2027 - Javits Center - New York, NY, USA",
     "link": [
-      "https://sawcfall2026.mapyourshow.com/8_0/exhview/index.cfm"
+      "https://www.nyboatshow.com/whos-exhibiting"
     ],
-    "agentName": "Yahia",
-    "ld": "List : 120 - 126",
+    "agentName": "",
+    "ld": "",
     "lists": "",
     "comment": "",
-    "date": "",
-    "status": "Done",
-    "pinnedTo": null,
-    "completedAt": "2026-07-22T20:31:15.767Z"
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
   },
   {
-    "id": "mrwj53pg4gnbhu9ax",
-    "showName": "XShow - HR Tech 2026 - October 20-22, 2026 - Mandalay Bay - Las Vegas, Nv,  USA",
+    "id": "ms36pkz2fhq1jfrxd",
+    "showName": "Tampa Build Expo 2027 - January 20-21, 2027 - Tampa Convention Center - Tampa, Fl, USA",
     "link": [
-      "https://events.hrtechnologyconference.com/hrtech2026/Public/eventmap.aspx"
+      "https://buildexpousa.com/tampa-build-expo/"
     ],
-    "agentName": "Yahia",
-    "ld": "List : 284 - 295",
+    "agentName": "",
+    "ld": "",
     "lists": "",
     "comment": "",
-    "date": "",
-    "status": "Done",
-    "pinnedTo": null,
-    "completedAt": "2026-07-22T20:31:15.768Z"
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
   },
   {
-    "id": "mrwj53pgzu6ajc677",
-    "showName": "XShow - SupplySide Global 2026 - October 28- 30, 2026 - Mandalay Bay - Las Vegas, Nv, USA",
+    "id": "ms36pkz23rz0jpj7i",
+    "showName": "ZShow - NSGC 2026 - National Society of Genetic Counselors - November 10- 14, 2026 - Baltimore Convention Center - BALTIMORE, MD,  USA",
     "link": [
-      "https://exhibitor.supplysideglobal.com/supplysideglobal26/Public/eventmap.aspx?shMode=E"
+      "https://smithbucklin.expocad.com/Events/26nsgc/index.html"
     ],
-    "agentName": "Yahia",
-    "ld": "List : 1373  - 1381 ",
+    "agentName": "",
+    "ld": "",
     "lists": "",
     "comment": "",
-    "date": "",
-    "status": "Done",
-    "pinnedTo": null,
-    "completedAt": "2026-07-22T20:31:15.770Z"
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
   },
   {
-    "id": "mrwj53pg7azlzeb1z",
-    "showName": "XShow - FABTECH 2026 - October 21 - 23, 2026 - Las Vegas Convention Center - Las Vegas, NV, USA",
+    "id": "ms36pkz2igas1siyb",
+    "showName": "XShow - CAHF 2026 - California Association of Health Facilities - November 16- 17, 2026 - Palm Springs Convention Center - Palm Springs, CA, USA",
     "link": [
-      "https://s36.a2zinc.net/clients/SME/FABTECH2026/Public/Eventmap.aspx?shmode=E&ID=7063&thumbnail=1"
+      "https://s23.a2zinc.net/clients/CAHF/CAHF2026/Public/EventMap.aspx?shMode=E"
     ],
-    "agentName": "Yahia",
-    "ld": "List : 1332 - 1349 ",
+    "agentName": "",
+    "ld": "List: 100 - 103",
     "lists": "",
     "comment": "",
-    "date": "",
-    "status": "Done",
-    "pinnedTo": null,
-    "completedAt": "2026-07-22T20:31:15.771Z"
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
   },
   {
-    "id": "mrwj53pgzor170vtq",
-    "showName": "XShow - NACAC 2026  - National Association for College Admission Counseling - OCTOBER 8-10, 2026 - MINNEAPOLIS CONVENTION CENTER - MINNEAPOLIS, MN, USA",
+    "id": "ms36pkz2fp7k32v7v",
+    "showName": "XZShow - The IAFE Convention & Trade Show 2026 - November 29 - December 3, 2026 - Kentucky International Convention Center -  Louisville, KY, USA",
     "link": [
-      "https://fp37.a2zinc.net/clients/NACAC/nc26/Public/EventMap.aspx?ID=492&sortMenu=104000"
+      "https://s2.goeshow.com/iafe/annual/2026/exhibitor_exhibit_map.cfm"
     ],
-    "agentName": "Yahia",
-    "ld": "List : 172 - 179",
+    "agentName": "",
+    "ld": "List: 185 - 188",
     "lists": "",
     "comment": "",
-    "date": "",
-    "status": "Done",
-    "pinnedTo": null,
-    "completedAt": "2026-07-22T20:31:15.772Z"
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
   },
   {
-    "id": "mrwj53pggpzda1yq0",
-    "showName": "XShow - MD&M Midwest 2026 - OCTOBER 28-29, 2026 - Minneapolis Convention Center - Minneapolis, MN, USA",
+    "id": "ms36pkz27s99pmrae",
+    "showName": "XShow - MRS 2026 - Materials Research Society Fall Meeting & Exhibit - December 1- 3, 2026 - Hynes Convention Center - Boston, Ma, USA",
     "link": [
-      "https://admmn26.mapyourshow.com/8_0/explore/exhibitor-gallery.cfm?featured=false"
+      "https://hallerickson.ungerboeck.com/prod/app85.cshtml?aat=72315234652f70374f53396b6d54694e4667477635444f6441504775334e6e30797a4b31666754495976343d"
     ],
-    "agentName": "Yahia",
-    "ld": "List :  517 - 525",
+    "agentName": "",
+    "ld": "",
     "lists": "",
     "comment": "",
-    "date": "",
-    "status": "Done",
-    "pinnedTo": null,
-    "completedAt": "2026-07-22T20:31:15.773Z"
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
   },
   {
-    "id": "mrwj53pggqkpzyk7s",
-    "showName": "XShow - Periop Leader Week 2026 - October 4-7, 2026 - Savannah Convention Center - Savannah, GA, USA",
+    "id": "ms36pkz2iagtu5r4d",
+    "showName": "XZShow - Grand Strand Gift & Resort Merchandise Show 2026 - December 6-9, 2026 - Myrtle Beach Convention Center - Myrtle Beach, SC, USA",
     "link": [
-      "https://ormc26.mapyourshow.com/8_0/explore/exhibitor-gallery.cfm?featured=false"
+      "https://gsr1226.mapyourshow.com/8_0/explore/exhibitor-gallery.cfm?featured=false"
     ],
-    "agentName": "Yahia",
-    "ld": "List : 80 - 87",
+    "agentName": "",
+    "ld": "List: 215 - 230",
     "lists": "",
     "comment": "",
-    "date": "",
-    "status": "Done",
-    "pinnedTo": null,
-    "completedAt": "2026-07-22T20:31:15.774Z"
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
   },
   {
-    "id": "mrwj53phkszmqey3q",
-    "showName": "XShow - International Fastener Expo 2026 - October 8-9, 2026 - Phoenix Convention Center - Phoenix, AZ, USA",
+    "id": "ms36pkz2pik7hjmnd",
+    "showName": "XZShow - AABC 2026 -  Advanced Automotive Battery Conference - DECEMBER 7-10, 2026 - San Diego Convention Center - San Diego, CA , USA",
     "link": [
-      "https://fastener.a2zinc.net/IFE2026/Public/eventmap.aspx?&shavailable=1"
+      "https://www.intheorious.com/chi/pub/aabc2026b_pub/#"
     ],
-    "agentName": "Yahia",
-    "ld": "List :   394 - 399",
+    "agentName": "",
+    "ld": "List: 50 - 60",
     "lists": "",
     "comment": "",
-    "date": "",
-    "status": "Done",
-    "pinnedTo": null,
-    "completedAt": "2026-07-22T20:31:15.776Z"
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
   },
   {
-    "id": "mrwj53phkks7im5bc",
-    "showName": "XZShow - SEMICON West 2026 - October 13–15, 2026 - Moscone Center - San Francisco, CA, USA",
+    "id": "ms36pkz2af3as324l",
+    "showName": "XShow - AAEP Annual Convention & Trade Show 2026 - December 8- 10, 2026 - Mandalay Bay Convention Center - Las Vegas, Nv, USA",
     "link": [
-      "https://expo.semi.org/west2026//Public/EventMap.aspx?shMode=E&ID=32435&thumbnail=1"
+      "https://aaep2026.eventscribe.net/SearchByExpoCompany.asp?pfp=Browse%20By%20Company&embedded=true&initialWidth=1040&childId=embeddedPage&parentTitle=Meet%20Our%20Exhibitors%20-%20AAEP%20Annual%20Convention&parentUrl=https%3A%2F%2Fconvention.aaep.org%2Fmeet-our-exhibitors%2F"
     ],
-    "agentName": "Ammar",
-    "ld": "List : 695 - 701",
-    "lists": "Do Some",
-    "comment": "",
-    "date": "",
-    "status": "Done",
-    "pinnedTo": null,
-    "completedAt": "2026-07-22T20:30:47.527Z"
-  },
-  {
-    "id": "mrwj53phabqbtrz3w",
-    "showName": "XZShow - ASBO 2026 - Association of School Business Officials International -  October 14–16, 2026 - David L. Lawrence Convention Center - Pittsburgh, PA, USA",
-    "link": [
-      "https://s6.goeshow.com/asbo/annual/2026/exhibitor_hall_map.cfm"
-    ],
-    "agentName": "Yahia",
-    "ld": "List : 108 - 114",
+    "agentName": "",
+    "ld": "List: 274 - 279",
     "lists": "",
     "comment": "",
-    "date": "",
-    "status": "Done",
-    "pinnedTo": null,
-    "completedAt": "2026-07-22T20:32:21.126Z"
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
   },
   {
-    "id": "mrwj53ph8bu0909hs",
-    "showName": "XZShow - APTA 2026 - American Public Transportation Association - October 5- 7, 2026 - McCormick Place Convention Center - Chicago, IL, USA",
+    "id": "ms36pkz215fejs6bv",
+    "showName": "XZShow - Gartner IT Infrastructure, Operations & Cloud Strategies Conference 2026 -  December 8 – 10, 2026 - The Venetian Resort Las Vegas - Las Vegas, Nv, USA",
     "link": [
-      "https://www.aptaexpo.com//exhibitor_exhibitor_list.cfm"
+      "https://www.gartner.com/en/conferences/na/infrastructure-operations-cloud-us/exhibitors"
     ],
-    "agentName": "Yahia",
-    "ld": "List : 651 - 663",
+    "agentName": "",
+    "ld": "List: 101 - 112",
     "lists": "",
     "comment": "",
-    "date": "",
-    "status": "Done",
-    "pinnedTo": null,
-    "completedAt": "2026-07-22T20:32:21.127Z"
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
   },
   {
-    "id": "mrwj53ph394ch7glm",
-    "showName": "XZShow - NASS 2026 - North American Spine Society - October 14-17, 2026 - Henry B. Gonzalez Convention Center - San Antonio, TX, USA",
+    "id": "ms36pkz2w4x5u1w11",
+    "showName": "XShow - RMEF Hunter & Outdoor Christmas Expo 2026 Co Located With Cowboy Christmas 2026 - December 3-12, 2026 - Las Vegas Convention Center – South Halls - Las Vegas, NV, USA",
     "link": [
-      "https://nass2026.smallworldlabs.com/exhibitors"
+      "https://cc2026.smallworldlabs.com/exhibitors",
+      "https://s15.a2zinc.net/clients/RMEF/HOC26//Public/EventMap.aspx?ID=824"
     ],
-    "agentName": "Yahia",
-    "ld": "List : 198 - 209",
+    "agentName": "",
+    "ld": "",
+    "lists": "Cowboy Christmas 2026\nRMEF",
+    "comment": "",
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
+  },
+  {
+    "id": "ms36pkz2izua9vkna",
+    "showName": "XShow - AES 2026 - AMERICAN EPILEPSY SOCIETY - December 4-8, 2026 - Colorado Convention Center - Denver, CO, USA",
+    "link": [
+      "https://s36.a2zinc.net/clients/AES/AES2026AM/public/EventMap.aspx?shMode=E&ID=368&sortMenu=103000"
+    ],
+    "agentName": "",
+    "ld": "List: 128 - 135",
     "lists": "",
     "comment": "",
-    "date": "",
-    "status": "Done",
-    "pinnedTo": null,
-    "completedAt": "2026-07-22T20:32:21.128Z"
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
   },
   {
-    "id": "mrwj53phghh8z3jij",
-    "showName": "XZShow - ASPS Plastic Surgery 2026 - American Society of Plastic Surgeons -  October 16- 18, 2026 - George R. Brown Convention Center - HOUSTON-TX, USA",
+    "id": "ms36pkz22x49ras0o",
+    "showName": "XShow -  ASHP Midyear 2026 - December 7 - 9, 2026 - Orange County Convention Center - Orlando, FL, USA",
     "link": [
-      "https://exhibits.plasticsurgerythemeeting.com/pstm26/public/EventMap.aspx?ID=2869&shMode=E&sortMenu=103003"
+      "https://events.jspargo.com/Midyear26/public/EventMap.aspx?shMode=E&shExhlist=1&ID=122495&sortMenu=103001"
     ],
-    "agentName": "Yahia",
-    "ld": "List : 135 - 142",
+    "agentName": "",
+    "ld": "List: 244 - 251",
     "lists": "",
     "comment": "",
-    "date": "",
-    "status": "Done",
-    "pinnedTo": null,
-    "completedAt": "2026-07-22T20:32:21.130Z"
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
   },
   {
-    "id": "mrwj53phibownymla",
-    "showName": "XZShow - ASA 2026  - American Society of Anesthesiologists - October 17 - 19, 2026 - San Diego Convention Center - San Diego, CA, USA",
+    "id": "ms36pkz26of1wap76",
+    "showName": "XZShow - The Docks Expo & Marina Conference 2026 - December 1–3, 2026 - Music City Center - Nashville, TN, USA",
     "link": [
-      "https://asaanes2026.mapyourshow.com/8_0/explore/exhibitor-gallery.cfm?featured=false"
+      "https://s4.goeshow.com/docks/expo/2026/exhibit_map.cfm"
     ],
-    "agentName": "Yahia",
-    "ld": "List :  249 - 253",
+    "agentName": "",
+    "ld": "List: 168 - 179",
     "lists": "",
     "comment": "",
-    "date": "",
-    "status": "Done",
-    "pinnedTo": null,
-    "completedAt": "2026-07-22T20:32:21.131Z"
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
   },
   {
-    "id": "mrwj53phnlr5ru4up",
-    "showName": "XShow - IACP 2026 - International Association of Chiefs of Police - October 24 - 27, 2026 - Orange County Convention Center - Orlando, FL, USA",
+    "id": "ms36pkz2zo5d8cm6y",
+    "showName": "XShow - ASH Annual Meeting 2026 - American Society of Hematology - December 12- 14, 2026 - Ernest N. Morial Convention Center - New Orleans, LA, USA",
     "link": [
-      "https://iacp2026.mapyourshow.com/8_0/explore/exhibitor-gallery.cfm?featured=false"
+      "https://events.jspargo.com/ASH26/public/eventmap.aspx?shavailable=1"
     ],
-    "agentName": "Yahia",
-    "ld": "List : 632 - 639",
+    "agentName": "",
+    "ld": "List: 266 - 453",
     "lists": "",
     "comment": "",
-    "date": "",
-    "status": "Done",
-    "pinnedTo": null,
-    "completedAt": "2026-07-22T20:32:21.132Z"
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
   },
   {
-    "id": "mrwj53ph15nb42et8",
-    "showName": "XZShow - Greenbuild International Conference and Expo 2026 - October 20 - 23, 2026 - Javits Center - New York, NY, USA",
+    "id": "ms36pkz2mc4cgr9sr",
+    "showName": "XZShow - CSBA AEC 2026 - California School Boards Association - December 3- 5, 2026 - San Diego Convention Center - San Diego, CA, USA",
     "link": [
-      "https://s23.a2zinc.net/clients/informaconnect/gice2026/Public/EventMap.aspx?shMode=E&ID=3956"
+      "https://fp37.a2zinc.net/clients/CSBA/AEC2026//Public/EventMap.aspx?shMode=E"
     ],
-    "agentName": "Yahia",
-    "ld": "List : 162 - 166",
+    "agentName": "",
+    "ld": "List: 102 - 108",
     "lists": "",
     "comment": "",
-    "date": "",
-    "status": "Done",
-    "pinnedTo": null,
-    "completedAt": "2026-07-22T20:32:21.134Z"
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
   },
   {
-    "id": "mrwj53phiwt3sfb5a",
-    "showName": "XShow - FNCE 2026 - Food & Nutrition Conference & Expo - October 24-27, 2026 - Henry B. González Convention Center - San Antonio, Tx, USA",
+    "id": "ms36pkz22u18ftstf",
+    "showName": "XShow - The MRAA Conference DEALER WEEK 2026 - December 6- 9, 2026 - Tampa Convention Center - Tampa, Fl, USA",
     "link": [
-      "https://s23.a2zinc.net/clients/CorcExpo/fnce2026/Public/EventMap.aspx?shMode=E&ID=15823"
+      "https://s7.goeshow.com/mraa/dealerweek/2026/Exibitor_List.cfm"
     ],
-    "agentName": "Yahia",
-    "ld": "List : 242 - 250",
+    "agentName": "",
+    "ld": "List: 157 - 162",
     "lists": "",
     "comment": "",
-    "date": "",
-    "status": "Done",
-    "pinnedTo": null,
-    "completedAt": "2026-07-22T20:32:21.135Z"
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
   },
   {
-    "id": "mrwj53phimsdpvkay",
-    "showName": "XShow - HCD 2026 - Healthcare Design Industry Show - October 17-20, 2026 - Ernest N. Morial Convention Center - New Orleans LA, USA",
+    "id": "ms36pkz2ns7odnghx",
+    "showName": "XShow - SABCS 2026 - San Antonio Breast Cancer Symposium - December 8 - 11, 2026 -  Henry B. González Convention Center - San Antonio, Tx, USA",
     "link": [
-      "https://health.a2zinc.net/HCD2026/Public/eventmap.aspx?&shavailable=1"
+      "https://sabcs26.mapyourshow.com/8_0/explore/exhibitor-gallery.cfm?featured=false"
     ],
-    "agentName": "Yahia",
-    "ld": "List : 255 - 262 ",
+    "agentName": "",
+    "ld": "List: 99 - 103",
     "lists": "",
     "comment": "",
-    "date": "",
-    "status": "Done",
-    "pinnedTo": null,
-    "completedAt": "2026-07-22T20:32:21.136Z"
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
   },
   {
-    "id": "mrwj53ph61mcc08xf",
-    "showName": "XShow - IFPA 2026 - The Global Produce & Floral Show - OCTOBER 14 - 16, 2026 - Orange County Convention Center - Orlando-Fl, USA",
+    "id": "ms36pkz2pew3j3qo1",
+    "showName": "XZShow - The International WorkBoat Show 2026 - December 2-4, 2026 - Ernest N. Morial Convention Center - New Orleans, LA, USA",
     "link": [
-      "https://26conv.mapyourshow.com/8_0/explore/exhibitor-gallery.cfm?featured=false"
+      "https://workboatshow2026.smallworldlabs.com/exhibitors"
     ],
-    "agentName": "Yahia",
-    "ld": "List : 775 - 790",
+    "agentName": "",
+    "ld": "List: 893 - 904",
     "lists": "",
     "comment": "",
-    "date": "",
-    "status": "Done",
-    "pinnedTo": null,
-    "completedAt": "2026-07-22T20:32:21.138Z"
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
   },
   {
-    "id": "mrwj53phyu0fw8jfd",
-    "showName": "XZShow - Ncchc 2026 - NATIONAL CONFERENCE ON CORRECTIONAL HEALTH CARE - October 24-28, 2026 - Paris Las Vegas - Las Vegas, NV, USA",
+    "id": "ms36pkz28dah19pfo",
+    "showName": "XShow - SHOT Show 2027 - january 19- 22, 2027 - Venetian Expo + Caesars Forum - Las Vegas, Nv, USA",
     "link": [
-      "https://ncchc.expo-genie.com/ncchc26/floor-plan-viewer/"
+      "https://n1a.goexposoftware.com/events/ss27/goExpo/floorPlan/viewFloorPlan.php"
     ],
-    "agentName": "Yahia",
-    "ld": "List : 71 - 74",
+    "agentName": "",
+    "ld": "List: 2323 - 2332",
     "lists": "",
     "comment": "",
-    "date": "",
-    "status": "Done",
-    "pinnedTo": null,
-    "completedAt": "2026-07-22T20:32:21.139Z"
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
   },
   {
-    "id": "mrwj53phmt1wutn5s",
-    "showName": "XZShow - ASPE 2026 - American Society of Plumbing Engineers Convention and Exposition - October 12- 13, 2026 - Oklahoma City Convention Center - Oklahoma City, OK, USA",
+    "id": "ms36pkz3xzhob6a7k",
+    "showName": "XShow- SUPERZOO 2026 - August 12 - 14, 2026 - Mandalay Bay - Las Vegas, NV, USA",
     "link": [
-      "https://aspe2026.smallworldlabs.com/exhibitors"
+      "https://s23.a2zinc.net/clients/WPA/SZ2026/Public/EventMap.aspx?shMode=E"
     ],
-    "agentName": "Yahia",
-    "ld": "List : 260 - 264",
+    "agentName": "",
+    "ld": "List: 1170 - 1185",
     "lists": "",
     "comment": "",
-    "date": "",
-    "status": "Done",
-    "pinnedTo": null,
-    "completedAt": "2026-07-22T20:32:21.141Z"
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
   },
   {
-    "id": "mrwj53phccy8edk2e",
-    "showName": "XZShow - The Battery Show North America 2026 - Co Located With - Electric & Hybrid Vehicle - October 13-15 - Huntington Place - Detroit, MI, USA",
+    "id": "ms36pkz3al8l6246c",
+    "showName": "XZShow - Ai4 2026 - North America's largest artificial intelligence industry event - AUGUST 4-6, 2026 - the venetian - Las vegas, Nv, USA",
     "link": [
-      "https://tbsm26.mapyourshow.com/8_0/explore/exhibitor-gallery.cfm?featured=false"
+      "https://ai4.io/who-attends/"
     ],
-    "agentName": "Ammar",
-    "ld": "List : 892 - 935",
-    "lists": "Do Some",
-    "comment": "",
-    "date": "",
-    "status": "Done",
-    "pinnedTo": null,
-    "completedAt": "2026-07-22T20:30:47.527Z"
-  },
-  {
-    "id": "mrwj53phgqu7374v5",
-    "showName": "XShow - ASRM 2026 - American Society for Reproductive Medicine - October 24-28, 2026 - Baltimore Convention Center - Baltimore-Md, USA",
-    "link": [
-      "https://www.expocad.com/host/fx/eventpower/26asrm/exfx.html"
-    ],
-    "agentName": "Yahia",
-    "ld": "List : 223 - 231",
+    "agentName": "",
+    "ld": "List: 4748 - 5033",
     "lists": "",
     "comment": "",
-    "date": "",
-    "status": "Done",
-    "pinnedTo": null,
-    "completedAt": "2026-07-22T20:32:21.142Z"
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
+  },
+  {
+    "id": "ms36pkz3973pdn82y",
+    "showName": "XShow - ASD Market Week 2026 - August 24 - 27, 2026 - Las Vegas Convention Center - LAS VEGAS-NV, USA",
+    "link": [
+      "https://asd.a2zinc.net/August2026/Public/eventmap.aspx?ID=46633&shAvailable=1"
+    ],
+    "agentName": "",
+    "ld": "List: 1194 - 1256",
+    "lists": "",
+    "comment": "",
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
+  },
+  {
+    "id": "ms36pkz3y1k4102la",
+    "showName": "XShow - MAGIC - PROJECT - SOURCING - OFFPRICE 2026 Las Vegas - August 10-12, 2026 - Las Vegas Convention Center - Las Vegas, NV, USA",
+    "link": [
+      "https://lasvegasaug.fashionresource.com/marketplace/exhibitors?hash=7d193d019235f8117e65d139093f192c&limit=12&pageNumber=1"
+    ],
+    "agentName": "",
+    "ld": "List: 324 - 469",
+    "lists": "",
+    "comment": "",
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
+  },
+  {
+    "id": "ms36pkz3b58c36sxd",
+    "showName": "XZShow - RE+ Mid-Atlantic 2026 - August 12-13, 2026 - pennsylvania Convention Center - Philadelphia, PA, USA",
+    "link": [
+      "https://rema26.mapyourshow.com/8_0/explore/exhibitor-gallery.cfm?featured=false"
+    ],
+    "agentName": "",
+    "ld": "List: 122 - 126",
+    "lists": "",
+    "comment": "",
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
+  },
+  {
+    "id": "ms36pkz32slosfmob",
+    "showName": "XZShow - Techtextil North America 2026 - August 4 - 6, 2026 - Raleigh Convention Center - Raleigh, NC, USA",
+    "link": [
+      "https://ttnaw26.mapyourshow.com/8_0/explore/exhibitor-gallery.cfm?featured=false"
+    ],
+    "agentName": "",
+    "ld": "List: 135 - 140",
+    "lists": "",
+    "comment": "",
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
+  },
+  {
+    "id": "ms36pkz35bkaibemw",
+    "showName": "XShow -  ICSC FLORIDA 2026 - International Council of Shopping Centers - August 30 - September 1, 2026 - Orange County Convention Center - Orlando-Fl, USA",
+    "link": [
+      "https://fl2026.mapyourshow.com/8_0/explore/exhibitor-gallery.cfm?featured=false"
+    ],
+    "agentName": "",
+    "ld": "List: 299 - 308",
+    "lists": "",
+    "comment": "",
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
+  },
+  {
+    "id": "ms36pkz3btztys6gn",
+    "showName": "XZShow AABP 2026 - American Association of Bovine Practitioners - August 27 - 29, 2026 - Minneapolis Convention Center - Minneapolis, MN, USA",
+    "link": [
+      "https://s23.a2zinc.net/clients/AABovine/AABP2026//Public/EventMap.aspx?shMode=E"
+    ],
+    "agentName": "",
+    "ld": "List: 81 - 86",
+    "lists": "",
+    "comment": "",
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
+  },
+  {
+    "id": "ms36pkz4dvexf953u",
+    "showName": "XShow -  IDEAg Amarillo Farm & Ranch Show 2026 - December 1-3, 2026 - Amarillo Civic Center - Amarillo, TX",
+    "link": [
+      "https://ideaggroup.expocad.com/Events/26afrs/index.html"
+    ],
+    "agentName": "",
+    "ld": "List: 331 - 334",
+    "lists": "",
+    "comment": "",
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
+  },
+  {
+    "id": "ms36pkz4fr8hllbf4",
+    "showName": "XZShow - The Water Expo - Water Quality Supply & Waste Water 2026 - August 12 - 13, 2026 - Broward County Convention Center - FORT LAUDERDALE-FL, USA",
+    "link": [
+      "https://app.expofp.com/exhibitorList?expoKey=twe26"
+    ],
+    "agentName": "",
+    "ld": "List: 96 - 101",
+    "lists": "",
+    "comment": "",
+    "date": "2026-07-27",
+    "status": "Pending",
+    "pinnedTo": null
   }
 ]
