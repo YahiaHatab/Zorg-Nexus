@@ -2733,13 +2733,19 @@
 
     function applyLedgerFilter() {
       const q = (document.getElementById('ledgerSearch')?.value || '').toLowerCase().trim();
-      const filtered = q
+      const filtered = (q
         ? _ledgerSource.filter(rec =>
           (rec.filename || '').toLowerCase().includes(q) ||
           (rec.agent || '').toLowerCase().includes(q) ||
           (rec.time || '').toLowerCase().includes(q)
         )
-        : _ledgerSource;
+        : [..._ledgerSource]).sort((a, b) => {
+          const isCxlA = a.mode === 'CXL' || String(a.status || '').startsWith('CXL');
+          const isCxlB = b.mode === 'CXL' || String(b.status || '').startsWith('CXL');
+          if (isCxlA && !isCxlB) return -1;
+          if (!isCxlA && isCxlB) return 1;
+          return 0;
+        });
 
       const tbody = document.getElementById('ledgerBody');
       if (!filtered.length) {
@@ -3780,7 +3786,13 @@
       }
       populateBulkAgentDropdown();
 
-      const activeArray = isHopperFiltered ? filteredShows : showsData;
+      const activeArray = [...(isHopperFiltered ? filteredShows : showsData)].sort((a, b) => {
+        const isCxlA = String(a.status || '').startsWith('CXL');
+        const isCxlB = String(b.status || '').startsWith('CXL');
+        if (isCxlA && !isCxlB) return -1;
+        if (!isCxlA && isCxlB) return 1;
+        return 0;
+      });
 
       if (!activeArray || !activeArray.length) {
         tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:40px;">${isHopperFiltered ? 'No shows match the filters.' : 'Queue is empty. Drop an Excel file here or click Upload.'}</td></tr>`;
