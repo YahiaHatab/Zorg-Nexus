@@ -1045,6 +1045,54 @@ app.post('/api/shows/complete', (req, res) => {
     }
 });
 
+// Skip: reset the In Progress show back to Pending & unassign, then let the agent fetch next
+app.post('/api/shows/skip', (req, res) => {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ success: false, error: 'id required' });
+    try {
+        const currentShows = JSON.parse(fs.readFileSync(showsPath));
+        const show = currentShows.find(s => s.id === id);
+        if (!show) return res.status(404).json({ success: false, error: 'Show not found' });
+
+        // Reset to pending, unassigned, move to bottom of array so it appears at end of queue
+        show.status = 'Pending';
+        show.agentName = '';
+        delete show.startTime;
+
+        // Move skipped show to end of list so next agent gets a fresh one
+        const idx = currentShows.indexOf(show);
+        currentShows.splice(idx, 1);
+        currentShows.push(show);
+
+        fs.writeFileSync(showsPath, JSON.stringify(currentShows, null, 2));
+        io.emit('hopper_updated');
+        res.json({ success: true });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
+// Exit Queue: reset the In Progress show back to Pending & unassign, agent goes idle (no auto-next)
+app.post('/api/shows/exit-queue', (req, res) => {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ success: false, error: 'id required' });
+    try {
+        const currentShows = JSON.parse(fs.readFileSync(showsPath));
+        const show = currentShows.find(s => s.id === id);
+        if (!show) return res.status(404).json({ success: false, error: 'Show not found' });
+
+        show.status = 'Pending';
+        show.agentName = '';
+        delete show.startTime;
+
+        fs.writeFileSync(showsPath, JSON.stringify(currentShows, null, 2));
+        io.emit('hopper_updated');
+        res.json({ success: true });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
 app.post('/api/shows/clear', (req, res) => {
     fs.writeFileSync(showsPath, JSON.stringify([], null, 2));
     io.emit('hopper_updated');

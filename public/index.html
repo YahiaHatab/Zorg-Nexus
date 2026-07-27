@@ -2321,7 +2321,6 @@
                 <p id="briefingStatus" style="color:var(--text-muted); font-size:14px;">Waiting for Show...</p>
               </div>
               <div style="display:flex; gap:10px; align-items:center;">
-                <button id="btn-open-zorg" class="zorg-purple-btn">✨ ZORG Scrape</button>
                 <button onclick="requestDesktopNotifications()"
                   style="cursor:pointer; padding:6px 12px; border-radius:6px; background:transparent; color:var(--text-muted); border:1px solid var(--border); font-size:12px; font-weight:600; transition:color 0.2s;">🔔
                   Enable Alerts</button>
@@ -2358,17 +2357,21 @@
                 </div>
               </div>
 
-              <!-- Upload & Auto-Complete File Input -->
-              <input type="file" id="briefingUploadInput" style="display:none;" accept=".xlsx, .xls" multiple onchange="uploadAndCompleteShow(this)">
-
-              <div style="display:flex; gap:16px;">
-                <button onclick="document.getElementById('briefingUploadInput').click()" class="filter-btn btn-std"
-                  style="flex:1.2; padding:14px; font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px;">
-                  ⬆ Upload Excel & Complete Show
-                </button>
+              <div style="display:flex; gap:12px;">
                 <button id="doneWorkingBtn" onclick="finishWorking()"
                   style="flex:1; background:var(--success); border:none; color:#fff; font-weight:600; font-size:14px; padding:14px; border-radius:8px; cursor:pointer; transition:background 0.2s;">
                   ✓ Complete Without File
+                </button>
+              </div>
+              <!-- Skip / Exit Queue row -->
+              <div style="display:flex; gap:12px; margin-top:10px;">
+                <button id="skipShowBtn" onclick="skipShow()"
+                  style="flex:1; padding:10px 14px; font-size:13px; font-weight:600; border-radius:8px; cursor:pointer; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.5); color:#fbbf24; display:flex; align-items:center; justify-content:center; gap:7px; transition:background 0.2s, border-color 0.2s;" title="Return this show to the queue and get the next one">
+                  ⏭ Skip Show
+                </button>
+                <button id="exitQueueBtn" onclick="exitQueue()"
+                  style="flex:1; padding:10px 14px; font-size:13px; font-weight:600; border-radius:8px; cursor:pointer; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.35); color:#f87171; display:flex; align-items:center; justify-content:center; gap:7px; transition:background 0.2s, border-color 0.2s;" title="Return this show to the queue and go idle (no auto-next)">
+                  🚪 Exit Queue
                 </button>
               </div>
             </div>
@@ -2387,18 +2390,6 @@
             </div>
           </div>
 
-          <!-- ── SHOWS YOU WORKED ON HISTORY PANEL ── -->
-          <div class="panel glass-panel" style="max-width:800px; margin:24px auto 0; padding:24px; width:100%;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:12px;">
-              <h3 style="font-size:15px; font-weight:700; color:var(--text-main); display:flex; align-items:center; gap:8px; margin:0;">
-                <span>📜</span> Shows You Worked On
-              </h3>
-              <span id="briefingHistoryCount" style="font-size:11px; color:var(--accent-blue); font-weight:700; background:var(--accent-blue-glow); padding:3px 10px; border-radius:12px;">0 Shows</span>
-            </div>
-            <div id="briefingHistoryList" style="max-height:280px; overflow-y:auto; padding-right:4px;">
-              <div style="color:var(--text-muted); font-size:12px; text-align:center; padding:20px;">Loading history...</div>
-            </div>
-          </div>
         </div>
 
 
@@ -2407,24 +2398,7 @@
   </div>
 
 
-  <!-- ══════════════════════════════════════
-       ZORG SCRAPER FLOATING PORTAL
-  ══════════════════════════════════════ -->
-  <div id="zorgPortal" class="zorg-portal-window hidden">
-    <div class="portal-header" id="portalHeader">
-      <div class="portal-header-title">
-        <span class="portal-dot"></span>
-        ZORG Scraper
-      </div>
-      <button class="portal-close-btn" id="btn-close-zorg" title="Close portal">✕</button>
-    </div>
-    <div class="portal-iframe-clip">
-      <iframe id="zorgScraperFrame" src="http://localhost:3000" title="ZORG Scraper" width="100%" loading="eager"
-        allowfullscreen sandbox="allow-same-origin allow-scripts allow-forms allow-downloads allow-popups"></iframe>
-    </div>
-    <!-- Resize grip — draggable bottom-right corner -->
-    <div class="portal-resize-handle" id="portalResizeHandle"></div>
-  </div>
+
 
   <div id="toastContainer"></div>
 
@@ -2755,6 +2729,12 @@
                 showToast(`✅ <b>Upload Successful</b><br>${result.filename}<br>Shown: ${stats.shown} | Hidden: ${stats.hidden}`, 'success');
               }
             });
+
+            // Auto-complete the active show if in Briefing Room
+            if (currentAssignedShow && currentView === 'briefing') {
+              showToast(`🎯 Auto-completing show: <b>${escHtml(currentAssignedShow.showName)}</b>`, 'info');
+              await finishWorking();
+            }
           } else {
             showErrorOverlay('Upload Failed', 'The server could not process the upload request.', data.error || 'Please try again.');
           }
@@ -3530,19 +3510,6 @@
         updateBriefingModeDisplay();
       }
 
-      async function uploadAndCompleteShow(inputEl) {
-        if (!inputEl.files || inputEl.files.length === 0) return;
-        const uploadedFiles = Array.from(inputEl.files);
-        inputEl.value = '';
-
-        showToast('⬆ Uploading Excel file...', 'info');
-        await uploadFiles(uploadedFiles, 'standard');
-
-        if (currentAssignedShow) {
-          showToast(`✅ Auto-completing show: ${currentAssignedShow.showName}`, 'success');
-          await finishWorking();
-        }
-      }
 
       async function finishWorking() {
         if (!currentAssignedShow) return;
@@ -3722,94 +3689,74 @@
       }
 
       // ─────────────────────────────────────────────
-      //  ZORG SCRAPER PORTAL — Toggle, Drag & Resize
+      //  SKIP SHOW & EXIT QUEUE
       // ─────────────────────────────────────────────
-      (function () {
-        const portal = document.getElementById('zorgPortal');
-        const header = document.getElementById('portalHeader');
-        const btnOpen = document.getElementById('btn-open-zorg');
-        const btnClose = document.getElementById('btn-close-zorg');
-        const resizeGrip = document.getElementById('portalResizeHandle');
+      async function skipShow() {
+        if (!currentAssignedShow) return;
+        const showToSkip = currentAssignedShow;
 
-        const MIN_W = 320, MIN_H = 300;
-
-        // ── Toggle open / close ──
-        btnOpen.addEventListener('click', () => {
-          portal.classList.remove('hidden');
-        });
-        btnClose.addEventListener('click', () => {
-          portal.classList.add('hidden');
-        });
-
-        // ── Dragging logic ──
-        let isDragging = false;
-        let dragOffsetX = 0, dragOffsetY = 0;
-
-        header.addEventListener('mousedown', (e) => {
-          if (e.target.closest('#btn-close-zorg')) return;
-          isDragging = true;
-          const rect = portal.getBoundingClientRect();
-          dragOffsetX = e.clientX - rect.left;
-          dragOffsetY = e.clientY - rect.top;
-          portal.classList.add('dragging');
-          document.body.style.userSelect = 'none';
-        });
-
-        // ── Resize logic ──
-        let isResizing = false;
-        let resizeStartX = 0, resizeStartY = 0;
-        let resizeStartW = 0, resizeStartH = 0;
-
-        resizeGrip.addEventListener('mousedown', (e) => {
-          e.preventDefault();
-          e.stopPropagation(); // don't accidentally trigger drag
-          isResizing = true;
-          resizeStartX = e.clientX;
-          resizeStartY = e.clientY;
-          resizeStartW = portal.offsetWidth;
-          resizeStartH = portal.offsetHeight;
-          document.body.style.userSelect = 'none';
-          document.body.style.cursor = 'nwse-resize';
-        });
-
-        // ── Shared mousemove ──
-        document.addEventListener('mousemove', (e) => {
-          if (isDragging) {
-            const vw = window.innerWidth;
-            const vh = window.innerHeight;
-            let newLeft = e.clientX - dragOffsetX;
-            let newTop = e.clientY - dragOffsetY;
-            newLeft = Math.max(0, Math.min(newLeft, vw - portal.offsetWidth));
-            newTop = Math.max(0, Math.min(newTop, vh - portal.offsetHeight));
-            portal.style.left = newLeft + 'px';
-            portal.style.top = newTop + 'px';
-            portal.style.right = 'unset';
-            portal.style.bottom = 'unset';
-          }
-
-          if (isResizing) {
-            const dx = e.clientX - resizeStartX;
-            const dy = e.clientY - resizeStartY;
-            const newW = Math.max(MIN_W, Math.min(resizeStartW + dx, window.innerWidth * 0.98));
-            const newH = Math.max(MIN_H, Math.min(resizeStartH + dy, window.innerHeight * 0.96));
-            portal.style.width = newW + 'px';
-            portal.style.height = newH + 'px';
+        showCustomConfirm({
+          title: 'Skip Show',
+          message: `Skip "${showToSkip.showName}"? It will be returned to the end of the queue and you will be assigned the next available show.`,
+          confirmText: '⏭ Skip Show',
+          isDanger: false,
+          onConfirm: async () => {
+            try {
+              const res = await fetch('/api/shows/skip', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: showToSkip.id })
+              });
+              if ((await res.json()).success) {
+                stopTimer();
+                if (socket) socket.emit('agent_status', { agent: currentUser, status: 'Idle', show: null });
+                currentAssignedShow = null;
+                showToast('⏭ Show skipped — fetching your next one...', 'info');
+                renderBriefingCard();
+                // Automatically pull next show
+                await startNextShow();
+              } else {
+                showToast('❌ Failed to skip show.', 'error');
+              }
+            } catch (e) {
+              showToast('❌ Server error while skipping.', 'error');
+            }
           }
         });
+      }
 
-        // ── Shared mouseup ──
-        document.addEventListener('mouseup', () => {
-          if (isDragging) {
-            isDragging = false;
-            portal.classList.remove('dragging');
+      async function exitQueue() {
+        if (!currentAssignedShow) return;
+        const showToExit = currentAssignedShow;
+
+        showCustomConfirm({
+          title: 'Exit Queue',
+          message: `Exit queue? "${showToExit.showName}" will be returned to the queue unassigned. You will go idle and will NOT receive the next show automatically.`,
+          confirmText: '🚪 Exit Queue',
+          isDanger: true,
+          onConfirm: async () => {
+            try {
+              const res = await fetch('/api/shows/exit-queue', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: showToExit.id })
+              });
+              if ((await res.json()).success) {
+                stopTimer();
+                if (socket) socket.emit('agent_status', { agent: currentUser, status: 'Idle', show: null });
+                currentAssignedShow = null;
+                showToast('🚪 Exited queue — show returned to hopper.', 'info');
+                renderBriefingCard();
+                // Do NOT fetch next show — agent chose to go idle
+              } else {
+                showToast('❌ Failed to exit queue.', 'error');
+              }
+            } catch (e) {
+              showToast('❌ Server error while exiting queue.', 'error');
+            }
           }
-          if (isResizing) {
-            isResizing = false;
-            document.body.style.cursor = '';
-          }
-          document.body.style.userSelect = '';
         });
-      })();
+      }
 
       // ─────────────────────────────────────────────
       //  BOOT

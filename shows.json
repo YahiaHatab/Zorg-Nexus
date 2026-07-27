@@ -524,21 +524,6 @@
     "completedAt": "2026-07-27T18:32:07.054Z"
   },
   {
-    "id": "ms36pkz4dvexf953u",
-    "showName": "XShow -  IDEAg Amarillo Farm & Ranch Show 2026 - December 1-3, 2026 - Amarillo Civic Center - Amarillo, TX",
-    "link": [
-      "https://ideaggroup.expocad.com/Events/26afrs/index.html"
-    ],
-    "agentName": "Yahia",
-    "ld": "List: 331 - 334",
-    "lists": "",
-    "comment": "",
-    "date": "2026-07-27",
-    "status": "HOLD",
-    "pinnedTo": null,
-    "startTime": 1785177127069
-  },
-  {
     "id": "ms36pkz4fr8hllbf4",
     "showName": "XZShow - The Water Expo - Water Quality Supply & Waste Water 2026 - August 12 - 13, 2026 - Broward County Convention Center - FORT LAUDERDALE-FL, USA",
     "link": [
@@ -553,5 +538,21 @@
     "pinnedTo": null,
     "startTime": 1785177162775,
     "completedAt": "2026-07-27T18:37:06.998Z"
+  },
+  {
+    "id": "ms36pkz4dvexf953u",
+    "showName": "XShow -  IDEAg Amarillo Farm & Ranch Show 2026 - December 1-3, 2026 - Amarillo Civic Center - Amarillo, TX",
+    "link": [
+      "https://ideaggroup.expocad.com/Events/26afrs/index.html"
+    ],
+    "agentName": "Yahia",
+    "ld": "List: 331 - 334",
+    "lists": "",
+    "comment": "",
+    "date": "2026-07-27",
+    "status": "Done",
+    "pinnedTo": null,
+    "startTime": 1785184284894,
+    "completedAt": "2026-07-27T20:31:27.949Z"
   }
 ]
