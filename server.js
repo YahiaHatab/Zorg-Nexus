@@ -734,6 +734,7 @@ app.post('/api/shows/upload', upload.single('file'), async (req, res) => {
         const sheet = workbook.worksheets[0];
         const newShows = [];
 
+        // New column order: A=Show Name, B=Link, C=I/D, D=Comment, E=Agent Name
         let lastShow = null;
         sheet.eachRow((row, rowNumber) => {
             if (rowNumber === 1) return; // skip header
@@ -747,48 +748,38 @@ app.post('/api/shows/upload', upload.single('file'), async (req, res) => {
             };
 
             const showName = getVal(1).trim();
-            const link = getVal(2).trim();
-            const status = getVal(3).trim();
+            const link    = getVal(2).trim();
+            const ld      = getVal(3).trim();   // I/D (Sum of Exhibitor)
+            const comment = getVal(4).trim();
+            const agent   = getVal(5).trim();   // Agent Name
 
             if (showName) {
-                if (!status) {
-                    let existingShow = newShows.find(s => s.showName.toLowerCase() === showName.toLowerCase());
-                    if (existingShow) {
-                        lastShow = existingShow;
-                        if (link && !lastShow.link.includes(link)) {
-                            lastShow.link.push(link);
-                        }
-                        const agent = getVal(4), ld = getVal(5), lists = getVal(6), comment = getVal(7);
-                        if (agent && !lastShow.agentName) lastShow.agentName = agent;
-                        if (ld && !lastShow.ld.split('\n').includes(ld)) lastShow.ld += (lastShow.ld ? '\n' : '') + ld;
-                        if (lists && !lastShow.lists.split('\n').includes(lists)) lastShow.lists += (lastShow.lists ? '\n' : '') + lists;
-                        if (comment && !lastShow.comment.split('\n').includes(comment)) lastShow.comment += (lastShow.comment ? '\n' : '') + comment;
-                    } else {
-                        lastShow = {
-                            id: Date.now().toString(36) + Math.random().toString(36).substr(2, 9),
-                            showName: showName,
-                            link: link ? [link] : [],
-                            agentName: getVal(4),
-                            ld: getVal(5),
-                            lists: getVal(6),
-                            comment: getVal(7),
-                            date: getVal(8) || new Date().toISOString().split('T')[0],
-                            status: 'Pending',
-                            pinnedTo: null // for assignment logic
-                        };
-                        newShows.push(lastShow);
-                    }
+                let existingShow = newShows.find(s => s.showName.toLowerCase() === showName.toLowerCase());
+                if (existingShow) {
+                    lastShow = existingShow;
+                    if (link && !lastShow.link.includes(link)) lastShow.link.push(link);
+                    if (agent && !lastShow.agentName) lastShow.agentName = agent;
+                    if (ld && !lastShow.ld.split('\n').includes(ld)) lastShow.ld += (lastShow.ld ? '\n' : '') + ld;
+                    if (comment && !lastShow.comment.split('\n').includes(comment)) lastShow.comment += (lastShow.comment ? '\n' : '') + comment;
                 } else {
-                    lastShow = null;
+                    lastShow = {
+                        id: Date.now().toString(36) + Math.random().toString(36).substr(2, 9),
+                        showName,
+                        link: link ? [link] : [],
+                        ld: ld || '',
+                        comment: comment || '',
+                        agentName: agent || '',
+                        lists: '',
+                        date: new Date().toISOString().split('T')[0],
+                        status: 'Pending',
+                        pinnedTo: null
+                    };
+                    newShows.push(lastShow);
                 }
             } else if (!showName && link && lastShow) {
-                // Continuation row for the last show
-                if (!lastShow.link.includes(link)) {
-                    lastShow.link.push(link);
-                }
-                const ld = getVal(5), lists = getVal(6), comment = getVal(7);
+                // Continuation row — extra link for last show
+                if (!lastShow.link.includes(link)) lastShow.link.push(link);
                 if (ld && !lastShow.ld.split('\n').includes(ld)) lastShow.ld += (lastShow.ld ? '\n' : '') + ld;
-                if (lists && !lastShow.lists.split('\n').includes(lists)) lastShow.lists += (lastShow.lists ? '\n' : '') + lists;
                 if (comment && !lastShow.comment.split('\n').includes(comment)) lastShow.comment += (lastShow.comment ? '\n' : '') + comment;
             }
         });
@@ -1105,31 +1096,54 @@ app.get('/api/shows/export', async (req, res) => {
         const wb = new ExcelJS.Workbook();
         const sheet = wb.addWorksheet('Shows Hopper');
 
+        // New column order: Show Name | Link | I/D | Comment | Agent Name
         sheet.columns = [
-            { header: 'Show Name', key: 'showName', width: 30 },
-            { header: 'Link', key: 'link', width: 40 },
-            { header: 'Status', key: 'status', width: 15 },
-            { header: 'Agent Name', key: 'agentName', width: 20 },
-            { header: 'L/D', key: 'ld', width: 15 },
-            { header: 'Name of Lists', key: 'lists', width: 25 },
-            { header: 'Comment', key: 'comment', width: 30 },
-            { header: 'Date', key: 'date', width: 15 },
+            { header: 'Show Name',  key: 'showName',  width: 45 },
+            { header: 'Link',       key: 'link',       width: 50 },
+            { header: 'I/D',        key: 'ld',         width: 18 },
+            { header: 'Comment',    key: 'comment',    width: 35 },
+            { header: 'Agent Name', key: 'agentName',  width: 20 },
         ];
 
-        sheet.getRow(1).font = { bold: true };
+        // Style header row
+        const headerRow = sheet.getRow(1);
+        headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+        headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1F2937' } };
+        headerRow.alignment = { vertical: 'middle', horizontal: 'left' };
+        headerRow.height = 20;
+
+        // Status → fill colour map
+        const STATUS_FILL = {
+            'Done':        { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFF9900' } }, // Orange
+            'HOLD':        { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFF00' } }, // Yellow
+            'CXL':         { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFF0000' } }, // Red
+        };
 
         currentShows.forEach(s => {
             const links = Array.isArray(s.link) ? s.link.join('\n') : (s.link || '');
-            sheet.addRow({
-                showName: s.showName,
-                link: links,
-                status: s.status || 'Pending',
+            const dataRow = sheet.addRow({
+                showName:  s.showName  || '',
+                link:      links,
+                ld:        s.ld        || '',
+                comment:   s.comment   || '',
                 agentName: s.agentName || '',
-                ld: s.ld || '',
-                lists: s.lists || '',
-                comment: s.comment || '',
-                date: s.date || ''
             });
+
+            // Determine fill based on status
+            const rawStatus = (s.status || 'Pending');
+            let fillKey = null;
+            if (rawStatus === 'Done')                    fillKey = 'Done';
+            else if (rawStatus === 'HOLD')               fillKey = 'HOLD';
+            else if (rawStatus.startsWith('CXL'))        fillKey = 'CXL';
+
+            if (fillKey) {
+                dataRow.eachCell({ includeEmpty: true }, cell => {
+                    cell.fill = STATUS_FILL[fillKey];
+                });
+            }
+
+            // Wrap text in link cell
+            dataRow.getCell('link').alignment = { wrapText: true, vertical: 'top' };
         });
 
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
