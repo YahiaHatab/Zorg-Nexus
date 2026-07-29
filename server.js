@@ -1296,6 +1296,94 @@ app.post('/api/shows/cancel', (req, res) => {
 });
 
 // ─────────────────────────────────────────────
+//  ADMIN — UPDATE SHOW STATUS (HOLD, Pending, Done, CXL)
+// ─────────────────────────────────────────────
+app.post('/api/shows/status', (req, res) => {
+    const { id, status, reason } = req.body;
+    if (!id || !status) return res.status(400).json({ success: false, error: 'id and status are required' });
+
+    try {
+        const currentShows = JSON.parse(fs.readFileSync(showsPath));
+        const show = currentShows.find(s => s.id === id);
+        if (!show) return res.status(404).json({ success: false, error: 'Show not found' });
+
+        const oldAgent = show.agentName;
+
+        if (status === 'CXL' || status.startsWith('CXL')) {
+            show.status = reason ? `CXL/${reason}` : 'CXL';
+        } else {
+            show.status = status;
+        }
+
+        if (status === 'HOLD' || status === 'Pending') {
+            delete show.startTime;
+        }
+
+        fs.writeFileSync(showsPath, JSON.stringify(currentShows, null, 2));
+
+        if (status === 'HOLD' && oldAgent) {
+            io.emit('show_cancelled', {
+                id: show.id,
+                showName: show.showName,
+                reason: 'Placed on HOLD by Admin',
+                agentName: oldAgent
+            });
+        }
+
+        io.emit('hopper_updated');
+        io.emit('show_status_changed', { id: show.id, status: show.status, agentName: show.agentName });
+
+        res.json({ success: true, show });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
+// ─────────────────────────────────────────────
+//  ADMIN — ASSIGN SHOW TO AGENT
+// ─────────────────────────────────────────────
+app.post('/api/shows/assign', (req, res) => {
+    const { id, agentName } = req.body;
+    if (!id) return res.status(400).json({ success: false, error: 'id required' });
+
+    try {
+        const currentShows = JSON.parse(fs.readFileSync(showsPath));
+        const show = currentShows.find(s => s.id === id);
+        if (!show) return res.status(404).json({ success: false, error: 'Show not found' });
+
+        const previousAgent = show.agentName;
+        show.agentName = agentName || '';
+        show.status = 'Pending';
+        delete show.startTime;
+
+        fs.writeFileSync(showsPath, JSON.stringify(currentShows, null, 2));
+
+        if (previousAgent && previousAgent !== agentName) {
+            io.emit('show_cancelled', {
+                id: show.id,
+                showName: show.showName,
+                reason: `Reassigned to ${agentName || 'hopper'} by Admin`,
+                agentName: previousAgent
+            });
+        }
+
+        io.emit('hopper_updated');
+
+        if (agentName) {
+            for (const [sId, s] of io.of("/").sockets) {
+                if (s.username === agentName) {
+                    s.emit('showsAssigned');
+                }
+            }
+        }
+
+        res.json({ success: true, show });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
+// ─────────────────────────────────────────────
 //  UPLOAD
 // ─────────────────────────────────────────────
 app.post('/api/upload', upload.single('file'), async (req, res) => {

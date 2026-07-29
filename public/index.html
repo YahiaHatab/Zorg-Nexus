@@ -76,6 +76,10 @@
       transition: background 0.3s, color 0.3s;
     }
 
+    .hidden {
+      display: none !important;
+    }
+
     .mono {
       font-family: 'JetBrains Mono', monospace;
     }
@@ -2346,83 +2350,126 @@
         <!-- ── BRIEFING ROOM VIEW ── -->
         <div class="view-container" id="briefingView"
           style="display:none; padding:32px; overflow-y:auto; background:transparent;">
-          <div class="panel glass-panel"
-            style="max-width:800px; margin:0 auto; padding:32px; position:relative; width:100%;">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px;">
-              <div>
-                <h1 style="font-size:24px; font-weight:700; margin-bottom:8px;">Agent Briefing Room</h1>
-                <p id="briefingStatus" style="color:var(--text-muted); font-size:14px;">Waiting for Show...</p>
-              </div>
-              <div style="display:flex; gap:10px; align-items:center;">
-                <button onclick="requestDesktopNotifications()"
-                  style="cursor:pointer; padding:6px 12px; border-radius:6px; background:transparent; color:var(--text-muted); border:1px solid var(--border); font-size:12px; font-weight:600; transition:color 0.2s;">🔔
-                  Enable Alerts</button>
-                <div id="briefingTimer" class="mono"
-                  style="font-size:20px; font-weight:700; color:var(--accent-blue); display:none;">00:00:00</div>
-              </div>
-            </div>
+          <div style="max-width:1040px; margin:0 auto; display:flex; gap:20px; align-items:flex-start; width:100%;">
 
-            <div id="briefingContent" style="display:none;">
-              <div id="briefingDetailsBlock"
-                style="background:var(--bg-base); border: 1px solid var(--border); border-radius:8px; padding:20px; margin-bottom:24px;">
-                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
-                  <h2 id="briefingShowName"
-                    style="font-size:16px; font-weight:600; color:var(--text-main); margin-right:16px; line-height:1.4;">
-                  </h2>
-                  <button id="copyNameBtn" onclick="copySmartName()" class="filter-btn btn-some"
-                    style="flex-shrink:0;">📋 Copy Name</button>
+            <!-- Main Agent Briefing Glass Div -->
+            <div class="panel glass-panel"
+              style="flex:1; padding:32px; position:relative; min-width:0;">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px;">
+                <div>
+                  <h1 style="font-size:24px; font-weight:700; margin-bottom:8px;">Agent Briefing Room</h1>
+                  <p id="briefingStatus" style="color:var(--text-muted); font-size:14px;">Waiting for Show...</p>
                 </div>
-                <div
-                  style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-top:20px; border-top:1px solid var(--border); padding-top:20px;">
-                  <div>
-                    <div
-                      style="font-size:11px; color:var(--text-muted); text-transform:uppercase; font-weight:600; margin-bottom:8px;">
-                      Links</div>
-                    <div id="briefingLinks" style="display:flex; flex-direction:column; gap:8px;"></div>
-                  </div>
-                  <div>
-                    <div
-                      style="font-size:11px; color:var(--text-muted); text-transform:uppercase; font-weight:600; margin-bottom:8px;">
-                      Details</div>
-                    <div id="briefingDetails"
-                      style="font-size:13px; color:var(--text-main); white-space:pre-wrap; line-height:1.5;"></div>
-                  </div>
+                <div style="display:flex; gap:10px; align-items:center;">
+                  <button onclick="requestDesktopNotifications()"
+                    style="cursor:pointer; padding:6px 12px; border-radius:6px; background:transparent; color:var(--text-muted); border:1px solid var(--border); font-size:12px; font-weight:600; transition:color 0.2s;">🔔
+                    Enable Alerts</button>
+                  <div id="briefingTimer" class="mono"
+                    style="font-size:20px; font-weight:700; color:var(--accent-blue); display:none;">00:00:00</div>
                 </div>
               </div>
 
-              <div style="display:flex; gap:12px;">
-                <button id="doneWorkingBtn" onclick="finishWorking()"
-                  style="flex:1; background:var(--success); border:none; color:#fff; font-weight:600; font-size:14px; padding:14px; border-radius:8px; cursor:pointer; transition:background 0.2s;">
-                  ✓ Complete Without File
-                </button>
+              <div id="briefingContent" style="display:none;">
+                <!-- Main Show Details Box -->
+                <div id="briefingDetailsBlock"
+                  style="background:var(--bg-base); border: 1px solid var(--border); border-radius:8px; padding:20px; margin-bottom:20px;">
+                  <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+                    <h2 id="briefingShowName"
+                      style="font-size:16px; font-weight:600; color:var(--text-main); margin-right:16px; line-height:1.4;">
+                    </h2>
+                    <button id="copyNameBtn" onclick="copySmartName()" class="filter-btn btn-some"
+                      style="flex-shrink:0;">📋 Copy Name</button>
+                  </div>
+                  <div
+                    style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-top:20px; border-top:1px solid var(--border); padding-top:20px;">
+                    <div>
+                      <div
+                        style="font-size:11px; color:var(--text-muted); text-transform:uppercase; font-weight:600; margin-bottom:8px;">
+                        Links</div>
+                      <div id="briefingLinks" style="display:flex; flex-direction:column; gap:8px;"></div>
+                    </div>
+                    <div>
+                      <div
+                        style="font-size:11px; color:var(--text-muted); text-transform:uppercase; font-weight:600; margin-bottom:8px;">
+                        Details</div>
+                      <div id="briefingDetails"
+                        style="font-size:13px; color:var(--text-main); white-space:pre-wrap; line-height:1.5;"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="display:flex; gap:12px;">
+                  <button id="doneWorkingBtn" onclick="finishWorking()"
+                    style="flex:1; background:var(--success); border:none; color:#fff; font-weight:600; font-size:14px; padding:12px; border-radius:8px; cursor:pointer; transition:background 0.2s;">
+                    ✓ Complete Without File
+                  </button>
+                </div>
+                <!-- Skip / Exit Queue row (Smaller buttons for all users) -->
+                <div style="display:flex; gap:10px; margin-top:8px;">
+                  <button id="skipShowBtn" onclick="skipShow()"
+                    style="flex:1; padding:7px 10px; font-size:11.5px; font-weight:600; border-radius:6px; cursor:pointer; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.5); color:#fbbf24; display:flex; align-items:center; justify-content:center; gap:5px; transition:background 0.2s, border-color 0.2s;" title="Return this show to the queue and get the next one">
+                    ⏭ Skip Show
+                  </button>
+                  <button id="exitQueueBtn" onclick="exitQueue()"
+                    style="flex:1; padding:7px 10px; font-size:11.5px; font-weight:600; border-radius:6px; cursor:pointer; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.35); color:#f87171; display:flex; align-items:center; justify-content:center; gap:5px; transition:background 0.2s, border-color 0.2s;" title="Return this show to the queue and go idle (no auto-next)">
+                    🚪 Exit Queue
+                  </button>
+                </div>
               </div>
-              <!-- Skip / Exit Queue row -->
-              <div style="display:flex; gap:12px; margin-top:10px;">
-                <button id="skipShowBtn" onclick="skipShow()"
-                  style="flex:1; padding:10px 14px; font-size:13px; font-weight:600; border-radius:8px; cursor:pointer; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.5); color:#fbbf24; display:flex; align-items:center; justify-content:center; gap:7px; transition:background 0.2s, border-color 0.2s;" title="Return this show to the queue and get the next one">
-                  ⏭ Skip Show
-                </button>
-                <button id="exitQueueBtn" onclick="exitQueue()"
-                  style="flex:1; padding:10px 14px; font-size:13px; font-weight:600; border-radius:8px; cursor:pointer; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.35); color:#f87171; display:flex; align-items:center; justify-content:center; gap:7px; transition:background 0.2s, border-color 0.2s;" title="Return this show to the queue and go idle (no auto-next)">
-                  🚪 Exit Queue
-                </button>
+
+              <div id="briefingEmpty" style="text-align:center; padding:60px 0; color:var(--text-muted);">
+                <div style="font-size:48px; margin-bottom:16px; opacity:0.5;">☕</div>
+                <h3 style="font-size:16px; font-weight:600; margin-bottom:8px;">Ready for your next show?</h3>
+                <p style="font-size:13px; max-width:300px; margin:0 auto;">Press the button below to assign and start your
+                  next show.</p>
+                <button onclick="startNextShow()" class="filter-btn btn-std"
+                  style="margin-top:24px; display:inline-flex; align-items:center; justify-content:center; margin-left:auto; margin-right:auto; font-size:16px; padding:12px 24px;">▶
+                  Start Next Show</button>
+                <button id="btn-request-show" class="filter-btn btn-some hidden" onclick="requestManualShow()"
+                  style="margin-top:24px; display:inline-flex; align-items:center; justify-content:center; margin-left:auto; margin-right:auto; font-size:16px; padding:12px 24px; background:var(--accent-purple-glow); border-color:var(--accent-purple);">🖐️
+                  Request Show</button>
               </div>
             </div>
 
-            <div id="briefingEmpty" style="text-align:center; padding:60px 0; color:var(--text-muted);">
-              <div style="font-size:48px; margin-bottom:16px; opacity:0.5;">☕</div>
-              <h3 style="font-size:16px; font-weight:600; margin-bottom:8px;">Ready for your next show?</h3>
-              <p style="font-size:13px; max-width:300px; margin:0 auto;">Press the button below to assign and start your
-                next show.</p>
-              <button onclick="startNextShow()" class="filter-btn btn-std"
-                style="margin-top:24px; display:inline-flex; align-items:center; justify-content:center; margin-left:auto; margin-right:auto; font-size:16px; padding:12px 24px;">▶
-                Start Next Show</button>
-              <button id="btn-request-show" class="filter-btn btn-some hidden" onclick="requestManualShow()"
-                style="margin-top:24px; display:inline-flex; align-items:center; justify-content:center; margin-left:auto; margin-right:auto; font-size:16px; padding:12px 24px; background:var(--accent-purple-glow); border-color:var(--accent-purple);">🖐️
-                Request Show</button>
+            <!-- SEPARATE ADMIN OVERRIDE PANEL (Outside main Glass Div) -->
+            <div id="adminBriefingControls" class="panel glass-panel" style="display:none; width:220px; flex-shrink:0; padding:20px; border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.04); flex-direction:column; gap:12px;">
+              <div style="font-size:11px; font-weight:700; text-transform:uppercase; color:var(--danger); letter-spacing:0.05em; margin-bottom:4px; display:flex; align-items:center; gap:5px;">
+                🛡️ Admin Tools
+              </div>
+              
+              <!-- Reassign -->
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <label style="font-size:10px; font-weight:600; color:var(--text-muted); text-transform:uppercase;">Reassign Agent</label>
+                <div style="display:flex; gap:4px;">
+                  <select id="adminAssignAgentSelect" style="flex:1; padding:4px 6px; border-radius:5px; border:1px solid var(--border); background:var(--bg-panel); color:var(--text-main); font-size:11px; outline:none; height:28px;">
+                    <option value="">Agent...</option>
+                  </select>
+                  <button onclick="adminReassignCurrentShow()" style="padding:4px 8px; font-size:11px; font-weight:600; border-radius:5px; border:1px solid rgba(59,130,246,0.3); background:var(--accent-blue-glow); color:var(--accent-blue); cursor:pointer; height:28px; white-space:nowrap;" title="Reassign Show">Assign</button>
+                </div>
+              </div>
+
+              <!-- Status -->
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <label style="font-size:10px; font-weight:600; color:var(--text-muted); text-transform:uppercase;">Show Status</label>
+                <div style="display:flex; gap:4px;">
+                  <select id="adminStatusSelect" style="flex:1; padding:4px 6px; border-radius:5px; border:1px solid var(--border); background:var(--bg-panel); color:var(--text-main); font-size:11px; outline:none; height:28px;">
+                    <option value="Pending">Pending</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="HOLD">HOLD</option>
+                    <option value="Done">Done</option>
+                  </select>
+                  <button onclick="adminChangeCurrentShowStatus()" style="padding:4px 8px; font-size:11px; font-weight:600; border-radius:5px; border:1px solid rgba(16,185,129,0.3); background:rgba(16,185,129,0.12); color:var(--success); cursor:pointer; height:28px; white-space:nowrap;" title="Set Status">Set</button>
+                </div>
+              </div>
+
+              <!-- Hold & Cancel Buttons -->
+              <div style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
+                <button onclick="adminHoldCurrentShow()" style="width:100%; padding:7px 10px; font-size:11px; font-weight:600; border-radius:5px; border:1px solid rgba(245,158,11,0.4); background:rgba(245,158,11,0.12); color:var(--warning); cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px;" title="Place on Hold">⏸️ Place on HOLD</button>
+                <button onclick="adminCancelCurrentShow()" style="width:100%; padding:7px 10px; font-size:11px; font-weight:600; border-radius:5px; border:1px solid rgba(239,68,68,0.4); background:rgba(239,68,68,0.12); color:var(--danger); cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px;" title="Cancel Show">🚫 Cancel Show (CXL)</button>
+              </div>
             </div>
+
           </div>
-
         </div>
 
 
@@ -2471,6 +2518,16 @@
     </div>
 
     <script>
+      function escHtml(str) {
+        if (!str) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
       const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
       let currentUser = null;
       let files = [], logs = [];
@@ -2891,8 +2948,8 @@
 
         if (view === 'briefing') {
           document.getElementById('briefingView').style.display = 'flex';
-          if (!currentAssignedShow) fetchNextShow();
-          renderBriefingHistory();
+          if (!currentAssignedShow) startNextShow();
+          else renderBriefingCard();
         } else {
           document.getElementById('filesView').style.display = 'flex';
           renderTable();
@@ -3596,10 +3653,136 @@
         showToast('🖐️ Show request sent to administrators.', 'info');
       }
 
+      async function populateAdminAgentDropdown() {
+        const select = document.getElementById('adminAssignAgentSelect');
+        if (!select) return;
+        try {
+          const res = await fetch('/api/admin/users');
+          const data = await res.json();
+          if (data.success && Array.isArray(data.users)) {
+            const currentVal = select.value;
+            select.innerHTML = '<option value="">Select Agent...</option>' + 
+              data.users.map(u => `<option value="${escHtml(u.username)}">${escHtml(u.username)} (${u.role})</option>`).join('');
+            if (currentVal) select.value = currentVal;
+          }
+        } catch (e) { console.error('Failed to populate agent dropdown', e); }
+      }
+
+      async function adminReassignCurrentShow() {
+        if (!currentAssignedShow) return;
+        const targetAgent = document.getElementById('adminAssignAgentSelect').value;
+        if (!targetAgent) {
+          showToast('Please select an agent to reassign the show.', 'warning');
+          return;
+        }
+        try {
+          const res = await fetch('/api/shows/assign', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: currentAssignedShow.id, agentName: targetAgent })
+          });
+          const data = await res.json();
+          if (data.success) {
+            showToast(`Show reassigned to ${targetAgent}!`, 'success');
+            currentAssignedShow = null;
+            renderBriefingCard();
+          } else {
+            showToast(data.error || 'Reassignment failed', 'error');
+          }
+        } catch (e) {
+          showToast('Error reassigning show', 'error');
+        }
+      }
+
+      async function adminChangeCurrentShowStatus() {
+        if (!currentAssignedShow) return;
+        const newStatus = document.getElementById('adminStatusSelect').value;
+        try {
+          const res = await fetch('/api/shows/status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: currentAssignedShow.id, status: newStatus })
+          });
+          const data = await res.json();
+          if (data.success) {
+            showToast(`Show status updated to ${newStatus}!`, 'success');
+            if (newStatus === 'HOLD' || newStatus === 'Done' || newStatus.startsWith('CXL')) {
+              currentAssignedShow = null;
+            } else {
+              currentAssignedShow.status = newStatus;
+            }
+            renderBriefingCard();
+          } else {
+            showToast(data.error || 'Status update failed', 'error');
+          }
+        } catch (e) {
+          showToast('Error updating status', 'error');
+        }
+      }
+
+      async function adminHoldCurrentShow() {
+        if (!currentAssignedShow) return;
+        try {
+          const res = await fetch('/api/shows/status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: currentAssignedShow.id, status: 'HOLD' })
+          });
+          const data = await res.json();
+          if (data.success) {
+            showToast('Show placed on HOLD!', 'warning');
+            currentAssignedShow = null;
+            renderBriefingCard();
+          } else {
+            showToast(data.error || 'HOLD failed', 'error');
+          }
+        } catch (e) {
+          showToast('Error placing show on hold', 'error');
+        }
+      }
+
+      async function adminCancelCurrentShow() {
+        if (!currentAssignedShow) return;
+        const reason = prompt(`Cancel show "${currentAssignedShow.showName}"?\nEnter cancellation reason:`);
+        if (reason === null) return;
+        try {
+          const res = await fetch('/api/shows/cancel', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: currentAssignedShow.id, reason: reason || 'Cancelled by Admin' })
+          });
+          const data = await res.json();
+          if (data.success) {
+            showToast('Show cancelled successfully!', 'error');
+            currentAssignedShow = null;
+            renderBriefingCard();
+          } else {
+            showToast(data.error || 'Cancellation failed', 'error');
+          }
+        } catch (e) {
+          showToast('Error cancelling show', 'error');
+        }
+      }
+
       function renderBriefingCard() {
         const emptyDiv = document.getElementById('briefingEmpty');
         const contentDiv = document.getElementById('briefingContent');
         const statusEl = document.getElementById('briefingStatus');
+
+        let currentRole = localStorage.getItem('zorg_nexus_role') || getCookie('zorg_nexus_role');
+        const adminControls = document.getElementById('adminBriefingControls');
+        if (adminControls) {
+          if (currentRole === 'Admin') {
+            adminControls.style.display = 'block';
+            populateAdminAgentDropdown();
+            if (currentAssignedShow) {
+              const statusSel = document.getElementById('adminStatusSelect');
+              if (statusSel) statusSel.value = currentAssignedShow.status || 'In Progress';
+            }
+          } else {
+            adminControls.style.display = 'none';
+          }
+        }
 
         if (!currentAssignedShow) {
           emptyDiv.style.display = 'block';
