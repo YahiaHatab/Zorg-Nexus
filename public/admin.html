@@ -69,6 +69,44 @@
       --glass-border: rgba(255, 255, 255, 0.08);
     }
 
+    /* ── ENHANCED PROFESSIONAL CUSTOM DROPDOWN MENUS ── */
+    select {
+      appearance: none !important;
+      -webkit-appearance: none !important;
+      -moz-appearance: none !important;
+      background-color: var(--bg-panel, #1e293b) !important;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+      background-repeat: no-repeat !important;
+      background-position: right 8px center !important;
+      background-size: 12px 12px !important;
+      padding-right: 24px !important;
+      border: 1px solid var(--border, rgba(255, 255, 255, 0.12)) !important;
+      border-radius: 6px;
+      color: var(--text-main, #f8fafc) !important;
+      font-family: inherit;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    select:hover {
+      border-color: rgba(59, 130, 246, 0.5) !important;
+      background-color: rgba(30, 41, 59, 0.95) !important;
+    }
+
+    select:focus {
+      border-color: var(--accent-blue, #3b82f6) !important;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3) !important;
+    }
+
+    select option {
+      background-color: #0f172a !important;
+      color: #f8fafc !important;
+      padding: 10px 12px !important;
+      font-size: 12px !important;
+    }
+
     body {
       background: linear-gradient(135deg, var(--bg-main) 0%, var(--bg-hover) 100%);
       background-attachment: fixed;
