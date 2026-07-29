@@ -3068,6 +3068,59 @@
       } catch (e) { showToast('Failed to load analytics.', 'error'); }
     }
 
+    function normalizeReason(raw) {
+      if (!raw || typeof raw !== 'string') return 'Other';
+      let clean = raw.trim()
+        .replace(/[`’‘]/g, "'")
+        .replace(/\s+/g, ' ');
+      if (!clean) return 'Other';
+
+      const lower = clean.toLowerCase();
+      const ALIAS_MAP = {
+        "int'l": "Int'l",
+        "intl": "Int'l",
+        "international": "Int'l",
+        "internation": "Int'l",
+        "publisher": "Publisher",
+        "publishing": "Publisher",
+        "puplishing": "Publisher",
+        "publishers": "Publisher",
+        "publish": "Publisher",
+        "cxl": "CXL",
+        "cancel": "CXL",
+        "canceled": "CXL",
+        "cancelled": "CXL",
+        "nf": "NF",
+        "n/f": "NF",
+        "not found": "NF",
+        "not-found": "NF",
+        "no num": "No Num",
+        "no number": "No Num",
+        "no phone": "No Num",
+        "no #": "No Num",
+        "no-num": "No Num",
+        "repeated": "Repeated",
+        "repeat": "Repeated",
+        "duplicate": "Repeated",
+        "dup": "Repeated",
+        "removed": "Removed",
+        "remove": "Removed",
+        "local": "Local",
+        "local company": "Local",
+        "blank": "Blank",
+        "invalid reason": "Invalid Reason"
+      };
+
+      if (ALIAS_MAP[lower]) return ALIAS_MAP[lower];
+      if (lower.startsWith('publ') || lower.startsWith('pupl')) return 'Publisher';
+      if (lower.startsWith("int'") || lower.startsWith("intl")) return "Int'l";
+      if (lower.startsWith("repeat") || lower.startsWith("dup")) return "Repeated";
+      if (lower.startsWith("remov")) return "Removed";
+      if (lower.startsWith("canc")) return "CXL";
+
+      return clean.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+    }
+
     function renderAnalytics(data) {
       // ── Aggregate all-time totals ──
       let totalFiles = 0, totalLeads = 0, totalShown = 0;
@@ -3137,9 +3190,10 @@
           // Accumulate per-record reason breakdown
           if (rec.reasonBreakdown) {
             for (const [reason, count] of Object.entries(rec.reasonBreakdown)) {
-              allTimeReasons[reason] = (allTimeReasons[reason] || 0) + count;
+              const norm = normalizeReason(reason);
+              allTimeReasons[norm] = (allTimeReasons[norm] || 0) + count;
               if (!dailyReasonMap[dateKey]) dailyReasonMap[dateKey] = {};
-              dailyReasonMap[dateKey][reason] = (dailyReasonMap[dateKey][reason] || 0) + count;
+              dailyReasonMap[dateKey][norm] = (dailyReasonMap[dateKey][norm] || 0) + count;
             }
           }
         }
@@ -3231,6 +3285,9 @@
         'Removed':  '#F59E0B',
         'Repeated': '#06B6D4',
         'No Num':   '#EC4899',
+        'Publisher':'#10B981',
+        "Int'l":    '#3B82F6',
+        'CXL':      '#6366F1',
         'Other':    '#6B7280'
       };
 

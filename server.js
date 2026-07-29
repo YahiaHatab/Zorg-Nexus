@@ -198,6 +198,62 @@ function saveAnalytics(data) {
  *     ]
  *   }
  */
+/**
+ * Normalize and group hidden row reasons (typos, punctuation, canonical mapping).
+ */
+function normalizeReason(raw) {
+    if (!raw || typeof raw !== 'string') return 'Other';
+    let clean = raw.trim()
+        .replace(/[`’‘]/g, "'")
+        .replace(/\s+/g, ' ');
+    if (!clean) return 'Other';
+
+    const lower = clean.toLowerCase();
+    const ALIAS_MAP = {
+        "int'l": "Int'l",
+        "intl": "Int'l",
+        "international": "Int'l",
+        "internation": "Int'l",
+        "publisher": "Publisher",
+        "publishing": "Publisher",
+        "puplishing": "Publisher",
+        "publishers": "Publisher",
+        "publish": "Publisher",
+        "cxl": "CXL",
+        "cancel": "CXL",
+        "canceled": "CXL",
+        "cancelled": "CXL",
+        "nf": "NF",
+        "n/f": "NF",
+        "not found": "NF",
+        "not-found": "NF",
+        "no num": "No Num",
+        "no number": "No Num",
+        "no phone": "No Num",
+        "no #": "No Num",
+        "no-num": "No Num",
+        "repeated": "Repeated",
+        "repeat": "Repeated",
+        "duplicate": "Repeated",
+        "dup": "Repeated",
+        "removed": "Removed",
+        "remove": "Removed",
+        "local": "Local",
+        "local company": "Local",
+        "blank": "Blank",
+        "invalid reason": "Invalid Reason"
+    };
+
+    if (ALIAS_MAP[lower]) return ALIAS_MAP[lower];
+    if (lower.startsWith('publ') || lower.startsWith('pupl')) return 'Publisher';
+    if (lower.startsWith("int'") || lower.startsWith("intl")) return "Int'l";
+    if (lower.startsWith("repeat") || lower.startsWith("dup")) return "Repeated";
+    if (lower.startsWith("remov")) return "Removed";
+    if (lower.startsWith("canc")) return "CXL";
+
+    return clean.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+}
+
 function analyticsAddRecord(dateKey, username, record) {
     const data = loadAnalytics();
 
@@ -219,7 +275,8 @@ function analyticsAddRecord(dateKey, username, record) {
     if (!day.summary.reasonBreakdown) day.summary.reasonBreakdown = {};
     if (record.reasonBreakdown) {
         for (const [reason, count] of Object.entries(record.reasonBreakdown)) {
-            day.summary.reasonBreakdown[reason] = (day.summary.reasonBreakdown[reason] || 0) + count;
+            const norm = normalizeReason(reason);
+            day.summary.reasonBreakdown[norm] = (day.summary.reasonBreakdown[norm] || 0) + count;
         }
     }
 
@@ -259,9 +316,11 @@ function analyticsRemoveRecord(dateKey, transactionId) {
     // Deduct reason breakdown from day summary
     if (rec.reasonBreakdown && day.summary.reasonBreakdown) {
         for (const [reason, count] of Object.entries(rec.reasonBreakdown)) {
-            if (day.summary.reasonBreakdown[reason] !== undefined) {
-                day.summary.reasonBreakdown[reason] = Math.max(0, day.summary.reasonBreakdown[reason] - count);
-                if (day.summary.reasonBreakdown[reason] === 0) delete day.summary.reasonBreakdown[reason];
+            const norm = normalizeReason(reason);
+            const targetKey = day.summary.reasonBreakdown[norm] !== undefined ? norm : reason;
+            if (day.summary.reasonBreakdown[targetKey] !== undefined) {
+                day.summary.reasonBreakdown[targetKey] = Math.max(0, day.summary.reasonBreakdown[targetKey] - count);
+                if (day.summary.reasonBreakdown[targetKey] === 0) delete day.summary.reasonBreakdown[targetKey];
             }
         }
     }
@@ -381,7 +440,8 @@ async function processExcelFile(filePath, originalName) {
     }
 
     function bumpReason(reason) {
-        reasonBreakdown[reason] = (reasonBreakdown[reason] || 0) + 1;
+        const norm = normalizeReason(reason);
+        reasonBreakdown[norm] = (reasonBreakdown[norm] || 0) + 1;
     }
 
     const sheet = workbook.getWorksheet('Sheet1') || workbook.worksheets[0];
