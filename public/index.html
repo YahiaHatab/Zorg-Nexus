@@ -745,6 +745,39 @@
       border-right: none;
     }
 
+    .file-table th.sortable {
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.2s, background 0.2s;
+    }
+
+    .file-table th.sortable:hover {
+      color: var(--accent-blue);
+      background: var(--bg-hover);
+    }
+
+    .file-table th .sort-icon {
+      margin-left: 6px;
+      font-size: 10px;
+      opacity: 0.4;
+      display: inline-block;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+
+    .file-table th.sortable:hover .sort-icon {
+      opacity: 0.8;
+    }
+
+    .file-table th.active-sort {
+      color: var(--accent-blue);
+    }
+
+    .file-table th.active-sort .sort-icon {
+      opacity: 1;
+      color: var(--accent-blue);
+      font-weight: bold;
+    }
+
     .file-table td {
       padding: 14px 16px;
       border-bottom: 1px solid var(--border);
@@ -2276,13 +2309,13 @@
             <table class="file-table" id="mainTable">
               <thead>
                 <tr>
-                  <th style="width: 25%;">Filename</th>
-                  <th style="width: 11%;">Show Type</th>
-                  <th style="width: 15%;">Lead Yield</th>
-                  <th style="width: 13%;">Modified</th>
-                  <th style="width: 16%;">Destination</th>
-                  <th style="width: 10%;">Status</th>
-                  <th style="width: 10%;">Notes</th>
+                  <th class="sortable" onclick="sortTable('name')" style="width: 25%;">Filename <span class="sort-icon" id="sort-name">↕</span></th>
+                  <th class="sortable" onclick="sortTable('showType')" style="width: 11%;">Show Type <span class="sort-icon" id="sort-showType">↕</span></th>
+                  <th class="sortable" onclick="sortTable('yield')" style="width: 15%;">Lead Yield <span class="sort-icon" id="sort-yield">↕</span></th>
+                  <th class="sortable" onclick="sortTable('mtime')" style="width: 13%;">Modified <span class="sort-icon" id="sort-mtime">↕</span></th>
+                  <th class="sortable" onclick="sortTable('destPath')" style="width: 16%;">Destination <span class="sort-icon" id="sort-destPath">↕</span></th>
+                  <th class="sortable" onclick="sortTable('status')" style="width: 10%;">Status <span class="sort-icon" id="sort-status">↕</span></th>
+                  <th class="sortable" onclick="sortTable('note')" style="width: 10%;">Notes <span class="sort-icon" id="sort-note">↕</span></th>
                 </tr>
               </thead>
               <tbody id="tableBody"></tbody>
@@ -2869,8 +2902,30 @@
       // ─────────────────────────────────────────────
       //  TABLE RENDER (Today's Files)
       // ─────────────────────────────────────────────
-      function fmtSize(b) { return b > 1048576 ? (b / 1048576).toFixed(1) + 'MB' : (b / 1024).toFixed(0) + 'KB'; }
-      function fmtDate(d) { return `${d.getDate()}-${monthNames[d.getMonth()]}-${d.getFullYear()}`; }
+      let tableSortCol = 'mtime';
+      let tableSortDir = 'desc';
+
+      function sortTable(col) {
+        if (tableSortCol === col) {
+          tableSortDir = tableSortDir === 'asc' ? 'desc' : 'asc';
+        } else {
+          tableSortCol = col;
+          tableSortDir = (col === 'yield' || col === 'mtime') ? 'desc' : 'asc';
+        }
+        renderTable();
+      }
+
+      function fmtDate(d) {
+        if (!d || !(d instanceof Date) || isNaN(d)) return '—';
+        const day = d.getDate();
+        const month = monthNames[d.getMonth()];
+        const year = d.getFullYear();
+        let hrs = d.getHours();
+        const ampm = hrs >= 12 ? 'PM' : 'AM';
+        hrs = hrs % 12 || 12;
+        const mins = String(d.getMinutes()).padStart(2, '0');
+        return `${day}-${month}-${year} ${hrs}:${mins} ${ampm}`;
+      }
 
       function renderTable() {
         const q = document.getElementById('searchInput').value.toLowerCase();
@@ -2881,12 +2936,78 @@
           targetDate = new Date(y, m - 1, d);
         }
 
-        const list = files.filter(f => {
+        let list = files.filter(f => {
           const matchQ = !q || f.name.toLowerCase().includes(q);
           const matchD = f.mtime.getFullYear() === targetDate.getFullYear() &&
             f.mtime.getMonth() === targetDate.getMonth() &&
             f.mtime.getDate() === targetDate.getDate();
           return matchQ && matchD;
+        });
+
+        // ── Sort list by selected column ──
+        list.sort((a, b) => {
+          let valA, valB;
+          const fullNameA = (a.name || a.filename || a.showName || a.destPath || '').toString();
+          const fullNameB = (b.name || b.filename || b.showName || b.destPath || '').toString();
+          const isXShowA = fullNameA.includes('XShow') || fullNameA.includes('XZShow') || fullNameA.includes('X Show') || fullNameA.includes('XZ Show') || fullNameA.toLowerCase().includes('x-show') || fullNameA.toLowerCase().includes('xshow');
+          const isXShowB = fullNameB.includes('XShow') || fullNameB.includes('XZShow') || fullNameB.includes('X Show') || fullNameB.includes('XZ Show') || fullNameB.toLowerCase().includes('x-show') || fullNameB.toLowerCase().includes('xshow');
+
+          switch (tableSortCol) {
+            case 'name':
+              valA = (a.name || '').toLowerCase();
+              valB = (b.name || '').toLowerCase();
+              break;
+            case 'showType':
+              valA = isXShowA ? 'X' : 'New';
+              valB = isXShowB ? 'X' : 'New';
+              break;
+            case 'yield':
+              valA = a.shown !== undefined && a.shown !== null ? a.shown : (a.net !== undefined ? a.net : 0);
+              valB = b.shown !== undefined && b.shown !== null ? b.shown : (b.net !== undefined ? b.net : 0);
+              break;
+            case 'mtime':
+              valA = a.mtime ? new Date(a.mtime).getTime() : 0;
+              valB = b.mtime ? new Date(b.mtime).getTime() : 0;
+              break;
+            case 'destPath':
+              valA = (a.destPath || '').toLowerCase();
+              valB = (b.destPath || '').toLowerCase();
+              break;
+            case 'status':
+              valA = (a.status || '').toLowerCase();
+              valB = (b.status || '').toLowerCase();
+              break;
+            case 'note':
+              valA = (a.note || '').toLowerCase();
+              valB = (b.note || '').toLowerCase();
+              break;
+            default:
+              valA = 0; valB = 0;
+          }
+
+          let res = 0;
+          if (typeof valA === 'number' && typeof valB === 'number') {
+            res = valA - valB;
+          } else {
+            res = String(valA).localeCompare(String(valB));
+          }
+          return tableSortDir === 'asc' ? res : -res;
+        });
+
+        // Update sort indicators in table headers
+        const cols = ['name', 'showType', 'yield', 'mtime', 'destPath', 'status', 'note'];
+        cols.forEach(c => {
+          const el = document.getElementById('sort-' + c);
+          if (el) {
+            const th = el.closest('th');
+            if (c === tableSortCol) {
+              el.textContent = tableSortDir === 'asc' ? '▲' : '▼';
+              if (th) th.classList.add('active-sort');
+            } else {
+              el.textContent = '↕';
+              if (th) th.classList.remove('active-sort');
+            }
+          }
         });
 
         const tbody = document.getElementById('tableBody');
