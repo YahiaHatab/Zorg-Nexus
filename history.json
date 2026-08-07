@@ -1,1409 +1,1437 @@
 {
   "files": [
     {
-      "agent": "Ammar",
-      "name": "XShow - ISE Expo 2026 - The Broadband Development Marketplace - AUGUST 18-20, 2026 - Music City Center - Nashville, TN, USA Ammar.xlsx",
-      "size": 27746,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785350861586,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms6ft1cak1sbx60q8"
-    },
-    {
-      "agent": "Ammar",
-      "name": "XShow - Health Care Facilities Innovation Conference 2026 - August 2-5, 2026 - Minneapolis Convention Center - Minneapolis, MN, USA Ammar.xlsx",
-      "size": 47784,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785350861543,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms6ft1b47lswwc95n"
-    },
-    {
-      "agent": "Ammar",
-      "name": "XShow - TheFitExpo Anaheim 2026 - August 29-30, 2026 - Anaheim Convention Center - ANAHEIM-CA, USA Ammar.xlsx",
-      "size": 35682,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785350861464,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms6ft18xwypa7jagx"
-    },
-    {
-      "agent": "Ammar",
-      "name": "XShow - NY NOW Summer 2026 Market  - New York International Gift Fair - August 2–4, 2026 - Javits Center - New York, NY, USA Ammar.xlsx",
-      "size": 65304,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785350861390,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms6ft16vi3kaizjsr"
-    },
-    {
-      "agent": "Ammar",
-      "name": "XShow - IVT Expo USA 2026 - industrial & Off-Highway Vehicle Technology - August 19- 20, 2026 - Donald E. Stephens Convention Center - CHICAGO-IL, USA Ammar.xlsx",
-      "size": 33213,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785350861284,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms6ft13zpuws94s8m"
-    },
-    {
       "agent": "Yahia",
-      "name": "XZShow - IHI Forum 2026 - Working Together to Transform Health and Health Care - December 6–9, 2026 - Phoenix Convention Center - Phoenix, AZ, USA Yahia.xlsx",
-      "size": 15312,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785350526289,
+      "name": "XZShow - SC 2026 - November 16- 19, 2026 - McCormick Place - Chicago, IL, USA Yahia & Ammar.xlsx",
+      "size": 65861,
+      "mtime": "2026-08-07T09:00:00.000Z",
+      "uploadTime": 1786131245524,
       "region": "USA",
-      "destPath": "2026/July/29-7",
+      "destPath": "2026/August/07-8",
       "status": "sorted",
-      "transactionId": "ms6flumdmj5r9z1uq"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XZShow - SPIE 2026 - Optics & Photonics - August 25- 27, 2026 -San Diego Convention Center - San Diego, CA, USA Yahia.xlsx",
-      "size": 27211,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785350245510,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms6fftz2in1tdjrsq"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XZShow - Premiere San Antonio 2026 - August 30 - 31, 2026 - Henry B. González Convention Center - San Antonio, TX, USA Yahia.xlsx",
-      "size": 26599,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785350008949,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms6farfystdoumr7j"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XZShow - Be+Well Beauty & Wellness Show 2026 -Conference Florida - August 30-31, 2026 - Ft. Lauderdale Broward County Convention Center - Fort Lauderdale, FL, USA Yahia.xlsx",
-      "size": 28888,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785349778617,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms6f5tpt4ue4hw8hh"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XShow - The Landscape Show 2026 - Orange County Convention Center - August 19- 21, 2026 - Orange County Convention Center - Orlando, Fl, USA Yahia.xlsx",
-      "size": 56336,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785349141301,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms6es5ykj0w1jmofx"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XZShow - California Restaurant Show 2026 - August 23 - 25, 2026 - Anaheim Convention Center - Anaheim, CA, USA Yahia.xlsx",
-      "size": 36212,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785348923060,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms6enhkcb559ljc6p"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XZShow - TNLA - Nursery & Landscape Expo - August 11-13, 2026 - HENRY B. GONZALEZ CONVENTION CENTER - SAN ANTONIO, Tx USA Yahia.xlsx",
-      "size": 72532,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785347779308,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms6dyz1dtv2l7mo0h"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XShow - Newtopia Now 2026 - August 19-20, 2026 - Colorado Convention Center - Denver, CO, USA Yahia.xlsx",
-      "size": 48249,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785347365013,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms6dq3d8p8ldpp5do"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XShow - International Fastener Expo 2026 - October 8-9, 2026 - Phoenix Convention Center - Phoenix, AZ, USA Yahia.xlsx",
-      "size": 63065,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785346166500,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms6d0el7uk103qtpk"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XShow - MD&M Midwest 2026 - OCTOBER 28-29, 2026 - Minneapolis Convention Center - Minneapolis, MN, USA Yahia.xlsx",
-      "size": 71354,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785345570123,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms6cnmf6kgfrwlvkn"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XShow - FABTECH 2026 - October 21 - 23, 2026 - Las Vegas Convention Center - Las Vegas, NV, USA Yahia.xlsx",
-      "size": 163275,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785345280324,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms6cheswj0uaox2f2"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XShow - EMS World Expo 2026 - September 28 - October 2, 2026 - Orange County Convention Center West - Orlando-Fl, USA Yahia.xlsx",
-      "size": 49306,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785344904345,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms6c9cp48hea5hzf1"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XShow - SupplySide Global 2026 - October 28- 30, 2026 - Mandalay Bay - Las Vegas, Nv, USA Yahia.xlsx",
-      "size": 160881,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785344719236,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms6c5dv8jej66yx5t"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XShow - HR Tech 2026 - October 20-22, 2026 - Mandalay Bay - Las Vegas, Nv,  USA Yahia.xlsx",
-      "size": 50809,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785343728832,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms6bk5o124qj5hljz"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XZShow - OMED 2026 - Osteopathic Medical Education Conference - October 22- 25, 2026 - Caesars Palace - LAS VEGAS-NV, USA Yahia.xlsx",
-      "size": 18267,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785343275599,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms6bafyd4sn1ovdpe"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XShow - NBAA 2026 - Business Aviation Convention & Exhibition - October 20 - 22, 2026 - Las Vegas Convention Center - Las Vegas, NV, USA Yahia.xlsx",
-      "size": 73095,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785342976290,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms6b4104rwsxk2vf4"
-    },
-    {
-      "agent": "Yahia",
-      "name": "ZShow - SPIE Photomask Technology + EUV Lithography 2026 - September 9-10, 2026 - Monterey Conference Center - Monterey, CA, USA. Yahia.xlsx",
-      "size": 13074,
-      "mtime": "2026-07-28T09:00:00.000Z",
-      "uploadTime": 1785342369367,
-      "region": "USA",
-      "destPath": "2026/July/28-7",
-      "status": "sorted",
-      "transactionId": "ms6ar0pbbtbztvhj2"
-    },
-    {
-      "agent": "Ammar",
-      "name": "NKBA KBIS 2026 - KitchenBath Industry Show - February 2-4, 2027 - Las Vegas Convention Center - Las Vegas, NV, USA Ammar.xlsx",
-      "size": 41501,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785340774017,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms69stq3lvvopllpw"
-    },
-    {
-      "agent": "Ammar",
-      "name": "Automation Fair - Rockwell Automation 2026 - November 16- 19, 2026 - Thomas M. Menino Convention & Exhibition Center - Boston, MA, USA Ammar.xlsx",
-      "size": 18831,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785340773942,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms69sto19q70v96ne"
-    },
-    {
-      "agent": "Ammar",
-      "name": "ZShow - SMRP 2026 - Society for Maintenance & Reliability Professionals - September 28 - October 1, 2026 - Raleigh Convention Center - Raleigh, NC, USA Ammar.xlsx",
-      "size": 20845,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785340773899,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms69stmtwd2apjef2"
-    },
-    {
-      "agent": "Ammar",
-      "name": "ZShow - SEG 2026 - Society of Economic Geologists Annual Conference - September 30 - October 3, 2026 - Salt Palace Convention Center - Salt Lake City, UT, USA Ammar.xlsx",
-      "size": 22652,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785340773842,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms69stl994kq5fepo"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XShow - Las Vegas Souvenir & Resort Gift Show 2026 -  October 6-9, 2026 - Las Vegas Convention Center, South Hall - Las Vegas, NV, USA. Yahia.xlsx",
-      "size": 63089,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785340497676,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms69mwho59zllly69"
+      "transactionId": "msjcfdfltu1n24qos"
     },
     {
       "agent": "Yahia",
       "name": "Xshow -  NEW ENGLAND DESIGN-2-PART SHOW 2026 - September 30 - October 1 , 2026 - Royal Plaza Trade Center - Marlborough, MA, USA. Yahia.xlsx",
-      "size": 31460,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785340160648,
+      "size": 36004,
+      "mtime": "2026-08-07T09:00:00.000Z",
+      "uploadTime": 1786126140079,
       "region": "USA",
-      "destPath": "2026/July/29-7",
+      "destPath": "2026/August/07-8",
       "status": "sorted",
-      "transactionId": "ms69fog0610eppg9v"
-    },
-    {
-      "agent": "Yahia",
-      "name": "Xshow - Surf Expo 2026 - SEPTEMBER 16-18, 2026 - ORANGE COUNTY CONVENTION CENTER - ORLANDO , fl, USA. Yahai.xlsx",
-      "size": 55691,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785339762111,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms6974x6hxuf7sdwt"
+      "transactionId": "msj9dy1q0ga1hrafm"
     },
     {
       "agent": "Yahia",
       "name": "XZShow - AAOPT 2026 - American Academy of Optometry - September 30 - October 3, 2026 - ANAHEIM CONVENTION CENTER -  Anaheim, CA, USA. Yahia.xlsx",
-      "size": 26601,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785338867404,
+      "size": 28127,
+      "mtime": "2026-08-07T09:00:00.000Z",
+      "uploadTime": 1786125668483,
       "region": "USA",
-      "destPath": "2026/July/29-7",
+      "destPath": "2026/August/07-8",
       "status": "sorted",
-      "transactionId": "ms68nykiu51lvfdsu"
+      "transactionId": "msj93u5vo8jlxcxzo"
     },
     {
       "agent": "Yahia",
-      "name": "Xshow - PRINTING United Expo 2026 - September 23-25, 2026 - Las Vegas Convention Center - Las Vegas, NV, USA. Yahia.xlsx",
-      "size": 91813,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785338544868,
+      "name": "XZShow - Corrugated Week 2026 - September 29-30, 2026 - Fort Worth Convention Center - Fort Worth, TX, USA. Yahia.xlsx",
+      "size": 23469,
+      "mtime": "2026-08-07T09:00:00.000Z",
+      "uploadTime": 1786125224622,
       "region": "USA",
-      "destPath": "2026/July/29-7",
+      "destPath": "2026/August/07-8",
       "status": "sorted",
-      "transactionId": "ms68h1ouk03k1o8e5"
-    },
-    {
-      "agent": "Yahia",
-      "name": "Xshow - SOUTHEAST DESIGN-2-PART SHOW 2026 - September 16- 17, 2026 - Greenville Convention Center - Greenville, SC, USA. Yahia.xlsx",
-      "size": 28160,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785337801019,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms6813qrd6h4f8z5o"
-    },
-    {
-      "agent": "Yahia",
-      "name": "Xshow - NJSFDA 2026 - New Jersey State Funeral Directors Association - September 15–17, 2026 - Hard Rock Hotel & Casino Atlantic City - Atlantic City, NJ, USA. Yahia.xlsx",
-      "size": 19745,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785337504307,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms67uqsrlosbhm2jy"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XZShow - Timber Processing & Energy Expo 2026 - September 23–25, 2026 - Portland Expo Center - Portland, Or, USA Yahia.xlsx",
-      "size": 27139,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785337287441,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms67q3gpmhnu7awzp"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XZShow - RAPS Convergence 2026 - September 15-17 2026 - Charlotte Convention Center - Charlotte, NC, USA. Yahia.xlsx",
-      "size": 19711,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785337049062,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms67kzj1xwocu0toh"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XShow - NBMBAA 2026 - National Black MBA Association - SEPTEMBER 23 - 25, 2026 - Los Angeles Convention Center - Los Angeles, Ca, USA Yahia.xlsx",
-      "size": 21132,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785336721173,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms67dyix2znz9s9xi"
+      "transactionId": "msj8uboetkbfkem54"
     },
     {
       "agent": "Yahia",
       "name": "Xshow - League of California Cities Annual Conference & Expo 2026 - September 23- 25, 2026 - Anaheim Convention Center - Anaheim, CA, USA. Yahia.xlsx",
-      "size": 33961,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785336514182,
+      "size": 38521,
+      "mtime": "2026-08-07T09:00:00.000Z",
+      "uploadTime": 1786124724360,
       "region": "USA",
-      "destPath": "2026/July/29-7",
+      "destPath": "2026/August/07-8",
       "status": "sorted",
-      "transactionId": "ms679itaaiw99fjq5"
-    },
-    {
-      "agent": "Yahia",
-      "name": "Xshow - NSH 2026 - National Society for Histotechnology Annual Convention - SEPTEMBER 25-29, 2026 - Henry B. Gonzalez Convention Center - San Antonio, TX, USA. Yahia.xlsx",
-      "size": 19603,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785336025965,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms66z23m5qd68pxlf"
-    },
-    {
-      "agent": "Yahia",
-      "name": "The NGA Show 2027 - February 1- 2, 2027 - MGM Grand Conference Center - Las Vegas, Nv, USA. Yahia.xlsx",
-      "size": 27548,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785335727206,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms66snkth6dxpwdaf"
-    },
-    {
-      "agent": "Yahia",
-      "name": "Imaging USA 2027 - PPA - Premier Photography Conference - January 31 - February 2, 2027 - Charlotte Convention Center - Charlotte, NC, USA. Yahia.xlsx",
-      "size": 15523,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785331733833,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms64f29ondlyur4gl"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XShow - Los Angeles Build Expo 2026 - November 4-5, 2026 - Los Angeles Convention Center - Los Angeles, Ca, USA Yahia.xlsx",
-      "size": 24932,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785330463919,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms63nueduso1iwszx"
-    },
-    {
-      "agent": "Yahia",
-      "name": "ZShow - AZA Annual Conference 2026 - Association of Zoos & Aquariums - September 26 - October 1, 2026 - Oregon Convention Center - Portland, OR, USA. Yahia.xlsx",
-      "size": 22861,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785330130196,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms63gow89d30kbg6j"
-    },
-    {
-      "agent": "Yahia",
-      "name": "Star of the South Dental Meeting 2026 - September 25- 26, 2026 - Norris Conference Center - HOUSTON, TX, USA. Yahia.xlsx",
-      "size": 10947,
-      "mtime": "2026-07-29T09:00:00.000Z",
-      "uploadTime": 1785328425322,
-      "region": "USA",
-      "destPath": "2026/July/29-7",
-      "status": "sorted",
-      "transactionId": "ms62g5e3d47uykdf2"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XZShow - DW 2026 - Ariat Dirt World Summit - November 9 - 11, 2026 - Phoenix Convention Center - Phoenix, Az, USA. Yahia.xlsx",
-      "size": 25418,
-      "mtime": "2026-07-28T09:00:00.000Z",
-      "uploadTime": 1785267099807,
-      "region": "USA",
-      "destPath": "2026/July/28-7",
-      "status": "sorted",
-      "transactionId": "ms51xqc5i2hkw8pnq"
+      "transactionId": "msj8jlobz78h797ib"
     },
     {
       "agent": "Ammar",
-      "name": "IPPE 2027 - International Production & Processing Expo - January 26- 28, 2027 - Georgia World Congress Center -  Atlanta, Ga, USA Ammar.xlsx",
-      "size": 78176,
-      "mtime": "2026-07-28T09:00:00.000Z",
-      "uploadTime": 1785265052871,
+      "name": "Xshow - CES 2027 - january 6- 9, 2027 - las vegas convention center - Las Vegas, Nv, USA Ammar.xlsx",
+      "size": 249670,
+      "mtime": "2026-08-07T09:00:00.000Z",
+      "uploadTime": 1786124419310,
       "region": "USA",
-      "destPath": "2026/July/28-7",
+      "destPath": "2026/August/07-8",
       "status": "sorted",
-      "transactionId": "ms50puwspr6gzezzx"
+      "transactionId": "msj8d2ak7mzm1jn89"
     },
     {
       "agent": "Yahia",
-      "name": "XZShow - AAOMS 2026 - American Association of Oral and Maxillofacial Surgeons - September 28 – October 3, 2026 - Seattle, WA, USA Yahia.xlsx",
-      "size": 31385,
-      "mtime": "2026-07-28T09:00:00.000Z",
-      "uploadTime": 1785261030540,
+      "name": "Xshow - FSTEC  2026 - Foodservice Technology Conference & Showcase - September 23 – 25, 2026 - Gaylord Texan Resort & Convention Center - Grapevine, Tx, USA. Yahia.xlsx",
+      "size": 21202,
+      "mtime": "2026-08-07T09:00:00.000Z",
+      "uploadTime": 1786123963035,
       "region": "USA",
-      "destPath": "2026/July/28-7",
+      "destPath": "2026/August/07-8",
       "status": "sorted",
-      "transactionId": "ms4ybn9ej091y49az"
+      "transactionId": "msj83a81xup3tqwip"
     },
     {
       "agent": "Yahia",
-      "name": "XZShow - MGMA 2026 - Medical Group Management Association - September 27 – 30, 2026 - Henry B. González Convention Center, San Antonio, Tx, USA Yahia.xlsx",
-      "size": 31124,
-      "mtime": "2026-07-28T09:00:00.000Z",
-      "uploadTime": 1785260824794,
+      "name": "Xshow - SOUTHEAST DESIGN-2-PART SHOW 2026 - September 16- 17, 2026 - Greenville Convention Center - Greenville, SC, USA. Yahia.xlsx",
+      "size": 29277,
+      "mtime": "2026-08-07T09:00:00.000Z",
+      "uploadTime": 1786123379636,
       "region": "USA",
-      "destPath": "2026/July/28-7",
+      "destPath": "2026/August/07-8",
       "status": "sorted",
-      "transactionId": "ms4y78ibb19ny6rlt"
+      "transactionId": "msj7qs2ra0917vt2l"
     },
     {
       "agent": "Yahia",
-      "name": "XZShow - Psych Congress 2026 - September 15-19, 2026 - New Orleans Ernest N. Morial Convention Center - New Orleans, LA, USA Yahia.xlsx",
-      "size": 19988,
-      "mtime": "2026-07-28T09:00:00.000Z",
-      "uploadTime": 1785260537265,
+      "name": "XZShow - Archlight Summit 2026 - SEPTEMBER 15-16, 2026 - DALLAS MARKET CENTER - DALLAS, TX, USA. Yahia.xlsx",
+      "size": 19298,
+      "mtime": "2026-08-07T09:00:00.000Z",
+      "uploadTime": 1786123116118,
       "region": "USA",
-      "destPath": "2026/July/28-7",
+      "destPath": "2026/August/07-8",
       "status": "sorted",
-      "transactionId": "ms4y12nc0gkhplxwb"
+      "transactionId": "msj7l4r09uhiigdbr"
     },
     {
       "agent": "Yahia",
-      "name": "XShow - ITC Vegas 2026 - The world's largest gathering of insurance innovation - September 29, 2026 - October 1, 2026 - Mandalay Bay - Las Vegas, NV, USA Yahia.xlsx",
-      "size": 66426,
-      "mtime": "2026-07-28T09:00:00.000Z",
-      "uploadTime": 1785260367907,
+      "name": "XZShow - AAID ANNUAL CONFERENCE 2026 - September 30 – October 3, 2026 - The Gaylord Nashville - Nashville, Tn, USA. Yahia.xlsx",
+      "size": 22549,
+      "mtime": "2026-08-07T09:00:00.000Z",
+      "uploadTime": 1786122838930,
       "region": "USA",
-      "destPath": "2026/July/28-7",
+      "destPath": "2026/August/07-8",
       "status": "sorted",
-      "transactionId": "ms4xxfyw1qvdehvmm"
+      "transactionId": "msj7f6v75jqf5hzef"
     },
     {
       "agent": "Yahia",
-      "name": "XZShow - VPPPA’s 2026 Safety+ Symposium 2026 - August 30 - September 2, 2026 - Gaylord Opryland Resort & Convention Center - Nashville, Tn, USA Yahia.xlsx",
-      "size": 26642,
-      "mtime": "2026-07-28T09:00:00.000Z",
-      "uploadTime": 1785259512640,
+      "name": "XShow - NBMBAA 2026 - National Black MBA Association - SEPTEMBER 23 - 25, 2026 - Los Angeles Convention Center - Los Angeles, Ca, USA Yahia.xlsx",
+      "size": 21672,
+      "mtime": "2026-08-07T09:00:00.000Z",
+      "uploadTime": 1786122486960,
       "region": "USA",
-      "destPath": "2026/July/28-7",
+      "destPath": "2026/August/07-8",
       "status": "sorted",
-      "transactionId": "ms4xf41kh81bmm0jb"
+      "transactionId": "msj77nacvcscj7gd8"
     },
     {
       "agent": "Yahia",
-      "name": "XZShow IANA 2026 - Intermodal Association of North America - September 14-16, 2026 - Long Beach Convention Center - Long Beach-Ca, USA Ammar.xlsx",
-      "size": 20284,
-      "mtime": "2026-07-28T09:00:00.000Z",
-      "uploadTime": 1785259224089,
+      "name": "XZShow - Groceryshop 2026 - September 22 - 24 2026 - Mandalay Bay - Las Vegas, Nv, USA Yahia.xlsx",
+      "size": 23632,
+      "mtime": "2026-08-07T09:00:00.000Z",
+      "uploadTime": 1786122335854,
       "region": "USA",
-      "destPath": "2026/July/28-7",
+      "destPath": "2026/August/07-8",
       "status": "sorted",
-      "transactionId": "ms4x8xeaycdmm2234"
+      "transactionId": "msj74eow0h8cr5si0"
     },
     {
       "agent": "Yahia",
-      "name": "XZShow - ICSC@WESTERN 2026 - International Council of Shopping Centers - September 14-16, 2026 - San Diego Convention Center - San Diego-Ca, USA Yahia.xlsx",
-      "size": 31305,
-      "mtime": "2026-07-28T09:00:00.000Z",
-      "uploadTime": 1785258758275,
+      "name": "XZShow - THE FIERCEST WEEK IN PHARMA - SEPTEMBER 14-17, 2026 - PENNSYLVANIA CONVENTION CENTER - Philadelphia, PA, USA. Yahia.xlsx",
+      "size": 21943,
+      "mtime": "2026-08-07T09:00:00.000Z",
+      "uploadTime": 1786121703718,
       "region": "USA",
-      "destPath": "2026/July/28-7",
+      "destPath": "2026/August/07-8",
       "status": "sorted",
-      "transactionId": "ms4wyxz01xvjwvh7x"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XShow - IFDA 2026 - International Foodservice Distributors Association - September 13-15, 2026 - Henry B. Gonzalez Convention Center - San Antonio-Tx, USA Ammar.xlsx",
-      "size": 23751,
-      "mtime": "2026-07-28T09:00:00.000Z",
-      "uploadTime": 1785258342149,
-      "region": "USA",
-      "destPath": "2026/July/28-7",
-      "status": "sorted",
-      "transactionId": "ms4wq0vx5su3mcdho"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XZShow - OTA 2026 - Orthopaedic Trauma Association - September 24-25, 2026 - Music City Center - Nashville-Tn, USA Yahia.xlsx",
-      "size": 22454,
-      "mtime": "2026-07-28T09:00:00.000Z",
-      "uploadTime": 1785258121593,
-      "region": "USA",
-      "destPath": "2026/July/28-7",
-      "status": "sorted",
-      "transactionId": "ms4wlap8z3hd7g1dw"
-    },
-    {
-      "agent": "Yahia",
-      "name": "SameList XZShow - G2E 2026 - Global Gaming Expo -  September 28 – October 1, 2026 -  THE VENETIAN EXPO - LAS VEGAS, Nv, USA Yahia.xlsx",
-      "size": 43788,
-      "mtime": "2026-07-28T09:00:00.000Z",
-      "uploadTime": 1785257816513,
-      "region": "USA",
-      "destPath": "2026/July/28-7",
-      "status": "sorted",
-      "transactionId": "ms4weraxh73jya9tj"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XZShow - SCTE Cable-Tec Expo 2026 - September 29- October 1, 2026 - Georgia World Congress Center - Atlanta, GA, USA Yahia.xlsx",
-      "size": 35833,
-      "mtime": "2026-07-28T09:00:00.000Z",
-      "uploadTime": 1785257329936,
-      "region": "USA",
-      "destPath": "2026/July/28-7",
-      "status": "sorted",
-      "transactionId": "ms4w4buyfvyx6keaz"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XZShow - AREMA 2026 - American Railway Engineering & Maintenance - September 14- 15, 2026 - Kansas City Convention Center - Kansas City, MO, USA Yahia.xlsx",
-      "size": 38837,
-      "mtime": "2026-07-28T09:00:00.000Z",
-      "uploadTime": 1785257006045,
-      "region": "USA",
-      "destPath": "2026/July/28-7",
-      "status": "sorted",
-      "transactionId": "ms4vxdxxyqyak3xo5"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XZShow - GSX 2026 - Global Security Exchange - September 14- 16, 2026 - Georgia World Congress Center - ATLANTA-GA, USA Yahia.xlsx",
-      "size": 65680,
-      "mtime": "2026-07-28T09:00:00.000Z",
-      "uploadTime": 1785256835707,
-      "region": "USA",
-      "destPath": "2026/July/28-7",
-      "status": "sorted",
-      "transactionId": "ms4vtqi72gzrfyitr"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XZShow - NRWA WaterPro 2026 - National Rural Water Association -  September 14-16, 2026 - The Phoenix Convention Center - Phoenix, Az, USA Yahia.xlsx",
-      "size": 24111,
-      "mtime": "2026-07-28T09:00:00.000Z",
-      "uploadTime": 1785256514823,
-      "region": "USA",
-      "destPath": "2026/July/28-7",
-      "status": "sorted",
-      "transactionId": "ms4vmuwqvr5on9tm6"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XShow - Americas Food & Beverage Show 2026 - September 13- 16, 2026 - Miami Beach Convention Center - MIAMI, FL, USA Yahia.xlsx",
-      "size": 72103,
-      "mtime": "2026-07-28T09:00:00.000Z",
-      "uploadTime": 1785254187614,
-      "region": "USA",
-      "destPath": "2026/July/28-7",
-      "status": "sorted",
-      "transactionId": "ms4u8z818fism96az"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XZShow - embedded world North America 2026 - September 22-24, 2026 - Anaheim Convention Center - Anaheim, CA, USA Yahia.xlsx",
-      "size": 27482,
-      "mtime": "2026-07-28T09:00:00.000Z",
-      "uploadTime": 1785253456912,
-      "region": "USA",
-      "destPath": "2026/July/28-7",
-      "status": "sorted",
-      "transactionId": "ms4ttbesl7mt2b1xs"
-    },
-    {
-      "agent": "Ammar",
-      "name": "GreenTech North America 2026  - September 23- 24, 2026 - Pennsylvania Convention Center -  Philadelphia, PA, USA Ammar.xlsx",
-      "size": 14382,
-      "mtime": "2026-07-28T09:00:00.000Z",
-      "uploadTime": 1785253124133,
-      "region": "USA",
-      "destPath": "2026/July/28-7",
-      "status": "sorted",
-      "transactionId": "ms4tm6n3k9mxccmhw"
-    },
-    {
-      "agent": "Ammar",
-      "name": "ProGreen Expo 2027 - January 26-28, 2027 - Colorado Convention Center -  Denver, Co, USA Ammar.xlsx",
-      "size": 17576,
-      "mtime": "2026-07-28T09:00:00.000Z",
-      "uploadTime": 1785253123938,
-      "region": "USA",
-      "destPath": "2026/July/28-7",
-      "status": "sorted",
-      "transactionId": "ms4tm6hnb05ucncff"
-    },
-    {
-      "agent": "Ammar",
-      "name": "XShow - MAGIC New York 2026 - September 9 - 11, 2026 - Javits Center - New York, NY, USA Ammar.xlsx",
-      "size": 99033,
-      "mtime": "2026-07-28T09:00:00.000Z",
-      "uploadTime": 1785253123573,
-      "region": "USA",
-      "destPath": "2026/July/28-7",
-      "status": "sorted",
-      "transactionId": "ms4tm679rxhev4nnp"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XZShow - Breakbulk Americas 2026 - September 22 - 23, 2026 - George R. Brown Convention Center - Houston, TX, USA Yahia.xlsx",
-      "size": 45953,
-      "mtime": "2026-07-28T09:00:00.000Z",
-      "uploadTime": 1785252629869,
-      "region": "USA",
-      "destPath": "2026/July/28-7",
-      "status": "sorted",
-      "transactionId": "ms4tbl9fgaf6y4zxg"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XShow - ADHA 2026 - American Dental Hygienists' Association - September 26- 28, 2026 - Fort Worth Convention Center - Fort Worth, Tx, USA Yahia.xlsx",
-      "size": 21750,
-      "mtime": "2026-07-28T09:00:00.000Z",
-      "uploadTime": 1785252146485,
-      "region": "USA",
-      "destPath": "2026/July/28-7",
-      "status": "sorted",
-      "transactionId": "ms4t18a383rk72cqn"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XShow - WEFTEC 2026 - Water Environment Federation - September 26-30, 2026 - Ernest N. Morial Convention Center - New Orleans-La, USA Yahia.xlsx",
-      "size": 143538,
-      "mtime": "2026-07-28T09:00:00.000Z",
-      "uploadTime": 1785251508482,
-      "region": "USA",
-      "destPath": "2026/July/28-7",
-      "status": "sorted",
-      "transactionId": "ms4snjzoi2tuprtxs"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XZShow - CAMX 2026 - Composites and Advanced Materials Expo - September 21 – 24, 2026 - Georgia World Congress Center, Building C - Atlanta, GA, USA Yahia.xlsx",
-      "size": 67343,
-      "mtime": "2026-07-28T09:00:00.000Z",
-      "uploadTime": 1785250799540,
-      "region": "USA",
-      "destPath": "2026/July/28-7",
-      "status": "sorted",
-      "transactionId": "ms4s8cyv627tzpoha"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XShow - GlassBuild America 2026 - SEPTEMBER 23-25, 2026 - Las Vegas Convention Center - Las Vegas, NV, USA Yahia.xlsx",
-      "size": 74328,
-      "mtime": "2026-07-28T09:00:00.000Z",
-      "uploadTime": 1785250396364,
-      "region": "USA",
-      "destPath": "2026/July/28-7",
-      "status": "sorted",
-      "transactionId": "ms4rzpvoavk0gfnp1"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XShow - Commercial UAV Expo 2026 - September 1 - 3, 2026 - Caesars Forum - Las Vegas, NV, USA Yahia.xlsx",
-      "size": 34755,
-      "mtime": "2026-07-28T09:00:00.000Z",
-      "uploadTime": 1785250133330,
-      "region": "USA",
-      "destPath": "2026/July/28-7",
-      "status": "sorted",
-      "transactionId": "ms4ru2x3fsa1u7sz4"
-    },
-    {
-      "agent": "Yahia",
-      "name": "ZShow - AAHA Con 2026 - American Animal Hospital Association - September 17-19, 2026 - Oregon Convention Center - Portland, Or, USA. Yahia.xlsx",
-      "size": 13301,
-      "mtime": "2026-07-28T09:00:00.000Z",
-      "uploadTime": 1785249567232,
-      "region": "USA",
-      "destPath": "2026/July/28-7",
-      "status": "sorted",
-      "transactionId": "ms4rhy44psp7i2vij"
-    },
-    {
-      "agent": "Yahia",
-      "name": "ZShow - PNCWA Annual Conference 2026 - September 13-16, 2026 - Spokane Convention Center - Spokane, WA, USA. Yahia.xlsx",
-      "size": 13286,
-      "mtime": "2026-07-28T09:00:00.000Z",
-      "uploadTime": 1785248543682,
-      "region": "USA",
-      "destPath": "2026/July/28-7",
-      "status": "sorted",
-      "transactionId": "ms4qw0c74gxdyughk"
-    },
-    {
-      "agent": "Yahia",
-      "name": "SSA Fall Trade Show 2026 - Self Storage Association - September 8-11, 2026 - ARIA Resort & Casino - LAS VEGAS, NV, USA. Yahia.xlsx",
-      "size": 25038,
-      "mtime": "2026-07-28T09:00:00.000Z",
-      "uploadTime": 1785245787783,
-      "region": "USA",
-      "destPath": "2026/July/28-7",
-      "status": "sorted",
-      "transactionId": "ms4p8xvgw1zk6hc70"
-    },
-    {
-      "agent": "Yahia",
-      "name": "Xshow - MANTS 2027 - MID-ATLANTIC NURSERY TRADE SHOW - January 13 - 15, 2027 - Baltimore Convention Center - Baltimore, MD, USA Yahia.xlsx",
-      "size": 71624,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785182392941,
-      "region": "USA",
-      "destPath": "2026/July/27-7",
-      "status": "sorted",
-      "transactionId": "ms3ni63a9xhftyihc"
-    },
-    {
-      "agent": "Yahia",
-      "name": "Xshow -  IDEAg Amarillo Farm & Ranch Show 2026 - December 1-3, 2026 - Amarillo Civic Center - Amarillo, TX USA Yahia.xlsx",
-      "size": 31192,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785180729506,
-      "region": "USA",
-      "destPath": "2026/July/27-7",
-      "status": "sorted",
-      "transactionId": "ms3miikwb5slyu3xh"
-    },
-    {
-      "agent": "Yahia",
-      "name": "ZShow - Southwest Pool & Spa Show 2027 - January 14-16, 2027 - Henry B. Gonzalez Convention Center - San Antonio, TX, USA. Yahia.xlsx",
-      "size": 14892,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785180269497,
-      "region": "USA",
-      "destPath": "2026/July/27-7",
-      "status": "sorted",
-      "transactionId": "ms3m8nmwefnwtkdes"
-    },
-    {
-      "agent": "Yahia",
-      "name": "Super Pet Expo 2027 - January 8-10, 2027 - New Jersey Convention & Exposition Center - Edison, NJ, US. Yahia.xlsx",
-      "size": 18300,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785177883385,
-      "region": "UK",
-      "destPath": "2026/July/27-7",
-      "status": "sorted",
-      "transactionId": "ms3ktii5exx4bslrg"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XShow - The Water Expo - Water Quality Supply & Waste Water 2026 - August 12 - 13, 2026 - Broward County Convention Center - FORT LAUDERDALE-FL, USA Yahia.xlsx",
-      "size": 25280,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785177426501,
-      "region": "USA",
-      "destPath": "2026/July/27-7",
-      "status": "sorted",
-      "transactionId": "ms3kjpyu47nz491r9"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XZShow AABP 2026 - American Association of Bovine Practitioners - August 27 - 29, 2026 - Minneapolis Convention Center - Minneapolis, MN, USA. Yahia.xlsx",
-      "size": 20216,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785177124766,
-      "region": "USA",
-      "destPath": "2026/July/27-7",
-      "status": "sorted",
-      "transactionId": "ms3kd95acwyd49obf"
+      "transactionId": "msj6quxn48xkmjzpu"
     },
     {
       "agent": "Yahia",
       "name": "Xshow -  ICSC FLORIDA 2026 - International Council of Shopping Centers - August 30 - September 1, 2026 - Orange County Convention Center - Orlando-Fl, USA Yahia.xlsx",
-      "size": 44231,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785176911994,
+      "size": 45877,
+      "mtime": "2026-08-07T09:00:00.000Z",
+      "uploadTime": 1786121152509,
       "region": "USA",
-      "destPath": "2026/July/27-7",
+      "destPath": "2026/August/07-8",
       "status": "sorted",
-      "transactionId": "ms3k8oywcdzjoqo0x"
+      "transactionId": "msj6f1m3s9m2lzoao"
     },
     {
       "agent": "Yahia",
-      "name": "XShow - Techtextil North America 2026 - August 4 - 6, 2026 - Raleigh Convention Center - Raleigh, NC, USA Yahia.xlsx",
-      "size": 27718,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785176609820,
+      "name": "Xshow - PAINWeek 2026  - September 8-11, 2026 - The Cosmopolitan - Las Vegas, NV, USA. Yahia.xlsx",
+      "size": 18086,
+      "mtime": "2026-08-07T09:00:00.000Z",
+      "uploadTime": 1786120736710,
       "region": "USA",
-      "destPath": "2026/July/27-7",
+      "destPath": "2026/August/07-8",
       "status": "sorted",
-      "transactionId": "ms3k27tef5kijw9h7"
+      "transactionId": "msj664sbor025gdqp"
+    },
+    {
+      "agent": "Ammar",
+      "name": "XShow - ITC Vegas 2026 - The world's largest gathering of insurance innovation - September 29, 2026 - October 1, 2026 - Mandalay Bay - Las Vegas, NV, USA Ammar.xlsx",
+      "size": 66371,
+      "mtime": "2026-08-07T09:00:00.000Z",
+      "uploadTime": 1786119339674,
+      "region": "USA",
+      "destPath": "2026/August/07-8",
+      "status": "sorted",
+      "transactionId": "msj5c6tru49a5lgus"
+    },
+    {
+      "agent": "Ammar",
+      "name": "Xshow - Surf Expo 2026 - SEPTEMBER 16-18, 2026 - ORANGE COUNTY CONVENTION CENTER - ORLANDO , fl, USA Ammar.xlsx",
+      "size": 58070,
+      "mtime": "2026-08-07T09:00:00.000Z",
+      "uploadTime": 1786119339581,
+      "region": "USA",
+      "destPath": "2026/August/07-8",
+      "status": "sorted",
+      "transactionId": "msj5c6rauicnd2dfn"
+    },
+    {
+      "agent": "Ammar",
+      "name": "Gulf States Horticultural Expo 2027 - January 6- 8, 2027 - Mobile Convention Center - Mobile, AL, USA Ammar.xlsx",
+      "size": 30900,
+      "mtime": "2026-08-07T09:00:00.000Z",
+      "uploadTime": 1786119339489,
+      "region": "USA",
+      "destPath": "2026/August/07-8",
+      "status": "sorted",
+      "transactionId": "msj5c6opd7ouiqqid"
+    },
+    {
+      "agent": "Ammar",
+      "name": "TRB Annual Meeting 2027 - Transportation Research Board - January 10 - 14, 2027 - Walter E. Washington Convention Center - WASHINGTON-DC, USA Ammar.xlsx",
+      "size": 21779,
+      "mtime": "2026-08-07T09:00:00.000Z",
+      "uploadTime": 1786119339417,
+      "region": "USA",
+      "destPath": "2026/August/07-8",
+      "status": "sorted",
+      "transactionId": "msj5c6mpvb18q6buc"
+    },
+    {
+      "agent": "Ammar",
+      "name": "XZShow - HR Florida 2026 - August 30, 2026 - September 2, 2026 - Gaylord Palms Resort & Convention Center - Kissimmee, Fl, USA Ammar.xlsx",
+      "size": 18552,
+      "mtime": "2026-08-07T09:00:00.000Z",
+      "uploadTime": 1786119339367,
+      "region": "USA",
+      "destPath": "2026/August/07-8",
+      "status": "sorted",
+      "transactionId": "msj5c6lbgrwmfyuke"
     },
     {
       "agent": "Yahia",
-      "name": "XZShow - RE+ Mid-Atlantic 2026 - August 12-13, 2026 - pennsylvania Convention Center - Philadelphia, PA, USA Yahia.xlsx",
-      "size": 28893,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785176437555,
+      "name": "Xshow - SHSMD 2026 - Society for Healthcare Strategy & Market Development - September 27-29, 2026 - Baltimore Convention Center, Baltimore, MD, USA . Yahia.xlsx",
+      "size": 18247,
+      "mtime": "2026-08-07T09:00:00.000Z",
+      "uploadTime": 1786118341844,
       "region": "USA",
-      "destPath": "2026/July/27-7",
+      "destPath": "2026/August/07-8",
       "status": "sorted",
-      "transactionId": "ms3jyiw3x8vkm6n3r"
+      "transactionId": "msj4qsw74wk9nb4uv"
     },
     {
       "agent": "Yahia",
-      "name": "XShow - MAGIC - PROJECT - SOURCING - OFFPRICE 2026 Las Vegas - August 10-12, 2026 - Las Vegas Convention Center - Las Vegas, NV, USA Yahia.xlsx",
-      "size": 79745,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785176248130,
+      "name": "XZShow - VPPPA’s 2026 Safety+ Symposium 2026 - August 30 - September 2, 2026 - Gaylord Opryland Resort & Convention Center - Nashville, Tn, USA Yahia.xlsx",
+      "size": 27916,
+      "mtime": "2026-08-07T09:00:00.000Z",
+      "uploadTime": 1786118099096,
       "region": "USA",
-      "destPath": "2026/July/27-7",
+      "destPath": "2026/August/07-8",
       "status": "sorted",
-      "transactionId": "ms3jugqaw6l2zp8jj"
+      "transactionId": "msj4lll66itxc7zdj"
     },
     {
       "agent": "Yahia",
-      "name": "XShow - ASD Market Week 2026 - August 24 - 27, 2026 - Las Vegas Convention Center - LAS VEGAS-NV, USA Yahia.xlsx",
-      "size": 141664,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785175090668,
+      "name": "XZShow IANA 2026 - Intermodal Association of North America - September 14-16, 2026 - Long Beach Convention Center - Long Beach-Ca, USA Yahia.xlsx",
+      "size": 21652,
+      "mtime": "2026-08-07T09:00:00.000Z",
+      "uploadTime": 1786117779351,
       "region": "USA",
-      "destPath": "2026/July/27-7",
+      "destPath": "2026/August/07-8",
       "status": "sorted",
-      "transactionId": "ms3j5nmgi8fbvoesn"
+      "transactionId": "msj4eqvbr8ryunck7"
     },
     {
       "agent": "Yahia",
-      "name": "XShow- SUPERZOO 2026 - August 12 - 14, 2026 - Mandalay Bay - Las Vegas, NV, USA Yahia.xlsx",
-      "size": 154830,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785174518331,
+      "name": "XZShow - ICSC@WESTERN 2026 - International Council of Shopping Centers - September 14-16, 2026 - San Diego Convention Center - San Diego-Ca, USA Yahia.xlsx",
+      "size": 34192,
+      "mtime": "2026-08-07T09:00:00.000Z",
+      "uploadTime": 1786117550017,
       "region": "USA",
-      "destPath": "2026/July/27-7",
+      "destPath": "2026/August/07-8",
       "status": "sorted",
-      "transactionId": "ms3ite094iqw103sx"
-    },
-    {
-      "agent": "Ammar",
-      "name": "XShow - SHOT Show 2027 - january 19- 22, 2027 - Venetian Expo + Caesars Forum - Las Vegas, Nv, USA Ammar.xlsx",
-      "size": 264606,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785174358591,
-      "region": "USA",
-      "destPath": "2026/July/27-7",
-      "status": "sorted",
-      "transactionId": "ms3ipyr1xby456irr"
-    },
-    {
-      "agent": "Ammar",
-      "name": "XZShow - The International WorkBoat Show 2026 - December 2-4, 2026 - Ernest N. Morial Convention Center - New Orleans, LA, USA Ammar.xlsx",
-      "size": 63486,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785174355886,
-      "region": "USA",
-      "destPath": "2026/July/27-7",
-      "status": "sorted",
-      "transactionId": "ms3ipwo27ph9xjqxh"
+      "transactionId": "msj49tx1jcatpd092"
     },
     {
       "agent": "Yahia",
-      "name": "XShow - RMEF Hunter & Outdoor Christmas Expo 2026 Co Located With Cowboy Christmas 2026 - December 3-12, 2026 - Las Vegas Convention Center – South Halls - Las Vegas, NV, USA. Yahia.xlsx",
-      "size": 30837,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785172597430,
+      "name": "XShow - IFDA 2026 - International Foodservice Distributors Association - September 13-15, 2026 - Henry B. Gonzalez Convention Center - San Antonio-Tx, USA yahia.xlsx",
+      "size": 24377,
+      "mtime": "2026-08-07T09:00:00.000Z",
+      "uploadTime": 1786117188511,
       "region": "USA",
-      "destPath": "2026/July/27-7",
+      "destPath": "2026/August/07-8",
       "status": "sorted",
-      "transactionId": "ms3ho7tuwkravucjn"
-    },
-    {
-      "agent": "Ammar",
-      "name": "ZShow - New York National Boat Show 2027 - January 20-24, 2027 - Javits Center - New York, NY, USA Ammar.xlsx",
-      "size": 21819,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785172397209,
-      "region": "USA",
-      "destPath": "2026/July/27-7",
-      "status": "sorted",
-      "transactionId": "ms3hjxci3x80ta6wo"
-    },
-    {
-      "agent": "Ammar",
-      "name": "ZShow - NSGC 2026 - National Society of Genetic Counselors - November 10- 14, 2026 - Baltimore Convention Center - BALTIMORE, MD,  USA Ammar.xlsx",
-      "size": 16437,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785172397183,
-      "region": "USA",
-      "destPath": "2026/July/27-7",
-      "status": "sorted",
-      "transactionId": "ms3hjxbquq75j4n62"
-    },
-    {
-      "agent": "Ammar",
-      "name": "ZShow - AABC 2026 -  Advanced Automotive Battery Conference - DECEMBER 7-10, 2026 - San Diego Convention Center - San Diego, CA , USA Ammar.xlsx",
-      "size": 13384,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785172397153,
-      "region": "USA",
-      "destPath": "2026/July/27-7",
-      "status": "sorted",
-      "transactionId": "ms3hjxav5x6m9ofb7"
-    },
-    {
-      "agent": "Ammar",
-      "name": "Xshow - AAEP Annual Convention & Trade Show 2026 - December 8- 10, 2026 - Mandalay Bay Convention Center - Las Vegas, Nv, USA Ammar.xlsx",
-      "size": 28580,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785172397130,
-      "region": "USA",
-      "destPath": "2026/July/27-7",
-      "status": "sorted",
-      "transactionId": "ms3hjxaa5ng10pa8o"
-    },
-    {
-      "agent": "Ammar",
-      "name": "XZShow - Gartner IT Infrastructure, Operations & Cloud Strategies Conference 2026 -  December 8 – 10, 2026 - The Venetian Resort Las Vegas - Las Vegas, Nv, USA Ammar.xlsx",
-      "size": 17170,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785172397089,
-      "region": "USA",
-      "destPath": "2026/July/27-7",
-      "status": "sorted",
-      "transactionId": "ms3hjx9693il40tje"
-    },
-    {
-      "agent": "Ammar",
-      "name": "XZShow - The Docks Expo & Marina Conference 2026 - December 1–3, 2026 - Music City Center - Nashville, TN, USA Ammar.xlsx",
-      "size": 21832,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785172397060,
-      "region": "USA",
-      "destPath": "2026/July/27-7",
-      "status": "sorted",
-      "transactionId": "ms3hjx8cci9hw048e"
-    },
-    {
-      "agent": "Ammar",
-      "name": "ZShow - SpaceCom 2027 - January 12- 14, 2027 - Orange County Convention Center - Orlando, FL, USA Ammar.xlsx",
-      "size": 15026,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785172397023,
-      "region": "USA",
-      "destPath": "2026/July/27-7",
-      "status": "sorted",
-      "transactionId": "ms3hjx7crll5r3kkl"
-    },
-    {
-      "agent": "Ammar",
-      "name": "ZShow - UMA 2027 - Motorcoach Expo  - January 17 – 20, 2027 - Henry B. González Convention Center - San Antonio, TX, USA Ammar.xlsx",
-      "size": 9770,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785172396998,
-      "region": "USA",
-      "destPath": "2026/July/27-7",
-      "status": "sorted",
-      "transactionId": "ms3hjx6j8hzpcvfqd"
-    },
-    {
-      "agent": "Ammar",
-      "name": "TPIE 2027 - Tropical Plant Industry Exhibition - January 20- 22, 2027 - Broward County Convention Center - Fort Lauderdale-Fl, USA Ammar.xlsx",
-      "size": 27799,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785172396961,
-      "region": "USA",
-      "destPath": "2026/July/27-7",
-      "status": "sorted",
-      "transactionId": "ms3hjx5l0nwmnvorb"
+      "transactionId": "msj422z3buigmzt02"
     },
     {
       "agent": "Yahia",
-      "name": "XShow - SABCS 2026 - San Antonio Breast Cancer Symposium - December 8 - 11, 2026 - Henry B. González Convention Center - San Antonio, Tx, USA. Yahia.xlsx",
-      "size": 21291,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785172389801,
+      "name": "XZShow - Emergency Nursing 2026 - September 28 - October 1, 2026 - Phoenix Convention Center - Phoenix-Az, USA Yahia.xlsx",
+      "size": 27999,
+      "mtime": "2026-08-07T09:00:00.000Z",
+      "uploadTime": 1786116848098,
       "region": "USA",
-      "destPath": "2026/July/27-7",
+      "destPath": "2026/August/07-8",
       "status": "sorted",
-      "transactionId": "ms3hjrmhdfk9y5tng"
+      "transactionId": "msj3usbbde5apg2hf"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XZShow - OHCA Annual Convention 2026 - Oregon Health Care Association - September 22-23, 2026 - Oregon Convention Center - Portland-Or, USA Yahia.xlsx",
+      "size": 28027,
+      "mtime": "2026-08-07T09:00:00.000Z",
+      "uploadTime": 1786116599409,
+      "region": "USA",
+      "destPath": "2026/August/07-8",
+      "status": "sorted",
+      "transactionId": "msj3pgf6zow2vrxf7"
+    },
+    {
+      "agent": "Yahia",
+      "name": "Halloween & Party Expo 2027 - January 11-13, 2027 - Ernest N. Morial Convention Center - NEW ORLEANS-LA, USA. Yahia.xlsx",
+      "size": 14691,
+      "mtime": "2026-08-07T09:00:00.000Z",
+      "uploadTime": 1786116209562,
+      "region": "USA",
+      "destPath": "2026/August/07-8",
+      "status": "sorted",
+      "transactionId": "msj3h3lt2r00xnw45"
+    },
+    {
+      "agent": "Yahia",
+      "name": "Abilities Expo Los Angeles 2027 - January 14-16, 2027 - Long Beach Convention Center - Long Beach, CA, USA. Yahia.xlsx",
+      "size": 14328,
+      "mtime": "2026-08-07T09:00:00.000Z",
+      "uploadTime": 1786114361519,
+      "region": "USA",
+      "destPath": "2026/August/07-8",
+      "status": "sorted",
+      "transactionId": "msj2dhnlgfwwma788"
+    },
+    {
+      "agent": "Yahia",
+      "name": "SCWA 2027 - Southwest Car Wash Association - February 24-26, 2027 - The Fort Worth Convention Center- Fort Worth-Tx, USA. Yahia.xlsx",
+      "size": 19796,
+      "mtime": "2026-08-07T09:00:00.000Z",
+      "uploadTime": 1786111280588,
+      "region": "USA",
+      "destPath": "2026/August/07-8",
+      "status": "sorted",
+      "transactionId": "msj0jge824hv44vc7"
+    },
+    {
+      "agent": "Yahia",
+      "name": "ZShow - AMS Annual Meeting 2027 - January 10- 14, 2027 - Colorado Convention Center - Denver CO, USA. Yahia.xlsx",
+      "size": 13986,
+      "mtime": "2026-08-07T09:00:00.000Z",
+      "uploadTime": 1786107191124,
+      "region": "USA",
+      "destPath": "2026/August/07-8",
+      "status": "sorted",
+      "transactionId": "msiy3sxyucf8luvs9"
+    },
+    {
+      "agent": "Yahia",
+      "name": "ZShow - Florida Fire Conference 2027 - JANUARY 4-8, 2027 - ORANGE COUNTY FIRE RESCUE TRAINING CENTER - Orlando, FL, USA. Yahia.xlsx",
+      "size": 13064,
+      "mtime": "2026-08-07T09:00:00.000Z",
+      "uploadTime": 1786105541303,
+      "region": "USA",
+      "destPath": "2026/August/07-8",
+      "status": "sorted",
+      "transactionId": "msix4fxnn9keauvy4"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XShow - Americas Food & Beverage Show 2026 - September 13- 16, 2026 - Miami Beach Convention Center - MIAMI, FL, USA Yahia.xlsx",
+      "size": 87791,
+      "mtime": "2026-08-06T09:00:00.000Z",
+      "uploadTime": 1786041388413,
+      "region": "USA",
+      "destPath": "2026/August/06-8",
+      "status": "sorted",
+      "transactionId": "mshuxf8ib8jooxpp3"
+    },
+    {
+      "agent": "Ammar",
+      "name": "XShow - MAGIC New York 2026 - September 9 - 11, 2026 - Javits Center - New York, NY, USA Ammar.xlsx",
+      "size": 112141,
+      "mtime": "2026-08-06T09:00:00.000Z",
+      "uploadTime": 1786038054576,
+      "region": "USA",
+      "destPath": "2026/August/06-8",
+      "status": "sorted",
+      "transactionId": "mshsxyucxtzfrjihu"
+    },
+    {
+      "agent": "Ammar",
+      "name": "Cleveland Boat Show 2026 - December 17- 20, 2026 - Huntington Convention Center of Cleveland - CLEVELAND-OH, USA Ammar.xlsx",
+      "size": 77279,
+      "mtime": "2026-08-06T09:00:00.000Z",
+      "uploadTime": 1786038054424,
+      "region": "USA",
+      "destPath": "2026/August/06-8",
+      "status": "sorted",
+      "transactionId": "mshsxyq4h5jdcz5qn"
+    },
+    {
+      "agent": "Ammar",
+      "name": "GEO WEEK 2027 - February 23-25, 2027 - SALT PALACE CONVENTION CENTER - Salt Lake City, UT, USA Ammar.xlsx",
+      "size": 17862,
+      "mtime": "2026-08-06T09:00:00.000Z",
+      "uploadTime": 1786038054339,
+      "region": "USA",
+      "destPath": "2026/August/06-8",
+      "status": "sorted",
+      "transactionId": "mshsxynwjf95iwdng"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XShow - Build Show LIVE 2026 - September 10 - 12, 2026 - Henry B. González Convention Center - San Antonio, TX, USA Yahia.xlsx",
+      "size": 25338,
+      "mtime": "2026-08-06T09:00:00.000Z",
+      "uploadTime": 1786037594175,
+      "region": "USA",
+      "destPath": "2026/August/06-8",
+      "status": "sorted",
+      "transactionId": "mshso3lgijq9ouyep"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XZShow - ACS 2026 - American College of Surgeons - September 26–29, 2026 - Walter E. Washington Convention Center - Washington, DC, USA Yahia.xlsx",
+      "size": 26756,
+      "mtime": "2026-08-06T09:00:00.000Z",
+      "uploadTime": 1786037205812,
+      "region": "USA",
+      "destPath": "2026/August/06-8",
+      "status": "sorted",
+      "transactionId": "mshsfrxk25xly76es"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XShow - RNG WORKS 2026 - September 15-17, 2026 - Baird Center - MILWAUKEE-WI, USA Yahia.xlsx",
+      "size": 17738,
+      "mtime": "2026-08-06T09:00:00.000Z",
+      "uploadTime": 1786036914313,
+      "region": "USA",
+      "destPath": "2026/August/06-8",
+      "status": "sorted",
+      "transactionId": "mshs9j02sybus7j8k"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XZShow - G2E 2026 - Global Gaming Expo -  September 28 – October 1, 2026 -  THE VENETIAN EXPO - LAS VEGAS, Nv, USA Yahia.xlsx",
+      "size": 45243,
+      "mtime": "2026-08-06T09:00:00.000Z",
+      "uploadTime": 1786036558426,
+      "region": "USA",
+      "destPath": "2026/August/06-8",
+      "status": "sorted",
+      "transactionId": "mshs1wekx5g1pw8vs"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XShow - Healthcare Facilities Symposium & Expo 2026 - SEPTEMBER 28-30, 2026 - Charlotte Convention Center - Charlotte, NC, USA. Yahia.xlsx",
+      "size": 24751,
+      "mtime": "2026-08-06T09:00:00.000Z",
+      "uploadTime": 1786036086179,
+      "region": "USA",
+      "destPath": "2026/August/06-8",
+      "status": "sorted",
+      "transactionId": "mshrrs0pr8b945l8n"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XZShow - AWT 2026 - Association of Water Technologies Annual Convention and Exposition - SEPTEMBER 16-18, 2026 - OKLAHOMA CONVENTION CENTER - OKLAHOMA CITY-OK, USA. Yahia.xlsx",
+      "size": 23210,
+      "mtime": "2026-08-06T09:00:00.000Z",
+      "uploadTime": 1786035475744,
+      "region": "USA",
+      "destPath": "2026/August/06-8",
+      "status": "sorted",
+      "transactionId": "mshrep011jbjznhgd"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XShow - AAFPRS 2026 - American Academy of Facial Plastic and Reconstructive Surgery - September 23-26, 2026 - Fontainebleau Las Vegas - LAS VEGAS, Nv, USA. Yahia.xlsx",
+      "size": 19729,
+      "mtime": "2026-08-06T09:00:00.000Z",
+      "uploadTime": 1786034988678,
+      "region": "USA",
+      "destPath": "2026/August/06-8",
+      "status": "sorted",
+      "transactionId": "mshr496h3l3ox82er"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XZShow - AEE World 2026 - World Energy Conference & Expo - September 16-18, 2026 - Orange County Convention Center - Orlando, FL, USA Yahia.xlsx",
+      "size": 19632,
+      "mtime": "2026-08-06T09:00:00.000Z",
+      "uploadTime": 1786034778289,
+      "region": "USA",
+      "destPath": "2026/August/06-8",
+      "status": "sorted",
+      "transactionId": "mshqzqudp1butfi7i"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XZShow - TPS 2026 - Turbomachinery & Pump Symposia - SEPTEMBER 22-24, 2026 - George R. Brown Convention Center - Houston, Tx, USA Yahia.xlsx",
+      "size": 48531,
+      "mtime": "2026-08-06T09:00:00.000Z",
+      "uploadTime": 1786034511250,
+      "region": "USA",
+      "destPath": "2026/August/06-8",
+      "status": "sorted",
+      "transactionId": "mshqu0smnit5unchn"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XShow - SIOP 2026 - International Society of Paediatric Oncology - September 15-18, 2026 - Henry B. González Convention Center - San Antonio, TX, USA. Yahia.xlsx",
+      "size": 15055,
+      "mtime": "2026-08-06T09:00:00.000Z",
+      "uploadTime": 1786034125419,
+      "region": "USA",
+      "destPath": "2026/August/06-8",
+      "status": "sorted",
+      "transactionId": "mshqlr36jvgyba7e6"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XZShow - AOFAS 2026 - Annual Meeting of American Orthopaedic Foot & Ankle Society - September 16-19, 2026 - Seattle Convention Center - Arch - Seattle WA, USA. Yahia.xlsx",
+      "size": 22600,
+      "mtime": "2026-08-06T09:00:00.000Z",
+      "uploadTime": 1786032045210,
+      "region": "USA",
+      "destPath": "2026/August/06-8",
+      "status": "sorted",
+      "transactionId": "mshpd5zk2rtpc1m6s"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XZShow - APHON 2026 - Association of Pediatric HematologyOncology Nurses - September 16 – 18, 2026 - Renasant Convention Center - Memphis, TN, USA Yahia.xlsx",
+      "size": 15969,
+      "mtime": "2026-08-06T09:00:00.000Z",
+      "uploadTime": 1786031860332,
+      "region": "USA",
+      "destPath": "2026/August/06-8",
+      "status": "sorted",
+      "transactionId": "mshp97bwxa2jp6s91"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XShow - MakeUp in NewYork 2026 - September 16-17, 2026 - Javits Center - New York City-Ny, USA. Yahia.xlsx",
+      "size": 27450,
+      "mtime": "2026-08-06T09:00:00.000Z",
+      "uploadTime": 1786031545090,
+      "region": "USA",
+      "destPath": "2026/August/06-8",
+      "status": "sorted",
+      "transactionId": "mshp2g3bwt7b5fd3y"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XZShow - OTA 2026 - Orthopaedic Trauma Association - September 24-25, 2026 - Music City Center - Nashville-Tn, USA Yahia.xlsx",
+      "size": 23107,
+      "mtime": "2026-08-06T09:00:00.000Z",
+      "uploadTime": 1786031017187,
+      "region": "USA",
+      "destPath": "2026/August/06-8",
+      "status": "sorted",
+      "transactionId": "mshor4rb8y38zyg1a"
+    },
+    {
+      "agent": "Yahia",
+      "name": "Xshow - LSX USA Congress 2026 - Life Science eXecutive September 23-24, 2026 - Hynes Convention Center - Boston-Ma, USA. Yahia.xlsx",
+      "size": 30889,
+      "mtime": "2026-08-06T09:00:00.000Z",
+      "uploadTime": 1786030543568,
+      "region": "USA",
+      "destPath": "2026/August/06-8",
+      "status": "sorted",
+      "transactionId": "mshogzb9320884kho"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XZShow - Global Polymer Summit 2026 - September 28 - 30, 2026 - Kentucky International Convention Center - Louisville, KY, USA Yahia.xlsx",
+      "size": 30692,
+      "mtime": "2026-08-06T09:00:00.000Z",
+      "uploadTime": 1786029286146,
+      "region": "USA",
+      "destPath": "2026/August/06-8",
+      "status": "sorted",
+      "transactionId": "mshnq12vum2gjofmu"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XZShow - NRWA WaterPro 2026 - National Rural Water Association -  September 14-16, 2026 - The Phoenix Convention Center - Phoenix, Az, USA Yahia.xlsx",
+      "size": 25614,
+      "mtime": "2026-08-06T09:00:00.000Z",
+      "uploadTime": 1786028920891,
+      "region": "USA",
+      "destPath": "2026/August/06-8",
+      "status": "sorted",
+      "transactionId": "mshni78vxfck9u9td"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XZShow - embedded world North America 2026 - September 22-24, 2026 - Anaheim Convention Center - Anaheim, CA, USA Yahia.xlsx",
+      "size": 28399,
+      "mtime": "2026-08-06T09:00:00.000Z",
+      "uploadTime": 1786028602666,
+      "region": "USA",
+      "destPath": "2026/August/06-8",
+      "status": "sorted",
+      "transactionId": "mshnbdpb5nuefqvyd"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XZShow - ASLA - American Society of Landscape Architects - September 16- 18, 2026 - Los Angeles Convention Center - Los Angeles, CA, USA Yahia.xlsx",
+      "size": 55090,
+      "mtime": "2026-08-06T09:00:00.000Z",
+      "uploadTime": 1786028345594,
+      "region": "USA",
+      "destPath": "2026/August/06-8",
+      "status": "sorted",
+      "transactionId": "mshn5vc894n3y5o37"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XShow - Digital Dealer Conference & Exposition 2026 - September 22-23, 2026 - Huntington Place - Detroit, MI, USA Yahia.xlsx",
+      "size": 19306,
+      "mtime": "2026-08-06T09:00:00.000Z",
+      "uploadTime": 1786027797021,
+      "region": "USA",
+      "destPath": "2026/August/06-8",
+      "status": "sorted",
+      "transactionId": "mshmu42a7g3uzt18k"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XZShow - PWX 2026 - Public Works Expo - August 30–September 2, 2026 - George R. Brown Convention Center - Houston, Tx, USA Yahia.xlsx",
+      "size": 65921,
+      "mtime": "2026-08-06T09:00:00.000Z",
+      "uploadTime": 1786027616518,
+      "region": "USA",
+      "destPath": "2026/August/06-8",
+      "status": "sorted",
+      "transactionId": "mshmq8s4n8ljj3tkd"
+    },
+    {
+      "agent": "Yahia",
+      "name": "APA 2027 - International Personalization Expo - February 23-26, 2027 - Horseshoe Las Vegas - LAS VEGAS-NV, USA. Yahia.xlsx",
+      "size": 14040,
+      "mtime": "2026-08-06T09:00:00.000Z",
+      "uploadTime": 1786026489735,
+      "region": "USA",
+      "destPath": "2026/August/06-8",
+      "status": "sorted",
+      "transactionId": "mshm23crwpdjp0kb7"
+    },
+    {
+      "agent": "Yahia",
+      "name": "SPIE Advanced Lithography 2027 - February 21- 25, 2027 - San Jose McEnery Convention Center - San Jose, CA, USA. Yahia.xlsx",
+      "size": 13289,
+      "mtime": "2026-08-06T09:00:00.000Z",
+      "uploadTime": 1786023481483,
+      "region": "USA",
+      "destPath": "2026/August/06-8",
+      "status": "sorted",
+      "transactionId": "mshk9m5w1sarwpvwz"
+    },
+    {
+      "agent": "Yahia",
+      "name": "Northwest Hort Expo 2026 - December 7-9, 2026 - Three Rivers Convention Center  - Kennewick, WA, USA. Yahia.xlsx",
+      "size": 16199,
+      "mtime": "2026-08-06T09:00:00.000Z",
+      "uploadTime": 1786022108875,
+      "region": "USA",
+      "destPath": "2026/August/06-8",
+      "status": "sorted",
+      "transactionId": "mshjg724lda5qi4j4"
+    },
+    {
+      "agent": "Yahia",
+      "name": "ZShow - IEEE-RAS Humanoids 2026 - International Conference on Humanoid Robots - December 6 - 9, 2026 - Santa Clara Convention Center - Santa Clara, CA, USA. Yahia.xlsx",
+      "size": 12058,
+      "mtime": "2026-08-06T09:00:00.000Z",
+      "uploadTime": 1786018601248,
+      "region": "USA",
+      "destPath": "2026/August/06-8",
+      "status": "sorted",
+      "transactionId": "mshhd0jz0955hfe9p"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XShow - WEFTEC 2026 - Water Environment Federation - September 26-30, 2026 - Ernest N. Morial Convention Center - New Orleans-La, USA Yahia.xlsx",
+      "size": 147232,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785957739521,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msgh4jcfer1if7mzt"
+    },
+    {
+      "agent": "Ammar",
+      "name": "Xshow - ASH Annual Meeting 2026 - American Society of Hematology - December 12- 14, 2026 - Ernest N. Morial Convention Center - New Orleans, LA, USA Ammar.xlsx",
+      "size": 40917,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785957471708,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msggysphi05q10l2a"
+    },
+    {
+      "agent": "Ammar",
+      "name": "XZShow - Midwest Clinic 2026 - Midwest Clinic International Band and Orchestra Conference - December 16 - 18, 2026 - McCormick Place West - Chicago, IL , USA Ammar.xlsx",
+      "size": 27801,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785957471636,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msggysng0b0pmncx5"
+    },
+    {
+      "agent": "Ammar",
+      "name": "XShow - AES 2026 - AMERICAN EPILEPSY SOCIETY - December 4-8, 2026 - Colorado Convention Center - Denver, CO, USA Ammar.xlsx",
+      "size": 24882,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785957471588,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msggysm5gyfvtjoh3"
+    },
+    {
+      "agent": "Ammar",
+      "name": "Xshow - TPIE 2027 - Tropical Plant Industry Exhibition - January 20- 22, 2027 - Broward County Convention Center - Fort Lauderdale-Fl, USA Ammar.xlsx",
+      "size": 32258,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785957471467,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msggysijvpy3jot0h"
+    },
+    {
+      "agent": "Ammar",
+      "name": "XShow - Commercial UAV Expo 2026 - September 1 - 3, 2026 - Caesars Forum - Las Vegas, NV, USA Ammar.xlsx",
+      "size": 35715,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785957471385,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msggysge0ci4325rw"
+    },
+    {
+      "agent": "Ammar",
+      "name": "XShow - THE EXPERIENCE Convention & Trade Show 2026 - September 9-11, 2026 - Paris Las Vegas - Las Vegas, NV, USA Ammar.xlsx",
+      "size": 23504,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785957471311,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msggysed9q87y4l28"
+    },
+    {
+      "agent": "Ammar",
+      "name": "ZShow - Design-Build Conference & Expo 2026 - November 4- 6, 2026 - Huntington Convention Center - Cleveland, OH, USA Ammar.xlsx",
+      "size": 18174,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785957471257,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msggyscsaqu8ty3mn"
+    },
+    {
+      "agent": "Ammar",
+      "name": "Compounding World Expo NA 2026 - November 11-12, 2026 - Huntington Convention Center of Cleveland - Cleveland, OH, USA Ammar.xlsx",
+      "size": 27527,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785957471162,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msggysac0czhzal2p"
+    },
+    {
+      "agent": "Ammar",
+      "name": "ZShow - AAHKS Annual Meeting 2026 - American Association of Hip and Knee Surgeons - November 5-8, 2026 - The Gaylord Texan - DALLAS-TX, USA Ammar.xlsx",
+      "size": 18680,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785957471119,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msggys92ob6pflap9"
+    },
+    {
+      "agent": "Ammar",
+      "name": "ACAAI Annual Scientific Meeting 2026 - November 12-16, 2026 - Phoenix Convention Center - PHOENIX-AZ, USA Ammar.xlsx",
+      "size": 16086,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785957471066,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msggys7lbro9p9pav"
+    },
+    {
+      "agent": "Ammar",
+      "name": "XZshow - Grand Strand Gift & Resort Merchandise Show 2026 - December 6-9, 2026 - Myrtle Beach Convention Center - Myrtle Beach, SC, USA Ammar.xlsx",
+      "size": 34458,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785957471018,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msggys5v96piiaolh"
+    },
+    {
+      "agent": "Ammar",
+      "name": "XZShow - Irrigation Show 2026 - December 7-10, 2026 - Las Vegas Convention Center - Las Vegas, Nv, USA Ammar.xlsx",
+      "size": 24819,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785957470936,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msggys412tczbzu6a"
+    },
+    {
+      "agent": "Ammar",
+      "name": "Xshow -  ASHP Midyear 2026 - December 7 - 9, 2026 - Orange County Convention Center - Orlando, FL, USA Ammar.xlsx",
+      "size": 34744,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785957470869,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msggys27u9812eesj"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XZShow - CAMX 2026 - Composites and Advanced Materials Expo - September 21 – 24, 2026 - Georgia World Congress Center, Building C - Atlanta, GA, USA Yahia.xlsx",
+      "size": 68865,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785957294938,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msggv0b43h3lxqvvw"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XShow - GlassBuild America 2026 - SEPTEMBER 23-25, 2026 - Las Vegas Convention Center - Las Vegas, NV, USA Yahia.xlsx",
+      "size": 76188,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785957070313,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msggq6zdcdm55myxa"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XShow - CES 2027 - january 6- 9, 2027 - las vegas convention center - Las Vegas, Nv, USA Yahia.xlsx",
+      "size": 246842,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785956644833,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msggh2of4f7b8j97d"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XShow - NKBA KBIS 2027 - KitchenBath Industry Show - February 2-4, 2027 - Las Vegas Convention Center - Las Vegas, NV, USA Yahia.xlsx",
+      "size": 64453,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785955170536,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msgflh3spn2we2cat"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XShow - SHOT Show 2027 - january 19- 22, 2027 - Venetian Expo + Caesars Forum - Las Vegas, Nv, USA Yahia.xlsx",
+      "size": 281941,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785954941562,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msgfgkf8y9tr8q7sd"
+    },
+    {
+      "agent": "Yahia",
+      "name": "Xshow - America Outdoors Conference & Outfitter Expo 2026 - December 8-11, 2026 - Oklahoma City Convention Center - Oklahoma City, OK, USA. Yahia.xlsx",
+      "size": 16394,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785954107969,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msgeyp88qrizewq5t"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XZShow - The International WorkBoat Show 2026 - December 2-4, 2026 - Ernest N. Morial Convention Center - New Orleans, LA, USA Yahia.xlsx",
+      "size": 102470,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785953888586,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msgetzxotbirkhr6f"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XShow - RMEF Hunter & Outdoor Christmas Expo 2026 - December 3-12, 2026 - Las Vegas Convention Center – South Halls - Las Vegas, NV, USA. Yahia.xlsx",
+      "size": 54712,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785953392606,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msgejd8vkcno3jrln"
     },
     {
       "agent": "Yahia",
       "name": "XShow - The MRAA Conference DEALER WEEK 2026 - December 6- 9, 2026 - Tampa Convention Center - Tampa, Fl, USA. Yahia.xlsx",
-      "size": 26438,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785171934890,
+      "size": 28572,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785952752716,
       "region": "USA",
-      "destPath": "2026/July/27-7",
+      "destPath": "2026/August/05-8",
       "status": "sorted",
-      "transactionId": "ms3ha0lzaxx321tzp"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XZShow - CSBA AEC 2026 - California School Boards Association - December 3- 5, 2026 - San Diego Convention Center - San Diego, CA, USA. Yahia.xlsx",
-      "size": 22295,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785169376698,
-      "region": "USA",
-      "destPath": "2026/July/27-7",
-      "status": "sorted",
-      "transactionId": "ms3fr6p98ada3hhit"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XShow - ASH Annual Meeting 2026 - American Society of Hematology - December 12- 14, 2026 - Ernest N. Morial Convention Center - New Orleans, LA, USA. Yahia.xlsx",
-      "size": 39332,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785168977165,
-      "region": "USA",
-      "destPath": "2026/July/27-7",
-      "status": "sorted",
-      "transactionId": "ms3fimex74livk8yw"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XShow -  ASHP Midyear 2026 - December 7 - 9, 2026 - Orange County Convention Center - Orlando, FL, USA. Yahia.xlsx",
-      "size": 34464,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785168540546,
-      "region": "USA",
-      "destPath": "2026/July/27-7",
-      "status": "sorted",
-      "transactionId": "ms3f99irueyke1wkl"
-    },
-    {
-      "agent": "Yahia",
-      "name": "XShow - AES 2026 - AMERICAN EPILEPSY SOCIETY - December 4-8, 2026 - Colorado Convention Center - Denver, CO, USA. Yahia.xlsx",
-      "size": 24403,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785168007148,
-      "region": "USA",
-      "destPath": "2026/July/27-7",
-      "status": "sorted",
-      "transactionId": "ms3exty7wz90dn289"
-    },
-    {
-      "agent": "Yahia",
-      "name": "Tampa Build Expo 2027 - January 20-21, 2027 - Tampa Convention Center - Tampa, Fl, USA. Yahia.xlsx",
-      "size": 21897,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785167536538,
-      "region": "USA",
-      "destPath": "2026/July/27-7",
-      "status": "sorted",
-      "transactionId": "ms3enqtpgifo7c6zw"
-    },
-    {
-      "agent": "Yahia",
-      "name": "Xshow - Grand Strand Gift & Resort Merchandise Show 2026 - December 6-9, 2026 - Myrtle Beach Convention Center - Myrtle Beach, SC, USA  . Yahia.xlsx",
-      "size": 34250,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785162778349,
-      "region": "USA",
-      "destPath": "2026/July/27-7",
-      "status": "sorted",
-      "transactionId": "ms3btrdt614ycola9"
+      "transactionId": "msge5nib64ofs1dop"
     },
     {
       "agent": "Yahia",
       "name": "Xshow - MRS 2026 - Materials Research Society Fall Meeting & Exhibit - December 1- 3, 2026 - Hynes Convention Center - Boston, Ma, USA Yahia.xlsx",
-      "size": 22838,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785162409522,
+      "size": 24638,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785951518252,
       "region": "USA",
-      "destPath": "2026/July/27-7",
+      "destPath": "2026/August/05-8",
       "status": "sorted",
-      "transactionId": "ms3blusevb09gs0bb"
+      "transactionId": "msgdf6zhh4peoodj0"
     },
     {
       "agent": "Yahia",
-      "name": "XZShow - The IAFE Convention & Trade Show 2026 - November 29 - December 3, 2026 - Kentucky International Convention Center -  Louisville, KY, USA Yahia.xlsx",
-      "size": 29256,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785161856075,
+      "name": "Xshow -  LDI Show 2026 - December 6- 8, 2026 - Las Vegas Convention Center - West Halls - Las Vegas, NV, USA Yahia.xlsx",
+      "size": 39512,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785951229027,
       "region": "USA",
-      "destPath": "2026/July/27-7",
+      "destPath": "2026/August/05-8",
       "status": "sorted",
-      "transactionId": "ms3b9zr0sstl42ox9"
+      "transactionId": "msgd8ztgcp8wey2ry"
     },
     {
       "agent": "Yahia",
-      "name": "AARC 2026 - American Association for Respiratory Care - November 14- 17, 2026 - New Orleans Ernest N. Morial Convention Center - New Orleans, LA, USA. Yahia.xlsx",
-      "size": 16351,
-      "mtime": "2026-07-27T09:00:00.000Z",
-      "uploadTime": 1785156570865,
+      "name": "Xshow - AAEP Annual Convention & Trade Show 2026 - December 8- 10, 2026 - Mandalay Bay Convention Center - Las Vegas, Nv, USA Yahia.xlsx",
+      "size": 41655,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785950771436,
       "region": "USA",
-      "destPath": "2026/July/27-7",
+      "destPath": "2026/August/05-8",
       "status": "sorted",
-      "transactionId": "ms384pnfvxkhqvybf"
+      "transactionId": "msgcz6qp0ydd5p5os"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XZShow - AIChE 2026 - Annual Meeting of American Institute of Chemical Engineers - November 8 - 12, 2026 - Minneapolis Convention Center, Minneapolis - MN, USA Yahia.xlsx",
+      "size": 15727,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785950461128,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msgcsjate5pfraxqk"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XShow - WEDDING PRO CONVENTION 2026 - November 17-19, 2026 - Las Vegas Convention Center - Las Vegas, Nv, USA. Yahia.xlsx",
+      "size": 25195,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785950235251,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msgcnp0lyv9njc9r8"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XShow - AB Show 2026 - November 18-19, 2026 - Orange County Convention Center - Orlando, FL, USA Yahia.xlsx",
+      "size": 27664,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785949925512,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msgch20v2u6bgix12"
+    },
+    {
+      "agent": "Yahia",
+      "name": "AAPMR Annual Assembly 2026 - American Academy of Physical Medicine and Rehabilitation - November 11-14, 2026 - Orange County Convention Center - Orlando, FL, USA. Yahia.xlsx",
+      "size": 17955,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785949433450,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msgc6ichidge1heqc"
+    },
+    {
+      "agent": "Yahia",
+      "name": "Xshow - service world Expo 2026 - November 9-11, 2026 - Caesars Forum - Las Vegas, NV, USA. Yahia.xlsx",
+      "size": 26783,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785948033930,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msgbcigx2g5iqsfol"
+    },
+    {
+      "agent": "Yahia",
+      "name": "Xshow - Ocean City Resort Gift Expo 2026 - November 15-17, 2026 - Roland E. Powell Convention Center - Ocean City, MD, USA  . Yahia.xlsx",
+      "size": 20561,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785947669785,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msgb4phnayvm5839i"
+    },
+    {
+      "agent": "Yahia",
+      "name": "Xshow - STAFDA 2026 - Specialty Tools & Fasteners Distributers Assn - November 15-17, 2026 - Anaheim Convention Center - Anaheim, CA, USA Yahia.xlsx",
+      "size": 30485,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785947447352,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msgazxuw6qmokwm21"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XZShow - SC 2026 - November 16- 19, 2026 - McCormick Place - Chicago, IL, USA Yahia.xlsx",
+      "size": 61682,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785945040635,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msg9kctotjvfo14ct"
+    },
+    {
+      "agent": "Yahia",
+      "name": "Xshow - RoofCON 2026 - November 10 -12, 2026 - Oklahoma Convention Center - Oklahoma City, OK, USA Yahia.xlsx",
+      "size": 18273,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785943444925,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msg8m5kheg30s6tcg"
+    },
+    {
+      "agent": "Yahia",
+      "name": "Geosynthetics Conference 2027 - Co Located With - IECA 2027 International Erosion Control Association - February 21 – 24, 2027 - Reno-Sparks Convention Center - Reno, Nv, USA. Yahia.xlsx",
+      "size": 18950,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785942996263,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msg8cjdoewzfz0hs2"
+    },
+    {
+      "agent": "Yahia",
+      "name": "ZShow - BPS 2027 - Biophysical Society Annual Meeting - FEBRUARY 20-24, 2027 - Pennsylvania Convention Center - Philadelphia, Pa, USA. Yahia.xlsx",
+      "size": 13190,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785941414044,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msg7emj6rci7cwrgn"
+    },
+    {
+      "agent": "Yahia",
+      "name": "GEAPS 2027 - Grain Elevator and Processing Society - February 20-23, 2027 - Kansas City Convention Center - Kansas City, Mo, USA. Yahia.xlsx",
+      "size": 11538,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785940247138,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msg6pm51kv3gepngi"
+    },
+    {
+      "agent": "Yahia",
+      "name": "Xshow - The Anaheim Landscape Expo 2026 - November 4- 5, 2026 - Anaheim Convention Center - Anaheim, CA, USA Yahia.xlsx",
+      "size": 27264,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785938656805,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msg5rj19746879gau"
+    },
+    {
+      "agent": "Ammar",
+      "name": "XZShow - GNYDM 2026 - Greater New York Dental Meeting - November 29 – December 1, 2026 - JACOB K. JAVITS CONVENTION CENTER - NEW YORK CITY-NY, USA Ammar.xlsx",
+      "size": 50559,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785938622013,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msg5qs6r66nrfmgpp"
+    },
+    {
+      "agent": "Ammar",
+      "name": "XShow - HLTH 2026 - The Future of Healthcare - November 15-18, 2026 - The Venetian Expo Center - Las Vegas, NV, USA Ammar.xlsx",
+      "size": 56846,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785938621938,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msg5qs4rms69dt7j7"
+    },
+    {
+      "agent": "Ammar",
+      "name": "XShow - IFMA 2026 - World Workplace Conference & Expo - November 18-20, 2026 - ANAHEIM CONVENTION CENTER - Anaheim, Ca, USA Ammar.xlsx",
+      "size": 44965,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785938621859,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msg5qs2lconvoxlrk"
+    },
+    {
+      "agent": "Ammar",
+      "name": "XZShow - DEMA 2026 - Diving Equipment & Marketing Association - November 3-6, 2026 - Ernest N. Morial Convention Center - New Orleans, LA, USA Ammar.xlsx",
+      "size": 58903,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785938621788,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msg5qs0lgtq4zcivm"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XShow - RSNA 2026 - Radiological Society of North America - November 29 - December 2, 2026 - McCormick Place - Chicago, IL, USA. Yahia.xlsx",
+      "size": 76333,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785938200374,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msg5hqugy2uxixfdy"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XShow - IITSEC 2026 - 30 November – 3 December, 2026 - Orange County Convention Center - Orlando, FL, USA. Yahia.xlsx",
+      "size": 46777,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785937877467,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msg5atowcohvt45l3"
+    },
+    {
+      "agent": "Yahia",
+      "name": "SameList - XShow - Expo! Expo! IAEE 2026 - International Association of Exhibitions & Events - November 16-18 2026 - Baird Center - Milwaukee, WI, USA  . Yahia.xlsx",
+      "size": 27783,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785937389250,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msg50cz9cytst6nk4"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XShow - The Hospitality Show 2026 - November 2-4, 2026 - Miami Beach Convention Center - Miami Beach, FL, USA. Yahia.xlsx",
+      "size": 39996,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785937007080,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msg4s63bnxsyzxqct"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XShow - BDNY 2026 - Boutique Design New York - NOVEMBER 8-9, 2026 - Jacob Javits Convention Center - New York, NY, USA Yahia.xlsx",
+      "size": 88110,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785934682273,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msg3ec9futkr9xcwi"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XShow - IAAPA Expo 2026 - International Association of Amusement Parks and Attractions - November 17 - 20, 2026 - Orange County Convention Center - Orlando, FL, USA Yahia.xlsx",
+      "size": 156499,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785932929222,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msg2crle6ndaujr4q"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XShow - International Pool Spa Patio Expo 2026 - co-located with - Deck Expo 2026 - November 17 - 19, 2026 - Ernest N. Morial Convention Center - New Orleans, LA, USA Yahia.xlsx",
+      "size": 47272,
+      "mtime": "2026-08-05T09:00:00.000Z",
+      "uploadTime": 1785932257358,
+      "region": "USA",
+      "destPath": "2026/August/05-8",
+      "status": "sorted",
+      "transactionId": "msg1yd6m2yi4ka6cs"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XShow - RE+ 2026 - Largest energy event in North America - November 17-19, 2026 - Las Vegas Convention Center - Las Vegas, NV, USA Yahia.xlsx",
+      "size": 126327,
+      "mtime": "2026-08-04T09:00:00.000Z",
+      "uploadTime": 1785861263052,
+      "region": "USA",
+      "destPath": "2026/August/04-8",
+      "status": "sorted",
+      "transactionId": "msevopmj0ctrsoow1"
+    },
+    {
+      "agent": "Ammar",
+      "name": "XShow - IEC SPARK 2026 - October 21 – 24, 2026 - Greater Columbus Convention Center - Columbus, Oh, USA Ammar.xlsx",
+      "size": 16927,
+      "mtime": "2026-08-04T09:00:00.000Z",
+      "uploadTime": 1785860830689,
+      "region": "USA",
+      "destPath": "2026/August/04-8",
+      "status": "sorted",
+      "transactionId": "msevfg0rjig4s02ka"
+    },
+    {
+      "agent": "Ammar",
+      "name": "XZShow - NAB Show New York 2026 - October 21-22, 2026 - Javits Center - New York, NY, USA Ammar.xlsx",
+      "size": 23861,
+      "mtime": "2026-08-04T09:00:00.000Z",
+      "uploadTime": 1785860830631,
+      "region": "USA",
+      "destPath": "2026/August/04-8",
+      "status": "sorted",
+      "transactionId": "msevffz4pcfyu9c5x"
+    },
+    {
+      "agent": "Ammar",
+      "name": "XZShow - AZA Annual Conference 2026 - Association of Zoos & Aquariums - September 26 - October 1, 2026 - Oregon Convention Center - Portland, OR, USA Ammar.xlsx",
+      "size": 25492,
+      "mtime": "2026-08-04T09:00:00.000Z",
+      "uploadTime": 1785860830571,
+      "region": "USA",
+      "destPath": "2026/August/04-8",
+      "status": "sorted",
+      "transactionId": "msevffxgsr81rpxo1"
+    },
+    {
+      "agent": "Ammar",
+      "name": "XZShow - ISTFA 2026 - International Symposium for Testing and Failure Analysis - October 4-8, 2026 - Henry B. González Convention Center - San Antonio-Tx, USA Ammar.xlsx",
+      "size": 16189,
+      "mtime": "2026-08-04T09:00:00.000Z",
+      "uploadTime": 1785860830514,
+      "region": "USA",
+      "destPath": "2026/August/04-8",
+      "status": "sorted",
+      "transactionId": "msevffvx0f61y4mu8"
+    },
+    {
+      "agent": "Ammar",
+      "name": "NADA 2027 - National Automobile Dealers Association - FEBRUARY 18-20, 2027 - ORANGE COUNTY CONVENTION CENTER - ORLANDO-FL, USA Ammar.xlsx",
+      "size": 36301,
+      "mtime": "2026-08-04T09:00:00.000Z",
+      "uploadTime": 1785860830467,
+      "region": "USA",
+      "destPath": "2026/August/04-8",
+      "status": "sorted",
+      "transactionId": "msevffuk1jqe3cnlt"
+    },
+    {
+      "agent": "Ammar",
+      "name": "ZShow - BICSI Winter 2027 - February 14- 18, 2027 - Orange County Convention Center - Orlando, Fl, USA Ammar.xlsx",
+      "size": 13495,
+      "mtime": "2026-08-04T09:00:00.000Z",
+      "uploadTime": 1785860830381,
+      "region": "USA",
+      "destPath": "2026/August/04-8",
+      "status": "sorted",
+      "transactionId": "msevffs3wodq2om9m"
+    },
+    {
+      "agent": "Ammar",
+      "name": "AAAR Annual Conference 2026 - American Association for Aerosol Research - October 26-30, 2026 - Pasadena Convention Center - Pasadena, Ca, USA Ammar.xlsx",
+      "size": 10913,
+      "mtime": "2026-08-04T09:00:00.000Z",
+      "uploadTime": 1785860830326,
+      "region": "USA",
+      "destPath": "2026/August/04-8",
+      "status": "sorted",
+      "transactionId": "msevffqorct5lsghw"
+    },
+    {
+      "agent": "Ammar",
+      "name": "ZShow - AMCP Nexus 2026 - October 26-29, 2026 -  Gaylord Pacific Resort & Convention Center - Chula Vista, Ca, USA Ammar.xlsx",
+      "size": 10710,
+      "mtime": "2026-08-04T09:00:00.000Z",
+      "uploadTime": 1785860830273,
+      "region": "USA",
+      "destPath": "2026/August/04-8",
+      "status": "sorted",
+      "transactionId": "msevffp8php3n51wj"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XShow - ISSA Show North America 2026 - November 17 - 19, 2026 - Mandalay Bay Convention Center - Las Vegas, NV, USA Yahia.xlsx",
+      "size": 66005,
+      "mtime": "2026-08-04T09:00:00.000Z",
+      "uploadTime": 1785858066043,
+      "region": "USA",
+      "destPath": "2026/August/04-8",
+      "status": "sorted",
+      "transactionId": "msets6su2bylfqi6q"
+    },
+    {
+      "agent": "Yahia",
+      "name": "Xshow - LeadingAge ANNUAL MEETING 2026 - OCTOBER 25-28, 2026 - Pennsylvania Convention Center - PHILADELPHIA ,PA, USA. Yahia.xlsx",
+      "size": 50619,
+      "mtime": "2026-08-04T09:00:00.000Z",
+      "uploadTime": 1785857592712,
+      "region": "USA",
+      "destPath": "2026/August/04-8",
+      "status": "sorted",
+      "transactionId": "mseti1kdp1d5wknkl"
+    },
+    {
+      "agent": "Yahia",
+      "name": "XZShow - Florida Restaurant Show 2026 - The Pizza Tomorrow Summit 2026 - October 25 - 27, 2026 - THE ORANGE COUNTY CONVENTION CENTER - Orlando, FL, USA. Yahia.xlsx",
+      "size": 29764,
+      "mtime": "2026-08-04T09:00:00.000Z",
+      "uploadTime": 1785857014121,
+      "region": "USA",
+      "destPath": "2026/August/04-8",
+      "status": "sorted",
+      "transactionId": "mset5n4a5w0nbyl30"
+    },
+    {
+      "agent": "Yahia",
+      "name": "Xshow - TSA 2026 - Texas Society of Architects - October 15 - 17, 2026 - Henry B. Gonzalez Convention Center - San Antonio, Tx USA. Yahia.xlsx",
+      "size": 25923,
+      "mtime": "2026-08-04T09:00:00.000Z",
+      "uploadTime": 1785856219297,
+      "region": "USA",
+      "destPath": "2026/August/04-8",
+      "status": "sorted",
+      "transactionId": "msesoltscdt24tioy"
+    },
+    {
+      "agent": "Yahia",
+      "name": "ZShow - ACA 2027 - American Camp Association National Conference - February 16-19, 2027 - Kentucky International Convention Center - Louisville, KY, USA. Yahia.xlsx",
+      "size": 15769,
+      "mtime": "2026-08-04T09:00:00.000Z",
+      "uploadTime": 1785855781911,
+      "region": "USA",
+      "destPath": "2026/August/04-8",
+      "status": "sorted",
+      "transactionId": "msesf8ctes22eu2kz"
+    },
+    {
+      "agent": "Yahia",
+      "name": "CRF TCT 2026 - Transcatheter Cardiovascular Therapeutics - October 31 - November 3, 2026 - San Diego Convention Center - San Diego, CA, USA. Yahia.xlsx",
+      "size": 15333,
+      "mtime": "2026-08-04T09:00:00.000Z",
+      "uploadTime": 1785853075500,
+      "region": "USA",
+      "destPath": "2026/August/04-8",
+      "status": "sorted",
+      "transactionId": "mseqt82sd5nk5362g"
+    },
+    {
+      "agent": "Yahia",
+      "name": "ZShow - WestEdge Design Fair 2026 - October 29–31, 2026 - The Barker Hangar - Santa Monica, Ca, USA. Yahia.xlsx",
+      "size": 15330,
+      "mtime": "2026-08-04T09:00:00.000Z",
+      "uploadTime": 1785850388793,
+      "region": "USA",
+      "destPath": "2026/August/04-8",
+      "status": "sorted",
+      "transactionId": "msep7mzu9u023rp12"
+    },
+    {
+      "agent": "Yahia",
+      "name": "ZShow - Critical Minerals Expo North America 2026 - October 28-29 2026 - Cobb Convention Center - Atlanta, Ga, USA. Yahia.xlsx",
+      "size": 15155,
+      "mtime": "2026-08-04T09:00:00.000Z",
+      "uploadTime": 1785847414982,
+      "region": "USA",
+      "destPath": "2026/August/04-8",
+      "status": "sorted",
+      "transactionId": "msenfwdzyvf6fpqdj"
     }
   ],
   "logs": [
     {
-      "agent": "Ammar",
+      "agent": "Yahia",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - ISE Expo 2026 - The Broadband Development Marketplace - AUGUST 18-20, 2026 - Music City Center - Nashville, TN, USA Ammar.xlsx (Shown: 6, Hidden: 2)",
-      "type": "success"
-    },
-    {
-      "agent": "Ammar",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - Health Care Facilities Innovation Conference 2026 - August 2-5, 2026 - Minneapolis Convention Center - Minneapolis, MN, USA Ammar.xlsx (Shown: 6, Hidden: 6)",
-      "type": "success"
-    },
-    {
-      "agent": "Ammar",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - TheFitExpo Anaheim 2026 - August 29-30, 2026 - Anaheim Convention Center - ANAHEIM-CA, USA Ammar.xlsx (Shown: 5, Hidden: 9)",
-      "type": "success"
-    },
-    {
-      "agent": "Ammar",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - NY NOW Summer 2026 Market  - New York International Gift Fair - August 2–4, 2026 - Javits Center - New York, NY, USA Ammar.xlsx (Shown: 13, Hidden: 13)",
-      "type": "success"
-    },
-    {
-      "agent": "Ammar",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - IVT Expo USA 2026 - industrial & Off-Highway Vehicle Technology - August 19- 20, 2026 - Donald E. Stephens Convention Center - CHICAGO-IL, USA Ammar.xlsx (Shown: 2, Hidden: 3)",
+      "msg": "Sorted [STANDARD]: XZShow - SC 2026 - November 16- 19, 2026 - McCormick Place - Chicago, IL, USA Yahia & Ammar.xlsx (Shown: 170, Hidden: 132)",
       "type": "success"
     },
     {
       "agent": "Yahia",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow - IHI Forum 2026 - Working Together to Transform Health and Health Care - December 6–9, 2026 - Phoenix Convention Center - Phoenix, AZ, USA Yahia.xlsx (Shown: 3, Hidden: 0)",
+      "msg": "Sorted [STANDARD]: Xshow -  NEW ENGLAND DESIGN-2-PART SHOW 2026 - September 30 - October 1 , 2026 - Royal Plaza Trade Center - Marlborough, MA, USA. Yahia.xlsx (Shown: 13, Hidden: 0)",
       "type": "success"
     },
     {
       "agent": "Yahia",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow - SPIE 2026 - Optics & Photonics - August 25- 27, 2026 -San Diego Convention Center - San Diego, CA, USA Yahia.xlsx (Shown: 3, Hidden: 3)",
+      "msg": "Sorted [STANDARD]: XZShow - AAOPT 2026 - American Academy of Optometry - September 30 - October 3, 2026 - ANAHEIM CONVENTION CENTER -  Anaheim, CA, USA. Yahia.xlsx (Shown: 8, Hidden: 3)",
       "type": "success"
     },
     {
       "agent": "Yahia",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow - Premiere San Antonio 2026 - August 30 - 31, 2026 - Henry B. González Convention Center - San Antonio, TX, USA Yahia.xlsx (Shown: 1, Hidden: 6)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow - Be+Well Beauty & Wellness Show 2026 -Conference Florida - August 30-31, 2026 - Ft. Lauderdale Broward County Convention Center - Fort Lauderdale, FL, USA Yahia.xlsx (Shown: 6, Hidden: 9)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - The Landscape Show 2026 - Orange County Convention Center - August 19- 21, 2026 - Orange County Convention Center - Orlando, Fl, USA Yahia.xlsx (Shown: 5, Hidden: 1)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow - California Restaurant Show 2026 - August 23 - 25, 2026 - Anaheim Convention Center - Anaheim, CA, USA Yahia.xlsx (Shown: 6, Hidden: 6)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow - TNLA - Nursery & Landscape Expo - August 11-13, 2026 - HENRY B. GONZALEZ CONVENTION CENTER - SAN ANTONIO, Tx USA Yahia.xlsx (Shown: 6, Hidden: 6)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - Newtopia Now 2026 - August 19-20, 2026 - Colorado Convention Center - Denver, CO, USA Yahia.xlsx (Shown: 8, Hidden: 21)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - International Fastener Expo 2026 - October 8-9, 2026 - Phoenix Convention Center - Phoenix, AZ, USA Yahia.xlsx (Shown: 4, Hidden: 123)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - MD&M Midwest 2026 - OCTOBER 28-29, 2026 - Minneapolis Convention Center - Minneapolis, MN, USA Yahia.xlsx (Shown: 3, Hidden: 5)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - FABTECH 2026 - October 21 - 23, 2026 - Las Vegas Convention Center - Las Vegas, NV, USA Yahia.xlsx (Shown: 12, Hidden: 4)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - EMS World Expo 2026 - September 28 - October 2, 2026 - Orange County Convention Center West - Orlando-Fl, USA Yahia.xlsx (Shown: 1, Hidden: 4)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - SupplySide Global 2026 - October 28- 30, 2026 - Mandalay Bay - Las Vegas, Nv, USA Yahia.xlsx (Shown: 20, Hidden: 53)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - HR Tech 2026 - October 20-22, 2026 - Mandalay Bay - Las Vegas, Nv,  USA Yahia.xlsx (Shown: 7, Hidden: 25)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow - OMED 2026 - Osteopathic Medical Education Conference - October 22- 25, 2026 - Caesars Palace - LAS VEGAS-NV, USA Yahia.xlsx (Shown: 1, Hidden: 2)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - NBAA 2026 - Business Aviation Convention & Exhibition - October 20 - 22, 2026 - Las Vegas Convention Center - Las Vegas, NV, USA Yahia.xlsx (Shown: 14, Hidden: 4)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: ZShow - SPIE Photomask Technology + EUV Lithography 2026 - September 9-10, 2026 - Monterey Conference Center - Monterey, CA, USA. Yahia.xlsx (Shown: 26, Hidden: 12)",
-      "type": "success"
-    },
-    {
-      "agent": "Ammar",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: NKBA KBIS 2026 - KitchenBath Industry Show - February 2-4, 2027 - Las Vegas Convention Center - Las Vegas, NV, USA Ammar.xlsx (Shown: 157, Hidden: 83)",
-      "type": "success"
-    },
-    {
-      "agent": "Ammar",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: Automation Fair - Rockwell Automation 2026 - November 16- 19, 2026 - Thomas M. Menino Convention & Exhibition Center - Boston, MA, USA Ammar.xlsx (Shown: 104, Hidden: 21)",
-      "type": "success"
-    },
-    {
-      "agent": "Ammar",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: ZShow - SMRP 2026 - Society for Maintenance & Reliability Professionals - September 28 - October 1, 2026 - Raleigh Convention Center - Raleigh, NC, USA Ammar.xlsx (Shown: 116, Hidden: 27)",
-      "type": "success"
-    },
-    {
-      "agent": "Ammar",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: ZShow - SEG 2026 - Society of Economic Geologists Annual Conference - September 30 - October 3, 2026 - Salt Palace Convention Center - Salt Lake City, UT, USA Ammar.xlsx (Shown: 21, Hidden: 24)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - Las Vegas Souvenir & Resort Gift Show 2026 -  October 6-9, 2026 - Las Vegas Convention Center, South Hall - Las Vegas, NV, USA. Yahia.xlsx (Shown: 5, Hidden: 4)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: Xshow -  NEW ENGLAND DESIGN-2-PART SHOW 2026 - September 30 - October 1 , 2026 - Royal Plaza Trade Center - Marlborough, MA, USA. Yahia.xlsx (Shown: 5, Hidden: 2)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: Xshow - Surf Expo 2026 - SEPTEMBER 16-18, 2026 - ORANGE COUNTY CONVENTION CENTER - ORLANDO , fl, USA. Yahai.xlsx (Shown: 18, Hidden: 12)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow - AAOPT 2026 - American Academy of Optometry - September 30 - October 3, 2026 - ANAHEIM CONVENTION CENTER -  Anaheim, CA, USA. Yahia.xlsx (Shown: 5, Hidden: 4)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: Xshow - PRINTING United Expo 2026 - September 23-25, 2026 - Las Vegas Convention Center - Las Vegas, NV, USA. Yahia.xlsx (Shown: 13, Hidden: 8)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: Xshow - SOUTHEAST DESIGN-2-PART SHOW 2026 - September 16- 17, 2026 - Greenville Convention Center - Greenville, SC, USA. Yahia.xlsx (Shown: 10, Hidden: 0)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: Xshow - NJSFDA 2026 - New Jersey State Funeral Directors Association - September 15–17, 2026 - Hard Rock Hotel & Casino Atlantic City - Atlantic City, NJ, USA. Yahia.xlsx (Shown: 3, Hidden: 0)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow - Timber Processing & Energy Expo 2026 - September 23–25, 2026 - Portland Expo Center - Portland, Or, USA Yahia.xlsx (Shown: 4, Hidden: 1)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow - RAPS Convergence 2026 - September 15-17 2026 - Charlotte Convention Center - Charlotte, NC, USA. Yahia.xlsx (Shown: 6, Hidden: 4)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - NBMBAA 2026 - National Black MBA Association - SEPTEMBER 23 - 25, 2026 - Los Angeles Convention Center - Los Angeles, Ca, USA Yahia.xlsx (Shown: 2, Hidden: 4)",
+      "msg": "Sorted [STANDARD]: XZShow - Corrugated Week 2026 - September 29-30, 2026 - Fort Worth Convention Center - Fort Worth, TX, USA. Yahia.xlsx (Shown: 7, Hidden: 2)",
       "type": "success"
     },
     {
@@ -1413,477 +1441,759 @@
       "type": "success"
     },
     {
-      "agent": "Yahia",
+      "agent": "Ammar",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: Xshow - NSH 2026 - National Society for Histotechnology Annual Convention - SEPTEMBER 25-29, 2026 - Henry B. Gonzalez Convention Center - San Antonio, TX, USA. Yahia.xlsx (Shown: 1, Hidden: 4)",
+      "msg": "Sorted [STANDARD]: Xshow - CES 2027 - january 6- 9, 2027 - las vegas convention center - Las Vegas, Nv, USA Ammar.xlsx (Shown: 25, Hidden: 21)",
       "type": "success"
     },
     {
       "agent": "Yahia",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: The NGA Show 2027 - February 1- 2, 2027 - MGM Grand Conference Center - Las Vegas, Nv, USA. Yahia.xlsx (Shown: 110, Hidden: 40)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: Imaging USA 2027 - PPA - Premier Photography Conference - January 31 - February 2, 2027 - Charlotte Convention Center - Charlotte, NC, USA. Yahia.xlsx (Shown: 72, Hidden: 13)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - Los Angeles Build Expo 2026 - November 4-5, 2026 - Los Angeles Convention Center - Los Angeles, Ca, USA Yahia.xlsx (Shown: 66, Hidden: 120)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: ZShow - AZA Annual Conference 2026 - Association of Zoos & Aquariums - September 26 - October 1, 2026 - Oregon Convention Center - Portland, OR, USA. Yahia.xlsx (Shown: 138, Hidden: 55)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: Star of the South Dental Meeting 2026 - September 25- 26, 2026 - Norris Conference Center - HOUSTON, TX, USA. Yahia.xlsx (Shown: 5, Hidden: 3)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow - DW 2026 - Ariat Dirt World Summit - November 9 - 11, 2026 - Phoenix Convention Center - Phoenix, Az, USA. Yahia.xlsx (Shown: 85, Hidden: 18)",
+      "msg": "Sorted [STANDARD]: Xshow - FSTEC  2026 - Foodservice Technology Conference & Showcase - September 23 – 25, 2026 - Gaylord Texan Resort & Convention Center - Grapevine, Tx, USA. Yahia.xlsx (Shown: 11, Hidden: 1)",
       "type": "success"
     },
     {
       "agent": "Ammar",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: IPPE 2027 - International Production & Processing Expo - January 26- 28, 2027 - Georgia World Congress Center -  Atlanta, Ga, USA Ammar.xlsx (Shown: 742, Hidden: 406)",
+      "msg": "Sorted [STANDARD]: Xshow - CES 2027 - january 6- 9, 2027 - las vegas convention center - Las Vegas, Nv, USA Ammar.xlsx (Shown: 5, Hidden: 21)",
       "type": "success"
     },
     {
       "agent": "Yahia",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow - AAOMS 2026 - American Association of Oral and Maxillofacial Surgeons - September 28 – October 3, 2026 - Seattle, WA, USA Yahia.xlsx (Shown: 1, Hidden: 5)",
+      "msg": "Sorted [STANDARD]: Xshow - SOUTHEAST DESIGN-2-PART SHOW 2026 - September 16- 17, 2026 - Greenville Convention Center - Greenville, SC, USA. Yahia.xlsx (Shown: 6, Hidden: 1)",
       "type": "success"
     },
     {
       "agent": "Yahia",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow - MGMA 2026 - Medical Group Management Association - September 27 – 30, 2026 - Henry B. González Convention Center, San Antonio, Tx, USA Yahia.xlsx (Shown: 5, Hidden: 2)",
+      "msg": "Sorted [STANDARD]: XZShow - Archlight Summit 2026 - SEPTEMBER 15-16, 2026 - DALLAS MARKET CENTER - DALLAS, TX, USA. Yahia.xlsx (Shown: 5, Hidden: 0)",
       "type": "success"
     },
     {
       "agent": "Yahia",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow - Psych Congress 2026 - September 15-19, 2026 - New Orleans Ernest N. Morial Convention Center - New Orleans, LA, USA Yahia.xlsx (Shown: 3, Hidden: 2)",
+      "msg": "Sorted [STANDARD]: XZShow - AAID ANNUAL CONFERENCE 2026 - September 30 – October 3, 2026 - The Gaylord Nashville - Nashville, Tn, USA. Yahia.xlsx (Shown: 4, Hidden: 3)",
       "type": "success"
     },
     {
       "agent": "Yahia",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - ITC Vegas 2026 - The world's largest gathering of insurance innovation - September 29, 2026 - October 1, 2026 - Mandalay Bay - Las Vegas, NV, USA Yahia.xlsx (Shown: 10, Hidden: 9)",
+      "msg": "Sorted [STANDARD]: XShow - NBMBAA 2026 - National Black MBA Association - SEPTEMBER 23 - 25, 2026 - Los Angeles Convention Center - Los Angeles, Ca, USA Yahia.xlsx (Shown: 2, Hidden: 2)",
       "type": "success"
     },
     {
       "agent": "Yahia",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow - VPPPA’s 2026 Safety+ Symposium 2026 - August 30 - September 2, 2026 - Gaylord Opryland Resort & Convention Center - Nashville, Tn, USA Yahia.xlsx (Shown: 4, Hidden: 1)",
+      "msg": "Sorted [STANDARD]: XZShow - Groceryshop 2026 - September 22 - 24 2026 - Mandalay Bay - Las Vegas, Nv, USA Yahia.xlsx (Shown: 2, Hidden: 4)",
       "type": "success"
     },
     {
       "agent": "Yahia",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow IANA 2026 - Intermodal Association of North America - September 14-16, 2026 - Long Beach Convention Center - Long Beach-Ca, USA Ammar.xlsx (Shown: 2, Hidden: 4)",
+      "msg": "Sorted [STANDARD]: XZShow - THE FIERCEST WEEK IN PHARMA - SEPTEMBER 14-17, 2026 - PENNSYLVANIA CONVENTION CENTER - Philadelphia, PA, USA. Yahia.xlsx (Shown: 8, Hidden: 4)",
       "type": "success"
     },
     {
       "agent": "Yahia",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow - ICSC@WESTERN 2026 - International Council of Shopping Centers - September 14-16, 2026 - San Diego Convention Center - San Diego-Ca, USA Yahia.xlsx (Shown: 2, Hidden: 2)",
+      "msg": "Sorted [STANDARD]: Xshow -  ICSC FLORIDA 2026 - International Council of Shopping Centers - August 30 - September 1, 2026 - Orange County Convention Center - Orlando-Fl, USA Yahia.xlsx (Shown: 3, Hidden: 8)",
       "type": "success"
     },
     {
       "agent": "Yahia",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - IFDA 2026 - International Foodservice Distributors Association - September 13-15, 2026 - Henry B. Gonzalez Convention Center - San Antonio-Tx, USA Ammar.xlsx (Shown: 2, Hidden: 1)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow - OTA 2026 - Orthopaedic Trauma Association - September 24-25, 2026 - Music City Center - Nashville-Tn, USA Yahia.xlsx (Shown: 6, Hidden: 0)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: SameList XZShow - G2E 2026 - Global Gaming Expo -  September 28 – October 1, 2026 -  THE VENETIAN EXPO - LAS VEGAS, Nv, USA Yahia.xlsx (Shown: 0, Hidden: 8)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow - SCTE Cable-Tec Expo 2026 - September 29- October 1, 2026 - Georgia World Congress Center - Atlanta, GA, USA Yahia.xlsx (Shown: 4, Hidden: 0)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow - AREMA 2026 - American Railway Engineering & Maintenance - September 14- 15, 2026 - Kansas City Convention Center - Kansas City, MO, USA Yahia.xlsx (Shown: 4, Hidden: 0)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow - GSX 2026 - Global Security Exchange - September 14- 16, 2026 - Georgia World Congress Center - ATLANTA-GA, USA Yahia.xlsx (Shown: 15, Hidden: 3)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow - NRWA WaterPro 2026 - National Rural Water Association -  September 14-16, 2026 - The Phoenix Convention Center - Phoenix, Az, USA Yahia.xlsx (Shown: 3, Hidden: 1)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - Americas Food & Beverage Show 2026 - September 13- 16, 2026 - Miami Beach Convention Center - MIAMI, FL, USA Yahia.xlsx (Shown: 18, Hidden: 36)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow - embedded world North America 2026 - September 22-24, 2026 - Anaheim Convention Center - Anaheim, CA, USA Yahia.xlsx (Shown: 2, Hidden: 6)",
+      "msg": "Sorted [STANDARD]: Xshow - PAINWeek 2026  - September 8-11, 2026 - The Cosmopolitan - Las Vegas, NV, USA. Yahia.xlsx (Shown: 7, Hidden: 4)",
       "type": "success"
     },
     {
       "agent": "Ammar",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: IPPE 2027 - International Production & Processing Expo - January 26- 28, 2027 - Georgia World Congress Center -  Atlanta, Ga, USA. Ammar.xlsx (Shown: 643, Hidden: 341)",
+      "msg": "Sorted [STANDARD]: XShow - ITC Vegas 2026 - The world's largest gathering of insurance innovation - September 29, 2026 - October 1, 2026 - Mandalay Bay - Las Vegas, NV, USA Ammar.xlsx (Shown: 12, Hidden: 23)",
       "type": "success"
     },
     {
       "agent": "Ammar",
-      "ts": "06:40:02 PM",
-      "msg": "[UNDO] Reverted: IPPE 2027 - International Production & Processing Expo - January 26- 28, 2027 - Georgia World Congress Center -  Atlanta, Ga, USA Ammar.xlsx",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: Xshow - Surf Expo 2026 - SEPTEMBER 16-18, 2026 - ORANGE COUNTY CONVENTION CENTER - ORLANDO , fl, USA Ammar.xlsx (Shown: 13, Hidden: 7)",
+      "type": "success"
+    },
+    {
+      "agent": "Ammar",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: Gulf States Horticultural Expo 2027 - January 6- 8, 2027 - Mobile Convention Center - Mobile, AL, USA Ammar.xlsx (Shown: 268, Hidden: 61)",
+      "type": "success"
+    },
+    {
+      "agent": "Ammar",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: TRB Annual Meeting 2027 - Transportation Research Board - January 10 - 14, 2027 - Walter E. Washington Convention Center - WASHINGTON-DC, USA Ammar.xlsx (Shown: 103, Hidden: 51)",
+      "type": "success"
+    },
+    {
+      "agent": "Ammar",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XZShow - HR Florida 2026 - August 30, 2026 - September 2, 2026 - Gaylord Palms Resort & Convention Center - Kissimmee, Fl, USA Ammar.xlsx (Shown: 41, Hidden: 41)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: Xshow - SHSMD 2026 - Society for Healthcare Strategy & Market Development - September 27-29, 2026 - Baltimore Convention Center, Baltimore, MD, USA . Yahia.xlsx (Shown: 6, Hidden: 0)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XZShow - VPPPA’s 2026 Safety+ Symposium 2026 - August 30 - September 2, 2026 - Gaylord Opryland Resort & Convention Center - Nashville, Tn, USA Yahia.xlsx (Shown: 1, Hidden: 1)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XZShow IANA 2026 - Intermodal Association of North America - September 14-16, 2026 - Long Beach Convention Center - Long Beach-Ca, USA Yahia.xlsx (Shown: 3, Hidden: 2)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XZShow - ICSC@WESTERN 2026 - International Council of Shopping Centers - September 14-16, 2026 - San Diego Convention Center - San Diego-Ca, USA Yahia.xlsx (Shown: 4, Hidden: 6)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XShow - IFDA 2026 - International Foodservice Distributors Association - September 13-15, 2026 - Henry B. Gonzalez Convention Center - San Antonio-Tx, USA yahia.xlsx (Shown: 2, Hidden: 2)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XZShow - Emergency Nursing 2026 - September 28 - October 1, 2026 - Phoenix Convention Center - Phoenix-Az, USA Yahia.xlsx (Shown: 3, Hidden: 1)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XZShow - OHCA Annual Convention 2026 - Oregon Health Care Association - September 22-23, 2026 - Oregon Convention Center - Portland-Or, USA Yahia.xlsx (Shown: 2, Hidden: 5)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: Halloween & Party Expo 2027 - January 11-13, 2027 - Ernest N. Morial Convention Center - NEW ORLEANS-LA, USA. Yahia.xlsx (Shown: 55, Hidden: 12)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: Abilities Expo Los Angeles 2027 - January 14-16, 2027 - Long Beach Convention Center - Long Beach, CA, USA. Yahia.xlsx (Shown: 44, Hidden: 19)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "05:51:27 PM",
+      "msg": "[UNDO] Reverted: Abilities Expo Los Angeles 2027 - January 14-16, 2027 - Long Beach Convention Center - Long Beach, CA, USA. Yahia.xlsx",
       "type": "warning"
     },
     {
-      "agent": "Ammar",
+      "agent": "Yahia",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: IPPE 2027 - International Production & Processing Expo - January 26- 28, 2027 - Georgia World Congress Center -  Atlanta, Ga, USA Ammar.xlsx (Shown: 0, Hidden: 0)",
-      "type": "success"
-    },
-    {
-      "agent": "Ammar",
-      "ts": "06:39:54 PM",
-      "msg": "[UNDO] Reverted: IPPE 2027 - International Production & Processing Expo - January 26- 28, 2027 - Georgia World Congress Center -  Atlanta, Ga, USA Ammar.xlsx",
-      "type": "warning"
-    },
-    {
-      "agent": "Ammar",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: GreenTech North America 2026  - September 23- 24, 2026 - Pennsylvania Convention Center -  Philadelphia, PA, USA Ammar.xlsx (Shown: 74, Hidden: 25)",
-      "type": "success"
-    },
-    {
-      "agent": "Ammar",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: ProGreen Expo 2027 - January 26-28, 2027 - Colorado Convention Center -  Denver, Co, USA Ammar.xlsx (Shown: 65, Hidden: 89)",
-      "type": "success"
-    },
-    {
-      "agent": "Ammar",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: IPPE 2027 - International Production & Processing Expo - January 26- 28, 2027 - Georgia World Congress Center -  Atlanta, Ga, USA Ammar.xlsx (Shown: 0, Hidden: 0)",
-      "type": "success"
-    },
-    {
-      "agent": "Ammar",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - MAGIC New York 2026 - September 9 - 11, 2026 - Javits Center - New York, NY, USA Ammar.xlsx (Shown: 22, Hidden: 79)",
+      "msg": "Sorted [STANDARD]: Abilities Expo Los Angeles 2027 - January 14-16, 2027 - Long Beach Convention Center - Long Beach, CA, USA. Yahia.xlsx (Shown: 44, Hidden: 19)",
       "type": "success"
     },
     {
       "agent": "Yahia",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow - embedded world North America 2026 - September 22-24, 2026 - Anaheim Convention Center - Anaheim, CA, USA Yahia.xlsx (Shown: 0, Hidden: 3)",
+      "msg": "Sorted [STANDARD]: SCWA 2027 - Southwest Car Wash Association - February 24-26, 2027 - The Fort Worth Convention Center- Fort Worth-Tx, USA. Yahia.xlsx (Shown: 125, Hidden: 36)",
       "type": "success"
     },
     {
       "agent": "Yahia",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow - Breakbulk Americas 2026 - September 22 - 23, 2026 - George R. Brown Convention Center - Houston, TX, USA Yahia.xlsx (Shown: 5, Hidden: 4)",
+      "msg": "Sorted [STANDARD]: ZShow - AMS Annual Meeting 2027 - January 10- 14, 2027 - Colorado Convention Center - Denver CO, USA. Yahia.xlsx (Shown: 28, Hidden: 33)",
       "type": "success"
     },
     {
       "agent": "Yahia",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - ADHA 2026 - American Dental Hygienists' Association - September 26- 28, 2026 - Fort Worth Convention Center - Fort Worth, Tx, USA Yahia.xlsx (Shown: 1, Hidden: 5)",
+      "msg": "Sorted [STANDARD]: ZShow - Florida Fire Conference 2027 - JANUARY 4-8, 2027 - ORANGE COUNTY FIRE RESCUE TRAINING CENTER - Orlando, FL, USA. Yahia.xlsx (Shown: 18, Hidden: 24)",
       "type": "success"
     },
     {
       "agent": "Yahia",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - WEFTEC 2026 - Water Environment Federation - September 26-30, 2026 - Ernest N. Morial Convention Center - New Orleans-La, USA Yahia.xlsx (Shown: 25, Hidden: 8)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow - CAMX 2026 - Composites and Advanced Materials Expo - September 21 – 24, 2026 - Georgia World Congress Center, Building C - Atlanta, GA, USA Yahia.xlsx (Shown: 3, Hidden: 9)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - GlassBuild America 2026 - SEPTEMBER 23-25, 2026 - Las Vegas Convention Center - Las Vegas, NV, USA Yahia.xlsx (Shown: 8, Hidden: 27)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - Commercial UAV Expo 2026 - September 1 - 3, 2026 - Caesars Forum - Las Vegas, NV, USA Yahia.xlsx (Shown: 7, Hidden: 8)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: ZShow - AAHA Con 2026 - American Animal Hospital Association - September 17-19, 2026 - Oregon Convention Center - Portland, Or, USA. Yahia.xlsx (Shown: 25, Hidden: 23)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: ZShow - PNCWA Annual Conference 2026 - September 13-16, 2026 - Spokane Convention Center - Spokane, WA, USA. Yahia.xlsx (Shown: 26, Hidden: 10)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow - SPIE 2026 - Optics & Photonics - August 25- 27, 2026 -San Diego Convention Center - San Diego, CA, USA Yahia.xlsx (Shown: 7, Hidden: 4)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: SSA Fall Trade Show 2026 - Self Storage Association - September 8-11, 2026 - ARIA Resort & Casino - LAS VEGAS, NV, USA. Yahia.xlsx (Shown: 161, Hidden: 51)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: Xshow - MANTS 2027 - MID-ATLANTIC NURSERY TRADE SHOW - January 13 - 15, 2027 - Baltimore Convention Center - Baltimore, MD, USA Yahia.xlsx (Shown: 218, Hidden: 16)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: Xshow -  IDEAg Amarillo Farm & Ranch Show 2026 - December 1-3, 2026 - Amarillo Civic Center - Amarillo, TX USA Yahia.xlsx (Shown: 2, Hidden: 2)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: ZShow - Southwest Pool & Spa Show 2027 - January 14-16, 2027 - Henry B. Gonzalez Convention Center - San Antonio, TX, USA. Yahia.xlsx (Shown: 57, Hidden: 16)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: Super Pet Expo 2027 - January 8-10, 2027 - New Jersey Convention & Exposition Center - Edison, NJ, US. Yahia.xlsx (Shown: 73, Hidden: 79)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - The Water Expo - Water Quality Supply & Waste Water 2026 - August 12 - 13, 2026 - Broward County Convention Center - FORT LAUDERDALE-FL, USA Yahia.xlsx (Shown: 3, Hidden: 2)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow AABP 2026 - American Association of Bovine Practitioners - August 27 - 29, 2026 - Minneapolis Convention Center - Minneapolis, MN, USA. Yahia.xlsx (Shown: 3, Hidden: 4)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: Xshow -  ICSC FLORIDA 2026 - International Council of Shopping Centers - August 30 - September 1, 2026 - Orange County Convention Center - Orlando-Fl, USA Yahia.xlsx (Shown: 2, Hidden: 7)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - Techtextil North America 2026 - August 4 - 6, 2026 - Raleigh Convention Center - Raleigh, NC, USA Yahia.xlsx (Shown: 2, Hidden: 3)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow - RE+ Mid-Atlantic 2026 - August 12-13, 2026 - pennsylvania Convention Center - Philadelphia, PA, USA Yahia.xlsx (Shown: 2, Hidden: 1)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - MAGIC - PROJECT - SOURCING - OFFPRICE 2026 Las Vegas - August 10-12, 2026 - Las Vegas Convention Center - Las Vegas, NV, USA Yahia.xlsx (Shown: 12, Hidden: 20)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - ASD Market Week 2026 - August 24 - 27, 2026 - Las Vegas Convention Center - LAS VEGAS-NV, USA Yahia.xlsx (Shown: 2, Hidden: 43)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow- SUPERZOO 2026 - August 12 - 14, 2026 - Mandalay Bay - Las Vegas, NV, USA Yahia.xlsx (Shown: 9, Hidden: 9)",
+      "msg": "Sorted [STANDARD]: XShow - Americas Food & Beverage Show 2026 - September 13- 16, 2026 - Miami Beach Convention Center - MIAMI, FL, USA Yahia.xlsx (Shown: 52, Hidden: 87)",
       "type": "success"
     },
     {
       "agent": "Ammar",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - SHOT Show 2027 - january 19- 22, 2027 - Venetian Expo + Caesars Forum - Las Vegas, Nv, USA Ammar.xlsx (Shown: 15, Hidden: 14)",
+      "msg": "Sorted [STANDARD]: XShow - MAGIC New York 2026 - September 9 - 11, 2026 - Javits Center - New York, NY, USA Ammar.xlsx (Shown: 84, Hidden: 137)",
       "type": "success"
     },
     {
       "agent": "Ammar",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow - The International WorkBoat Show 2026 - December 2-4, 2026 - Ernest N. Morial Convention Center - New Orleans, LA, USA Ammar.xlsx (Shown: 9, Hidden: 5)",
-      "type": "success"
-    },
-    {
-      "agent": "Yahia",
-      "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - RMEF Hunter & Outdoor Christmas Expo 2026 Co Located With Cowboy Christmas 2026 - December 3-12, 2026 - Las Vegas Convention Center – South Halls - Las Vegas, NV, USA. Yahia.xlsx (Shown: 1, Hidden: 0)",
+      "msg": "Sorted [STANDARD]: Cleveland Boat Show 2026 - December 17- 20, 2026 - Huntington Convention Center of Cleveland - CLEVELAND-OH, USA Ammar.xlsx (Shown: 57, Hidden: 124)",
       "type": "success"
     },
     {
       "agent": "Ammar",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: ZShow - New York National Boat Show 2027 - January 20-24, 2027 - Javits Center - New York, NY, USA Ammar.xlsx (Shown: 155, Hidden: 74)",
+      "msg": "Sorted [STANDARD]: GEO WEEK 2027 - February 23-25, 2027 - SALT PALACE CONVENTION CENTER - Salt Lake City, UT, USA Ammar.xlsx (Shown: 116, Hidden: 50)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XShow - Build Show LIVE 2026 - September 10 - 12, 2026 - Henry B. González Convention Center - San Antonio, TX, USA Yahia.xlsx (Shown: 8, Hidden: 2)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XZShow - ACS 2026 - American College of Surgeons - September 26–29, 2026 - Walter E. Washington Convention Center - Washington, DC, USA Yahia.xlsx (Shown: 1, Hidden: 6)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XShow - RNG WORKS 2026 - September 15-17, 2026 - Baird Center - MILWAUKEE-WI, USA Yahia.xlsx (Shown: 7, Hidden: 0)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XZShow - G2E 2026 - Global Gaming Expo -  September 28 – October 1, 2026 -  THE VENETIAN EXPO - LAS VEGAS, Nv, USA Yahia.xlsx (Shown: 1, Hidden: 20)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XShow - Healthcare Facilities Symposium & Expo 2026 - SEPTEMBER 28-30, 2026 - Charlotte Convention Center - Charlotte, NC, USA. Yahia.xlsx (Shown: 0, Hidden: 1)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XZShow - AWT 2026 - Association of Water Technologies Annual Convention and Exposition - SEPTEMBER 16-18, 2026 - OKLAHOMA CONVENTION CENTER - OKLAHOMA CITY-OK, USA. Yahia.xlsx (Shown: 9, Hidden: 3)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XShow - AAFPRS 2026 - American Academy of Facial Plastic and Reconstructive Surgery - September 23-26, 2026 - Fontainebleau Las Vegas - LAS VEGAS, Nv, USA. Yahia.xlsx (Shown: 3, Hidden: 1)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XZShow - AEE World 2026 - World Energy Conference & Expo - September 16-18, 2026 - Orange County Convention Center - Orlando, FL, USA Yahia.xlsx (Shown: 4, Hidden: 2)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XZShow - TPS 2026 - Turbomachinery & Pump Symposia - SEPTEMBER 22-24, 2026 - George R. Brown Convention Center - Houston, Tx, USA Yahia.xlsx (Shown: 7, Hidden: 9)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XShow - SIOP 2026 - International Society of Paediatric Oncology - September 15-18, 2026 - Henry B. González Convention Center - San Antonio, TX, USA. Yahia.xlsx (Shown: 2, Hidden: 11)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XZShow - AOFAS 2026 - Annual Meeting of American Orthopaedic Foot & Ankle Society - September 16-19, 2026 - Seattle Convention Center - Arch - Seattle WA, USA. Yahia.xlsx (Shown: 2, Hidden: 2)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XZShow - APHON 2026 - Association of Pediatric HematologyOncology Nurses - September 16 – 18, 2026 - Renasant Convention Center - Memphis, TN, USA Yahia.xlsx (Shown: 5, Hidden: 3)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XShow - MakeUp in NewYork 2026 - September 16-17, 2026 - Javits Center - New York City-Ny, USA. Yahia.xlsx (Shown: 2, Hidden: 4)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XZShow - OTA 2026 - Orthopaedic Trauma Association - September 24-25, 2026 - Music City Center - Nashville-Tn, USA Yahia.xlsx (Shown: 3, Hidden: 3)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: Xshow - LSX USA Congress 2026 - Life Science eXecutive September 23-24, 2026 - Hynes Convention Center - Boston-Ma, USA. Yahia.xlsx (Shown: 4, Hidden: 7)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XZShow - Global Polymer Summit 2026 - September 28 - 30, 2026 - Kentucky International Convention Center - Louisville, KY, USA Yahia.xlsx (Shown: 5, Hidden: 3)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XZShow - NRWA WaterPro 2026 - National Rural Water Association -  September 14-16, 2026 - The Phoenix Convention Center - Phoenix, Az, USA Yahia.xlsx (Shown: 4, Hidden: 3)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XZShow - embedded world North America 2026 - September 22-24, 2026 - Anaheim Convention Center - Anaheim, CA, USA Yahia.xlsx (Shown: 4, Hidden: 0)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XZShow - ASLA - American Society of Landscape Architects - September 16- 18, 2026 - Los Angeles Convention Center - Los Angeles, CA, USA Yahia.xlsx (Shown: 8, Hidden: 1)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XShow - Digital Dealer Conference & Exposition 2026 - September 22-23, 2026 - Huntington Place - Detroit, MI, USA Yahia.xlsx (Shown: 5, Hidden: 1)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XZShow - PWX 2026 - Public Works Expo - August 30–September 2, 2026 - George R. Brown Convention Center - Houston, Tx, USA Yahia.xlsx (Shown: 8, Hidden: 7)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: APA 2027 - International Personalization Expo - February 23-26, 2027 - Horseshoe Las Vegas - LAS VEGAS-NV, USA. Yahia.xlsx (Shown: 45, Hidden: 10)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: SPIE Advanced Lithography 2027 - February 21- 25, 2027 - San Jose McEnery Convention Center - San Jose, CA, USA. Yahia.xlsx (Shown: 23, Hidden: 21)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: Northwest Hort Expo 2026 - December 7-9, 2026 - Three Rivers Convention Center  - Kennewick, WA, USA. Yahia.xlsx (Shown: 34, Hidden: 38)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: ZShow - IEEE-RAS Humanoids 2026 - International Conference on Humanoid Robots - December 6 - 9, 2026 - Santa Clara Convention Center - Santa Clara, CA, USA. Yahia.xlsx (Shown: 10, Hidden: 14)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XShow - WEFTEC 2026 - Water Environment Federation - September 26-30, 2026 - Ernest N. Morial Convention Center - New Orleans-La, USA Yahia.xlsx (Shown: 16, Hidden: 1)",
       "type": "success"
     },
     {
       "agent": "Ammar",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: ZShow - NSGC 2026 - National Society of Genetic Counselors - November 10- 14, 2026 - Baltimore Convention Center - BALTIMORE, MD,  USA Ammar.xlsx (Shown: 38, Hidden: 31)",
+      "msg": "Sorted [STANDARD]: Xshow - ASH Annual Meeting 2026 - American Society of Hematology - December 12- 14, 2026 - Ernest N. Morial Convention Center - New Orleans, LA, USA Ammar.xlsx (Shown: 0, Hidden: 2)",
       "type": "success"
     },
     {
       "agent": "Ammar",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: ZShow - AABC 2026 -  Advanced Automotive Battery Conference - DECEMBER 7-10, 2026 - San Diego Convention Center - San Diego, CA , USA Ammar.xlsx (Shown: 2, Hidden: 3)",
+      "msg": "Sorted [STANDARD]: XZShow - Midwest Clinic 2026 - Midwest Clinic International Band and Orchestra Conference - December 16 - 18, 2026 - McCormick Place West - Chicago, IL , USA Ammar.xlsx (Shown: 6, Hidden: 9)",
       "type": "success"
     },
     {
       "agent": "Ammar",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: Xshow - AAEP Annual Convention & Trade Show 2026 - December 8- 10, 2026 - Mandalay Bay Convention Center - Las Vegas, Nv, USA Ammar.xlsx (Shown: 4, Hidden: 1)",
+      "msg": "Sorted [STANDARD]: XShow - AES 2026 - AMERICAN EPILEPSY SOCIETY - December 4-8, 2026 - Colorado Convention Center - Denver, CO, USA Ammar.xlsx (Shown: 3, Hidden: 7)",
       "type": "success"
     },
     {
       "agent": "Ammar",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow - Gartner IT Infrastructure, Operations & Cloud Strategies Conference 2026 -  December 8 – 10, 2026 - The Venetian Resort Las Vegas - Las Vegas, Nv, USA Ammar.xlsx (Shown: 8, Hidden: 5)",
+      "msg": "Sorted [STANDARD]: Xshow - TPIE 2027 - Tropical Plant Industry Exhibition - January 20- 22, 2027 - Broward County Convention Center - Fort Lauderdale-Fl, USA Ammar.xlsx (Shown: 42, Hidden: 5)",
       "type": "success"
     },
     {
       "agent": "Ammar",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow - The Docks Expo & Marina Conference 2026 - December 1–3, 2026 - Music City Center - Nashville, TN, USA Ammar.xlsx (Shown: 5, Hidden: 4)",
+      "msg": "Sorted [STANDARD]: XShow - Commercial UAV Expo 2026 - September 1 - 3, 2026 - Caesars Forum - Las Vegas, NV, USA Ammar.xlsx (Shown: 13, Hidden: 11)",
       "type": "success"
     },
     {
       "agent": "Ammar",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: ZShow - SpaceCom 2027 - January 12- 14, 2027 - Orange County Convention Center - Orlando, FL, USA Ammar.xlsx (Shown: 49, Hidden: 30)",
+      "msg": "Sorted [STANDARD]: XShow - THE EXPERIENCE Convention & Trade Show 2026 - September 9-11, 2026 - Paris Las Vegas - Las Vegas, NV, USA Ammar.xlsx (Shown: 8, Hidden: 2)",
       "type": "success"
     },
     {
       "agent": "Ammar",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: ZShow - UMA 2027 - Motorcoach Expo  - January 17 – 20, 2027 - Henry B. González Convention Center - San Antonio, TX, USA Ammar.xlsx (Shown: 5, Hidden: 6)",
+      "msg": "Sorted [STANDARD]: ZShow - Design-Build Conference & Expo 2026 - November 4- 6, 2026 - Huntington Convention Center - Cleveland, OH, USA Ammar.xlsx (Shown: 114, Hidden: 19)",
       "type": "success"
     },
     {
       "agent": "Ammar",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: TPIE 2027 - Tropical Plant Industry Exhibition - January 20- 22, 2027 - Broward County Convention Center - Fort Lauderdale-Fl, USA Ammar.xlsx (Shown: 253, Hidden: 63)",
+      "msg": "Sorted [STANDARD]: Compounding World Expo NA 2026 - November 11-12, 2026 - Huntington Convention Center of Cleveland - Cleveland, OH, USA Ammar.xlsx (Shown: 229, Hidden: 66)",
+      "type": "success"
+    },
+    {
+      "agent": "Ammar",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: ZShow - AAHKS Annual Meeting 2026 - American Association of Hip and Knee Surgeons - November 5-8, 2026 - The Gaylord Texan - DALLAS-TX, USA Ammar.xlsx (Shown: 109, Hidden: 43)",
+      "type": "success"
+    },
+    {
+      "agent": "Ammar",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: ACAAI Annual Scientific Meeting 2026 - November 12-16, 2026 - Phoenix Convention Center - PHOENIX-AZ, USA Ammar.xlsx (Shown: 67, Hidden: 31)",
+      "type": "success"
+    },
+    {
+      "agent": "Ammar",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XZshow - Grand Strand Gift & Resort Merchandise Show 2026 - December 6-9, 2026 - Myrtle Beach Convention Center - Myrtle Beach, SC, USA Ammar.xlsx (Shown: 6, Hidden: 0)",
+      "type": "success"
+    },
+    {
+      "agent": "Ammar",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XZShow - Irrigation Show 2026 - December 7-10, 2026 - Las Vegas Convention Center - Las Vegas, Nv, USA Ammar.xlsx (Shown: 6, Hidden: 5)",
+      "type": "success"
+    },
+    {
+      "agent": "Ammar",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: Xshow -  ASHP Midyear 2026 - December 7 - 9, 2026 - Orange County Convention Center - Orlando, FL, USA Ammar.xlsx (Shown: 6, Hidden: 2)",
       "type": "success"
     },
     {
       "agent": "Yahia",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - SABCS 2026 - San Antonio Breast Cancer Symposium - December 8 - 11, 2026 - Henry B. González Convention Center - San Antonio, Tx, USA. Yahia.xlsx (Shown: 1, Hidden: 4)",
+      "msg": "Sorted [STANDARD]: XZShow - CAMX 2026 - Composites and Advanced Materials Expo - September 21 – 24, 2026 - Georgia World Congress Center, Building C - Atlanta, GA, USA Yahia.xlsx (Shown: 9, Hidden: 6)",
       "type": "success"
     },
     {
       "agent": "Yahia",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - The MRAA Conference DEALER WEEK 2026 - December 6- 9, 2026 - Tampa Convention Center - Tampa, Fl, USA. Yahia.xlsx (Shown: 4, Hidden: 2)",
+      "msg": "Sorted [STANDARD]: XShow - GlassBuild America 2026 - SEPTEMBER 23-25, 2026 - Las Vegas Convention Center - Las Vegas, NV, USA Yahia.xlsx (Shown: 13, Hidden: 26)",
       "type": "success"
     },
     {
       "agent": "Yahia",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow - CSBA AEC 2026 - California School Boards Association - December 3- 5, 2026 - San Diego Convention Center - San Diego, CA, USA. Yahia.xlsx (Shown: 4, Hidden: 2)",
+      "msg": "Sorted [STANDARD]: XShow - CES 2027 - january 6- 9, 2027 - las vegas convention center - Las Vegas, Nv, USA Yahia.xlsx (Shown: 37, Hidden: 171)",
       "type": "success"
     },
     {
       "agent": "Yahia",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - ASH Annual Meeting 2026 - American Society of Hematology - December 12- 14, 2026 - Ernest N. Morial Convention Center - New Orleans, LA, USA. Yahia.xlsx (Shown: 6, Hidden: 2)",
+      "msg": "Sorted [STANDARD]: XShow - NKBA KBIS 2027 - KitchenBath Industry Show - February 2-4, 2027 - Las Vegas Convention Center - Las Vegas, NV, USA Yahia.xlsx (Shown: 2, Hidden: 2)",
       "type": "success"
     },
     {
       "agent": "Yahia",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow -  ASHP Midyear 2026 - December 7 - 9, 2026 - Orange County Convention Center - Orlando, FL, USA. Yahia.xlsx (Shown: 6, Hidden: 3)",
+      "msg": "Sorted [STANDARD]: XShow - SHOT Show 2027 - january 19- 22, 2027 - Venetian Expo + Caesars Forum - Las Vegas, Nv, USA Yahia.xlsx (Shown: 12, Hidden: 20)",
       "type": "success"
     },
     {
       "agent": "Yahia",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow - AES 2026 - AMERICAN EPILEPSY SOCIETY - December 4-8, 2026 - Colorado Convention Center - Denver, CO, USA. Yahia.xlsx (Shown: 3, Hidden: 6)",
+      "msg": "Sorted [STANDARD]: Xshow - America Outdoors Conference & Outfitter Expo 2026 - December 8-11, 2026 - Oklahoma City Convention Center - Oklahoma City, OK, USA. Yahia.xlsx (Shown: 2, Hidden: 3)",
       "type": "success"
     },
     {
       "agent": "Yahia",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: Tampa Build Expo 2027 - January 20-21, 2027 - Tampa Convention Center - Tampa, Fl, USA. Yahia.xlsx (Shown: 108, Hidden: 107)",
+      "msg": "Sorted [STANDARD]: XZShow - The International WorkBoat Show 2026 - December 2-4, 2026 - Ernest N. Morial Convention Center - New Orleans, LA, USA Yahia.xlsx (Shown: 12, Hidden: 4)",
       "type": "success"
     },
     {
       "agent": "Yahia",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: Xshow - Grand Strand Gift & Resort Merchandise Show 2026 - December 6-9, 2026 - Myrtle Beach Convention Center - Myrtle Beach, SC, USA  . Yahia.xlsx (Shown: 7, Hidden: 5)",
+      "msg": "Sorted [STANDARD]: XShow - RMEF Hunter & Outdoor Christmas Expo 2026 - December 3-12, 2026 - Las Vegas Convention Center – South Halls - Las Vegas, NV, USA. Yahia.xlsx (Shown: 286, Hidden: 48)",
       "type": "success"
     },
     {
       "agent": "Yahia",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: Xshow - MRS 2026 - Materials Research Society Fall Meeting & Exhibit - December 1- 3, 2026 - Hynes Convention Center - Boston, Ma, USA Yahia.xlsx (Shown: 3, Hidden: 7)",
+      "msg": "Sorted [STANDARD]: XShow - The MRAA Conference DEALER WEEK 2026 - December 6- 9, 2026 - Tampa Convention Center - Tampa, Fl, USA. Yahia.xlsx (Shown: 1, Hidden: 3)",
       "type": "success"
     },
     {
       "agent": "Yahia",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XZShow - The IAFE Convention & Trade Show 2026 - November 29 - December 3, 2026 - Kentucky International Convention Center -  Louisville, KY, USA Yahia.xlsx (Shown: 1, Hidden: 1)",
+      "msg": "Sorted [STANDARD]: Xshow - MRS 2026 - Materials Research Society Fall Meeting & Exhibit - December 1- 3, 2026 - Hynes Convention Center - Boston, Ma, USA Yahia.xlsx (Shown: 4, Hidden: 5)",
       "type": "success"
     },
     {
       "agent": "Yahia",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: XShow- SUPERZOO 2026 - August 12 - 14, 2026 - Mandalay Bay - Las Vegas, NV, USA Yahia.xlsx (Shown: 11, Hidden: 6)",
+      "msg": "Sorted [STANDARD]: Xshow -  LDI Show 2026 - December 6- 8, 2026 - Las Vegas Convention Center - West Halls - Las Vegas, NV, USA Yahia.xlsx (Shown: 2, Hidden: 14)",
       "type": "success"
     },
     {
       "agent": "Yahia",
       "ts": "12:00:00 PM",
-      "msg": "Sorted [STANDARD]: AARC 2026 - American Association for Respiratory Care - November 14- 17, 2026 - New Orleans Ernest N. Morial Convention Center - New Orleans, LA, USA. Yahia.xlsx (Shown: 62, Hidden: 44)",
+      "msg": "Sorted [STANDARD]: Xshow - AAEP Annual Convention & Trade Show 2026 - December 8- 10, 2026 - Mandalay Bay Convention Center - Las Vegas, Nv, USA Yahia.xlsx (Shown: 8, Hidden: 2)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XZShow - AIChE 2026 - Annual Meeting of American Institute of Chemical Engineers - November 8 - 12, 2026 - Minneapolis Convention Center, Minneapolis - MN, USA Yahia.xlsx (Shown: 2, Hidden: 5)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XShow - WEDDING PRO CONVENTION 2026 - November 17-19, 2026 - Las Vegas Convention Center - Las Vegas, Nv, USA. Yahia.xlsx (Shown: 3, Hidden: 6)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XShow - AB Show 2026 - November 18-19, 2026 - Orange County Convention Center - Orlando, FL, USA Yahia.xlsx (Shown: 8, Hidden: 5)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: AAPMR Annual Assembly 2026 - American Academy of Physical Medicine and Rehabilitation - November 11-14, 2026 - Orange County Convention Center - Orlando, FL, USA. Yahia.xlsx (Shown: 69, Hidden: 56)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: Xshow - service world Expo 2026 - November 9-11, 2026 - Caesars Forum - Las Vegas, NV, USA. Yahia.xlsx (Shown: 5, Hidden: 6)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: Xshow - Ocean City Resort Gift Expo 2026 - November 15-17, 2026 - Roland E. Powell Convention Center - Ocean City, MD, USA  . Yahia.xlsx (Shown: 4, Hidden: 2)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: Xshow - STAFDA 2026 - Specialty Tools & Fasteners Distributers Assn - November 15-17, 2026 - Anaheim Convention Center - Anaheim, CA, USA Yahia.xlsx (Shown: 5, Hidden: 3)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XZShow - SC 2026 - November 16- 19, 2026 - McCormick Place - Chicago, IL, USA Yahia.xlsx (Shown: 24, Hidden: 26)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: Xshow - RoofCON 2026 - November 10 -12, 2026 - Oklahoma Convention Center - Oklahoma City, OK, USA Yahia.xlsx (Shown: 1, Hidden: 7)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: Geosynthetics Conference 2027 - Co Located With - IECA 2027 International Erosion Control Association - February 21 – 24, 2027 - Reno-Sparks Convention Center - Reno, Nv, USA. Yahia.xlsx (Shown: 100, Hidden: 26)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: ZShow - BPS 2027 - Biophysical Society Annual Meeting - FEBRUARY 20-24, 2027 - Pennsylvania Convention Center - Philadelphia, Pa, USA. Yahia.xlsx (Shown: 26, Hidden: 15)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: GEAPS 2027 - Grain Elevator and Processing Society - February 20-23, 2027 - Kansas City Convention Center - Kansas City, Mo, USA. Yahia.xlsx (Shown: 11, Hidden: 3)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: Xshow - The Anaheim Landscape Expo 2026 - November 4- 5, 2026 - Anaheim Convention Center - Anaheim, CA, USA Yahia.xlsx (Shown: 3, Hidden: 3)",
+      "type": "success"
+    },
+    {
+      "agent": "Ammar",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XZShow - GNYDM 2026 - Greater New York Dental Meeting - November 29 – December 1, 2026 - JACOB K. JAVITS CONVENTION CENTER - NEW YORK CITY-NY, USA Ammar.xlsx (Shown: 10, Hidden: 23)",
+      "type": "success"
+    },
+    {
+      "agent": "Ammar",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XShow - HLTH 2026 - The Future of Healthcare - November 15-18, 2026 - The Venetian Expo Center - Las Vegas, NV, USA Ammar.xlsx (Shown: 17, Hidden: 17)",
+      "type": "success"
+    },
+    {
+      "agent": "Ammar",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XShow - IFMA 2026 - World Workplace Conference & Expo - November 18-20, 2026 - ANAHEIM CONVENTION CENTER - Anaheim, Ca, USA Ammar.xlsx (Shown: 10, Hidden: 1)",
+      "type": "success"
+    },
+    {
+      "agent": "Ammar",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XZShow - DEMA 2026 - Diving Equipment & Marketing Association - November 3-6, 2026 - Ernest N. Morial Convention Center - New Orleans, LA, USA Ammar.xlsx (Shown: 1, Hidden: 7)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XShow - RSNA 2026 - Radiological Society of North America - November 29 - December 2, 2026 - McCormick Place - Chicago, IL, USA. Yahia.xlsx (Shown: 12, Hidden: 4)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XShow - IITSEC 2026 - 30 November – 3 December, 2026 - Orange County Convention Center - Orlando, FL, USA. Yahia.xlsx (Shown: 4, Hidden: 3)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: SameList - XShow - Expo! Expo! IAEE 2026 - International Association of Exhibitions & Events - November 16-18 2026 - Baird Center - Milwaukee, WI, USA  . Yahia.xlsx (Shown: 0, Hidden: 9)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XShow - The Hospitality Show 2026 - November 2-4, 2026 - Miami Beach Convention Center - Miami Beach, FL, USA. Yahia.xlsx (Shown: 8, Hidden: 10)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XShow - BDNY 2026 - Boutique Design New York - NOVEMBER 8-9, 2026 - Jacob Javits Convention Center - New York, NY, USA Yahia.xlsx (Shown: 27, Hidden: 11)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XShow - IAAPA Expo 2026 - International Association of Amusement Parks and Attractions - November 17 - 20, 2026 - Orange County Convention Center - Orlando, FL, USA Yahia.xlsx (Shown: 6, Hidden: 17)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XShow - International Pool Spa Patio Expo 2026 - co-located with - Deck Expo 2026 - November 17 - 19, 2026 - Ernest N. Morial Convention Center - New Orleans, LA, USA Yahia.xlsx (Shown: 11, Hidden: 6)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XShow - RE+ 2026 - Largest energy event in North America - November 17-19, 2026 - Las Vegas Convention Center - Las Vegas, NV, USA Yahia.xlsx (Shown: 17, Hidden: 35)",
+      "type": "success"
+    },
+    {
+      "agent": "Ammar",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XShow - IEC SPARK 2026 - October 21 – 24, 2026 - Greater Columbus Convention Center - Columbus, Oh, USA Ammar.xlsx (Shown: 6, Hidden: 1)",
+      "type": "success"
+    },
+    {
+      "agent": "Ammar",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XZShow - NAB Show New York 2026 - October 21-22, 2026 - Javits Center - New York, NY, USA Ammar.xlsx (Shown: 4, Hidden: 9)",
+      "type": "success"
+    },
+    {
+      "agent": "Ammar",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XZShow - AZA Annual Conference 2026 - Association of Zoos & Aquariums - September 26 - October 1, 2026 - Oregon Convention Center - Portland, OR, USA Ammar.xlsx (Shown: 17, Hidden: 2)",
+      "type": "success"
+    },
+    {
+      "agent": "Ammar",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XZShow - ISTFA 2026 - International Symposium for Testing and Failure Analysis - October 4-8, 2026 - Henry B. González Convention Center - San Antonio-Tx, USA Ammar.xlsx (Shown: 3, Hidden: 3)",
+      "type": "success"
+    },
+    {
+      "agent": "Ammar",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: NADA 2027 - National Automobile Dealers Association - FEBRUARY 18-20, 2027 - ORANGE COUNTY CONVENTION CENTER - ORLANDO-FL, USA Ammar.xlsx (Shown: 342, Hidden: 125)",
+      "type": "success"
+    },
+    {
+      "agent": "Ammar",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: ZShow - BICSI Winter 2027 - February 14- 18, 2027 - Orange County Convention Center - Orlando, Fl, USA Ammar.xlsx (Shown: 70, Hidden: 16)",
+      "type": "success"
+    },
+    {
+      "agent": "Ammar",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: AAAR Annual Conference 2026 - American Association for Aerosol Research - October 26-30, 2026 - Pasadena Convention Center - Pasadena, Ca, USA Ammar.xlsx (Shown: 26, Hidden: 7)",
+      "type": "success"
+    },
+    {
+      "agent": "Ammar",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: ZShow - AMCP Nexus 2026 - October 26-29, 2026 -  Gaylord Pacific Resort & Convention Center - Chula Vista, Ca, USA Ammar.xlsx (Shown: 18, Hidden: 15)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XShow - ISSA Show North America 2026 - November 17 - 19, 2026 - Mandalay Bay Convention Center - Las Vegas, NV, USA Yahia.xlsx (Shown: 8, Hidden: 5)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: Xshow - LeadingAge ANNUAL MEETING 2026 - OCTOBER 25-28, 2026 - Pennsylvania Convention Center - PHILADELPHIA ,PA, USA. Yahia.xlsx (Shown: 13, Hidden: 3)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: XZShow - Florida Restaurant Show 2026 - The Pizza Tomorrow Summit 2026 - October 25 - 27, 2026 - THE ORANGE COUNTY CONVENTION CENTER - Orlando, FL, USA. Yahia.xlsx (Shown: 8, Hidden: 9)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: Xshow - TSA 2026 - Texas Society of Architects - October 15 - 17, 2026 - Henry B. Gonzalez Convention Center - San Antonio, Tx USA. Yahia.xlsx (Shown: 3, Hidden: 4)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: ZShow - ACA 2027 - American Camp Association National Conference - February 16-19, 2027 - Kentucky International Convention Center - Louisville, KY, USA. Yahia.xlsx (Shown: 65, Hidden: 22)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: CRF TCT 2026 - Transcatheter Cardiovascular Therapeutics - October 31 - November 3, 2026 - San Diego Convention Center - San Diego, CA, USA. Yahia.xlsx (Shown: 41, Hidden: 43)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: ZShow - WestEdge Design Fair 2026 - October 29–31, 2026 - The Barker Hangar - Santa Monica, Ca, USA. Yahia.xlsx (Shown: 48, Hidden: 33)",
+      "type": "success"
+    },
+    {
+      "agent": "Yahia",
+      "ts": "12:00:00 PM",
+      "msg": "Sorted [STANDARD]: ZShow - Critical Minerals Expo North America 2026 - October 28-29 2026 - Cobb Convention Center - Atlanta, Ga, USA. Yahia.xlsx (Shown: 44, Hidden: 39)",
       "type": "success"
     }
   ]
