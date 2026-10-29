@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "widget": "electron widget/main.js",
+    "start:all": "node server.js & electron widget/main.js"
   },
   "keywords": [],
   "author": "",
@@ -15,5 +18,8 @@
     "express": "^5.2.1",
     "multer": "^2.1.1",
     "socket.io": "^4.8.3"
+  },
+  "devDependencies": {
+    "electron": "^43.3.0"
   }
 }

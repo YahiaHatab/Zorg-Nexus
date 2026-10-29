@@ -362,26 +362,14 @@ function checkIsRed(font) {
 // ─────────────────────────────────────────────
 // ─────────────────────────────────────────────
 //  DAILY RESET
-//  Clears history.json and wipes today's data from analytics.
+//  Clears history.json and signals all frontends.
+//  Preserves historical analytics.json ledger.
 // ─────────────────────────────────────────────
 async function performDailyReset() {
     console.log(`\n> [RESET] Starting daily reset at ${new Date().toISOString()}`);
 
     fs.writeFileSync(historyPath, JSON.stringify({ files: [], logs: [] }, null, 2));
     console.log('> [RESET] history.json cleared.');
-
-    // Wipe today's data from analytics.json so it doesn't reload on refresh
-    try {
-        const dateKey = new Date().toISOString().split('T')[0];
-        const analytics = JSON.parse(fs.readFileSync(analyticsPath));
-        if (analytics[dateKey]) {
-            delete analytics[dateKey];
-            fs.writeFileSync(analyticsPath, JSON.stringify(analytics, null, 2));
-            console.log(`> [RESET] Removed today's (${dateKey}) data from analytics.json.`);
-        }
-    } catch (e) {
-        console.error("> [RESET] Error modifying analytics.json:", e);
-    }
 
     io.emit('daily_reset');
     console.log('> [RESET] daily_reset event broadcast.');
@@ -428,6 +416,7 @@ async function processExcelFile(filePath, originalName) {
     let newHidden = 0;
     let someShown = 0;
     let someHidden = 0;
+    let fromHide = 0;
     const isNA = /\bUSA\b|\bCANADA\b/i.test(originalName);
 
     // ── Hidden-row reason breakdown ──────────────
@@ -446,6 +435,33 @@ async function processExcelFile(filePath, originalName) {
 
     const sheet = workbook.getWorksheet('Sheet1') || workbook.worksheets[0];
     if (sheet) {
+        // Pass 1: Identify the tag column where New / Some / FromHide are located
+        let tagColIndex = -1;
+        const colTagCounts = {};
+
+        sheet.eachRow((row) => {
+            row.eachCell((cell, colNumber) => {
+                let cellText = '';
+                if (cell.value && cell.value.richText) {
+                    cellText = cell.value.richText.map(rt => rt.text).join('');
+                } else if (cell.value !== null && cell.value !== undefined) {
+                    cellText = cell.value.toString();
+                }
+                cellText = cellText.trim();
+                if (/^new(\d*)$/i.test(cellText) || /^some(\d*)$/i.test(cellText) || /fromhide/i.test(cellText)) {
+                    colTagCounts[colNumber] = (colTagCounts[colNumber] || 0) + 1;
+                }
+            });
+        });
+
+        let maxCount = 0;
+        for (const [col, count] of Object.entries(colTagCounts)) {
+            if (count > maxCount) {
+                maxCount = count;
+                tagColIndex = parseInt(col, 10);
+            }
+        }
+
         let stats = {};
 
         let highestNewNum = -1;
@@ -455,6 +471,8 @@ async function processExcelFile(filePath, originalName) {
         let highestSomeNum = -1;
         let latestSomeKey = "Some";
         let foundAnySome = false;
+
+        let fromHideLocal = 0;
 
         let globalHidden = 0;
         let globalVisible = 0;
@@ -482,7 +500,7 @@ async function processExcelFile(filePath, originalName) {
             const col2Str = col2Value !== null && col2Value !== undefined ? col2Value.toString().trim() : '';
             const isLocal = col2Str.toLowerCase().includes('local');
 
-            row.eachCell((cell) => {
+            const checkCell = (cell) => {
                 let cellText = '';
                 let isRed = false;
                 if (cell.value && cell.value.richText) {
@@ -491,8 +509,18 @@ async function processExcelFile(filePath, originalName) {
                     cellText = cell.value ? cell.value.toString() : '';
                     if (checkIsRed(cell.font)) isRed = true;
                 }
+                const trimmedText = cellText.trim();
 
-                const matchNew = cellText.trim().match(/^new(\d*)$/i);
+                // Check FromHide first (case-insensitive, in same column as New/Some)
+                if (/fromhide/i.test(trimmedText)) {
+                    if (isRed && !isHidden) {
+                        fromHide++;
+                        if (isLocal) fromHideLocal++;
+                    }
+                    return;
+                }
+
+                const matchNew = trimmedText.match(/^new(\d*)$/i);
                 if (matchNew) {
                     hasNewInRow = true; foundAnyNew = true;
                     const num = matchNew[1] === "" ? 0 : parseInt(matchNew[1], 10);
@@ -500,14 +528,20 @@ async function processExcelFile(filePath, originalName) {
                     if (isRed) hasRedFont = true;
                 }
 
-                const matchSome = cellText.trim().match(/^some(\d*)$/i);
+                const matchSome = trimmedText.match(/^some(\d*)$/i);
                 if (matchSome) {
                     hasSomeInRow = true; foundAnySome = true;
                     const num = matchSome[1] === "" ? 0 : parseInt(matchSome[1], 10);
                     if (num > rowSomeNum) { rowSomeNum = num; rowSomeKey = num === 0 ? "Some" : `Some${num}`; }
                     if (isRed) hasRedFont = true;
                 }
-            });
+            };
+
+            if (tagColIndex !== -1) {
+                checkCell(row.getCell(tagColIndex));
+            } else {
+                row.eachCell((cell) => checkCell(cell));
+            }
 
             if (isHidden) {
                 globalHidden++;
@@ -563,7 +597,7 @@ async function processExcelFile(filePath, originalName) {
         let someShownLocal = 0;
         let someHiddenLocal = 0;
 
-        if (foundAnyNew || foundAnySome) {
+        if (foundAnyNew || foundAnySome || fromHide > 0) {
             if (foundAnyNew) {
                 newShown = stats[latestNewKey].visibleRed;
                 newHidden = stats[latestNewKey].hidden;
@@ -582,11 +616,12 @@ async function processExcelFile(filePath, originalName) {
                 }
             }
 
-            if (!isNA && (newShown + newHidden + someShown + someHidden) >= 200) {
+            if (!isNA && (newShown + newHidden + someShown + someHidden + fromHide) >= 200) {
                 newShown = Math.max(0, newShown - newShownLocal);
                 newHidden = Math.max(0, newHidden - newHiddenLocal);
                 someShown = Math.max(0, someShown - someShownLocal);
                 someHidden = Math.max(0, someHidden - someHiddenLocal);
+                fromHide = Math.max(0, fromHide - fromHideLocal);
             }
 
             if (someShown === 0) {
@@ -602,7 +637,7 @@ async function processExcelFile(filePath, originalName) {
             }
         }
 
-        finalVisibleRed = newShown + someShown;
+        finalVisibleRed = newShown + someShown + fromHide;
         finalHidden = newHidden + someHidden;
     }
 
@@ -614,6 +649,8 @@ async function processExcelFile(filePath, originalName) {
         newHidden,
         someShown,
         someHidden,
+        fromHide,
+        FromHide: fromHide,
         reasonBreakdown
     };
 }
@@ -651,6 +688,26 @@ app.post('/api/user/theme', (req, res) => {
         res.status(500).json({ success: false, error: e.message });
     }
 });
+
+app.get('/api/user/profile', (req, res) => {
+    try {
+        const username = req.query.username;
+        if (!username) return res.status(400).json({ success: false, error: 'Missing username' });
+        const users = JSON.parse(fs.readFileSync(usersPath));
+        const user = users.find(u => u.username === username);
+        if (!user) return res.status(404).json({ success: false, error: 'User not found' });
+        res.json({
+            success: true,
+            username: user.username,
+            role: user.role || 'Agent',
+            theme: user.theme || 'light',
+            enableSharedOutput: !!user.enableSharedOutput
+        });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
 
 // ─────────────────────────────────────────────
 //  USER DATA  (today's activity from history.json)
@@ -1466,6 +1523,7 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
             newHidden: stats.newHidden || 0,
             someShown: stats.someShown || 0,
             someHidden: stats.someHidden || 0,
+            fromHide: stats.fromHide || 0,
             reasonBreakdown: stats.reasonBreakdown || {}
         });
 
@@ -1497,6 +1555,7 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
             newHidden: stats.newHidden || 0,
             someShown: stats.someShown || 0,
             someHidden: stats.someHidden || 0,
+            fromHide: stats.fromHide || 0,
             reasonBreakdown: stats.reasonBreakdown || {}
         });
 
@@ -1605,6 +1664,7 @@ app.post('/api/upload-bulk', upload.array('files', 20), async (req, res) => {
                     newHidden: stats.newHidden || 0,
                     someShown: stats.someShown || 0,
                     someHidden: stats.someHidden || 0,
+                    fromHide: stats.fromHide || 0,
                     reasonBreakdown: stats.reasonBreakdown || {}
                 });
 
@@ -1636,6 +1696,7 @@ app.post('/api/upload-bulk', upload.array('files', 20), async (req, res) => {
                     newHidden: stats.newHidden || 0,
                     someShown: stats.someShown || 0,
                     someHidden: stats.someHidden || 0,
+                    fromHide: stats.fromHide || 0,
                     reasonBreakdown: stats.reasonBreakdown || {}
                 });
 
@@ -1808,11 +1869,11 @@ function rebuildDaySummary(day) {
 
 // ─────────────────────────────────────────────
 //  ADMIN — UPDATE SINGLE RECORD
-//  Body: { dateKey, transactionId, agent, filename, mode, newShown, newHidden, someShown, someHidden, note }
+//  Body: { dateKey, transactionId, agent, filename, mode, newShown, newHidden, someShown, someHidden, fromHide, note }
 // ─────────────────────────────────────────────
 app.put('/api/admin/record', (req, res) => {
     try {
-        const { dateKey, transactionId, agent, filename, mode, newShown, newHidden, someShown, someHidden, note } = req.body;
+        const { dateKey, transactionId, agent, filename, mode, newShown, newHidden, someShown, someHidden, fromHide, note } = req.body;
         if (!dateKey || !transactionId) {
             return res.status(400).json({ success: false, error: 'dateKey and transactionId are required.' });
         }
@@ -1839,6 +1900,7 @@ app.put('/api/admin/record', (req, res) => {
             rec.newHidden = 0;
             rec.someShown = 0;
             rec.someHidden = 0;
+            rec.fromHide = 0;
             rec.shown = 0;
             rec.hidden = 0;
             rec.total = 0;
@@ -1847,8 +1909,9 @@ app.put('/api/admin/record', (req, res) => {
             if (newHidden !== undefined) rec.newHidden = Number(newHidden) || 0;
             if (someShown !== undefined) rec.someShown = Number(someShown) || 0;
             if (someHidden !== undefined) rec.someHidden = Number(someHidden) || 0;
+            if (fromHide !== undefined) rec.fromHide = Number(fromHide) || 0;
 
-            rec.shown = (rec.newShown || 0) + (rec.someShown || 0);
+            rec.shown = (rec.newShown || 0) + (rec.someShown || 0) + (rec.fromHide || 0);
             rec.hidden = (rec.newHidden || 0) + (rec.someHidden || 0);
             rec.total = rec.shown + rec.hidden;
         }
@@ -1907,6 +1970,7 @@ app.get('/api/export/:date', async (req, res) => {
             { header: 'New Hidden', key: 'newHidden', width: 15 },
             { header: 'Some Net', key: 'someShown', width: 15 },
             { header: 'Some Hidden', key: 'someHidden', width: 15 },
+            { header: 'FromHide', key: 'fromHide', width: 15 },
             { header: 'File Name', key: 'filename', width: 50 },
             { header: 'Date', key: 'date', width: 15 },
             { header: 'Mode', key: 'mode', width: 15 },
@@ -1933,6 +1997,7 @@ app.get('/api/export/:date', async (req, res) => {
                 newHidden: rec.newHidden || 0,
                 someShown: rec.someShown || 0,
                 someHidden: rec.someHidden || 0,
+                fromHide: rec.fromHide || 0,
                 filename: rec.filename,
                 date: dateKey,
                 mode: rec.mode,
@@ -1955,6 +2020,7 @@ app.get('/api/export/:date', async (req, res) => {
             newHidden: day.records.reduce((sum, r) => sum + (r.newHidden || 0), 0),
             someShown: day.records.reduce((sum, r) => sum + (r.someShown || 0), 0),
             someHidden: day.records.reduce((sum, r) => sum + (r.someHidden || 0), 0),
+            fromHide: day.records.reduce((sum, r) => sum + (r.fromHide || 0), 0),
             filename: `${day.summary.totalFiles} file(s) processed`,
             date: dateKey,
             mode: '—',

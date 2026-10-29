@@ -19,8 +19,12 @@ If Not IsScriptRunning("Zorg-Nexus\server.js") Then
     WshShell.Run "node ""C:\Users\Yehya\Desktop\Zorg-Nexus\server.js""", 0, False
 End If
 
-If Not IsScriptRunning("ZORG-main\app.js") Then
-    WshShell.Run "node ""C:\Users\Yehya\Desktop\ZORG-main\app.js""", 0, False
+If Not IsScriptRunning("widget/main.js") Then
+    WshShell.Run "npx electron ""C:\Users\Yehya\Desktop\Zorg-Nexus\widget\main.js""", 0, False
+End If
+
+If Not IsScriptRunning("ZORG\app.js") Then
+    WshShell.Run "node ""C:\Users\Yehya\Desktop\ZORG\app.js""", 0, False
 End If
 
 Set WshShell = Nothing

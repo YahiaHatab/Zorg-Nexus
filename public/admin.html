@@ -1963,6 +1963,10 @@
             <label style="font-size:11px; text-transform:uppercase; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Some Hidden</label>
             <input type="number" id="editRecSomeHidden" class="field-input" style="font-size:14px; padding:10px;" min="0" oninput="calculateEditPreview()">
           </div>
+          <div style="grid-column: span 2;">
+            <label style="font-size:11px; text-transform:uppercase; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">FromHide</label>
+            <input type="number" id="editRecFromHide" class="field-input" style="font-size:14px; padding:10px;" min="0" oninput="calculateEditPreview()">
+          </div>
         </div>
 
         <div id="editRecPreview" style="background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:6px; padding:10px 14px; font-size:12px; color:var(--text-muted); display:flex; justify-content:space-between;">
@@ -2161,10 +2165,13 @@
             </div>
           </div>
           <div id="ledgerSummaryBar"
-            style="padding:10px 20px; border-bottom:1px solid var(--border); display:none; gap:24px; flex-wrap:wrap; font-size:12px; color:var(--text-muted);">
+            style="padding:10px 20px; border-bottom:1px solid var(--border); display:none; align-items:center; gap:20px; flex-wrap:wrap; font-size:12px; color:var(--text-muted); background:rgba(0,0,0,0.15);">
             <span>Shows: <b id="ls-files" style="color:var(--text-main);">—</b></span>
             <span>Gross: <b id="ls-leads" style="color:var(--text-main);">—</b></span>
             <span>Net: <b id="ls-shown" style="color:var(--success);">—</b></span>
+            <span>Net/Gross: <b id="ls-pct" style="color:var(--accent-purple); font-weight:700;">—</b></span>
+            <div style="height:16px; width:1px; background:var(--border); margin:0 2px;"></div>
+            <div id="ls-agents" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;"></div>
           </div>
           <div style="overflow-x:auto; overflow-y:auto; max-height: calc(100vh - 280px);">
             <table class="data-table">
@@ -2206,7 +2213,7 @@
           <div class="stat-card">
             <div class="sc-val" id="as-totalShown" style="color:var(--success);">—</div>
             <div style="font-size:10px; color:var(--text-muted); margin-bottom:6px; font-family:'JetBrains Mono',monospace;">
-              New: <span id="as-newShown" style="font-weight:600; color:var(--success);">—</span> | Some: <span id="as-someShown" style="font-weight:600; color:var(--success);">—</span>
+              New: <span id="as-newShown" style="font-weight:600; color:var(--success);">—</span> | Some: <span id="as-someShown" style="font-weight:600; color:var(--success);">—</span> | FH: <span id="as-fromHide" style="font-weight:600; color:var(--success);">—</span>
             </div>
             <div class="sc-lbl">Net</div>
           </div>
@@ -2219,8 +2226,12 @@
           </div>
           <div class="stat-card">
             <div class="sc-val" id="as-totalDays" style="color:var(--accent-cyan);">—</div>
+            <div style="font-size:10px; color:var(--text-muted); margin-bottom:6px; font-family:'JetBrains Mono',monospace;">
+              With Data: <span id="as-uploadDays" style="font-weight:600; color:var(--text-main);">—</span>
+            </div>
             <div class="sc-lbl">Active Days</div>
           </div>
+
         </div>
 
         <!-- Charts -->
@@ -2557,10 +2568,13 @@
         // Determine user access level
         const me = usersData.find(u => u.username === currentUser);
         const myRole = me ? (me.role || 'Agent') : 'Agent';
+        localStorage.setItem('zorg_nexus_role', myRole);
+        setCookie('zorg_nexus_role', myRole);
         isAdminRole = (myRole === 'Admin');
         if (isAdminRole) document.body.classList.add('admin-mode');
         else document.body.classList.remove('admin-mode');
         isViewerRole = (myRole === 'Viewer');
+
 
         // Boot Agents
         if (!isAdminRole && !isViewerRole) {
@@ -2753,11 +2767,45 @@
         return;
       }
 
-      // Summary bar
+    function updateLedgerSummaryBar(day) {
+      const summaryBar = document.getElementById('ledgerSummaryBar');
+      if (!day || !day.summary) {
+        if (summaryBar) summaryBar.style.display = 'none';
+        return;
+      }
       summaryBar.style.display = 'flex';
-      document.getElementById('ls-files').textContent = day.summary.totalFiles;
-      document.getElementById('ls-leads').textContent = day.summary.totalLeads;
-      document.getElementById('ls-shown').textContent = day.summary.totalShown;
+      const totalFiles = day.summary.totalFiles || 0;
+      const totalLeads = day.summary.totalLeads || 0;
+      const totalShown = day.summary.totalShown || 0;
+      const overallPct = totalLeads > 0 ? ((totalShown / totalLeads) * 100).toFixed(1) + '%' : '0%';
+
+      document.getElementById('ls-files').textContent = totalFiles;
+      document.getElementById('ls-leads').textContent = totalLeads;
+      document.getElementById('ls-shown').textContent = totalShown;
+      document.getElementById('ls-pct').textContent = overallPct;
+
+      const agentContainer = document.getElementById('ls-agents');
+      if (agentContainer) {
+        const agents = day.summary.byAgent || {};
+        const agentEntries = Object.entries(agents).sort((a, b) => b[1].shown - a[1].shown);
+        if (agentEntries.length === 0) {
+          agentContainer.innerHTML = '';
+        } else {
+          agentContainer.innerHTML = agentEntries.map(([agentName, stats]) => {
+            const pct = stats.leads > 0 ? ((stats.shown / stats.leads) * 100).toFixed(1) + '%' : '0%';
+            return `<span style="background:rgba(255,255,255,0.05); padding:3px 10px; border-radius:6px; border:1px solid var(--border); font-size:11.5px; display:inline-flex; align-items:center; gap:6px;">
+              <strong style="color:var(--text-main); font-weight:600;">${escHtml(agentName)}:</strong>
+              <span style="color:var(--success); font-weight:600;">${stats.shown}</span> / 
+              <span style="color:var(--text-muted);">${stats.leads}</span>
+              <span style="color:var(--accent-purple); font-weight:700; background:rgba(139,92,246,0.12); padding:1px 5px; border-radius:4px; font-size:11px;">(${pct})</span>
+            </span>`;
+          }).join('');
+        }
+      }
+    }
+
+      // Summary bar
+      updateLedgerSummaryBar(day);
 
       // Records table — newest first, searchable
       _ledgerSource = [...day.records].sort((a, b) => (b.time || '').localeCompare(a.time || ''));
@@ -2805,9 +2853,11 @@
         const newHidden = rec.newHidden !== undefined ? rec.newHidden : rec.hidden;
         const someShown = rec.someShown !== undefined ? rec.someShown : 0;
         const someHidden = rec.someHidden !== undefined ? rec.someHidden : 0;
+        const fromHide = rec.fromHide !== undefined ? rec.fromHide : 0;
 
-        const grossBreakdown = `<div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">N: ${newShown + newHidden} | S: ${someShown + someHidden}</div>`;
-        const netBreakdown = `<div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">N: ${newShown} | S: ${someShown}</div>`;
+        const fhTag = fromHide > 0 ? ` | FH: ${fromHide}` : '';
+        const grossBreakdown = `<div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">N: ${newShown + newHidden} | S: ${someShown + someHidden}${fhTag}</div>`;
+        const netBreakdown = `<div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">N: ${newShown} | S: ${someShown}${fhTag}</div>`;
         const hiddenBreakdown = `<div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">N: ${newHidden} | S: ${someHidden}</div>`;
 
         const editBtn = isAdminRole || rec.agent === currentUser
@@ -2978,11 +3028,13 @@
       const newHidden = rec.newHidden !== undefined ? rec.newHidden : rec.hidden;
       const someShown = rec.someShown !== undefined ? rec.someShown : 0;
       const someHidden = rec.someHidden !== undefined ? rec.someHidden : 0;
+      const fromHide = rec.fromHide !== undefined ? rec.fromHide : 0;
 
       document.getElementById('editRecNewShown').value = newShown;
       document.getElementById('editRecNewHidden').value = newHidden;
       document.getElementById('editRecSomeShown').value = someShown;
       document.getElementById('editRecSomeHidden').value = someHidden;
+      document.getElementById('editRecFromHide').value = fromHide;
 
       // Update layout and numbers preview
       onEditModeChange();
@@ -3020,8 +3072,9 @@
       const newHidden = Number(document.getElementById('editRecNewHidden').value) || 0;
       const someShown = Number(document.getElementById('editRecSomeShown').value) || 0;
       const someHidden = Number(document.getElementById('editRecSomeHidden').value) || 0;
+      const fromHide = Number(document.getElementById('editRecFromHide').value) || 0;
 
-      const net = newShown + someShown;
+      const net = newShown + someShown + fromHide;
       const hidden = newHidden + someHidden;
       const gross = net + hidden;
 
@@ -3051,6 +3104,7 @@
       const newHidden = Number(document.getElementById('editRecNewHidden').value) || 0;
       const someShown = Number(document.getElementById('editRecSomeShown').value) || 0;
       const someHidden = Number(document.getElementById('editRecSomeHidden').value) || 0;
+      const fromHide = Number(document.getElementById('editRecFromHide').value) || 0;
 
       const saveBtn = document.getElementById('confirmEditBtn');
       saveBtn.disabled = true;
@@ -3070,6 +3124,7 @@
             newHidden,
             someShown,
             someHidden,
+            fromHide,
             note
           })
         });
@@ -3164,12 +3219,13 @@
       let totalFiles = 0, totalLeads = 0, totalShown = 0;
       let totalNewShown = 0, totalNewHidden = 0, totalNewLeads = 0;
       let totalSomeShown = 0, totalSomeHidden = 0, totalSomeLeads = 0;
+      let totalFromHide = 0;
 
       // Reason breakdown aggregation
       const allTimeReasons = {};   // reason → all-time total
       const dailyReasonMap = {};   // dateKey → { reason → count }
 
-      const agentMap = {}; // agent → { files, leads, shown, newLeads, newShown, newHidden, someLeads, someShown, someHidden }
+      const agentMap = {}; // agent → { files, leads, shown, newLeads, newShown, newHidden, someLeads, someShown, someHidden, fromHide }
       const modeMap = { STANDARD: 0 };
       const dateKeys = Object.keys(data).sort();
 
@@ -3183,7 +3239,8 @@
             agentMap[agent] = {
               files: 0, leads: 0, shown: 0,
               newLeads: 0, newShown: 0, newHidden: 0,
-              someLeads: 0, someShown: 0, someHidden: 0
+              someLeads: 0, someShown: 0, someHidden: 0,
+              fromHide: 0
             };
           }
           agentMap[agent].files += stats.files;
@@ -3198,6 +3255,7 @@
           const recNewHidden = rec.newHidden !== undefined ? rec.newHidden : rec.hidden;
           const recSomeShown = rec.someShown !== undefined ? rec.someShown : 0;
           const recSomeHidden = rec.someHidden !== undefined ? rec.someHidden : 0;
+          const recFromHide = rec.fromHide !== undefined ? rec.fromHide : 0;
 
           totalNewShown += recNewShown;
           totalNewHidden += recNewHidden;
@@ -3207,13 +3265,16 @@
           totalSomeHidden += recSomeHidden;
           totalSomeLeads += (recSomeShown + recSomeHidden);
 
+          totalFromHide += recFromHide;
+
           const agent = rec.agent;
           if (agent) {
             if (!agentMap[agent]) {
               agentMap[agent] = {
                 files: 0, leads: 0, shown: 0,
                 newLeads: 0, newShown: 0, newHidden: 0,
-                someLeads: 0, someShown: 0, someHidden: 0
+                someLeads: 0, someShown: 0, someHidden: 0,
+                fromHide: 0
               };
             }
             agentMap[agent].newShown += recNewShown;
@@ -3223,6 +3284,8 @@
             agentMap[agent].someShown += recSomeShown;
             agentMap[agent].someHidden += recSomeHidden;
             agentMap[agent].someLeads += (recSomeShown + recSomeHidden);
+
+            agentMap[agent].fromHide += recFromHide;
           }
 
           // Accumulate per-record reason breakdown
@@ -3247,12 +3310,30 @@
       document.getElementById('as-totalShown').textContent = totalShown;
       document.getElementById('as-newShown').textContent = totalNewShown;
       document.getElementById('as-someShown').textContent = totalSomeShown;
+      const asFhEl = document.getElementById('as-fromHide');
+      if (asFhEl) asFhEl.textContent = totalFromHide;
 
       document.getElementById('as-totalHidden').textContent = totalLeads - totalShown;
       document.getElementById('as-newHidden').textContent = totalNewHidden;
       document.getElementById('as-someHidden').textContent = totalSomeHidden;
 
-      document.getElementById('as-totalDays').textContent = dateKeys.length;
+      let totalDaysSpan = dateKeys.length;
+      if (dateKeys.length > 0) {
+        const firstDateStr = dateKeys[0];
+        const lastDateStr = dateKeys[dateKeys.length - 1];
+        const todayStr = new Date().toISOString().split('T')[0];
+        const endDateStr = todayStr > lastDateStr ? todayStr : lastDateStr;
+
+        const firstDate = new Date(firstDateStr + 'T00:00:00');
+        const endDate = new Date(endDateStr + 'T00:00:00');
+
+        totalDaysSpan = Math.round((endDate - firstDate) / (1000 * 60 * 60 * 24)) + 1;
+      }
+
+      document.getElementById('as-totalDays').textContent = totalDaysSpan;
+      const uploadDaysEl = document.getElementById('as-uploadDays');
+      if (uploadDaysEl) uploadDaysEl.textContent = dateKeys.length;
+
 
       // ── Line chart — shown leads over last 14 days ──
       const last14 = [];
@@ -3414,8 +3495,9 @@
         const hidden = s.leads - s.shown;
         const conversion = s.leads > 0 ? ((s.shown / s.leads) * 100).toFixed(1) : '0.0';
 
-        const grossBreakdown = `<div style="font-size: 10px; color: var(--text-muted); margin-top: 2px; font-family:'JetBrains Mono',monospace;">N: ${s.newLeads} | S: ${s.someLeads}</div>`;
-        const netBreakdown = `<div style="font-size: 10px; color: var(--text-muted); margin-top: 2px; font-family:'JetBrains Mono',monospace;">N: ${s.newShown} | S: ${s.someShown}</div>`;
+        const fhNet = s.fromHide ? ` | FH: ${s.fromHide}` : '';
+        const grossBreakdown = `<div style="font-size: 10px; color: var(--text-muted); margin-top: 2px; font-family:'JetBrains Mono',monospace;">N: ${s.newLeads} | S: ${s.someLeads}${fhNet}</div>`;
+        const netBreakdown = `<div style="font-size: 10px; color: var(--text-muted); margin-top: 2px; font-family:'JetBrains Mono',monospace;">N: ${s.newShown} | S: ${s.someShown}${fhNet}</div>`;
         const hiddenBreakdown = `<div style="font-size: 10px; color: var(--text-muted); margin-top: 2px; font-family:'JetBrains Mono',monospace;">N: ${s.newHidden} | S: ${s.someHidden}</div>`;
 
         return `<tr>
@@ -4174,9 +4256,7 @@
         // Also refresh summary totals on Report Sheet tab
         const day = fullAnalytics[data.dateKey];
         if (day) {
-          document.getElementById('ls-files').textContent = day.summary.totalFiles;
-          document.getElementById('ls-leads').textContent = day.summary.totalLeads;
-          document.getElementById('ls-shown').textContent = day.summary.totalShown;
+          updateLedgerSummaryBar(day);
         }
       }
 
@@ -4202,6 +4282,10 @@
 
     socket.on('hopper_updated', () => {
       if (currentTab === 'hopper') fetchShows();
+    });
+
+    socket.on('users_updated', () => {
+      fetchUsers();
     });
 
     // ─────────────────────────────────────────────
