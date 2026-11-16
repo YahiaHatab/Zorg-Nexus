@@ -331,16 +331,34 @@
       position: absolute;
       top: 0;
       right: 0;
-      width: 5px;
+      width: 8px;
       height: 100%;
       cursor: col-resize;
       user-select: none;
-      z-index: 2;
+      z-index: 25;
+      touch-action: none;
+    }
+
+    .resizer::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: rgba(255, 255, 255, 0.12);
+      transition: background 0.15s, width 0.15s;
+    }
+
+    .resizer:hover::after,
+    .resizer.resizing::after {
+      background: #3b82f6;
+      width: 3px;
     }
 
     .resizer:hover,
     .resizer.resizing {
-      border-right: 2px solid #3b82f6;
+      background: rgba(59, 130, 246, 0.18);
     }
 
     .data-table td {
@@ -1094,6 +1112,41 @@
 
     @media (max-width: 1100px) {
       .chart-grid-2 { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 950px) {
+      .sidebar {
+        width: 64px !important;
+        min-width: 64px !important;
+      }
+      .sidebar-header {
+        padding: 0 !important;
+        justify-content: center !important;
+      }
+      .sidebar .logo,
+      .sidebar .sidebar-signature,
+      .sidebar .admin-sidebar-footer button,
+      .sidebar .admin-sidebar-footer a {
+        display: none !important;
+      }
+      .sidebar-nav {
+        padding: 8px 4px !important;
+      }
+      .sidebar .tab {
+        padding: 10px 0 !important;
+        justify-content: center !important;
+      }
+      .sidebar .tab .tab-label {
+        display: none !important;
+      }
+      .sidebar-toggle-btn {
+        display: none !important;
+      }
+      .topbar {
+        padding: 8px 12px;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
     }
 
     /* Reason breakdown horizontal chips */
@@ -2263,6 +2316,52 @@
       <!-- ══════════ TAB: ANALYTICS ══════════ -->
       <div id="tab-analytics" class="tab-content">
 
+        <!-- ── ANALYTICS CONTROLS: DATE RANGE & AGENT DRILL-DOWN ── -->
+        <div class="panel glass-panel" style="margin-bottom: 16px; padding: 12px 20px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+            <!-- Left: Date Range Filter -->
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px;">Date Range:</span>
+              <div class="type-filter-group" id="analyticsPresetGroup">
+                <button type="button" class="type-filter-btn" data-preset="today" onclick="setAnalyticsDatePreset('today', this)">Today</button>
+                <button type="button" class="type-filter-btn" data-preset="7d" onclick="setAnalyticsDatePreset('7d', this)">7 Days</button>
+                <button type="button" class="type-filter-btn active" data-preset="14d" onclick="setAnalyticsDatePreset('14d', this)">14 Days</button>
+                <button type="button" class="type-filter-btn" data-preset="30d" onclick="setAnalyticsDatePreset('30d', this)">30 Days</button>
+                <button type="button" class="type-filter-btn" data-preset="month" onclick="setAnalyticsDatePreset('month', this)">This Month</button>
+                <button type="button" class="type-filter-btn" data-preset="all" onclick="setAnalyticsDatePreset('all', this)">All Time</button>
+              </div>
+
+              <!-- Custom Date Pickers -->
+              <div style="display: inline-flex; align-items: center; gap: 6px; margin-left: 6px; background: rgba(0,0,0,0.15); padding: 2px 8px; border-radius: 6px; border: 1px solid var(--border);">
+                <input type="date" id="analyticsStartDate" class="date-input" style="padding: 3px 6px; font-size: 11px; border: none; background: transparent;" onchange="applyCustomAnalyticsDates()">
+                <span style="color: var(--text-muted); font-size: 11px;">to</span>
+                <input type="date" id="analyticsEndDate" class="date-input" style="padding: 3px 6px; font-size: 11px; border: none; background: transparent;" onchange="applyCustomAnalyticsDates()">
+              </div>
+            </div>
+
+            <!-- Right: Agent Drill-down -->
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px;">Agent Drill-Down:</span>
+              <select id="analyticsAgentSelect" class="hopper-filter" style="min-width: 150px; font-size: 12px; padding: 5px 12px;" onchange="setAnalyticsAgentFilter(this.value)">
+                <option value="All">All Agents (Overview)</option>
+              </select>
+              <button id="analyticsResetBtn" class="btn btn-sm btn-blue" style="display: none; padding: 4px 10px; font-size: 11px;" onclick="resetAnalyticsFilters()">
+                ✕ Reset to All
+              </button>
+            </div>
+          </div>
+
+          <!-- Active Filter Pill Banner -->
+          <div id="analyticsActiveFilterBanner" style="display: none; margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-muted); align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span>Filtered View:</span>
+              <span id="analyticsAgentPill" class="status-pill" style="background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); font-weight: 700;">All Agents</span>
+              <span id="analyticsRangePill" class="status-pill" style="background: rgba(16, 185, 129, 0.15); color: var(--success); font-weight: 700;">Last 14 Days</span>
+            </div>
+            <span id="analyticsShowingCount" style="font-family: 'JetBrains Mono', monospace; font-size: 11px;"></span>
+          </div>
+        </div>
+
         <!-- Stat cards row -->
         <div class="stat-grid" id="analyticsStatGrid">
           <div class="stat-card">
@@ -2303,13 +2402,13 @@
         <!-- Charts -->
         <div class="chart-grid-2">
           <div class="panel glass-panel">
-            <div class="panel-header">Net Leads — Last 14 Days</div>
+            <div class="panel-header" id="chartLineHeader">Net Leads — Last 14 Days</div>
             <div class="panel-body">
               <div class="chart-wrap" style="height:220px;"><canvas id="chartLine"></canvas></div>
             </div>
           </div>
           <div class="panel glass-panel">
-            <div class="panel-header">Agent Totals (All-Time)</div>
+            <div class="panel-header" id="chartBarHeader">Agent Totals</div>
             <div class="panel-body">
               <div class="chart-wrap" style="height:220px;"><canvas id="chartBar"></canvas></div>
             </div>
@@ -2318,9 +2417,9 @@
 
         <!-- Hidden Rows Reason Breakdown panel -->
         <div class="panel glass-panel">
-          <div class="panel-header">
+          <div class="panel-header" id="chartReasonsHeader">
             Hidden Rows — Reason Breakdown
-            <span style="font-size:11px;color:var(--text-muted);font-weight:400;margin-left:8px;">All-Time Totals + Last 14 Days Chart</span>
+            <span style="font-size:11px;color:var(--text-muted);font-weight:400;margin-left:8px;">Last 14 Days Chart</span>
           </div>
           <div class="panel-body">
             <!-- Number cards: one per reason -->
@@ -2336,7 +2435,7 @@
 
         <!-- Per-agent breakdown table -->
         <div class="panel glass-panel">
-          <div class="panel-header">All-Time Agent Breakdown</div>
+          <div class="panel-header" id="agentTableTitle">Agent Breakdown</div>
           <div style="overflow-x:auto;">
             <table class="data-table">
               <thead>
@@ -3238,24 +3337,98 @@
     }
 
     // ══════════════════════════════════════════════
-    //  TAB 3: ANALYTICS
+    //  TAB 3: ANALYTICS & INTERACTIVE DRILL-DOWN
     // ══════════════════════════════════════════════
     const CHART_COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4', '#EC4899', '#14B8A6'];
+    const REASON_COLORS = {
+      'Local':     '#8B5CF6',
+      'NF':        '#EF4444',
+      'Removed':   '#F59E0B',
+      'Repeated':  '#06B6D4',
+      'No Num':    '#EC4899',
+      'Publisher': '#10B981',
+      "Int'l":     '#3B82F6',
+      'CXL':       '#6366F1',
+      'Other':     '#6B7280'
+    };
+
+    let analyticsPreset = '14d';
+    let analyticsCustomStart = null;
+    let analyticsCustomEnd = null;
+    let analyticsSelectedAgent = 'All';
 
     async function fetchAnalytics() {
       try {
         const res = await fetch('/api/analytics?t=' + Date.now());
         const json = await res.json();
         if (!json.success) throw new Error(json.error);
-        fullAnalytics = json.data;
-        renderAnalytics(fullAnalytics);
+        fullAnalytics = json.data || {};
+        populateAnalyticsAgentDropdown();
+        applyAnalyticsFilter();
       } catch (e) { showToast('Failed to load analytics.', 'error'); }
+    }
+
+    function populateAnalyticsAgentDropdown() {
+      const select = document.getElementById('analyticsAgentSelect');
+      if (!select) return;
+      const agents = new Set();
+      for (const day of Object.values(fullAnalytics)) {
+        if (day.summary && day.summary.byAgent) {
+          Object.keys(day.summary.byAgent).forEach(a => { if (a) agents.add(a); });
+        }
+        if (day.records) {
+          day.records.forEach(r => { if (r.agent) agents.add(r.agent); });
+        }
+      }
+      const sorted = Array.from(agents).sort((a, b) => a.localeCompare(b));
+      const cur = analyticsSelectedAgent;
+      select.innerHTML = '<option value="All">All Agents (Overview)</option>' +
+        sorted.map(a => `<option value="${escHtml(a)}">${escHtml(a)}</option>`).join('');
+      select.value = cur;
+    }
+
+    function setAnalyticsDatePreset(preset, btn) {
+      analyticsPreset = preset;
+      document.querySelectorAll('#analyticsPresetGroup .type-filter-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      document.getElementById('analyticsStartDate').value = '';
+      document.getElementById('analyticsEndDate').value = '';
+      analyticsCustomStart = null;
+      analyticsCustomEnd = null;
+      applyAnalyticsFilter();
+    }
+
+    function applyCustomAnalyticsDates() {
+      const s = document.getElementById('analyticsStartDate').value;
+      const e = document.getElementById('analyticsEndDate').value;
+      if (s || e) {
+        analyticsPreset = 'custom';
+        analyticsCustomStart = s || null;
+        analyticsCustomEnd = e || null;
+        document.querySelectorAll('#analyticsPresetGroup .type-filter-btn').forEach(b => b.classList.remove('active'));
+        applyAnalyticsFilter();
+      }
+    }
+
+    function setAnalyticsAgentFilter(agentName) {
+      analyticsSelectedAgent = agentName || 'All';
+      const select = document.getElementById('analyticsAgentSelect');
+      if (select) select.value = analyticsSelectedAgent;
+      applyAnalyticsFilter();
+    }
+
+    function resetAnalyticsFilters() {
+      analyticsSelectedAgent = 'All';
+      const select = document.getElementById('analyticsAgentSelect');
+      if (select) select.value = 'All';
+      const defaultBtn = document.querySelector('#analyticsPresetGroup .type-filter-btn[data-preset="14d"]');
+      setAnalyticsDatePreset('14d', defaultBtn);
     }
 
     function normalizeReason(raw) {
       if (!raw || typeof raw !== 'string') return 'Other';
       let clean = raw.trim()
-        .replace(/[`’‘]/g, "'")
+        .replace(/[`'"]/g, "'")
         .replace(/\s+/g, ' ');
       if (!clean) return 'Other';
 
@@ -3305,48 +3478,121 @@
       return clean.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
     }
 
-    function renderAnalytics(data) {
-      // ── Aggregate all-time totals ──
+    function applyAnalyticsFilter() {
+      const data = fullAnalytics;
+      const allDateKeys = Object.keys(data).sort();
+      const today = new Date();
+      const todayStr = today.toISOString().split('T')[0];
+
+      let minDate = null;
+      let maxDate = null;
+      let dateLabel = 'Last 14 Days';
+      let chartDates = [];
+
+      function getNDaysAgo(n) {
+        const d = new Date();
+        d.setDate(d.getDate() - n);
+        return d.toISOString().split('T')[0];
+      }
+
+      if (analyticsPreset === 'today') {
+        minDate = todayStr;
+        maxDate = todayStr;
+        dateLabel = 'Today';
+        chartDates = [todayStr];
+      } else if (analyticsPreset === '7d') {
+        minDate = getNDaysAgo(6);
+        maxDate = todayStr;
+        dateLabel = 'Last 7 Days';
+        for (let i = 6; i >= 0; i--) chartDates.push(getNDaysAgo(i));
+      } else if (analyticsPreset === '14d') {
+        minDate = getNDaysAgo(13);
+        maxDate = todayStr;
+        dateLabel = 'Last 14 Days';
+        for (let i = 13; i >= 0; i--) chartDates.push(getNDaysAgo(i));
+      } else if (analyticsPreset === '30d') {
+        minDate = getNDaysAgo(29);
+        maxDate = todayStr;
+        dateLabel = 'Last 30 Days';
+        for (let i = 29; i >= 0; i--) chartDates.push(getNDaysAgo(i));
+      } else if (analyticsPreset === 'month') {
+        const y = today.getFullYear();
+        const m = String(today.getMonth() + 1).padStart(2, '0');
+        minDate = `${y}-${m}-01`;
+        maxDate = todayStr;
+        dateLabel = 'This Month';
+        const startDay = new Date(`${minDate}T00:00:00`);
+        const cur = new Date(startDay);
+        while (cur <= today) {
+          chartDates.push(cur.toISOString().split('T')[0]);
+          cur.setDate(cur.getDate() + 1);
+        }
+      } else if (analyticsPreset === 'all') {
+        minDate = null;
+        maxDate = null;
+        dateLabel = 'All Time';
+        chartDates = allDateKeys.length > 0 ? allDateKeys : [todayStr];
+      } else if (analyticsPreset === 'custom') {
+        minDate = analyticsCustomStart;
+        maxDate = analyticsCustomEnd;
+        dateLabel = `${minDate || 'Start'} to ${maxDate || 'Today'}`;
+        if (minDate && maxDate) {
+          const sDate = new Date(`${minDate}T00:00:00`);
+          const eDate = new Date(`${maxDate}T00:00:00`);
+          const cur = new Date(sDate);
+          while (cur <= eDate) {
+            chartDates.push(cur.toISOString().split('T')[0]);
+            cur.setDate(cur.getDate() + 1);
+          }
+        } else {
+          chartDates = allDateKeys.filter(d => (!minDate || d >= minDate) && (!maxDate || d <= maxDate));
+        }
+      }
+
+      const isDrillDown = (analyticsSelectedAgent !== 'All');
+
       let totalFiles = 0, totalLeads = 0, totalShown = 0;
       let totalNewShown = 0, totalNewHidden = 0, totalNewLeads = 0;
       let totalSomeShown = 0, totalSomeHidden = 0, totalSomeLeads = 0;
       let totalFromHide = 0;
 
-      // Reason breakdown aggregation
-      const allTimeReasons = {};   // reason → all-time total
-      const dailyReasonMap = {};   // dateKey → { reason → count }
-
-      const agentMap = {}; // agent → { files, leads, shown, newLeads, newShown, newHidden, someLeads, someShown, someHidden, fromHide }
-      const modeMap = { STANDARD: 0 };
-      const dateKeys = Object.keys(data).sort();
+      const allTimeReasons = {};
+      const dailyReasonMap = {};
+      const agentMap = {};
+      const activeDaysSet = new Set();
+      const dailyNetMap = {};
 
       for (const [dateKey, day] of Object.entries(data)) {
-        totalFiles += day.summary.totalFiles;
-        totalLeads += day.summary.totalLeads;
-        totalShown += day.summary.totalShown;
+        if (minDate && dateKey < minDate) continue;
+        if (maxDate && dateKey > maxDate) continue;
 
-        for (const [agent, stats] of Object.entries(day.summary.byAgent || {})) {
-          if (!agentMap[agent]) {
-            agentMap[agent] = {
-              files: 0, leads: 0, shown: 0,
-              newLeads: 0, newShown: 0, newHidden: 0,
-              someLeads: 0, someShown: 0, someHidden: 0,
-              fromHide: 0
-            };
-          }
-          agentMap[agent].files += stats.files;
-          agentMap[agent].leads += stats.leads;
-          agentMap[agent].shown += stats.shown;
+        const dayRecords = (day.records || []).filter(r => {
+          if (!isDrillDown) return true;
+          return r.agent === analyticsSelectedAgent;
+        });
+
+        if (dayRecords.length > 0) {
+          activeDaysSet.add(dateKey);
         }
 
-        for (const rec of (day.records || [])) {
-          modeMap.STANDARD++;
+        let dayShownTotal = 0;
 
-          const recNewShown = rec.newShown !== undefined ? rec.newShown : rec.shown;
-          const recNewHidden = rec.newHidden !== undefined ? rec.newHidden : rec.hidden;
+        for (const rec of dayRecords) {
+          totalFiles++;
+
+          const recShown = rec.shown !== undefined ? rec.shown : 0;
+          const recHidden = rec.hidden !== undefined ? rec.hidden : 0;
+          const recLeads = recShown + recHidden;
+
+          const recNewShown = rec.newShown !== undefined ? rec.newShown : recShown;
+          const recNewHidden = rec.newHidden !== undefined ? rec.newHidden : recHidden;
           const recSomeShown = rec.someShown !== undefined ? rec.someShown : 0;
           const recSomeHidden = rec.someHidden !== undefined ? rec.someHidden : 0;
           const recFromHide = rec.fromHide !== undefined ? rec.fromHide : 0;
+
+          totalShown += recShown;
+          totalLeads += recLeads;
+          dayShownTotal += recShown;
 
           totalNewShown += recNewShown;
           totalNewHidden += recNewHidden;
@@ -3358,28 +3604,27 @@
 
           totalFromHide += recFromHide;
 
-          const agent = rec.agent;
-          if (agent) {
-            if (!agentMap[agent]) {
-              agentMap[agent] = {
-                files: 0, leads: 0, shown: 0,
-                newLeads: 0, newShown: 0, newHidden: 0,
-                someLeads: 0, someShown: 0, someHidden: 0,
-                fromHide: 0
-              };
-            }
-            agentMap[agent].newShown += recNewShown;
-            agentMap[agent].newHidden += recNewHidden;
-            agentMap[agent].newLeads += (recNewShown + recNewHidden);
-
-            agentMap[agent].someShown += recSomeShown;
-            agentMap[agent].someHidden += recSomeHidden;
-            agentMap[agent].someLeads += (recSomeShown + recSomeHidden);
-
-            agentMap[agent].fromHide += recFromHide;
+          const agent = rec.agent || 'Unknown';
+          if (!agentMap[agent]) {
+            agentMap[agent] = {
+              files: 0, leads: 0, shown: 0,
+              newLeads: 0, newShown: 0, newHidden: 0,
+              someLeads: 0, someShown: 0, someHidden: 0,
+              fromHide: 0
+            };
           }
+          agentMap[agent].files++;
+          agentMap[agent].leads += recLeads;
+          agentMap[agent].shown += recShown;
+          agentMap[agent].newShown += recNewShown;
+          agentMap[agent].newHidden += recNewHidden;
+          agentMap[agent].newLeads += (recNewShown + recNewHidden);
+          agentMap[agent].someShown += recSomeShown;
+          agentMap[agent].someHidden += recSomeHidden;
+          agentMap[agent].someLeads += (recSomeShown + recSomeHidden);
+          agentMap[agent].fromHide += recFromHide;
 
-          // Accumulate per-record reason breakdown
+          // Reason breakdown
           if (rec.reasonBreakdown) {
             for (const [reason, count] of Object.entries(rec.reasonBreakdown)) {
               const norm = normalizeReason(reason);
@@ -3389,52 +3634,61 @@
             }
           }
         }
+
+        dailyNetMap[dateKey] = dayShownTotal;
       }
+
+      // Update Controls Banner & Headers
+      const isFiltered = isDrillDown || analyticsPreset !== '14d';
+      const resetBtn = document.getElementById('analyticsResetBtn');
+      if (resetBtn) resetBtn.style.display = isFiltered ? 'inline-flex' : 'none';
+
+      const banner = document.getElementById('analyticsActiveFilterBanner');
+      if (banner) {
+        banner.style.display = isFiltered ? 'flex' : 'none';
+        const agentPill = document.getElementById('analyticsAgentPill');
+        if (agentPill) agentPill.textContent = isDrillDown ? `Agent: ${analyticsSelectedAgent}` : 'All Agents';
+        const rangePill = document.getElementById('analyticsRangePill');
+        if (rangePill) rangePill.textContent = dateLabel;
+        const countSpan = document.getElementById('analyticsShowingCount');
+        if (countSpan) countSpan.textContent = `${totalFiles} shows • ${totalShown.toLocaleString()} net leads`;
+      }
+
+      const lineH = document.getElementById('chartLineHeader');
+      if (lineH) lineH.textContent = isDrillDown ? `Net Leads — ${dateLabel} (${analyticsSelectedAgent})` : `Net Leads — ${dateLabel}`;
+
+      const barH = document.getElementById('chartBarHeader');
+      if (barH) barH.textContent = isDrillDown ? `Agent Comparison (${dateLabel})` : `Agent Totals (${dateLabel})`;
+
+      const reasonH = document.getElementById('chartReasonsHeader');
+      if (reasonH) reasonH.innerHTML = `Hidden Rows — Reason Breakdown <span style="font-size:11px;color:var(--text-muted);font-weight:400;margin-left:8px;">${isDrillDown ? escHtml(analyticsSelectedAgent) + ' • ' : ''}${dateLabel}</span>`;
+
+      const tableH = document.getElementById('agentTableTitle');
+      if (tableH) tableH.textContent = `Agent Breakdown (${dateLabel})`;
 
       // Stat cards
-      document.getElementById('as-totalFiles').textContent = totalFiles;
-      
-      document.getElementById('as-totalLeads').textContent = totalLeads;
-      document.getElementById('as-newLeads').textContent = totalNewLeads;
-      document.getElementById('as-someLeads').textContent = totalSomeLeads;
+      document.getElementById('as-totalFiles').textContent = totalFiles.toLocaleString();
+      document.getElementById('as-totalLeads').textContent = totalLeads.toLocaleString();
+      document.getElementById('as-newLeads').textContent = totalNewLeads.toLocaleString();
+      document.getElementById('as-someLeads').textContent = totalSomeLeads.toLocaleString();
 
-      document.getElementById('as-totalShown').textContent = totalShown;
-      document.getElementById('as-newShown').textContent = totalNewShown;
-      document.getElementById('as-someShown').textContent = totalSomeShown;
+      document.getElementById('as-totalShown').textContent = totalShown.toLocaleString();
+      document.getElementById('as-newShown').textContent = totalNewShown.toLocaleString();
+      document.getElementById('as-someShown').textContent = totalSomeShown.toLocaleString();
       const asFhEl = document.getElementById('as-fromHide');
-      if (asFhEl) asFhEl.textContent = totalFromHide;
+      if (asFhEl) asFhEl.textContent = totalFromHide.toLocaleString();
 
-      document.getElementById('as-totalHidden').textContent = totalLeads - totalShown;
-      document.getElementById('as-newHidden').textContent = totalNewHidden;
-      document.getElementById('as-someHidden').textContent = totalSomeHidden;
+      document.getElementById('as-totalHidden').textContent = (totalLeads - totalShown).toLocaleString();
+      document.getElementById('as-newHidden').textContent = totalNewHidden.toLocaleString();
+      document.getElementById('as-someHidden').textContent = totalSomeHidden.toLocaleString();
 
-      let totalDaysSpan = dateKeys.length;
-      if (dateKeys.length > 0) {
-        const firstDateStr = dateKeys[0];
-        const lastDateStr = dateKeys[dateKeys.length - 1];
-        const todayStr = new Date().toISOString().split('T')[0];
-        const endDateStr = todayStr > lastDateStr ? todayStr : lastDateStr;
-
-        const firstDate = new Date(firstDateStr + 'T00:00:00');
-        const endDate = new Date(endDateStr + 'T00:00:00');
-
-        totalDaysSpan = Math.round((endDate - firstDate) / (1000 * 60 * 60 * 24)) + 1;
-      }
-
-      document.getElementById('as-totalDays').textContent = totalDaysSpan;
+      document.getElementById('as-totalDays').textContent = chartDates.length || activeDaysSet.size;
       const uploadDaysEl = document.getElementById('as-uploadDays');
-      if (uploadDaysEl) uploadDaysEl.textContent = dateKeys.length;
+      if (uploadDaysEl) uploadDaysEl.textContent = activeDaysSet.size;
 
-
-      // ── Line chart — shown leads over last 14 days ──
-      const last14 = [];
-      for (let i = 13; i >= 0; i--) {
-        const d = new Date();
-        d.setDate(d.getDate() - i);
-        last14.push(d.toISOString().split('T')[0]);
-      }
-      const lineLabels = last14.map(d => d.slice(5));   // "MM-DD"
-      const lineValues = last14.map(d => data[d]?.summary.totalShown || 0);
+      // Line Chart (Daily Net Leads)
+      const lineLabels = chartDates.map(d => d.slice(5)); // "MM-DD"
+      const lineValues = chartDates.map(d => dailyNetMap[d] || 0);
 
       if (chartLine) chartLine.destroy();
       chartLine = new Chart(document.getElementById('chartLine'), {
@@ -3442,31 +3696,43 @@
         data: {
           labels: lineLabels,
           datasets: [{
-            label: 'Shown',
+            label: isDrillDown ? `${analyticsSelectedAgent} Net` : 'Net Shown',
             data: lineValues,
-            borderColor: '#3B82F6',
-            backgroundColor: 'rgba(59,130,246,0.08)',
+            borderColor: isDrillDown ? '#06B6D4' : '#3B82F6',
+            backgroundColor: isDrillDown ? 'rgba(6,182,212,0.12)' : 'rgba(59,130,246,0.08)',
             tension: 0.35,
             fill: true,
-            pointBackgroundColor: '#3B82F6',
-            pointRadius: 4,
+            pointBackgroundColor: isDrillDown ? '#06B6D4' : '#3B82F6',
+            pointRadius: chartDates.length > 31 ? 2 : 4,
           }]
         },
         options: {
           responsive: true, maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                title: (items) => chartDates[items[0].dataIndex] || items[0].label
+              }
+            }
+          },
           scales: {
-            x: { grid: { color: 'rgba(55,65,81,0.5)' }, ticks: { color: '#9CA3AF', font: { size: 11 } } },
+            x: { grid: { color: 'rgba(55,65,81,0.5)' }, ticks: { color: '#9CA3AF', font: { size: 11 }, maxTicksLimit: 15 } },
             y: { grid: { color: 'rgba(55,65,81,0.5)' }, ticks: { color: '#9CA3AF', font: { size: 11 } }, beginAtZero: true }
           }
         }
       });
 
-      // ── Bar chart — all-time agent shown totals ──
+      // Bar Chart (Agent Totals)
       const agentEntries = Object.entries(agentMap).sort((a, b) => b[1].shown - a[1].shown);
       const barLabels = agentEntries.map(([name]) => name);
       const barShown = agentEntries.map(([, s]) => s.shown);
       const barHidden = agentEntries.map(([, s]) => s.leads - s.shown);
+
+      const barBgColors = agentEntries.map(([name]) => {
+        if (!isDrillDown) return '#10B981';
+        return name === analyticsSelectedAgent ? '#06B6D4' : 'rgba(16,185,129,0.3)';
+      });
 
       if (chartBar) chartBar.destroy();
       chartBar = new Chart(document.getElementById('chartBar'), {
@@ -3474,13 +3740,27 @@
         data: {
           labels: barLabels,
           datasets: [
-            { label: 'Shown', data: barShown, backgroundColor: '#10B981', borderRadius: 4, stack: 'stack' },
+            { label: 'Shown', data: barShown, backgroundColor: barBgColors, borderRadius: 4, stack: 'stack' },
             { label: 'Hidden', data: barHidden, backgroundColor: 'rgba(239,68,68,0.35)', borderRadius: 4, stack: 'stack' }
           ]
         },
         options: {
           responsive: true, maintainAspectRatio: false,
-          plugins: { legend: { labels: { color: '#9CA3AF', font: { size: 11 } } } },
+          onClick: (e, elements) => {
+            if (elements && elements.length) {
+              const clickedIdx = elements[0].index;
+              const clickedAgent = barLabels[clickedIdx];
+              if (clickedAgent) setAnalyticsAgentFilter(clickedAgent);
+            }
+          },
+          plugins: {
+            legend: { labels: { color: '#9CA3AF', font: { size: 11 } } },
+            tooltip: {
+              callbacks: {
+                footer: () => '💡 Click bar to drill down into this agent'
+              }
+            }
+          },
           scales: {
             x: { stacked: true, grid: { display: false }, ticks: { color: '#9CA3AF', font: { size: 11 } } },
             y: { stacked: true, grid: { color: 'rgba(55,65,81,0.5)' }, ticks: { color: '#9CA3AF', font: { size: 11 } }, beginAtZero: true }
@@ -3488,36 +3768,18 @@
         }
       });
 
-      // ── Reason Breakdown Chart (last 14 days) ──
-      const REASON_COLORS = {
-        'Local':    '#8B5CF6',
-        'NF':       '#EF4444',
-        'Removed':  '#F59E0B',
-        'Repeated': '#06B6D4',
-        'No Num':   '#EC4899',
-        'Publisher':'#10B981',
-        "Int'l":    '#3B82F6',
-        'CXL':      '#6366F1',
-        'Other':    '#6B7280'
-      };
-
-      // last14 and lineLabels already declared above (line chart section) — reuse them
-      const reasonLabels = lineLabels; // same "MM-DD" labels
-
-      // Sort by highest count first
+      // Reason Breakdown Chart & Number Cards
       const allReasonKeys = Object.keys(allTimeReasons).sort((a, b) => {
         return (allTimeReasons[b] || 0) - (allTimeReasons[a] || 0);
       });
 
-      // Simple hash function for consistent dynamic colours
       const hashStr = str => Array.from(str).reduce((h, c) => Math.imul(31, h) + c.charCodeAt(0) | 0, 0);
 
       const reasonDatasets = allReasonKeys.map((reason) => {
-        // Use a preset colour if available, else pick consistently from CHART_COLORS
         const color = REASON_COLORS[reason] || CHART_COLORS[Math.abs(hashStr(reason)) % CHART_COLORS.length];
         return {
           label: reason,
-          data: last14.map(d => (dailyReasonMap[d] && dailyReasonMap[d][reason]) || 0),
+          data: chartDates.map(d => (dailyReasonMap[d] && dailyReasonMap[d][reason]) || 0),
           backgroundColor: color,
           borderRadius: 3,
           stack: 'reasons'
@@ -3529,14 +3791,11 @@
       const totalAllReasons = Object.values(allTimeReasons).reduce((s, v) => s + v, 0);
 
       if (allReasonKeys.length === 0) {
-        // No data: hide chart, show placeholder in card grid
         document.getElementById('chartReasons').style.display = 'none';
         document.getElementById('reasonCardsGrid').innerHTML =
-          '<div style="color:var(--text-muted);font-size:13px;grid-column:1/-1;">No hidden-row data yet. Upload files with hidden rows to populate this panel.</div>';
+          `<div style="color:var(--text-muted);font-size:13px;grid-column:1/-1;">No hidden-row data found for ${isDrillDown ? escHtml(analyticsSelectedAgent) : 'the team'} in this date range.</div>`;
       } else {
         document.getElementById('chartReasons').style.display = '';
-
-        // ── Reason number cards ──
         document.getElementById('reasonCardsGrid').innerHTML = allReasonKeys.map(reason => {
           const count = allTimeReasons[reason] || 0;
           const pct = totalAllReasons > 0 ? ((count / totalAllReasons) * 100).toFixed(1) : '0.0';
@@ -3552,10 +3811,9 @@
             </div>`;
         }).join('');
 
-        // ── Stacked bar chart (last 14 days) ──
         chartReasons = new Chart(document.getElementById('chartReasons'), {
           type: 'bar',
-          data: { labels: reasonLabels, datasets: reasonDatasets },
+          data: { labels: lineLabels, datasets: reasonDatasets },
           options: {
             responsive: true,
             maintainAspectRatio: false,
@@ -3566,6 +3824,7 @@
               },
               tooltip: {
                 callbacks: {
+                  title: (items) => chartDates[items[0].dataIndex] || items[0].label,
                   footer: (items) => {
                     const total = items.reduce((s, i) => s + i.raw, 0);
                     return `Total hidden this day: ${total}`;
@@ -3574,14 +3833,14 @@
               }
             },
             scales: {
-              x: { stacked: true, grid: { display: false }, ticks: { color: '#9CA3AF', font: { size: 11 } } },
+              x: { stacked: true, grid: { display: false }, ticks: { color: '#9CA3AF', font: { size: 11 }, maxTicksLimit: 15 } },
               y: { stacked: true, grid: { color: 'rgba(55,65,81,0.5)' }, ticks: { color: '#9CA3AF', font: { size: 11 } }, beginAtZero: true }
             }
           }
         });
       }
 
-      // ── Agent breakdown table ──
+      // Agent Breakdown Table
       document.getElementById('analyticsAgentTable').innerHTML = agentEntries.map(([name, s]) => {
         const hidden = s.leads - s.shown;
         const conversion = s.leads > 0 ? ((s.shown / s.leads) * 100).toFixed(1) : '0.0';
@@ -3591,15 +3850,22 @@
         const netBreakdown = `<div style="font-size: 10px; color: var(--text-muted); margin-top: 2px; font-family:'JetBrains Mono',monospace;">N: ${s.newShown} | S: ${s.someShown}${fhNet}</div>`;
         const hiddenBreakdown = `<div style="font-size: 10px; color: var(--text-muted); margin-top: 2px; font-family:'JetBrains Mono',monospace;">N: ${s.newHidden} | S: ${s.someHidden}</div>`;
 
-        return `<tr>
-            <td class="agent-name">${escHtml(name)}</td>
+        const isSelected = (name === analyticsSelectedAgent);
+        const rowStyle = isSelected ? 'background: rgba(6, 182, 212, 0.12); outline: 1px solid var(--accent-cyan);' : '';
+        const drillIcon = isSelected ? '✓ Active' : '🔍 Drill-down';
+
+        return `<tr style="cursor: pointer; ${rowStyle}" onclick="setAnalyticsAgentFilter('${escHtml(name)}')" title="Click to drill down into ${escHtml(name)}">
+            <td class="agent-name" style="font-weight: 700; ${isSelected ? 'color: var(--accent-cyan);' : ''}">
+              ${escHtml(name)}
+              <span style="font-size: 10px; color: var(--text-muted); margin-left: 6px; font-weight: normal;">${drillIcon}</span>
+            </td>
             <td style="color:var(--accent-blue);font-weight:600;">${s.files}</td>
             <td>${s.leads}${grossBreakdown}</td>
             <td class="stat-highlight">${s.shown}${netBreakdown}</td>
             <td style="color:var(--danger);">${hidden}${hiddenBreakdown}</td>
             <td style="color:var(--warning);font-weight:600;">${conversion}%</td>
         </tr>`;
-      }).join('') || `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:30px;">No data yet.</td></tr>`;
+      }).join('') || `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:30px;">No data found for this selection.</td></tr>`;
     }
 
     // ══════════════════════════════════════════════
@@ -4741,30 +5007,61 @@
     });
 
     function initColumnResizers() {
-      const ths = document.querySelectorAll('.data-table th');
-      ths.forEach(th => {
-        if (th.querySelector('.resizer')) return;
-        const resizer = document.createElement('div');
-        resizer.className = 'resizer';
-        th.appendChild(resizer);
+      const tables = document.querySelectorAll('.data-table');
+      tables.forEach(table => {
+        const ths = table.querySelectorAll('th');
+        ths.forEach(th => {
+          if (th.querySelector('.resizer')) return;
+          const resizer = document.createElement('div');
+          resizer.className = 'resizer';
+          th.appendChild(resizer);
 
-        resizer.addEventListener('mousedown', e => {
-          e.preventDefault();
-          const startX = e.pageX;
-          const startWidth = th.offsetWidth;
-          resizer.classList.add('resizing');
+          resizer.addEventListener('mousedown', e => {
+            e.preventDefault();
+            e.stopPropagation();
+            const startX = e.pageX;
+            const startWidth = th.getBoundingClientRect().width;
+            const tableStartWidth = table.getBoundingClientRect().width;
+            resizer.classList.add('resizing');
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
 
-          const onMouseMove = e => {
-            const newWidth = startWidth + (e.pageX - startX);
-            th.style.width = newWidth + 'px';
-          };
-          const onMouseUp = () => {
-            resizer.classList.remove('resizing');
-            document.removeEventListener('mousemove', onMouseMove);
-            document.removeEventListener('mouseup', onMouseUp);
-          };
-          document.addEventListener('mousemove', onMouseMove);
-          document.addEventListener('mouseup', onMouseUp);
+            ths.forEach(h => {
+              h.style.width = h.getBoundingClientRect().width + 'px';
+            });
+            table.style.width = tableStartWidth + 'px';
+
+            const onMouseMove = e => {
+              const delta = e.pageX - startX;
+              const newWidth = Math.max(40, Math.round(startWidth + delta));
+              const actualDelta = newWidth - startWidth;
+              th.style.width = newWidth + 'px';
+              table.style.width = Math.max(tableStartWidth, Math.round(tableStartWidth + actualDelta)) + 'px';
+            };
+
+            const onMouseUp = upEvent => {
+              upEvent.preventDefault();
+              upEvent.stopPropagation();
+              resizer.classList.remove('resizing');
+              document.body.style.cursor = '';
+              document.body.style.userSelect = '';
+              document.removeEventListener('mousemove', onMouseMove);
+              document.removeEventListener('mouseup', onMouseUp);
+
+              th.style.pointerEvents = 'none';
+              setTimeout(() => {
+                th.style.pointerEvents = '';
+              }, 80);
+            };
+
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+          });
+
+          resizer.addEventListener('click', e => {
+            e.preventDefault();
+            e.stopPropagation();
+          });
         });
       });
     }

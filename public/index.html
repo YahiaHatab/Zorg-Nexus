@@ -477,34 +477,15 @@
     .user-dropdown {
       position: relative;
       display: inline-block;
-      margin-left: 12px;
-    }
-
-    .user-trigger {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 6px 14px;
-      border-radius: 8px;
-      background: var(--bg-panel);
-      border: 1px solid var(--border);
-      cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .user-trigger:hover {
-      background: var(--bg-hover);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
     .user-trigger {
       display: flex;
       align-items: center;
       gap: 6px;
-      padding: 6px 14px;
+      padding: 6px 12px;
       border-radius: 8px;
-      background: var(--bg-base);
+      background: var(--bg-main);
       border: 1px solid var(--border);
       cursor: pointer;
       transition: all 0.2s ease;
@@ -530,24 +511,27 @@
       position: absolute;
       top: calc(100% + 8px);
       right: 0;
-      min-width: 190px;
+      min-width: 200px;
       background: var(--bg-panel);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid var(--border);
       border-radius: 10px;
-      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
-      z-index: 9999;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+      z-index: 999999 !important;
       padding: 6px;
-      transform: translateY(-8px);
+      transform: translateY(-6px);
       transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+      pointer-events: none;
     }
 
     .user-dropdown:hover .user-menu,
-    .user-dropdown:focus-within .user-menu {
+    .user-dropdown:focus-within .user-menu,
+    .user-dropdown.open .user-menu {
       opacity: 1;
       visibility: visible;
       transform: translateY(0);
+      pointer-events: auto;
     }
 
     .user-menu-item {
@@ -722,11 +706,12 @@
     .toolbar {
       background: var(--bg-base);
       border-bottom: 1px solid var(--border);
-      padding: 16px 24px;
+      padding: 14px 24px;
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
       flex-shrink: 0;
+      flex-wrap: wrap;
     }
 
     .search-box {
@@ -735,15 +720,18 @@
       gap: 10px;
       background: var(--bg-panel);
       border: 1px solid var(--border);
-      padding: 8px 16px;
+      padding: 8px 14px;
       border-radius: 8px;
-      width: 250px;
+      width: 260px;
+      max-width: 100%;
+      min-width: 180px;
       transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .search-box:focus-within {
       border-color: var(--accent-blue);
-      width: 450px;
+      width: 380px;
+      max-width: 100%;
     }
 
     .search-box input {
@@ -809,16 +797,19 @@
     /* TABLE */
     .table-wrap {
       overflow-y: auto;
+      overflow-x: auto;
       flex: 1;
       min-height: 0;
       padding: 0 24px;
+      -webkit-overflow-scrolling: touch;
     }
 
     .file-table {
       width: 100%;
+      min-width: 960px;
       border-collapse: separate;
       border-spacing: 0;
-      margin-top: 16px;
+      margin-top: 12px;
       table-layout: fixed;
     }
 
@@ -837,6 +828,9 @@
       top: 0;
       background: var(--bg-base);
       z-index: 10;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .file-table th:last-child {
@@ -876,8 +870,16 @@
       font-weight: bold;
     }
 
+    .th-filename { width: 320px; }
+    .th-showtype { width: 90px; text-align: center; }
+    .th-yield { width: 160px; }
+    .th-mtime { width: 150px; }
+    .th-dest { width: 180px; }
+    .th-status { width: 160px; }
+    .th-notes { width: 130px; }
+
     .file-table td {
-      padding: 14px 16px;
+      padding: 12px 16px;
       border-bottom: 1px solid var(--border);
       font-size: 13px;
       white-space: nowrap;
@@ -885,9 +887,15 @@
       text-overflow: ellipsis;
     }
 
+    .file-table td.dest-cell {
+      max-width: 240px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     .file-table td.status-cell {
       overflow: visible;
-      text-overflow: clip;
+      white-space: nowrap;
     }
 
     .file-table tr:last-child td {
@@ -974,16 +982,33 @@
       right: 0;
       top: 0;
       bottom: 0;
-      width: 5px;
+      width: 8px;
       cursor: col-resize;
       user-select: none;
-      z-index: 11;
+      z-index: 25;
+      touch-action: none;
+    }
+
+    .resizer::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: rgba(255, 255, 255, 0.12);
+      transition: background 0.15s, width 0.15s;
+    }
+
+    .resizer:hover::after,
+    .resizer.resizing::after {
+      background: var(--accent-blue);
+      width: 3px;
     }
 
     .resizer:hover,
     .resizer.resizing {
-      background: var(--accent-blue);
-      opacity: 0.5;
+      background: rgba(59, 130, 246, 0.18);
     }
 
     /* REPORT TAGS */
@@ -2109,12 +2134,27 @@
     .top-widgets {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 14px 24px;
+      gap: 10px;
+      padding: 10px 20px;
       background: var(--bg-panel);
       border-bottom: 1px solid var(--border);
       flex-shrink: 0;
-      overflow: visible;
+      overflow: visible !important;
+      position: relative;
+      z-index: 1000;
+      max-width: 100%;
+      transition: padding 0.2s ease, min-height 0.2s ease;
+    }
+
+    .top-widgets-user-area {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 4px;
+      flex-shrink: 0;
+      margin-left: auto;
+      position: relative;
+      z-index: 1001;
     }
 
     .widget-group {
@@ -2296,7 +2336,8 @@
       font-size: 11px !important;
     }
 
-    @media (max-width: 1150px) {
+    /* ── RESPONSIVE MEDIA QUERIES FOR SPLIT-SCREEN & SMALL WINDOWS ── */
+    @media (max-width: 1200px) {
       .top-widgets {
         padding: 6px 14px;
         gap: 6px;
@@ -2328,6 +2369,151 @@
       .top-widgets .twc-body .twc-lbl {
         font-size: 10px;
         margin-top: 0;
+      }
+    }
+
+    @media (max-width: 950px) {
+      /* Auto collapse sidebar on split screen / narrow screens */
+      .sidebar {
+        width: 64px !important;
+        min-width: 64px !important;
+      }
+      .sidebar .sidebar-header {
+        padding: 0 !important;
+        justify-content: center !important;
+      }
+      .sidebar .logo,
+      .sidebar .status-pill,
+      .sidebar .panel-label,
+      .sidebar .nav-label,
+      .sidebar .sidebar-signature,
+      .sidebar .ml-wrapper,
+      .sidebar .ml-title span,
+      .sidebar .ml-toggle-icon,
+      .sidebar #lbLastUpdate {
+        display: none !important;
+      }
+      .sidebar .sidebar-nav {
+        padding: 0 8px !important;
+      }
+      .sidebar .sidebar-nav .nav-item {
+        padding: 10px 0 !important;
+        justify-content: center !important;
+        position: relative !important;
+      }
+      .sidebar .sidebar-nav .nav-item .nav-badge {
+        position: absolute;
+        top: 4px;
+        right: 6px;
+        padding: 2px 4px;
+        font-size: 9px;
+        min-width: 14px;
+        line-height: 1;
+      }
+      .sidebar .mini-leaderboard {
+        margin: 12px 8px !important;
+        padding: 8px 0 !important;
+        display: flex !important;
+        justify-content: center !important;
+      }
+      .sidebar .ml-title {
+        padding: 0 !important;
+        justify-content: center !important;
+      }
+      .sidebar .ml-title::before {
+        content: '🏆';
+        font-size: 16px;
+      }
+      .sidebar-toggle-btn {
+        display: none !important;
+      }
+
+      /* Toolbar non-overlapping flex layout */
+      .toolbar {
+        padding: 10px 16px;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .search-box {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 1 1 100%;
+        order: 1;
+      }
+      .search-box:focus-within {
+        width: 100% !important;
+      }
+      .date-input {
+        margin-left: 0 !important;
+        order: 2;
+        flex: 1;
+      }
+      .toolbar .filter-btn {
+        order: 3;
+        flex: 1;
+        white-space: nowrap;
+      }
+
+      /* Hide monthly cards on split-screen / narrow screens so Today's stats stay legible */
+      .top-widgets .widget-group.month {
+        display: none !important;
+      }
+      .top-widgets .widget-group.today {
+        border-right: none !important;
+        padding-right: 0 !important;
+        margin-right: 0 !important;
+      }
+
+      /* Table Wrap Horizontal Scrolling */
+      .table-wrap {
+        padding: 0 14px;
+        overflow-x: auto;
+      }
+      .file-table {
+        min-width: 960px;
+      }
+
+      /* Log footer responsiveness */
+      .log-header {
+        padding: 8px 16px;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      #historySearch {
+        width: 100% !important;
+        margin: 6px 0 0 0 !important;
+        order: 3;
+      }
+      .log-footer.expanded .log-inner-wrap {
+        max-height: 40vh;
+        height: auto;
+      }
+
+      /* Briefing view stack */
+      .briefing-grid {
+        grid-template-columns: 1fr !important;
+      }
+      #briefingView {
+        padding: 16px !important;
+      }
+      #briefingView .panel {
+        padding: 20px !important;
+      }
+      #toastContainer {
+        right: 12px;
+        left: 12px;
+        bottom: 20px;
+        width: auto;
+        max-width: calc(100vw - 24px);
+      }
+    }
+
+    @media (max-width: 680px) {
+      .top-widgets .health-pill {
+        display: none !important;
+      }
+      .top-widgets .twc-lbl {
+        display: none !important;
       }
     }
 
@@ -2664,6 +2850,9 @@
         <div class="nav-item" id="navBriefing" data-view="briefing" onclick="setView('briefing')" title="Briefing Room">
           <span class="nav-icon">🎯</span> <span class="nav-label">Briefing Room</span>
         </div>
+        <a href="/admin.html" class="nav-item" id="navAdminSidebar" style="display: none; text-decoration: none;" title="Admin Dashboard">
+          <span class="nav-icon">🛡️</span> <span class="nav-label">Admin Dashboard</span>
+        </a>
       </nav>
 
       <!-- MINI LEADERBOARD -->
@@ -2683,7 +2872,7 @@
 
     <!-- MAIN CONTENT -->
     <main class="main-content"
-      style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; background: var(--bg-base);">
+      style="flex: 1; overflow: hidden; display: flex; flex-direction: column; background: var(--bg-base); min-height: 0;">
       <!-- old stats bar removed, now inside top-widgets strip above -->
 
       <!-- TOP ANALYTICS WIDGET STRIP (Today's numbers, always visible) -->
@@ -2738,24 +2927,24 @@
           <span class="divider">|</span>
           <span>⚠️ <span id="statErrors" style="color:var(--danger)">0</span></span>
         </div>
-        <div style="display:flex; align-items:center; padding: 0 6px; flex-shrink:0;">
-          <div class="user-dropdown">
-            <div class="user-trigger">
+        <div class="top-widgets-user-area">
+          <div class="user-dropdown" id="userDropdown">
+            <div class="user-trigger" id="userTrigger">
               <span class="user-name-label" id="displayUser">Loading...</span>
               <span style="font-size: 10px; color: var(--text-muted); margin-left: 4px;">▾</span>
             </div>
-            <div class="user-menu">
-              <button id="themeToggle" class="user-menu-item">
-                Toggle Theme
+            <div class="user-menu" id="userMenu">
+              <button id="themeToggle" class="user-menu-item" type="button">
+                <span>🌓</span> Toggle Theme
               </button>
               <a id="adminLink" href="/admin.html" class="user-menu-item" style="display:none;">
-                Admin Dashboard
+                <span>🛡️</span> Admin Dashboard
               </a>
-              <button id="closeServerBtn" class="user-menu-item close-server" style="display:none;" onclick="closeServer()">
-                Close Server
+              <button id="closeServerBtn" class="user-menu-item close-server" type="button" style="display:none;" onclick="closeServer()">
+                <span>⛔</span> Close Server
               </button>
               <div class="user-menu-divider"></div>
-              <button class="user-menu-item logout" onclick="logout()">
+              <button class="user-menu-item logout" type="button" onclick="logout()">
                 <span>🚪</span> Logout
               </button>
             </div>
@@ -2798,13 +2987,13 @@
             <table class="file-table" id="mainTable">
               <thead>
                 <tr>
-                  <th class="sortable" onclick="sortTable('name')" style="width: 25%;">Filename <span class="sort-icon" id="sort-name">↕</span></th>
-                  <th class="sortable" onclick="sortTable('showType')" style="width: 11%;">Show Type <span class="sort-icon" id="sort-showType">↕</span></th>
-                  <th class="sortable" onclick="sortTable('yield')" style="width: 15%;">Lead Yield <span class="sort-icon" id="sort-yield">↕</span></th>
-                  <th class="sortable" onclick="sortTable('mtime')" style="width: 13%;">Modified <span class="sort-icon" id="sort-mtime">↕</span></th>
-                  <th class="sortable" onclick="sortTable('destPath')" style="width: 16%;">Destination <span class="sort-icon" id="sort-destPath">↕</span></th>
-                  <th class="sortable" onclick="sortTable('status')" style="width: 10%;">Status <span class="sort-icon" id="sort-status">↕</span></th>
-                  <th class="sortable" onclick="sortTable('note')" style="width: 10%;">Notes <span class="sort-icon" id="sort-note">↕</span></th>
+                  <th class="sortable th-filename" onclick="sortTable('name')">Filename <span class="sort-icon" id="sort-name">↕</span></th>
+                  <th class="sortable th-showtype" onclick="sortTable('showType')">Show Type <span class="sort-icon" id="sort-showType">↕</span></th>
+                  <th class="sortable th-yield" onclick="sortTable('yield')">Lead Yield <span class="sort-icon" id="sort-yield">↕</span></th>
+                  <th class="sortable th-mtime" onclick="sortTable('mtime')">Modified <span class="sort-icon" id="sort-mtime">↕</span></th>
+                  <th class="sortable th-dest" onclick="sortTable('destPath')">Destination <span class="sort-icon" id="sort-destPath">↕</span></th>
+                  <th class="sortable th-status" onclick="sortTable('status')">Status <span class="sort-icon" id="sort-status">↕</span></th>
+                  <th class="sortable th-notes" onclick="sortTable('note')">Notes <span class="sort-icon" id="sort-note">↕</span></th>
                 </tr>
               </thead>
               <tbody id="tableBody"></tbody>
@@ -2865,7 +3054,7 @@
                     <button id="copyNameBtn" onclick="copySmartName()" class="filter-btn btn-some"
                       style="flex-shrink:0;">📋 Copy Name</button>
                   </div>
-                  <div
+                  <div class="briefing-grid"
                     style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-top:20px; border-top:1px solid var(--border); padding-top:20px;">
                     <div>
                       <div
@@ -3031,31 +3220,75 @@
       // ─────────────────────────────────────────────
       function initTableResizers() {
         document.querySelectorAll('.file-table').forEach(table => {
-          table.querySelectorAll('th').forEach(col => {
+          const ths = table.querySelectorAll('th');
+          ths.forEach(col => {
+            if (col.querySelector('.resizer')) return;
             const resizer = document.createElement('div');
-            resizer.classList.add('resizer');
+            resizer.className = 'resizer';
             col.appendChild(resizer);
-            createResizableColumn(col, resizer);
+            createResizableColumn(table, col, resizer);
           });
         });
       }
 
-      function createResizableColumn(col, resizer) {
-        let x = 0, w = 0;
+      function createResizableColumn(table, col, resizer) {
+        let startX = 0;
+        let startWidth = 0;
+        let tableStartWidth = 0;
+
         const mouseDownHandler = e => {
-          x = e.clientX;
-          w = parseInt(window.getComputedStyle(col).width, 10);
+          e.preventDefault();
+          e.stopPropagation();
+
+          startX = e.clientX;
+          startWidth = col.getBoundingClientRect().width;
+          tableStartWidth = table.getBoundingClientRect().width;
+
+          // Snapshot all current column widths onto the th elements so the table layout remains stable
+          table.querySelectorAll('th').forEach(th => {
+            th.style.width = th.getBoundingClientRect().width + 'px';
+          });
+          table.style.width = tableStartWidth + 'px';
+
+          resizer.classList.add('resizing');
+          document.body.style.cursor = 'col-resize';
+          document.body.style.userSelect = 'none';
+
+          const mouseMoveHandler = moveEvent => {
+            const delta = moveEvent.clientX - startX;
+            const newWidth = Math.max(40, Math.round(startWidth + delta));
+            const actualDelta = newWidth - startWidth;
+            col.style.width = newWidth + 'px';
+            table.style.width = Math.max(tableStartWidth, Math.round(tableStartWidth + actualDelta)) + 'px';
+          };
+
+          const mouseUpHandler = upEvent => {
+            upEvent.preventDefault();
+            upEvent.stopPropagation();
+            resizer.classList.remove('resizing');
+            document.body.style.cursor = '';
+            document.body.style.userSelect = '';
+            document.removeEventListener('mousemove', mouseMoveHandler);
+            document.removeEventListener('mouseup', mouseUpHandler);
+
+            // Temporarily suppress click on the header so sortTable() is not triggered by resizing
+            col.style.pointerEvents = 'none';
+            setTimeout(() => {
+              col.style.pointerEvents = '';
+            }, 80);
+          };
+
           document.addEventListener('mousemove', mouseMoveHandler);
           document.addEventListener('mouseup', mouseUpHandler);
-          resizer.classList.add('resizing');
         };
-        const mouseMoveHandler = e => { col.style.width = `${w + (e.clientX - x)}px`; };
-        const mouseUpHandler = () => {
-          resizer.classList.remove('resizing');
-          document.removeEventListener('mousemove', mouseMoveHandler);
-          document.removeEventListener('mouseup', mouseUpHandler);
-        };
+
         resizer.addEventListener('mousedown', mouseDownHandler);
+
+        // Prevent click events on the resizer from triggering sortTable()
+        resizer.addEventListener('click', e => {
+          e.preventDefault();
+          e.stopPropagation();
+        });
       }
 
       // ─────────────────────────────────────────────
@@ -3116,17 +3349,15 @@
       //  AUTH
       // ─────────────────────────────────────────────
       function updateRoleUI(currentRole) {
-        if (currentRole === 'Admin' || currentRole === 'Viewer') {
-          document.getElementById('adminLink').style.display = 'inline-block';
-        } else {
-          document.getElementById('adminLink').style.display = 'none';
-        }
+        const isAdmin = (currentRole === 'Admin' || currentRole === 'Viewer');
+        const adminLink = document.getElementById('adminLink');
+        if (adminLink) adminLink.style.display = isAdmin ? 'flex' : 'none';
 
-        if (currentRole === 'Admin') {
-          document.getElementById('closeServerBtn').style.display = 'flex';
-        } else {
-          document.getElementById('closeServerBtn').style.display = 'none';
-        }
+        const navAdmin = document.getElementById('navAdminSidebar');
+        if (navAdmin) navAdmin.style.display = isAdmin ? 'flex' : 'none';
+
+        const closeBtn = document.getElementById('closeServerBtn');
+        if (closeBtn) closeBtn.style.display = (currentRole === 'Admin') ? 'flex' : 'none';
 
         const adminControls = document.getElementById('adminBriefingControls');
         if (adminControls) {
@@ -4754,6 +4985,21 @@
       }
       checkActiveShow();
 
+      // Initialize User Profile Dropdown click toggling
+      const userDrop = document.getElementById('userDropdown');
+      const userTrig = document.getElementById('userTrigger');
+      if (userTrig && userDrop) {
+        userTrig.addEventListener('click', (e) => {
+          e.stopPropagation();
+          userDrop.classList.toggle('open');
+        });
+        document.addEventListener('click', (e) => {
+          if (!userDrop.contains(e.target)) {
+            userDrop.classList.remove('open');
+          }
+        });
+      }
+
       // ─────────────────────────────────────────────
       //  GLOBAL KEYBOARD SHORTCUTS
       // ─────────────────────────────────────────────
@@ -4765,6 +5011,7 @@
           document.activeElement.blur();
           document.querySelectorAll('.toast').forEach(t => t.remove());
           document.querySelector('.upload-dd')?.classList.remove('open');
+          document.getElementById('userDropdown')?.classList.remove('open');
           if (typeof toggleLogs === 'function') {
             const footer = document.getElementById('logFooter');
             if (footer && footer.classList.contains('expanded')) toggleLogs();
