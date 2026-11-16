@@ -1487,6 +1487,74 @@
       background: var(--bg-sidebar) !important;
       border-right-color: rgba(255, 255, 255, 0.08) !important;
       color: var(--text-sidebar);
+      width: 220px;
+      min-width: 220px;
+      transition: width 0.22s cubic-bezier(0.4, 0, 0.2, 1), min-width 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .sidebar-header {
+      padding: 0 16px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      flex-shrink: 0;
+      gap: 8px;
+    }
+
+    .sidebar-toggle-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-sidebar);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      transition: all 0.2s;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    .sidebar-toggle-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      border-color: var(--accent-blue);
+    }
+
+    .sidebar.collapsed {
+      width: 64px !important;
+      min-width: 64px !important;
+    }
+
+    .sidebar.collapsed .sidebar-header {
+      padding: 0;
+      justify-content: center;
+    }
+
+    .sidebar.collapsed .logo,
+    .sidebar.collapsed .tab-label,
+    .sidebar.collapsed .sidebar-signature,
+    .sidebar.collapsed .admin-sidebar-footer {
+      display: none !important;
+    }
+
+    .sidebar.collapsed .sidebar-nav {
+      padding: 16px 8px !important;
+    }
+
+    .sidebar.collapsed .sidebar-nav .tab {
+      padding: 10px 0;
+      justify-content: center;
+    }
+
+    .sidebar.collapsed .tab-icon {
+      font-size: 16px;
     }
 
     .sidebar .logo {
@@ -2016,27 +2084,25 @@
 
   <div class="app-container" style="display: flex; height: 100vh; overflow: hidden;">
     <!-- SIDEBAR -->
-    <aside class="sidebar"
-      style="width: 220px; background: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; height: 100vh; overflow-y: auto;">
-      <div
-        style="padding: 0 24px; background: var(--bg-panel); border-bottom: 1px solid var(--border); height: 60px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+    <aside class="sidebar" id="adminSidebar">
+      <div class="sidebar-header">
         <div class="logo">Z-LEADS <span>/ Admin</span></div>
+        <button id="adminSidebarToggle" class="sidebar-toggle-btn" onclick="toggleAdminSidebar()" title="Toggle Sidebar (Ctrl+B)">«</button>
       </div>
       <nav class="sidebar-nav" style="display: flex; flex-direction: column; gap: 4px; padding: 16px 12px; flex: 1;">
-        <div class="tab active" onclick="switchTab('leaderboard', this)">📡 Live Leaderboard</div>
-        <div class="tab" onclick="switchTab('ledger', this)">🗂 Report Sheet</div>
-        <div class="tab" onclick="switchTab('analytics', this)">📊 Analytics</div>
-        <div class="tab" onclick="switchTab('hopper', this)">🚀 The Sheet</div>
-        <div class="tab" onclick="switchTab('config', this)">⚙ Config</div>
-        <div class="tab" onclick="switchTab('users', this)">👥 Users</div>
+        <div class="tab active" onclick="switchTab('leaderboard', this)" title="Live Leaderboard"><span class="tab-icon">📡</span> <span class="tab-label">Live Leaderboard</span></div>
+        <div class="tab" onclick="switchTab('ledger', this)" title="Report Sheet"><span class="tab-icon">🗂</span> <span class="tab-label">Report Sheet</span></div>
+        <div class="tab" onclick="switchTab('analytics', this)" title="Analytics"><span class="tab-icon">📊</span> <span class="tab-label">Analytics</span></div>
+        <div class="tab" onclick="switchTab('hopper', this)" title="The Sheet"><span class="tab-icon">🚀</span> <span class="tab-label">The Sheet</span></div>
+        <div class="tab" onclick="switchTab('config', this)" title="Config"><span class="tab-icon">⚙</span> <span class="tab-label">Config</span></div>
+        <div class="tab" onclick="switchTab('users', this)" title="Users"><span class="tab-icon">👥</span> <span class="tab-label">Users</span></div>
       </nav>
-      <div
+      <div class="admin-sidebar-footer"
         style="padding: 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; flex-shrink: 0;">
         <button class="btn btn-red admin-only" onclick="openModal()">⚡ Reset History</button>
         <button class="btn" onclick="refreshCurrentTab()">↻ Refresh</button>
         <a href="/" style="text-decoration:none; width: 100%;"><button class="btn btn-blue" style="width:100%;">←
             Portal</button></a>
-        </button>
       </div>
       <div class="sidebar-signature">POWERED BY <span>YAHIA</span></div>
     </aside>
@@ -2606,6 +2672,23 @@
         renderUsersTable();
         populateBulkAgentDropdown();
       } catch (e) { showToast('Failed to load users.', 'error'); }
+    }
+
+    // ── SIDEBAR TOGGLE ──────────────────────────
+    function toggleAdminSidebar() {
+      const sidebar = document.getElementById('adminSidebar');
+      if (!sidebar) return;
+      const isCollapsed = sidebar.classList.toggle('collapsed');
+      localStorage.setItem('zorg_admin_sidebar_collapsed', isCollapsed ? '1' : '0');
+      const btn = document.getElementById('adminSidebarToggle');
+      if (btn) btn.textContent = isCollapsed ? '»' : '«';
+    }
+
+    if (localStorage.getItem('zorg_admin_sidebar_collapsed') === '1') {
+      const sidebar = document.getElementById('adminSidebar');
+      if (sidebar) sidebar.classList.add('collapsed');
+      const btn = document.getElementById('adminSidebarToggle');
+      if (btn) btn.textContent = '»';
     }
 
     // ── TABS ─────────────────────────────────────
@@ -3818,6 +3901,12 @@
         if (currentTab === 'hopper') exportHopper();
         if (currentTab === 'config') saveConfig();
         if (currentTab === 'users') saveUsers();
+        return;
+      }
+
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
+        e.preventDefault();
+        toggleAdminSidebar();
         return;
       }
 

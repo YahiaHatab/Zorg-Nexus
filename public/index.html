@@ -235,46 +235,102 @@
       transform: translateY(-1px);
     }
 
-    /* GHOST DRAG OVERLAY */
-    #dragOverlay {
-      display: none;
+    /* ── FULL-SCREEN DRAG & DROP OVERLAY ── */
+    #dragOverlay.drag-overlay {
+      display: flex;
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 9995;
-      background: rgba(11, 15, 25, 0.7);
-      backdrop-filter: blur(8px);
-      gap: 24px;
-      padding: 24px;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 99995;
+      background: rgba(11, 15, 25, 0.85);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
     }
 
-    .drop-half {
-      flex: 1;
+    #dragOverlay.drag-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .drag-overlay-card {
+      width: 100%;
+      max-width: 600px;
+      background: rgba(17, 24, 39, 0.85);
+      border: 2px dashed var(--accent-blue);
+      border-radius: 24px;
+      padding: 44px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      box-shadow: 0 0 50px rgba(59, 130, 246, 0.25), inset 0 0 30px rgba(59, 130, 246, 0.08);
+      pointer-events: none;
+      transform: scale(0.96);
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+    }
+
+    #dragOverlay.drag-overlay.active .drag-overlay-card {
+      transform: scale(1);
+      border-color: var(--accent-cyan);
+    }
+
+    .drag-icon-wrap {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: var(--accent-blue-glow);
+      border: 1px solid rgba(59, 130, 246, 0.3);
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-direction: column;
-      border: 2px dashed var(--border);
-      border-radius: 16px;
-      transition: all 0.2s;
-      background: rgba(17, 24, 39, 0.5);
+      font-size: 34px;
+      margin-bottom: 8px;
+      animation: floatPulse 2s infinite ease-in-out;
     }
 
-    .drop-half.std {
-      color: var(--accent-blue);
+    @keyframes floatPulse {
+      0%, 100% { transform: translateY(0); box-shadow: 0 0 15px var(--accent-blue-glow); }
+      50% { transform: translateY(-5px); box-shadow: 0 0 25px rgba(6, 182, 212, 0.35); }
     }
 
-    .drop-half.dragover.std {
-      background: var(--accent-blue-glow);
-      border-color: var(--accent-blue);
+    .drag-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #f8fafc;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
     }
 
-    .drop-half h1 {
-      font-size: 32px;
-      font-weight: 700;
-      margin-bottom: 12px;
+    .drag-desc {
+      font-size: 13.5px;
+      color: #94a3b8;
+      max-width: 440px;
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+
+    .drag-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .drag-tag {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #cbd5e1;
     }
 
     .sidebar-signature {
@@ -1340,6 +1396,167 @@
       border-left-color: var(--accent-blue);
     }
 
+    /* ── VISIBLE UNDO COUNTDOWN TOAST ── */
+    .toast.undo-toast {
+      cursor: default;
+      border-left: 4px solid var(--warning);
+      background: var(--bg-panel);
+      padding: 14px 16px;
+      min-width: 320px;
+      max-width: 380px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4), 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+
+    .toast.undo-toast::after {
+      display: none !important;
+    }
+
+    .undo-toast-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .undo-toast-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+      font-size: 11px;
+      color: var(--warning);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .undo-toast-timer {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text-main);
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+
+    .undo-toast-file {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.3;
+    }
+
+    .undo-toast-stats {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      gap: 12px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .undo-toast-progress-wrap {
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 2px;
+      overflow: hidden;
+      margin: 2px 0;
+    }
+
+    .undo-toast-progress-bar {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, var(--warning), var(--danger));
+      border-radius: 2px;
+      transition: width 1s linear;
+    }
+
+    .undo-toast-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .undo-toast-revert-btn {
+      flex: 1;
+      padding: 6px 12px;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: var(--danger);
+      font-size: 11.5px;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .undo-toast-revert-btn:hover {
+      background: var(--danger);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .undo-toast-keep-btn {
+      padding: 6px 12px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 11.5px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .undo-toast-keep-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-main);
+    }
+
+    /* ── TABLE UNDO COUNTDOWN CHIP ── */
+    .table-undo-chip {
+      cursor: pointer;
+      margin-left: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: var(--danger);
+      border-radius: 6px;
+      padding: 2px 7px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      transition: all 0.2s;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .table-undo-chip:hover {
+      background: var(--danger);
+      color: #ffffff;
+      border-color: var(--danger);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
+    }
+
+    .table-undo-chip .undo-countdown {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      opacity: 0.9;
+    }
+
     @keyframes slideIn {
       from {
         transform: translateX(120%);
@@ -1734,6 +1951,103 @@
       background: var(--bg-sidebar) !important;
       border-right-color: rgba(255, 255, 255, 0.08) !important;
       color: var(--text-sidebar);
+      width: 220px;
+      min-width: 220px;
+      transition: width 0.22s cubic-bezier(0.4, 0, 0.2, 1), min-width 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .sidebar-header {
+      padding: 0 16px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      flex-shrink: 0;
+      gap: 8px;
+    }
+
+    .sidebar-toggle-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-sidebar);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      transition: all 0.2s;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    .sidebar-toggle-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      border-color: var(--accent-blue);
+    }
+
+    .sidebar.collapsed {
+      width: 64px !important;
+      min-width: 64px !important;
+    }
+
+    .sidebar.collapsed .sidebar-header {
+      padding: 0;
+      justify-content: center;
+    }
+
+    .sidebar.collapsed .logo,
+    .sidebar.collapsed .status-pill,
+    .sidebar.collapsed .panel-label,
+    .sidebar.collapsed .nav-label,
+    .sidebar.collapsed .sidebar-signature,
+    .sidebar.collapsed .ml-wrapper,
+    .sidebar.collapsed .ml-title span,
+    .sidebar.collapsed .ml-toggle-icon,
+    .sidebar.collapsed #lbLastUpdate {
+      display: none !important;
+    }
+
+    .sidebar.collapsed .sidebar-nav {
+      padding: 0 8px !important;
+    }
+
+    .sidebar.collapsed .sidebar-nav .nav-item {
+      padding: 10px 0;
+      justify-content: center;
+      position: relative;
+    }
+
+    .sidebar.collapsed .sidebar-nav .nav-item .nav-badge {
+      position: absolute;
+      top: 4px;
+      right: 6px;
+      padding: 2px 4px;
+      font-size: 9px;
+      min-width: 14px;
+      line-height: 1;
+    }
+
+    .sidebar.collapsed .mini-leaderboard {
+      margin: 12px 8px;
+      padding: 8px 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    .sidebar.collapsed .ml-title {
+      padding: 0;
+      justify-content: center;
+    }
+
+    .sidebar.collapsed .ml-title::before {
+      content: '🏆';
+      font-size: 16px;
     }
 
     .sidebar .logo {
@@ -1891,6 +2205,130 @@
     .pacing-ghost:hover {
       opacity: 0.8;
       transform: translateX(2px);
+    }
+
+    /* ── COMPACT TOP METRICS RIBBON ── */
+    .widgets-compact-toggle {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      margin-left: 8px;
+      flex-shrink: 0;
+      transition: all 0.2s;
+      line-height: 1;
+    }
+
+    .widgets-compact-toggle:hover {
+      background: var(--bg-hover);
+      color: var(--text-main);
+      border-color: var(--accent-blue);
+    }
+
+    .top-widgets {
+      transition: padding 0.2s ease, min-height 0.2s ease;
+    }
+
+    .top-widgets.compact {
+      padding: 6px 18px !important;
+      gap: 8px !important;
+    }
+
+    .top-widgets.compact .widget-group {
+      gap: 6px !important;
+    }
+
+    .top-widgets.compact .widget-group.today {
+      padding-right: 12px !important;
+      margin-right: 4px !important;
+    }
+
+    .top-widgets.compact .top-widget-card {
+      min-width: unset !important;
+      padding: 5px 10px !important;
+      gap: 8px !important;
+      border-radius: 6px !important;
+    }
+
+    .top-widgets.compact .twc-icon {
+      font-size: 14px !important;
+    }
+
+    .top-widgets.compact .twc-body {
+      display: flex !important;
+      align-items: baseline !important;
+      gap: 6px !important;
+      flex-direction: row !important;
+    }
+
+    .top-widgets.compact .twc-body .twc-val {
+      font-size: 14px !important;
+    }
+
+    .top-widgets.compact .twc-body .twc-lbl {
+      font-size: 10px !important;
+      margin-top: 0 !important;
+      white-space: nowrap !important;
+    }
+
+    .top-widgets.compact .pacing-ghost {
+      font-size: 10px !important;
+      margin: 0 !important;
+      margin-left: 2px !important;
+    }
+
+    .top-widgets.compact .health-pill {
+      padding: 4px 10px !important;
+      font-size: 11px !important;
+      gap: 8px !important;
+    }
+
+    .top-widgets.compact .user-trigger {
+      padding: 4px 8px !important;
+      font-size: 11px !important;
+    }
+
+    @media (max-width: 1150px) {
+      .top-widgets {
+        padding: 6px 14px;
+        gap: 6px;
+      }
+      .top-widgets .widget-group {
+        gap: 6px;
+      }
+      .top-widgets .widget-group.today {
+        padding-right: 10px;
+        margin-right: 4px;
+      }
+      .top-widgets .top-widget-card {
+        min-width: unset;
+        padding: 5px 9px;
+        gap: 6px;
+      }
+      .top-widgets .twc-icon {
+        font-size: 14px;
+      }
+      .top-widgets .twc-body {
+        display: flex;
+        align-items: baseline;
+        gap: 5px;
+        flex-direction: row;
+      }
+      .top-widgets .twc-body .twc-val {
+        font-size: 14px;
+      }
+      .top-widgets .twc-body .twc-lbl {
+        font-size: 10px;
+        margin-top: 0;
+      }
     }
 
     /* ── UPLOAD DROPDOWN ── */
@@ -2179,10 +2617,19 @@
     </div>
   </div>
 
-  <div id="dragOverlay">
-    <div class="drop-half std" id="dropStd" style="width: 100%;">
-      <h1>Upload Excel</h1>
-      <p>Drop one or more Excel files here to extract records.</p>
+  <!-- ── FULL-SCREEN DRAG & DROP OVERLAY ── -->
+  <div id="dragOverlay" class="drag-overlay">
+    <div class="drag-overlay-card">
+      <div class="drag-icon-wrap">
+        <span class="drag-icon">📊</span>
+      </div>
+      <h2 class="drag-title">Drop Excel Files Here</h2>
+      <p class="drag-desc">Release to extract leads, normalize disqualification tags, and dispatch to regional output folders.</p>
+      <div class="drag-tags">
+        <span class="drag-tag">📁 .xlsx Files</span>
+        <span class="drag-tag">⚡ Auto-Audit & Tags</span>
+        <span class="drag-tag">⏱ 5-Min Undo Window</span>
+      </div>
     </div>
   </div>
 
@@ -2203,27 +2650,26 @@
 
   <div class="app-container" style="display: flex; height: 100vh; overflow: hidden;">
     <!-- SIDEBAR -->
-    <aside class="sidebar"
-      style="width: 220px; background: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; height: 100vh;">
-      <div
-        style="padding: 0 24px; height: 64px; display: flex; align-items: center; border-bottom: 1px solid var(--border); flex-shrink: 0;">
-        <div class="logo">Z-LEADS <span>/ Sorter</span></div>
-        <div class="status-pill" style="margin-left: 12px;">Active</div>
+    <aside class="sidebar" id="appSidebar">
+      <div class="sidebar-header">
+        <div class="logo"><span class="logo-text">Z-LEADS</span> <span class="logo-sub">/ Sorter</span></div>
+        <div class="status-pill">Active</div>
+        <button id="sidebarToggleBtn" class="sidebar-toggle-btn" onclick="toggleSidebar()" title="Toggle Sidebar (Ctrl+B)">«</button>
       </div>
       <div class="panel-label">Workspace</div>
       <nav class="sidebar-nav" style="display: flex; flex-direction: column; gap: 8px; padding: 0 12px;">
-        <div class="nav-item active" id="navFiles" data-view="files" onclick="setView('files')">
-          <span class="nav-icon">📁</span> Today's Shows <span class="nav-badge" id="nbAll">0</span>
+        <div class="nav-item active" id="navFiles" data-view="files" onclick="setView('files')" title="Today's Shows">
+          <span class="nav-icon">📁</span> <span class="nav-label">Today's Shows</span> <span class="nav-badge" id="nbAll">0</span>
         </div>
-        <div class="nav-item" id="navBriefing" data-view="briefing" onclick="setView('briefing')">
-          <span class="nav-icon">🎯</span> Briefing Room
+        <div class="nav-item" id="navBriefing" data-view="briefing" onclick="setView('briefing')" title="Briefing Room">
+          <span class="nav-icon">🎯</span> <span class="nav-label">Briefing Room</span>
         </div>
       </nav>
 
       <!-- MINI LEADERBOARD -->
       <div class="mini-leaderboard" id="miniLeaderboard">
         <div class="ml-title" onclick="toggleLeaderboard()">
-          <span>🏆 Rankings <span class="ml-toggle-icon">▼</span></span>
+          <span>🏆 <span class="ml-title-text">Rankings</span> <span class="ml-toggle-icon">▼</span></span>
           <span id="lbLastUpdate" style="font-size:8px; opacity:0.6; font-family:'JetBrains Mono';">Sync...</span>
         </div>
         <div class="ml-wrapper" id="mlWrapper">
@@ -2314,6 +2760,7 @@
               </button>
             </div>
           </div>
+          <button id="widgetsCompactBtn" class="widgets-compact-toggle" onclick="toggleWidgetsCompact()" title="Toggle Compact Ribbon">⊟</button>
         </div>
       </div>
 
@@ -2647,6 +3094,24 @@
         document.getElementById('logFooter').classList.toggle('expanded');
       }
 
+      function toggleSidebar() {
+        const sidebar = document.getElementById('appSidebar');
+        if (!sidebar) return;
+        const isCollapsed = sidebar.classList.toggle('collapsed');
+        localStorage.setItem('zorg_sidebar_collapsed', isCollapsed ? '1' : '0');
+        const btn = document.getElementById('sidebarToggleBtn');
+        if (btn) btn.textContent = isCollapsed ? '»' : '«';
+      }
+
+      function toggleWidgetsCompact() {
+        const widgets = document.getElementById('topWidgets');
+        if (!widgets) return;
+        const isCompact = widgets.classList.toggle('compact');
+        localStorage.setItem('zorg_widgets_compact', isCompact ? '1' : '0');
+        const btn = document.getElementById('widgetsCompactBtn');
+        if (btn) btn.textContent = isCompact ? '⊞' : '⊟';
+      }
+
       // ─────────────────────────────────────────────
       //  AUTH
       // ─────────────────────────────────────────────
@@ -2725,6 +3190,20 @@
           fetchLeaderboard();
           // Sync role from server
           syncUserRole();
+
+          // Restore layout preferences
+          if (localStorage.getItem('zorg_sidebar_collapsed') === '1') {
+            const sidebar = document.getElementById('appSidebar');
+            if (sidebar) sidebar.classList.add('collapsed');
+            const btn = document.getElementById('sidebarToggleBtn');
+            if (btn) btn.textContent = '»';
+          }
+          if (localStorage.getItem('zorg_widgets_compact') === '1') {
+            const widgets = document.getElementById('topWidgets');
+            if (widgets) widgets.classList.add('compact');
+            const btn = document.getElementById('widgetsCompactBtn');
+            if (btn) btn.textContent = '⊞';
+          }
         }
       }
 
@@ -2889,6 +3368,9 @@
               if (result.success) {
                 const stats = result.stats;
                 showToast(`✅ <b>Upload Successful</b><br>${result.filename}<br>Shown: ${stats.shown} | Hidden: ${stats.hidden}`, 'success');
+                if (result.transactionId) {
+                  spawnUndoToast(result);
+                }
               }
             });
 
@@ -2983,24 +3465,110 @@
       }
 
       // ─────────────────────────────────────────────
-      //  DRAG & DROP
+      //  UNDO FLOATING CARD & COUNTDOWN
       // ─────────────────────────────────────────────
-      let dragTimer;
-      window.addEventListener('dragover', e => { e.preventDefault(); document.getElementById('dragOverlay').style.display = 'flex'; clearTimeout(dragTimer); });
-      window.addEventListener('dragleave', e => { e.preventDefault(); dragTimer = setTimeout(() => { document.getElementById('dragOverlay').style.display = 'none'; }, 100); });
-      window.addEventListener('drop', e => { e.preventDefault(); document.getElementById('dragOverlay').style.display = 'none'; });
+      function spawnUndoToast(result) {
+        if (!result || !result.transactionId) return;
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+        const txnId = result.transactionId;
+        const existing = document.getElementById(`undo-toast-${txnId}`);
+        if (existing) existing.remove();
 
-      function setupZone(id) {
-        const zone = document.getElementById(id);
-        if (!zone) return;
-        zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
-        zone.addEventListener('dragleave', e => { e.preventDefault(); zone.classList.remove('dragover'); });
-        zone.addEventListener('drop', e => {
-          e.preventDefault(); zone.classList.remove('dragover');
-          if (e.dataTransfer.files && e.dataTransfer.files.length > 0) uploadFiles(e.dataTransfer.files, 'standard');
-        });
+        const undoCard = document.createElement('div');
+        undoCard.className = 'toast undo-toast';
+        undoCard.id = `undo-toast-${txnId}`;
+
+        const startTime = Date.now();
+        const durationMs = 300000; // 5 minutes
+
+        undoCard.innerHTML = `
+          <div class="undo-toast-header">
+            <div class="undo-toast-title">
+              <span>⏳</span>
+              <span>Upload Dispatched</span>
+            </div>
+            <span class="undo-toast-timer" id="timer-${txnId}">05:00</span>
+          </div>
+          <div class="undo-toast-file" title="${escHtml(result.filename)}">${escHtml(result.filename)}</div>
+          <div class="undo-toast-stats">
+            <span>Net: <b style="color:var(--success)">${result.stats.shown}</b></span>
+            <span>Gross: <b style="color:var(--text-main)">${result.stats.shown + result.stats.hidden}</b></span>
+          </div>
+          <div class="undo-toast-progress-wrap">
+            <div class="undo-toast-progress-bar" id="bar-${txnId}"></div>
+          </div>
+          <div class="undo-toast-actions">
+            <button type="button" class="undo-toast-revert-btn" onclick="undoUpload('${txnId}'); dismissToast(document.getElementById('undo-toast-${txnId}'));">
+              ↩ Revert Upload
+            </button>
+            <button type="button" class="undo-toast-keep-btn" onclick="dismissToast(document.getElementById('undo-toast-${txnId}'))">
+              Keep
+            </button>
+          </div>
+        `;
+
+        container.prepend(undoCard);
+
+        const interval = setInterval(() => {
+          const elapsed = Date.now() - startTime;
+          const remaining = durationMs - elapsed;
+          if (remaining <= 0) {
+            clearInterval(interval);
+            dismissToast(undoCard);
+            return;
+          }
+          const mins = Math.floor(remaining / 60000);
+          const secs = String(Math.floor((remaining % 60000) / 1000)).padStart(2, '0');
+          const timerEl = document.getElementById(`timer-${txnId}`);
+          const barEl = document.getElementById(`bar-${txnId}`);
+          if (timerEl) timerEl.textContent = `${mins}:${secs}`;
+          if (barEl) barEl.style.width = `${(remaining / durationMs) * 100}%`;
+        }, 1000);
       }
-      setupZone('dropStd');
+
+      // ─────────────────────────────────────────────
+      //  DRAG & DROP (FULL WINDOW)
+      // ─────────────────────────────────────────────
+      let dragCounter = 0;
+      const dragOverlay = document.getElementById('dragOverlay');
+
+      function isExcelDrag(e) {
+        if (!e.dataTransfer || !e.dataTransfer.types) return false;
+        return Array.from(e.dataTransfer.types).includes('Files');
+      }
+
+      window.addEventListener('dragenter', e => {
+        if (!isExcelDrag(e)) return;
+        e.preventDefault();
+        dragCounter++;
+        if (dragOverlay) dragOverlay.classList.add('active');
+      });
+
+      window.addEventListener('dragover', e => {
+        if (!isExcelDrag(e)) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'copy';
+      });
+
+      window.addEventListener('dragleave', e => {
+        if (!isExcelDrag(e)) return;
+        e.preventDefault();
+        dragCounter = Math.max(0, dragCounter - 1);
+        if (dragCounter === 0 && dragOverlay) {
+          dragOverlay.classList.remove('active');
+        }
+      });
+
+      window.addEventListener('drop', e => {
+        if (!isExcelDrag(e)) return;
+        e.preventDefault();
+        dragCounter = 0;
+        if (dragOverlay) dragOverlay.classList.remove('active');
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+          uploadFiles(e.dataTransfer.files, 'standard');
+        }
+      });
 
       // ─────────────────────────────────────────────
       //  NAVIGATION
@@ -3157,8 +3725,11 @@
             } catch (e) { }
           }
           let canUndo = uploadTime && (nowMs - uploadTime) < 300000 && f.transactionId;
+          let remainingSec = canUndo ? Math.max(0, Math.floor((300000 - (nowMs - uploadTime)) / 1000)) : 0;
+          let mins = Math.floor(remainingSec / 60);
+          let secs = String(remainingSec % 60).padStart(2, '0');
           let undoBtnHtml = canUndo
-            ? `<span title="Revert upload (within 5 min)" onclick="undoUpload('${f.transactionId}')" style="cursor:pointer; margin-left:12px; display:inline-flex; align-items:center; justify-content:center; background:rgba(239,68,68,0.1); color:var(--danger); border-radius:4px; padding:2px 6px; font-size:10px; font-weight:700; letter-spacing:0.5px; transition:all 0.2s;" onmouseover="this.style.background='var(--danger)'; this.style.color='#fff';" onmouseout="this.style.background='rgba(239,68,68,0.1)'; this.style.color='var(--danger)';">↩ UNDO</span>`
+            ? `<button type="button" class="table-undo-chip" data-txn="${f.transactionId}" data-time="${uploadTime}" onclick="undoUpload('${f.transactionId}')" title="Revert upload within 5 min (Time remaining: ${mins}:${secs})"><span style="font-size:11px;">↩</span> <span>UNDO</span> <span class="undo-countdown">(${mins}:${secs})</span></button>`
             : '';
           const dateString = dateVal || new Date(f.mtime).toISOString().split('T')[0];
           const editBtn = f.agent === currentUser
@@ -3197,6 +3768,28 @@
         if (typeof renderPerformanceDashboard === 'function') {
           renderPerformanceDashboard();
         }
+      }
+
+      function updateTableUndoCountdowns() {
+        const chips = document.querySelectorAll('.table-undo-chip');
+        if (!chips.length) return;
+        const now = Date.now();
+        chips.forEach(chip => {
+          const uploadTime = Number(chip.getAttribute('data-time'));
+          if (!uploadTime) return;
+          const remainingSec = Math.max(0, Math.floor((300000 - (now - uploadTime)) / 1000));
+          if (remainingSec <= 0) {
+            chip.remove();
+          } else {
+            const mins = Math.floor(remainingSec / 60);
+            const secs = String(remainingSec % 60).padStart(2, '0');
+            const timerSpan = chip.querySelector('.undo-countdown');
+            if (timerSpan) timerSpan.textContent = `(${mins}:${secs})`;
+          }
+        });
+      }
+      if (!window._undoCountdownTicker) {
+        window._undoCountdownTicker = setInterval(updateTableUndoCountdowns, 1000);
       }
 
       // ─────────────────────────────────────────────
@@ -4176,6 +4769,20 @@
             const footer = document.getElementById('logFooter');
             if (footer && footer.classList.contains('expanded')) toggleLogs();
           }
+          return;
+        }
+
+        // Ctrl + B: Toggle Sidebar
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
+          e.preventDefault();
+          if (typeof toggleSidebar === 'function') toggleSidebar();
+          return;
+        }
+
+        // Ctrl + M: Toggle Compact Metrics Ribbon
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'm') {
+          e.preventDefault();
+          if (typeof toggleWidgetsCompact === 'function') toggleWidgetsCompact();
           return;
         }
 
