@@ -2411,6 +2411,14 @@
 
               <!-- Right: Actions -->
               <div style="display:flex; align-items:center; gap:10px; justify-content: flex-end;">
+                <!-- Outlook Sync Controls (Admin & Viewer) -->
+                <div style="display:inline-flex; align-items:center; gap:6px; background:var(--bg-main); border:1px solid var(--border); border-radius:8px; padding:3px 6px;">
+                  <span style="font-size:11px; font-weight:600; color:var(--text-muted); padding-left:4px;">Date:</span>
+                  <input type="date" id="outlookSyncDate" style="border:none; background:transparent; color:var(--text-main); font-family:inherit; font-size:12px; outline:none; cursor:pointer;">
+                  <button id="btnSyncOutlook" class="btn btn-blue" style="padding: 5px 11px; font-size:12px; display:inline-flex; align-items:center; gap:5px;" onclick="syncOutlookShows()" title="Scan and import locating show emails from Outlook">
+                    <span id="outlookSyncIcon">📥</span> <span>Sync Outlook</span>
+                  </button>
+                </div>
                 <button class="btn btn-blue admin-only" onclick="openAddShowModal()">+ Add Show</button>
                 <button class="btn btn-red" onclick="clearHopper()">✕ Clear Log</button>
                 <div class="custom-dropdown">
@@ -3870,6 +3878,13 @@
       applyHopperFilters();
     }
 
+    function getShowType(showName) {
+      const name = showName || '';
+      if (/\bx\s*[-_]?\s*z\s*[-_]?\s*show\b/i.test(name)) return 'XZ';
+      if (/\bx\s*[-_]?\s*show\b/i.test(name)) return 'X';
+      return 'New';
+    }
+
     function applyHopperFilters() {
       const q = document.getElementById('hopperSearch')?.value.toLowerCase() || '';
       const st = document.getElementById('hopperStatusFilter')?.value || 'All';
@@ -3884,8 +3899,9 @@
         const statusStr = s.status || 'Pending';
         const agent = s.agentName || 'Unassigned';
 
-        // Check Type Filter ('New' vs 'X')
-        const isX = s.showName.includes('XShow') || s.showName.includes('XZShow') || s.showName.includes('X Show') || s.showName.includes('XZ Show');
+        // Check Type Filter ('New' vs 'X' / 'XZ') - fully case-insensitive (handles XShow, XSHOW, Xshow, X-Show, etc.)
+        const stype = getShowType(s.showName);
+        const isX = (stype === 'X' || stype === 'XZ');
         if (currentTypeFilter === 'New' && isX) return false;
         if (currentTypeFilter === 'X' && !isX) return false;
 
@@ -3915,7 +3931,8 @@
         const name = s.showName || '';
         const st = (s.status || 'Pending').startsWith('CXL') ? 'CXL' : (s.status || 'Pending');
 
-        const isX = name.includes('XShow') || name.includes('XZShow') || name.includes('X Show') || name.includes('XZ Show');
+        const stype = getShowType(name);
+        const isX = (stype === 'X' || stype === 'XZ');
         if (isX) xCount++;
         else newCount++;
 
@@ -4068,10 +4085,11 @@
           ${selectedHopperIds.has(s.id) ? 'checked' : ''} 
           onchange="onHopperCheck('${s.id}', this.checked)">`;
 
-        // Determine Show Type (XZ-Show, X-Show, or New/Standard Show)
-        const isXZShow = s.showName.includes('XZShow') || s.showName.includes('XZ Show');
-        const isXShow = !isXZShow && (s.showName.includes('XShow') || s.showName.includes('X Show'));
-        const isNewShow = !isXZShow && !isXShow;
+        // Determine Show Type (XZ-Show, X-Show, or New/Standard Show) - fully case-insensitive
+        const stype = getShowType(s.showName);
+        const isXZShow = (stype === 'XZ');
+        const isXShow = (stype === 'X');
+        const isNewShow = (stype === 'New');
 
         let typeBadgeHtml = '';
         if (isXZShow) {
@@ -4189,6 +4207,62 @@
         }
       } catch (e) { showToast('❌ Server error.', 'error'); }
     }
+
+    async function syncOutlookShows() {
+      const dateInput = document.getElementById('outlookSyncDate');
+      const syncBtn = document.getElementById('btnSyncOutlook');
+      const syncIcon = document.getElementById('outlookSyncIcon');
+      const targetDate = (dateInput && dateInput.value) ? dateInput.value : new Date().toISOString().split('T')[0];
+
+      if (syncBtn) {
+        syncBtn.disabled = true;
+        syncBtn.style.opacity = '0.7';
+      }
+      if (syncIcon) syncIcon.textContent = '⏳';
+
+      showToast(`Scanning Outlook emails for ${targetDate}...`, 'info');
+
+      try {
+        const res = await fetch('/api/shows/sync-outlook', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ date: targetDate })
+        });
+        const json = await res.json();
+        if (json.success) {
+          if (json.addedToHopper > 0) {
+            showToast(`✅ Synced ${json.scrapedCount} emails. Added ${json.addedToHopper} new show(s) to Hopper!`, 'success');
+          } else if (json.scrapedCount > 0) {
+            showToast(`ℹ️ Scraped ${json.scrapedCount} emails (${json.updatedInHopper} updated, 0 new).`, 'info');
+          } else {
+            showToast(`ℹ️ No show emails found for ${json.date}.`, 'info');
+          }
+          fetchShows();
+        } else {
+          showToast(`❌ Outlook sync failed: ${json.error}`, 'error');
+        }
+      } catch (e) {
+        showToast(`❌ Network/Server error: ${e.message}`, 'error');
+      } finally {
+        if (syncBtn) {
+          syncBtn.disabled = false;
+          syncBtn.style.opacity = '1';
+        }
+        if (syncIcon) syncIcon.textContent = '📥';
+      }
+    }
+
+    // Auto-initialize Outlook Sync Date input to today's local date
+    document.addEventListener('DOMContentLoaded', () => {
+      const dInput = document.getElementById('outlookSyncDate');
+      if (dInput && !dInput.value) {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        dInput.value = `${yyyy}-${mm}-${dd}`;
+      }
+    });
 
     // ══════════════════════════════════════════════
     //  SOCKET.IO

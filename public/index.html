@@ -3078,8 +3078,8 @@
           let valA, valB;
           const fullNameA = (a.name || a.filename || a.showName || a.destPath || '').toString();
           const fullNameB = (b.name || b.filename || b.showName || b.destPath || '').toString();
-          const isXShowA = fullNameA.includes('XShow') || fullNameA.includes('XZShow') || fullNameA.includes('X Show') || fullNameA.includes('XZ Show') || fullNameA.toLowerCase().includes('x-show') || fullNameA.toLowerCase().includes('xshow');
-          const isXShowB = fullNameB.includes('XShow') || fullNameB.includes('XZShow') || fullNameB.includes('X Show') || fullNameB.includes('XZ Show') || fullNameB.toLowerCase().includes('x-show') || fullNameB.toLowerCase().includes('xshow');
+          const isXShowA = /\bx\s*[-_]?\s*z?\s*show\b/i.test(fullNameA);
+          const isXShowB = /\bx\s*[-_]?\s*z?\s*show\b/i.test(fullNameB);
 
           switch (tableSortCol) {
             case 'name':
@@ -3167,7 +3167,7 @@
 
           // Match admin.html X-Show vs New Show detection logic
           const fullNameStr = (f.name || f.filename || f.showName || f.destPath || '').toString();
-          const isXShow = fullNameStr.includes('XShow') || fullNameStr.includes('XZShow') || fullNameStr.includes('X Show') || fullNameStr.includes('XZ Show') || fullNameStr.toLowerCase().includes('x-show') || fullNameStr.toLowerCase().includes('xshow');
+          const isXShow = /\bx\s*[-_]?\s*z?\s*show\b/i.test(fullNameStr);
           const showTypeTag = isXShow
             ? `<span class="show-type-tag x-show">X</span>`
             : `<span class="show-type-tag new-show">New</span>`;

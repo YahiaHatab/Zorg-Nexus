@@ -843,6 +843,104 @@ app.get('/api/shows', (req, res) => {
     }
 });
 
+// Sync shows directly from Outlook Desktop MAPI
+app.post('/api/shows/sync-outlook', (req, res) => {
+    try {
+        const { date, markRead } = req.body || {};
+        let config = {};
+        try { config = JSON.parse(fs.readFileSync(configPath)); } catch (_) {}
+        const excelPath = config.showsTrackerPath || "C:\\Users\\Yehya\\Desktop\\Bonga\\MailS\\Shows_Tracker.xlsx";
+        const scriptPath = path.join(__dirname, 'scripts', 'outlook_sync.py');
+
+        const args = [scriptPath, '--excel-path', excelPath];
+        if (date && typeof date === 'string' && date.trim()) {
+            args.push('--date', date.trim());
+        }
+        if (markRead) {
+            args.push('--mark-read');
+        }
+
+        const { execFile } = require('child_process');
+        execFile('python', args, { maxBuffer: 10 * 1024 * 1024 }, (error, stdout, stderr) => {
+            if (error) {
+                console.error('[Outlook Sync Error]:', stderr || error.message);
+                return res.status(500).json({ success: false, error: stderr || error.message });
+            }
+
+            try {
+                const lines = stdout.trim().split('\n');
+                let result = null;
+                for (let i = lines.length - 1; i >= 0; i--) {
+                    try {
+                        result = JSON.parse(lines[i]);
+                        break;
+                    } catch (_) {}
+                }
+
+                if (!result || !result.success) {
+                    return res.status(500).json({ success: false, error: result?.error || 'Invalid output from Outlook sync script.' });
+                }
+
+                const currentShows = JSON.parse(fs.readFileSync(showsPath));
+                let addedToHopper = 0;
+                let updatedInHopper = 0;
+
+                (result.shows || []).forEach(s => {
+                    const existing = currentShows.find(cs => cs.showName.toLowerCase() === s.showName.toLowerCase());
+                    if (!existing) {
+                        const newShow = {
+                            id: Date.now().toString(36) + Math.random().toString(36).substr(2, 9),
+                            showName: s.showName,
+                            link: s.links || [],
+                            linkComments: s.linkComments || [],
+                            rangeComment: s.rangeComment || '',
+                            ld: s.listRange || '',
+                            comment: s.comment || '',
+                            agentName: '',
+                            lists: '',
+                            date: s.receivedTime ? s.receivedTime.split(' ')[0] : result.date,
+                            status: 'Pending',
+                            pinnedTo: null
+                        };
+                        currentShows.push(newShow);
+                        addedToHopper++;
+                    } else {
+                        let updated = false;
+                        (s.links || []).forEach(l => {
+                            if (!existing.link.includes(l)) { existing.link.push(l); updated = true; }
+                        });
+                        if (!existing.ld && s.listRange) { existing.ld = s.listRange; updated = true; }
+                        if (!existing.comment && s.comment) { existing.comment = s.comment; updated = true; }
+                        if (s.linkComments && s.linkComments.length) { existing.linkComments = s.linkComments; updated = true; }
+                        if (s.rangeComment) { existing.rangeComment = s.rangeComment; updated = true; }
+                        if (updated) updatedInHopper++;
+                    }
+                });
+
+                if (addedToHopper > 0 || updatedInHopper > 0) {
+                    fs.writeFileSync(showsPath, JSON.stringify(currentShows, null, 2));
+                    io.emit('hopper_updated');
+                }
+
+                res.json({
+                    success: true,
+                    date: result.date,
+                    scrapedCount: result.scrapedCount,
+                    newCountInExcel: result.newCount,
+                    addedToHopper,
+                    updatedInHopper,
+                    totalShows: currentShows.length
+                });
+            } catch (parseErr) {
+                console.error('[Outlook Sync Parse Error]:', parseErr);
+                res.status(500).json({ success: false, error: 'Failed to process sync output: ' + parseErr.message });
+            }
+        });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
 app.post('/api/shows/upload', upload.single('file'), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'No file uploaded.' });
     try {
@@ -1211,23 +1309,26 @@ app.get('/api/shows/export', async (req, res) => {
     try {
         const currentShows = JSON.parse(fs.readFileSync(showsPath));
         const wb = new ExcelJS.Workbook();
-        const sheet = wb.addWorksheet('Shows Hopper');
+        const sheet = wb.addWorksheet('Shows Hopper', {
+            views: [{ state: 'normal', zoomScale: 85 }]
+        });
+        sheet.properties.defaultRowHeight = 15;
 
-        // New column order: Show Name | Link | I/D | Comment | Agent Name
+        // Column order: Show Name | Link | I/D | Comment | Agent Name
         sheet.columns = [
-            { header: 'Show Name',  key: 'showName',  width: 45 },
-            { header: 'Link',       key: 'link',       width: 50 },
+            { header: 'Show Name',  key: 'showName',  width: 50 },
+            { header: 'Link',       key: 'link',       width: 60 },
             { header: 'I/D',        key: 'ld',         width: 18 },
             { header: 'Comment',    key: 'comment',    width: 35 },
             { header: 'Agent Name', key: 'agentName',  width: 20 },
         ];
 
-        // Style header row
+        // Style header row (Row 1): Height 15, Font Arial 10 Bold
         const headerRow = sheet.getRow(1);
-        headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+        headerRow.font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FFFFFFFF' } };
         headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1F2937' } };
         headerRow.alignment = { vertical: 'middle', horizontal: 'left' };
-        headerRow.height = 20;
+        headerRow.height = 15;
 
         // Status → fill colour map
         const STATUS_FILL = {
@@ -1237,14 +1338,18 @@ app.get('/api/shows/export', async (req, res) => {
         };
 
         currentShows.forEach(s => {
-            const links = Array.isArray(s.link) ? s.link.join('\n') : (s.link || '');
-            const dataRow = sheet.addRow({
-                showName:  s.showName  || '',
-                link:      links,
-                ld:        s.ld        || '',
-                comment:   s.comment   || '',
-                agentName: s.agentName || '',
-            });
+            const linkList = Array.isArray(s.link) 
+                ? s.link.filter(Boolean) 
+                : (s.link ? [s.link] : ['']);
+            if (linkList.length === 0) linkList.push('');
+
+            // Build per-link comments
+            let commentsList = [];
+            if (Array.isArray(s.linkComments) && s.linkComments.length > 0) {
+                commentsList = [...s.linkComments];
+            } else if (s.comment) {
+                commentsList = s.comment.split(/\s*\|\s*|\n/).map(c => c.trim()).filter(Boolean);
+            }
 
             // Determine fill based on status
             const rawStatus = (s.status || 'Pending');
@@ -1253,14 +1358,44 @@ app.get('/api/shows/export', async (req, res) => {
             else if (rawStatus === 'HOLD')               fillKey = 'HOLD';
             else if (rawStatus.startsWith('CXL'))        fillKey = 'CXL';
 
-            if (fillKey) {
-                dataRow.eachCell({ includeEmpty: true }, cell => {
-                    cell.fill = STATUS_FILL[fillKey];
-                });
-            }
+            linkList.forEach((url, idx) => {
+                const isFirst = (idx === 0);
+                let rowComment = '';
+                if (commentsList.length > idx) {
+                    rowComment = commentsList[idx];
+                } else if (isFirst) {
+                    rowComment = s.comment || '';
+                }
 
-            // Wrap text in link cell
-            dataRow.getCell('link').alignment = { wrapText: true, vertical: 'top' };
+                if (isFirst && s.rangeComment && !rowComment.includes(s.rangeComment)) {
+                    rowComment = rowComment ? `${rowComment} | ${s.rangeComment}` : s.rangeComment;
+                }
+
+                const dataRow = sheet.addRow({
+                    showName:  isFirst ? (s.showName || '') : '',
+                    link:      url || '',
+                    ld:        isFirst ? (s.ld || '') : '',
+                    comment:   rowComment || '',
+                    agentName: isFirst ? (s.agentName || '') : '',
+                });
+
+                dataRow.height = 15;
+
+                dataRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+                    cell.font = { name: 'Arial', size: 10 };
+                    cell.alignment = { vertical: 'middle' };
+
+                    // Make link column clickable with Arial font
+                    if (colNumber === 2 && url) {
+                        cell.value = { text: url, hyperlink: url };
+                        cell.font = { name: 'Arial', size: 10, color: { argb: 'FF0563C1' }, underline: true };
+                    }
+
+                    if (fillKey) {
+                        cell.fill = STATUS_FILL[fillKey];
+                    }
+                });
+            });
         });
 
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
