@@ -137,3 +137,47 @@ Before completing any task or making commits in this repo, run through this chec
 4. **WebSocket Event Verification**:
    If modifying API endpoints that alter show or floor state, ensure corresponding Socket.IO events (`io.emit('floorUpdate', ...)` or `io.emit('queueUpdate', ...)`) are triggered.
 
+---
+
+## 6. Operational Business Context & Inter-System Integration
+
+### 6.1 System Duality: ZORG-Ω Scraper vs. ZORG Nexus
+The trade show intelligence operation relies on two interconnected systems:
+1. **ZORG-Ω (`ZORGScraperSPEC.md`)**:
+   - Automated web directory scraper covering 26+ platforms (A2Z, eShow, Cadmium, MapYourShow, ExpoFP, etc.).
+   - Standardizes raw exhibitor catalogs into a clean 8-column Excel workbook (`Exhibitors` sheet: Exhibitor Name, Phone Number, Country, Contact Name, Email, Mails, Booth, Website).
+2. **ZORG NEXUS (`spec.md` + `server.js`)**:
+   - The operational hub: manages the show hopper queue, agent floor presence, session timers (via Agent Portal & Electron HUD Widget), Excel row auditing, regional file dispatching (`output/US` and `output/UK`), agent backup archiving, and analytics ledger.
+
+### 6.2 End-to-End Workflow & The "XShow" Protocol
+1. **Locating Department Handoff**:
+   - Locating scouts upcoming trade shows across the USA, UK, and worldwide.
+   - Sends show notifications specifying the show name, dates, location, exhibitor list link, and expected exhibitor counts.
+2. **Hopper & Dispatch**:
+   - Shows are queued in `shows.json` (manual entry or bulk import).
+   - Agents claim shows via the Agent Portal or auto-dispatch. An interactive session timer starts on the HUD widget.
+3. **Extraction & Excel Curation**:
+   - The agent uses ZORG-Ω to scrape the directory and generates the base workbook.
+   - The agent enriches records with contact names, direct phone numbers, and email addresses.
+   - **Disqualification / Hidden Rows**: Non-qualifying leads are hidden in Excel (`row.hidden === true` or height 0) and tagged with a reason in Column B/C (e.g. `Int'l`, `Publisher`, `CXL`, `NF`, `No Num`, `Repeated`, `Local`, `Blank`).
+4. **The "XShow" (Update Show) Protocol**:
+   - When a previously completed show registers new exhibitors, Locating sends an update notification with an increased exhibitor count.
+   - The agent re-scrapes the updated directory via ZORG-Ω.
+   - The agent compares the previous workbook with the newly scraped list to isolate new exhibitors.
+   - **New exhibitors are placed at the very top of the worksheet**.
+   - The tag column (typically **Column F**) is marked with the batch tag:
+     - 1st update: `New`
+     - 2nd update: `New2`
+     - 3rd update: `New3` ... up to `New10`, etc. (or `Some`, `Some2`..., `FromHide`).
+   - Newly worked visible leads are formatted with **Red font** (`visibleRed`).
+5. **Nexus Auditing & Auto-Dispatch**:
+   - The agent uploads the finished `.xlsx` file to ZORG Nexus.
+   - `processExcelFile()` scans the worksheet:
+     - Auto-identifies the tag column (Column F).
+     - Finds the highest batch index (e.g. `New10`) and computes metrics strictly for that latest iteration (`newShown`, `newHidden`).
+     - Normalizes hidden disqualification reasons via `normalizeReason()`.
+     - Automatically routes and partitions the file to `output/[US|UK]/[YYYY]/[Month]/[DD-MM]/[Filename].xlsx`.
+     - Archives an exact duplicate to `archive/[AgentUsername]/...`.
+     - Records stats in `analytics.json` and `history.json`, clears the show from the hopper, and registers a 5-minute rollback window in `undoRegistry`.
+
+

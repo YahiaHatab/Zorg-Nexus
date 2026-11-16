@@ -235,7 +235,14 @@ The core data integrity pipeline resides in `/api/upload` and `/api/upload-bulk`
 2. **ExcelJS Inspection**:
    - Inspects worksheet rows starting from the header (auto-detecting column headers: Company, Phone, Website, Reason, Country, etc.).
    - Distinguishes **Visible Rows** (counted as `shown` leads) from **Hidden Rows** (counted as `hidden` leads). A row is marked hidden if Excel's `row.hidden === true` or row height is zero.
-3. **Reason Normalization (`normalizeReason`)**:
+3. **Tag Column Auditing & The "XShow" Protocol**:
+   - For update shows (XShows) where new exhibitors are added to an existing show, the agent places new exhibitors at the top of the worksheet.
+   - The engine performs Pass 1: scans all columns to auto-detect the Tag Column (typically Column F) matching `/^new(\d*)$/i`, `/^some(\d*)$/i`, or `/fromhide/i`.
+   - The engine performs Pass 2: detects the highest batch iteration (e.g. `New`, `New2`, `New3` ... `New10`), and isolates counting strictly to the latest batch:
+     - `newShown`: Visible rows in the latest batch formatted with red font (`visibleRed`).
+     - `newHidden`: Hidden rows in the latest batch.
+   - For non-North American shows (`!isNA`), if total count >= 200, local exhibitor counts are systematically deducted.
+4. **Reason Normalization (`normalizeReason`)**:
    Hidden rows are inspected for disqualification tags and mapped to canonical values:
    - `Int'l` (aliases: international, intl, int'l)
    - `Publisher` (aliases: publishing, puplishing, publisher)
@@ -245,7 +252,7 @@ The core data integrity pipeline resides in `/api/upload` and `/api/upload-bulk`
    - `Repeated` (aliases: repeat, duplicate, dup)
    - `Local` (aliases: local company)
    - `Blank` / `Invalid Reason`
-4. **File Routing & Partitioning**:
+5. **File Routing & Partitioning**:
    Files are saved according to convention:
    ```
    output/[US|UK]/[YYYY]/[MonthName]/[DD-MM]/[ShowFilename].xlsx
@@ -254,7 +261,7 @@ The core data integrity pipeline resides in `/api/upload` and `/api/upload-bulk`
    ```
    archive/[AgentUsername]/[YYYY]/[MonthName]/[DD-MM]/[ShowFilename].xlsx
    ```
-5. **Ledger Recording**:
+6. **Ledger Recording**:
    Metrics are appended to `history.json` and `analytics.json`.
 
 ### 4.4 The 5-Minute Undo Registry
