@@ -3169,7 +3169,7 @@
     </div>
 
     <!-- ── BULK UPLOAD SUMMARY MODAL ── -->
-    <div id="bulkModal"
+    <div id="bulkModal" onclick="if(event.target === this) hideBulkModal()"
       style="display: none; position: fixed; inset: 0; z-index: 9997; background: rgba(11, 15, 25, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); align-items: center; justify-content: center; padding: 24px; animation: fadeIn 0.3s ease-out;">
       <div
         style="background: var(--bg-panel); border: 1px solid var(--border); border-radius: 20px; padding: 32px; width: 100%; max-width: 550px; text-align: left; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); display: flex; flex-direction: column; gap: 20px; max-height: 80vh;">
@@ -3592,18 +3592,42 @@
           hideBulkOverlay();
 
           if (data.success) {
-            showBulkSummaryModal(data.results);
+            window._lastBulkResults = data.results || [];
             fetchUserData();
             loadPerformanceDashboard();
-            data.results.forEach(result => {
+
+            const successList = (data.results || []).filter(r => r.success);
+            const failList = (data.results || []).filter(r => !r.success);
+
+            if (data.results && data.results.length === 1) {
+              // Single file upload
+              const result = data.results[0];
               if (result.success) {
-                const stats = result.stats;
-                showToast(`✅ <b>Upload Successful</b><br>${result.filename}<br>Shown: ${stats.shown} | Hidden: ${stats.hidden}`, 'success');
+                const stats = result.stats || { shown: 0, hidden: 0 };
+                showToast(`✅ <b>Upload Successful</b><br>${escHtml(result.filename)}<br>Net: <b>${stats.shown}</b> | Gross: <b>${stats.shown + stats.hidden}</b>`, 'success');
                 if (result.transactionId) {
                   spawnUndoToast(result);
                 }
+              } else {
+                showBulkSummaryModal(data.results);
               }
-            });
+            } else if (data.results && data.results.length > 1) {
+              // Bulk upload: Single consolidated toast + single batch undo card
+              if (failList.length > 0) {
+                // Show modal automatically when there are errors so user can inspect issues
+                showBulkSummaryModal(data.results);
+                showToast(`⚠️ <b>Bulk Upload Finished</b><br>${successList.length} succeeded, <b>${failList.length} failed</b>. Check details in modal.`, 'warning');
+              } else {
+                // Clean single summary toast, no intrusive modal
+                const totalNet = successList.reduce((acc, r) => acc + (r.stats?.shown || 0), 0);
+                const totalGross = successList.reduce((acc, r) => acc + (r.stats?.shown || 0) + (r.stats?.hidden || 0), 0);
+                showToast(`✅ <b>Bulk Upload Complete</b><br>${successList.length} files sorted successfully • <b>+${totalNet.toLocaleString()}</b> Net leads (${totalGross.toLocaleString()} Gross) <a href="javascript:void(0)" onclick="showBulkSummaryModal(window._lastBulkResults)" style="color:var(--accent-cyan);text-decoration:underline;margin-left:8px;font-size:12px;">View Summary</a>`, 'success');
+              }
+
+              if (successList.length > 0) {
+                spawnBatchUndoToast(successList);
+              }
+            }
 
             // Auto-complete the active show if in Briefing Room
             if (currentAssignedShow && currentView === 'briefing') {
@@ -3691,6 +3715,25 @@
         }
       }
 
+      async function undoBatchUpload(txIds) {
+        if (!txIds || !txIds.length) return;
+        let count = 0;
+        for (const txId of txIds) {
+          try {
+            const res = await fetch('/api/undo', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ transactionId: txId, username: currentUser })
+            });
+            const data = await res.json();
+            if (data.success) count++;
+          } catch (e) {}
+        }
+        showToast(`⏪ Reverted ${count} file${count === 1 ? '' : 's'}. Records scrubbed.`, 'info');
+        fetchUserData();
+        loadPerformanceDashboard();
+      }
+
       function manualUpload(inputEl) {
         if (inputEl.files.length > 0) { uploadFiles(inputEl.files, 'standard'); inputEl.value = ''; }
       }
@@ -3698,6 +3741,77 @@
       // ─────────────────────────────────────────────
       //  UNDO FLOATING CARD & COUNTDOWN
       // ─────────────────────────────────────────────
+      function spawnBatchUndoToast(successResults) {
+        const validResults = (successResults || []).filter(r => r && r.transactionId);
+        if (!validResults.length) return;
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+
+        if (validResults.length === 1) {
+          spawnUndoToast(validResults[0]);
+          return;
+        }
+
+        const existing = document.getElementById('batch-undo-toast');
+        if (existing) existing.remove();
+
+        const totalNet = validResults.reduce((acc, r) => acc + (r.stats?.shown || 0), 0);
+        const totalGross = validResults.reduce((acc, r) => acc + (r.stats?.shown || 0) + (r.stats?.hidden || 0), 0);
+        const txIds = validResults.map(r => r.transactionId);
+
+        const undoCard = document.createElement('div');
+        undoCard.className = 'toast undo-toast';
+        undoCard.id = 'batch-undo-toast';
+
+        const startTime = Date.now();
+        const durationMs = 300000; // 5 minutes
+
+        undoCard.innerHTML = `
+          <div class="undo-toast-header">
+            <div class="undo-toast-title">
+              <span>⏳</span>
+              <span>Batch Upload (${validResults.length} Files)</span>
+            </div>
+            <span class="undo-toast-timer" id="batch-undo-timer">05:00</span>
+          </div>
+          <div class="undo-toast-file" style="color:var(--text-muted); font-size:11px;">
+            ${validResults.length} files dispatched to storage
+          </div>
+          <div class="undo-toast-stats">
+            <span>Total Net: <b style="color:var(--success)">${totalNet.toLocaleString()}</b></span>
+            <span>Total Gross: <b style="color:var(--text-main)">${totalGross.toLocaleString()}</b></span>
+          </div>
+          <div class="undo-toast-progress-wrap">
+            <div class="undo-toast-progress-bar" id="batch-undo-bar"></div>
+          </div>
+          <div class="undo-toast-actions">
+            <button type="button" class="undo-toast-revert-btn" onclick="undoBatchUpload(${JSON.stringify(txIds).replace(/"/g, '&quot;')}); dismissToast(document.getElementById('batch-undo-toast'));">
+              ↩ Revert All (${validResults.length})
+            </button>
+            <button type="button" class="undo-toast-keep-btn" onclick="dismissToast(document.getElementById('batch-undo-toast'))">
+              Keep
+            </button>
+          </div>
+        `;
+
+        container.prepend(undoCard);
+
+        const interval = setInterval(() => {
+          const elapsed = Date.now() - startTime;
+          const remaining = durationMs - elapsed;
+          if (remaining <= 0) {
+            clearInterval(interval);
+            dismissToast(undoCard);
+            return;
+          }
+          const mins = Math.floor(remaining / 60000);
+          const secs = String(Math.floor((remaining % 60000) / 1000)).padStart(2, '0');
+          const timerEl = document.getElementById('batch-undo-timer');
+          const barEl = document.getElementById('batch-undo-bar');
+          if (timerEl) timerEl.textContent = `${mins}:${secs}`;
+          if (barEl) barEl.style.width = `${(remaining / durationMs) * 100}%`;
+        }, 1000);
+      }
       function spawnUndoToast(result) {
         if (!result || !result.transactionId) return;
         const container = document.getElementById('toastContainer');
@@ -5012,6 +5126,7 @@
           document.querySelectorAll('.toast').forEach(t => t.remove());
           document.querySelector('.upload-dd')?.classList.remove('open');
           document.getElementById('userDropdown')?.classList.remove('open');
+          if (typeof hideBulkModal === 'function') hideBulkModal();
           if (typeof toggleLogs === 'function') {
             const footer = document.getElementById('logFooter');
             if (footer && footer.classList.contains('expanded')) toggleLogs();
